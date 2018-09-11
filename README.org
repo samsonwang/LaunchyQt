@@ -1,0 +1,6 @@
+* LaunchyQt
+original code forked from https://sourceforge.net/projects/launchy
+svn path https://svn.code.sf.net/p/launchy/code/trunk/Launchy_QT [R671]
+
+** Reason for this repo
+I have been using Launchy for years, and found that this project has not been updated since 2010. I love this tool and want to reactivate this project.
