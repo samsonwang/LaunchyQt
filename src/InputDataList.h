@@ -20,9 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef INPUTDATALIST_H
 #define INPUTDATALIST_H
 
-
 #include "catalog.h"
-
 
 class InputDataList : public QList<InputData>
 {
@@ -30,6 +28,5 @@ public:
 	void parse(const QString& text);
 	QString toString(bool omitLast = false) const;
 };
-
 
 #endif // INPUTDATALIST_H

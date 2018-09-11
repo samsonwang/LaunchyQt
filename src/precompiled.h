@@ -34,24 +34,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <stdlib.h>
-#include <boost/shared_ptr.hpp>
 
-using namespace boost;
+// #include <boost/shared_ptr.hpp>
+// using namespace boost;
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #define _CRT_SECURE_NO_WARNINGS
-#define _WIN32_WINNT 0x0600	
-#define _WIN32_IE 0x0700
+//#define _WIN32_WINNT 0x0600
+//#define _WIN32_IE 0x0700
 #include <windows.h>
 #include <tchar.h>
-#include <shlobj.h>
-#include <shlguid.h>
-#include <shobjidl.h>
-#include <shellapi.h>
-#include <commctrl.h>
-#include <commoncontrols.h>
-#include <userenv.h>
-#include <lm.h>
+// 	#include <shlobj.h>
+// 	#include <shlguid.h>
+// 	#include <shobjidl.h>
+// 	#include <shellapi.h>
+// 	#include <commctrl.h>
+// 	#include <commoncontrols.h>
+// 	#include <userenv.h>
+// 	#include <lm.h>
 #endif
 
 

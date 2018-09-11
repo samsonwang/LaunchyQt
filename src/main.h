@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MAIN_H
 #define MAIN_H
 
-
 #include "plugin_handler.h"
 #include "platform_util.h"
 #include "catalog.h"
@@ -54,16 +53,13 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(CommandFlags)
 
 class LaunchyWidget : public QWidget
 {
-	Q_OBJECT  // Enable signals and slots
+	Q_OBJECT
 
 public:
 	LaunchyWidget(CommandFlags command);
 	~LaunchyWidget();
 
 	void executeStartupCommand(int command);
-
-	Catalog* catalog;
-	PluginHandler plugins;
 
 	void showLaunchy(bool noFade);
 	void showTrayIcon();
@@ -76,6 +72,10 @@ public:
 	void loadOptions();
 	int getHotkey() const;
 	void startUpdateTimer();
+
+public:
+    Catalog* catalog;
+	PluginHandler plugins;
 
 protected:
     void paintEvent(QPaintEvent* event);
@@ -133,7 +133,8 @@ private:
 	void addToHistory(QList<InputData>& item);
 	void startDropTimer();
 
-	QString currentSkin;
+private:
+    QString currentSkin;
 
 	Fader* fader;
 	QPixmap* frameGraphic;
@@ -173,13 +174,11 @@ private:
 	IconDelegate* listDelegate;
 	QAbstractItemDelegate* defaultListDelegate;
 
-	QHttp *http;
-	QBuffer *verBuffer;
-	QBuffer *counterBuffer;
+	QHttp* http;
+	QBuffer* verBuffer;
+	QBuffer* counterBuffer;
 };
 
-
 LaunchyWidget* createLaunchyWidget(CommandFlags command);
-
 
 #endif

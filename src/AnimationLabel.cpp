@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
+//#include "precompiled.h"
 #include "AnimationLabel.h"
 
 AnimationLabel::AnimationLabel(QWidget* parent) :
@@ -37,14 +37,14 @@ AnimationLabel::~AnimationLabel()
 void AnimationLabel::LoadAnimation(const QString& animationPath)
 {
 	// Ensure the animation continues to run after loading a new graphic
-	bool running = animation->state() == QMovie::Running;
+	// bool running = (animation->state() == QMovie::Running);
 	Stop();
 
 	animation->setFileName(animationPath);
 	if (animation->isValid())
 	{
 		setMovie(animation);
-		if (running)
+		if (animation->state() == QMovie::Running)
 			Start();
 	}
 }

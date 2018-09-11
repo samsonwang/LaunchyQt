@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "precompiled.h"
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 #include <QMacStyle>
 #endif
 #include "icon_delegate.h"
@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSearch.h"
 
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void SetForegroundWindowEx(HWND hWnd)
 {
 	// Attach foreground window thread to our thread
@@ -39,7 +39,7 @@ void SetForegroundWindowEx(HWND hWnd)
 	const DWORD currentID = GetCurrentThreadId();
 
 	AttachThreadInput(foreGroundID, currentID, TRUE);
-	// Do our stuff here 
+	// Do our stuff here
 	HWND lastActivePopupWnd = GetLastActivePopup(hWnd);
 	SetForegroundWindow(lastActivePopupWnd);
 
@@ -50,7 +50,7 @@ void SetForegroundWindowEx(HWND hWnd)
 
 
 LaunchyWidget::LaunchyWidget(CommandFlags command) :
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
 #endif
 #ifdef Q_WS_X11
@@ -356,7 +356,7 @@ void LaunchyWidget::updateAlternatives(bool resetSelection)
 		QString fullPath = QDir::toNativeSeparators(searchResults[i].fullPath);
 #ifdef _DEBUG
 		fullPath += QString(" (%1 launches)").arg(searchResults[i].usage);
-#endif			
+#endif
 		QListWidgetItem* item;
 		if (i < alternatives->count())
 		{
@@ -474,7 +474,7 @@ void LaunchyWidget::launchItem(CatItem& item)
 			}
 		}
 	}
-	
+
 	if (ops == MSG_CONTROL_LAUNCHITEM)
 	{
 		QString args = "";
@@ -491,7 +491,7 @@ void LaunchyWidget::launchItem(CatItem& item)
 		runProgram(item.fullPath, args);
 //#endif
 	}
-	
+
 	catalog->incrementUsage(item);
 	history.addItem(inputData);
 }
@@ -500,7 +500,7 @@ void LaunchyWidget::launchItem(CatItem& item)
 void LaunchyWidget::focusInEvent(QFocusEvent* event)
 {
     if (event->gotFocus() && fader->isFading())
-		fader->fadeIn(false);        
+		fader->fadeIn(false);
 
 
 	QWidget::focusInEvent(event);
@@ -547,7 +547,7 @@ void LaunchyWidget::alternativesRowChanged(int index)
 				gSearchText = inputData.toString();
 			}
 		}
-		else if (inputData.count() > 0 && 
+		else if (inputData.count() > 0 &&
 			(inputData.last().hasLabel(LABEL_AUTOSUGGEST) || inputData.last().hasText() == 0))
 		{
 			qDebug() << "Autosuggest" << item.shortName;
@@ -678,7 +678,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
 		doEnter();
 	}
 
-	else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_PageDown || 
+	else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_PageDown ||
 			 event->key() == Qt::Key_Up || event->key() == Qt::Key_PageUp)
 	{
 		if (alternatives->isVisible())
@@ -752,7 +752,7 @@ void LaunchyWidget::doBackTab()
 		input->selectAll();
 		input->insert(text);
     }
-	
+
     else if (text.lastIndexOf(QDir::separator()) >= 0) {
         text.truncate(text.lastIndexOf(QDir::separator())+1);
         input->selectAll();
@@ -763,7 +763,7 @@ void LaunchyWidget::doBackTab()
 		input->selectAll();
 		input->insert(text);
 	}
-	
+
 	else if (text.lastIndexOf(QDir::separator()) >= 0) {
 		text.truncate(text.lastIndexOf(QDir::separator())+1);
 		input->selectAll();
@@ -1008,7 +1008,7 @@ void LaunchyWidget::catalogProgressUpdated(int value)
 
 void LaunchyWidget::catalogBuilt()
 {
-	// Save settings and updated catalog, stop the "working" animation 
+	// Save settings and updated catalog, stop the "working" animation
 	saveSettings();
 	workingAnimation->Stop();
 
@@ -1279,13 +1279,13 @@ void LaunchyWidget::applySkin(const QString& name)
 						input->setGeometry(rect);
 					else if (spl.at(0).trimmed().compare("inputAlignment", Qt::CaseInsensitive) == 0)
 						input->setAlignment(
-						sizes[0].trimmed().compare("left", Qt::CaseInsensitive) == 0 ? Qt::AlignLeft : 
+						sizes[0].trimmed().compare("left", Qt::CaseInsensitive) == 0 ? Qt::AlignLeft :
 						sizes[0].trimmed().compare("right", Qt::CaseInsensitive) == 0 ? Qt::AlignRight : Qt::AlignHCenter );
-					else if (spl.at(0).trimmed().compare("output", Qt::CaseInsensitive) == 0) 
+					else if (spl.at(0).trimmed().compare("output", Qt::CaseInsensitive) == 0)
 						output->setGeometry(rect);
 					else if (spl.at(0).trimmed().compare("outputAlignment", Qt::CaseInsensitive) == 0)
 						output->setAlignment(
-						sizes[0].trimmed().compare("left", Qt::CaseInsensitive) == 0 ? Qt::AlignLeft : 
+						sizes[0].trimmed().compare("left", Qt::CaseInsensitive) == 0 ? Qt::AlignLeft :
 						sizes[0].trimmed().compare("right", Qt::CaseInsensitive) == 0 ? Qt::AlignRight : Qt::AlignHCenter );
 					else if (spl.at(0).trimmed().compare("alternatives", Qt::CaseInsensitive) == 0)
 						alternativesRect = rect;
@@ -1347,7 +1347,7 @@ void LaunchyWidget::applySkin(const QString& name)
 			validFrame = true;
 		}
 	}
-	
+
 	if (!validFrame)
 	{
 		// Set the background image
@@ -1475,7 +1475,7 @@ void LaunchyWidget::showOptionsDialog()
 		OptionsDialog options(this);
 		options.setObjectName("options");
 #ifdef Q_WS_WIN
-		// need to use this method in Windows to ensure that keyboard focus is set when 
+		// need to use this method in Windows to ensure that keyboard focus is set when
 		// being activated via a message from another instance of Launchy
 		SetForegroundWindowEx(options.winId());
 #endif
@@ -1538,7 +1538,7 @@ void LaunchyWidget::showLaunchy(bool noFade)
 	fader->fadeIn(noFade || alwaysShowLaunchy);
 
 #ifdef Q_WS_WIN
-	// need to use this method in Windows to ensure that keyboard focus is set when 
+	// need to use this method in Windows to ensure that keyboard focus is set when
 	// being activated via a hook or message from another instance of Launchy
 	SetForegroundWindowEx(winId());
 #elif defined(Q_WS_X11)
