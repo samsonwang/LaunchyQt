@@ -1,0 +1,60 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "calcy", "plugins\calcy\calcy.vcxproj", "{88EE52DD-589D-3ABD-9EE1-1883731E4943}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gcalc", "plugins\gcalc\gcalc.vcxproj", "{92016ED3-521C-3419-B116-93077C308D85}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "runner", "plugins\runner\runner.vcxproj", "{71CC8773-3693-3FC8-B5E5-065B5E3C8345}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "weby", "plugins\weby\weby.vcxproj", "{F6E9FE8F-9D0D-3ED9-AFD5-C0347F6881C1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "verby", "plugins\verby\verby.vcxproj", "{423E9997-610F-3946-A755-069D2F49A77A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Launchy", "src\Launchy.vcxproj", "{13D14477-03AD-397D-A892-E8D2527CFED5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "controly", "plugins\controly\controly.vcxproj", "{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Debug|x64.ActiveCfg = Debug|x64
+		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Debug|x64.Build.0 = Debug|x64
+		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Release|x64.ActiveCfg = Release|x64
+		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Release|x64.Build.0 = Release|x64
+		{92016ED3-521C-3419-B116-93077C308D85}.Debug|x64.ActiveCfg = Debug|x64
+		{92016ED3-521C-3419-B116-93077C308D85}.Debug|x64.Build.0 = Debug|x64
+		{92016ED3-521C-3419-B116-93077C308D85}.Release|x64.ActiveCfg = Release|x64
+		{92016ED3-521C-3419-B116-93077C308D85}.Release|x64.Build.0 = Release|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Debug|x64.ActiveCfg = Debug|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Debug|x64.Build.0 = Debug|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Release|x64.ActiveCfg = Release|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Release|x64.Build.0 = Release|x64
+		{F6E9FE8F-9D0D-3ED9-AFD5-C0347F6881C1}.Debug|x64.ActiveCfg = Debug|x64
+		{F6E9FE8F-9D0D-3ED9-AFD5-C0347F6881C1}.Debug|x64.Build.0 = Debug|x64
+		{F6E9FE8F-9D0D-3ED9-AFD5-C0347F6881C1}.Release|x64.ActiveCfg = Release|x64
+		{F6E9FE8F-9D0D-3ED9-AFD5-C0347F6881C1}.Release|x64.Build.0 = Release|x64
+		{423E9997-610F-3946-A755-069D2F49A77A}.Debug|x64.ActiveCfg = Debug|x64
+		{423E9997-610F-3946-A755-069D2F49A77A}.Debug|x64.Build.0 = Debug|x64
+		{423E9997-610F-3946-A755-069D2F49A77A}.Release|x64.ActiveCfg = Release|x64
+		{423E9997-610F-3946-A755-069D2F49A77A}.Release|x64.Build.0 = Release|x64
+		{13D14477-03AD-397D-A892-E8D2527CFED5}.Debug|x64.ActiveCfg = Debug|x64
+		{13D14477-03AD-397D-A892-E8D2527CFED5}.Debug|x64.Build.0 = Debug|x64
+		{13D14477-03AD-397D-A892-E8D2527CFED5}.Release|x64.ActiveCfg = Release|x64
+		{13D14477-03AD-397D-A892-E8D2527CFED5}.Release|x64.Build.0 = Release|x64
+		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Debug|x64.ActiveCfg = Debug|x64
+		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Debug|x64.Build.0 = Debug|x64
+		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Release|x64.ActiveCfg = Release|x64
+		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		Qt5Version = Qt5.11.1x64
+	EndGlobalSection
+EndGlobal

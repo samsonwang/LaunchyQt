@@ -39,3 +39,16 @@ GRTAGS
 
 # Qt creator
 *.pro.user
+
+
+# Visual Studio
+*.vcxproj.user
+*.db
+*.opendb
+ipch
+x64
+build
+debug
+.vs
+GeneratedFiles
+precompiled.h.cpp
