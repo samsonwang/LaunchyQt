@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 // This doesn't exist until qt 4.6 (currently 4.5 in ubuntu 10.04)
 #include <QProcessEnvironment>
 
@@ -42,11 +42,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UNICODE
 #endif
 
-#define _WIN32_WINNT 0x0600	
-#define _WIN32_IE 0x0700
+//#define _WIN32_WINNT 0x0600
+//#define _WIN32_IE 0x0700
 
 #include <windows.h>
-#include <shlobj.h>
+// #include <shlobj.h>
 
 // This is also defined in WinIconProvider, remove from both locations if 64 bit build is produced
 QString aliasTo64(QString path) 
@@ -144,7 +144,7 @@ void runProgram(QString path, QString args, bool translateSeparators) {
 
 #endif
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 
 int getDesktop() { return DESKTOP_MAC; }
 
@@ -161,7 +161,7 @@ void runProgram(QString path, QString args, bool translateSeparators)
 #endif
 
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_X11
 
 
 int getDesktop()

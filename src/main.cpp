@@ -487,8 +487,8 @@ void LaunchyWidget::launchItem(CatItem& item)
 				args += inputData[i].getText() + " ";
 
 /* UPDATE
-#ifdef Q_WS_X11
-		if (!platform->Execute(item.fullPath, args))
+   #ifdef Q_OS_X11
+   if (!platform->Execute(item.fullPath, args))
 			runProgram(item.fullPath, args);
 #else
 */
@@ -1482,10 +1482,10 @@ void LaunchyWidget::showOptionsDialog()
 		optionsOpen = true;
 		OptionsDialog options(this);
 		options.setObjectName("options");
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		// need to use this method in Windows to ensure that keyboard focus is set when
 		// being activated via a message from another instance of Launchy
-		SetForegroundWindowEx(options.winId());
+        SetForegroundWindowEx((HWND)options.winId());
 #endif
 		options.exec();
 
@@ -1545,10 +1545,10 @@ void LaunchyWidget::showLaunchy(bool noFade)
 
 	fader->fadeIn(noFade || alwaysShowLaunchy);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	// need to use this method in Windows to ensure that keyboard focus is set when
 	// being activated via a hook or message from another instance of Launchy
-	SetForegroundWindowEx(winId());
+    SetForegroundWindowEx((HWND)winId());
 #elif defined(Q_WS_X11)
 	/* Fix for bug 2994680: Not sure why this is necessary, perhaps someone with more
 	   Qt experience can tell, but doing these two calls will force the window to actually

@@ -31,12 +31,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <stdlib.h>
-#include <boost/shared_ptr.hpp>
+// #include <boost/shared_ptr.hpp>
 
-using namespace boost;
+// using namespace boost;
 
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 

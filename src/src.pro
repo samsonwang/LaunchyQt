@@ -102,14 +102,14 @@ win32 {
     CONFIG += embed_manifest_exe
    # INCLUDEPATH += c:/boost/
     RC_FILE = ../win/launchy.rc
-#	LIBS += shell32.lib \
-#		user32.lib \
-#		gdi32.lib \
-#		ole32.lib \
-#		comctl32.lib \
-#		advapi32.lib \
-#		userenv.lib \
-#        netapi32.lib
+       LIBS += shell32.lib \
+                user32.lib \
+                gdi32.lib \
+                ole32.lib \
+                comctl32.lib \
+                advapi32.lib \
+                userenv.lib \
+        netapi32.lib
     DEFINES = VC_EXTRALEAN \
         WIN32 \
         _UNICODE \
