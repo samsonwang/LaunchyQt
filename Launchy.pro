@@ -5,7 +5,7 @@ SUBDIRS = plugins/calcy \
           plugins/weby \
           plugins/verby \
           src
-          
+
 win32 {
 	SUBDIRS += plugins/controly
 }

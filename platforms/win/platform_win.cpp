@@ -140,7 +140,8 @@ QHash<QString, QList<QString> > PlatformWin::getDirectories()
 QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 {
 	QList<Directory> list;
-	Directory tmp;
+    /*
+    Directory tmp;
 
 	tmp.name = GetShellDirectory(CSIDL_COMMON_STARTMENU);
 	tmp.types << "*.lnk";
@@ -156,6 +157,7 @@ QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 	tmp2.name = "%appdata%\\Microsoft\\Internet Explorer\\Quick Launch";
 	tmp2.types << "*.*";
 	list.append(tmp2);
+    */
 	return list;
 }
 
@@ -213,6 +215,7 @@ bool PlatformWin::supportsAlphaBorder() const
 
 bool PlatformWin::getComputers(QStringList& computers) const
 {
+    /*
 	// Get a list of domains. This should return nothing or fail when we're on a workgroup
 	QStringList domains;
 	if (EnumerateNetworkServers(domains, SV_TYPE_DOMAIN_ENUM))
@@ -232,6 +235,8 @@ bool PlatformWin::getComputers(QStringList& computers) const
 	}
 
 	return EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
+    */
+    return true;
 }
 
 

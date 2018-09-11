@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Replace this process' environment with the current system environment
 void UpdateEnvironment()
 {
+    /*
 	// Fetch the current environment for the user
 	HANDLE accessToken;
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | TOKEN_QUERY, &accessToken))
@@ -72,19 +73,24 @@ void UpdateEnvironment()
 
 	DestroyEnvironmentBlock(environment);
 	CloseHandle(accessToken);
+    */
 }
 
 
 QString GetShellDirectory(int type)
 {
+    /*
 	wchar_t buffer[_MAX_PATH];
 	SHGetFolderPath(NULL, type, NULL, 0, buffer);
     return QString::fromWCharArray(buffer);
+    */
+    return QString();
 }
 
 
 bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t* domain)
 {
+    /*
 	SERVER_INFO_100* serverInfo = 0;
 	DWORD read, totalOnNetwork;
 
@@ -111,4 +117,6 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 	}
 
 	return result == NERR_Success;
+    */
+    return true;
 }

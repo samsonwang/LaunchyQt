@@ -134,6 +134,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 		QRegExp re("\\\\\\\\([a-z0-9\\-]+\\\\?)?$", Qt::CaseInsensitive);
 		if (re.exactMatch(filePath))
 		{
+            /*
 			// To avoid network hangs, explicitly fetch the My Computer icon for UNCs
 			LPITEMIDLIST pidl;
 			if (SHGetSpecialFolderLocation(NULL, CSIDL_DRIVES, &pidl) == S_OK)
@@ -142,6 +143,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 				// Set the file path to the My Computer GUID for any later fetches
 				filePath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
 			}
+            */
 		}
 		if (sfi.iIcon == 0)
 		{
@@ -194,6 +196,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 
 bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const
 {
+    /*
 	HICON hIcon = 0;
 	IImageList* imageList;
 	HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
@@ -209,6 +212,8 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 	}
 
 	return SUCCEEDED(hResult);
+    */
+    return true;
 }
 
 
@@ -217,6 +222,7 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 // icon to the one shown in explorer and it scales automatically.
 bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) const
 {
+    /*
 	HRESULT hr = S_FALSE;
 
 	if (fnSHCreateItemFromParsingName)
@@ -234,11 +240,11 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 				hr = psiif->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY, &iconBitmap);
 				if (hr == S_OK)
 				{
-                    /*
+
                     QPixmap iconPixmap = QPixmap::fromWinHBITMAP(iconBitmap, QPixmap::PremultipliedAlpha);
 					icon.addPixmap(iconPixmap);
 					DeleteObject(iconBitmap);
-                    */
+
 				}
 
 				psiif->Release();
@@ -248,4 +254,6 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 	}
 
 	return hr == S_OK;
+            */
+    return true;
 }
