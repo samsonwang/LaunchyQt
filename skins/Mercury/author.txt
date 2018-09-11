@@ -1,0 +1,7 @@
+Skin Title: Mercury
+
+Author: Josh Karlin and Juan Ignacio Serra
+
+Version: 1.1
+
+Date: 12/18/2009

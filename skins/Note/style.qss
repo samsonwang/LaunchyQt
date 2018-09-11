@@ -1,0 +1,71 @@
+#launchy {
+}
+
+#input {
+	font: 14px "NoteScrawl";
+	border-width: 0px;
+	background-color: rgba(0,244,120,0%);
+	border-style: solid;
+	color: rgb(157,12,21);
+	qproperty-alignment: AlignLeft;
+	qproperty-geometry: rect(25 130 130 25);
+}
+
+#output {
+	font: 14px "NoteScrawl";
+	border-width: 0px;
+	background-color: rgba(0,244,120,0%);
+	border-style: solid;
+	color: rgb(157,12,21);
+	qproperty-alignment: AlignCenter;
+	qproperty-geometry: rect(25 170 170 20);
+}
+
+#outputIcon {
+	qproperty-geometry: rect(180 65 32 32);
+}
+
+#alternatives {
+	font: 12px Sans, Verdana;
+	background-color: rgb(255,243,149);
+	alternate-background-color: rgb(255,245,120);
+	color: rgb(157,12,21);
+	border-style: solid;
+	border-width: 2px;
+	border-color: rgb(255,243,149);
+	qproperty-geometry: rect(8 215 256 40);
+}
+QScrollBar#altScroll:vertical {
+	image: url(scrollBack.png);
+	width: 16px;
+	margin: 16px 0px 16px 0px;
+}
+
+
+QScrollBar#altScroll::handle:vertical {
+	background: qlineargradient(x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgb(255,245,120), stop:0.5 white, stop:1 rgb(255,245,120));
+}
+
+QScrollBar#altScroll::sub-line:vertical {
+	width: 16px;
+	height: 16px;
+	subcontrol-position: top;
+	subcontrol-origin: margin; 
+	image: url(scrollUp.png);
+}
+
+QScrollBar#altScroll::add-page:vertical {
+	background: url(scrollBack.png);
+}
+
+QScrollBar#altScroll::sub-page:vertical {
+	background: url(scrollBack.png);
+}
+
+QScrollBar#altScroll::add-line:vertical {
+	width: 16px;
+	height: 16px; 
+	subcontrol-position: bottom;
+	subcontrol-origin: margin;
+	image: url(scrollDown.png);
+}

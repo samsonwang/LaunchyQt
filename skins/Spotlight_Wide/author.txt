@@ -1,0 +1,9 @@
+Spotlight Wide, Version 1.0
+By Remko Jansen (remko@ietsmet.nl)
+
+This is a wider version of the default skin
+that comes with Launchy.
+All credits go to Tyler Sticka » www.tylersticka.com.
+The author of the original skin.
+
+Latest Revision: Dec 7th, 2007

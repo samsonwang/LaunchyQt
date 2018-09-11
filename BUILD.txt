@@ -1,0 +1,65 @@
+Building on Linux:
+
+For Debian and Ubuntu:
+sudo apt-get install libqt4-dev libboost-dev g++ dh-make
+qmake -r Launchy.pro ; make ; sudo make install
+
+To build a deb package:
+cd linux ; ./build_deb.sh <version> such as ./buid_deb.sh 2.2
+
+
+
+Building and installing on Mac OS X:
+
+0) Install the boost C++ library
+1) Install the QT SDK
+2) qmake Launchy.pro -spec macx-g++ -r CONFIG+=release
+3) make ; make install
+ -- Launchy is now built and installed in release/Launchy.app
+4) cd mac
+5) sh mkdmg
+6) Now there is a release/Launchy.dmg
+5) copy Launchy.app to your Applications folder
+
+
+
+Building on Windows:
+
+Requirements: 
+1) Visual Studio 2005 w/ SP1
+2) QT 4.6 or greater.
+3) Boost
+
+
+Installing QT:
+. Download QT SDK at: https://qt.nokia.com/products
+. Run the installer
+
+. Setting the QT environment variables:
+. Go to control panel -> System -> Advanced system settings -> Environment Variables
+. Add these 2 variables to your user variables
+. Variable = QMAKESPEC    Value = win32-msvc2005
+. Variable = QTDIR        Value = c:\qt\2009.05
+
+. Open a Visual Studio 2005 command prompt
+. cd c:\qt\2009.05\
+. configure -opensource -no-webkit 
+. nmake
+
+The configure and nmake commands take a very long time.
+
+Download Boost from http://www.boost.org/users/download/
+Install Boost libraries to c:\boost
+
+Building Launchy:
+
+. Download launchy from subversion, the url to use is this: https://launchy.svn.sourceforge.net/svnroot/launchy/trunk/Launchy_QT/
+. From the command line, cd to the launchy directory and type '%QTDIR%\qmake\qmake -tp vc -r launchy.pro' to build the Visual Studio .sln files
+. Double click on the resulting launchy.sln
+. F7 to compile!
+
+
+Launchy and QT can also be built using Visual Studio 2008, just set use win32-msvc2008 instead of win32-msvc2005. In this scenario, there are binary compatibility issues with plugins built using Visual Studio 2005 which will cause a runtmacdeployqt ../release/Launchy.appime error and refuse to load.
+
+When you run Launchy, note that only one skin is installed in the debug\release directories.  
+Launchy looks awfully funny when it can't find its skin!

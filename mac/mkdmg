@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rm -rf files
+rm *.dmg
+mkdir files
+cp -r ../release/Launchy.app files/
+cp ../Readme.pdf files/
+ln -s /Applications files/Applications
+./create-dmg --window-size 500 300 --volname "Launchy" Launchy$1.dmg files/

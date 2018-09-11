@@ -1,0 +1,13 @@
+boundary = 0,0,500,100
+output = 290,37,160,24
+input = 60,37,160,24
+alternatives = 37,61,436,100
+icon = 241,32,32,32
+
+; These describe the font of the full path in the dropdown box
+; This should be in style.qss but the style sheet doesn't support it
+dropPathColor = 221,221,221
+dropPathFamily = Lucida Sans
+dropPathSize = 8
+dropPathWeight = 0
+dropPathItalics = 0

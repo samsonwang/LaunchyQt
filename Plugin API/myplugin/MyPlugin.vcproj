@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="MyPlugin"
+	ProjectGUID="{08B29CAE-8850-4669-9B02-E3A14FF5A07B}"
+	RootNamespace="MyPlugin"
+	Keyword="MakeFileProj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="%QTDIR%\bin\qmake myplugin.pro&#x0D;&#x0A;nmake debug"
+				ReBuildCommandLine="%QTDIR%\bin\qmake myplugin.pro&#x0D;&#x0A;nmake debug-clean&#x0D;&#x0A;nmake debug"
+				CleanCommandLine="%QTDIR%\bin\qmake myplugin.pro&#x0D;&#x0A;nmake debug-clean"
+				Output="MyPlugin.exe"
+				PreprocessorDefinitions="WIN32;_DEBUG"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="%QTDIR%\bin\qmake myplugin.pro&#x0D;&#x0A;nmake release"
+				ReBuildCommandLine="%QTDIR%\bin\qmake myplugin.pro&#x0D;&#x0A;nmake release-clean&#x0D;&#x0A;nmake release"
+				CleanCommandLine="%QTDIR%\bin\qmake myplugin.pro&#x0D;&#x0A;nmake release-clean"
+				Output="MyPlugin.exe"
+				PreprocessorDefinitions="WIN32;NDEBUG"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath=".\myplugin.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+			<File
+				RelativePath=".\myplugin.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Plugin API"
+			>
+			<File
+				RelativePath=".\catalog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\plugin_interface.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\plugin_interface.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\myplugin.pro"
+			>
+		</File>
+		<File
+			RelativePath=".\readme.txt"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

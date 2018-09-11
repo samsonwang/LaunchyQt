@@ -1,0 +1,892 @@
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass article
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family sfdefault
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize 11
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\topmargin 4cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Launchy 2.0 Documentation
+\end_layout
+
+\begin_layout Author
+Josh Karlin
+\end_layout
+
+\begin_layout Subsection*
+Please Read This First!
+\end_layout
+
+\begin_layout Standard
+When Launchy runs it disappears to the background.
+ You have to press ‘alt+space’ in order to see Launchy.
+ If Launchy is new for you please read the rest of this short manual.
+\end_layout
+
+\begin_layout Section
+Welcome
+\end_layout
+
+\begin_layout Standard
+Launchy was initially created for personal use but thanks to the encouragement
+ of my friends I decided to distribute it.
+ Launchy is completely free and open software so you should never pay for
+ it and you should feel free to pass it on to your friends.
+ The official homepage for Launchy is http://www.launchy.net/.
+ If you need help using Launchy or would like to leave any comments/suggestions
+ please feel free to post on the forums at http://www.sf.net/projects/launchy/.
+ 
+\end_layout
+
+\begin_layout Standard
+-- Josh Karlin
+\end_layout
+
+\begin_layout Section
+Basic Usage
+\end_layout
+
+\begin_layout Standard
+Launchy's primary function is to bring hard to reach objects on your computer
+ quickly within your grasp.
+ It does so by scanning your computer for interesting files (e.g.
+ programs on your computer and bookmarks) and then makes them searchable
+ with queries.
+ For instance, if you would like to run 
+\begin_inset Quotes eld
+\end_inset
+
+notepad
+\begin_inset Quotes erd
+\end_inset
+
+, you might invoke Launchy and type 
+\begin_inset Quotes eld
+\end_inset
+
+note
+\begin_inset Quotes erd
+\end_inset
+
+ and then hit enter to launch it.
+ To invoke Launchy, press and hold down the alt key and then press the space
+ key.
+\end_layout
+
+\begin_layout Standard
+By default, Launchy is able to perform a number of useful tasks:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Web searches
+\emph default
+ - Try typing 
+\begin_inset Quotes eld
+\end_inset
+
+google
+\begin_inset Quotes erd
+\end_inset
+
+, then hitting tab, and then entering your search
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Bookmarks
+\emph default
+ - Try typing the name of one of your bookmarks
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Calculator
+\emph default
+ - Try typing 
+\begin_inset Quotes eld
+\end_inset
+
+4 + 3
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+File Browsing
+\emph default
+ - Try typing 
+\begin_inset Quotes eld
+\end_inset
+
+c:
+\backslash
+windo
+\begin_inset Quotes erd
+\end_inset
+
+ hitting tab, and then typing 
+\begin_inset Quotes eld
+\end_inset
+
+system
+\begin_inset Quotes erd
+\end_inset
+
+ and hitting tab.
+ This will autocomplete to c:
+\backslash
+windows
+\backslash
+system
+\backslash
+
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Control Panel
+\emph default
+ - Try typing 
+\begin_inset Quotes eld
+\end_inset
+
+sound
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Exiting Launchy
+\end_layout
+
+\begin_layout Standard
+Simply right click on Launchy and press the 
+\begin_inset Quotes eld
+\end_inset
+
+exit
+\begin_inset Quotes erd
+\end_inset
+
+ button.
+\end_layout
+
+\begin_layout Section
+Advanced Usage
+\end_layout
+
+\begin_layout Standard
+All of Launchy's options can be reached by right clicking the mouse on Launchy
+ and pressing the 
+\begin_inset Quotes eld
+\end_inset
+
+Options
+\begin_inset Quotes erd
+\end_inset
+
+ button.
+ Many of Launchy's options are self-explanatory (changing skins and the
+ hotkey) while some others are not.
+ In this section I discuss the advanced options.
+\end_layout
+
+\begin_layout Subsection
+Scanning additional directories
+\end_layout
+
+\begin_layout Standard
+The directories and file types that Launchy scans are configurable.
+ The following discussion refers to the 
+\begin_inset Quotes eld
+\end_inset
+
+Catalog
+\begin_inset Quotes erd
+\end_inset
+
+ tab of the options menu.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's begin by adding your music files.
+ Press the big 
+\begin_inset Quotes eld
+\end_inset
+
++
+\begin_inset Quotes erd
+\end_inset
+
+ button and direct Launchy to your music folder.
+ After pressing okay, enter 
+\begin_inset Quotes eld
+\end_inset
+
+*.mp3
+\begin_inset Quotes erd
+\end_inset
+
+ into the file types entry box and press the smaller 
+\begin_inset Quotes eld
+\end_inset
+
++
+\begin_inset Quotes erd
+\end_inset
+
+ button directly below.
+ You might also want to add 
+\begin_inset Quotes eld
+\end_inset
+
+*.aac
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+*.wma
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+*.ogg
+\begin_inset Quotes erd
+\end_inset
+
+ as well.
+ Now, Launchy will scan all of your music.
+ You can tell Launch to rebuild its index right now by pressing the 
+\begin_inset Quotes eld
+\end_inset
+
+Rescan Catalog
+\begin_inset Quotes erd
+\end_inset
+
+ button.
+\end_layout
+
+\begin_layout Subsection
+Using Launchy on a USB stick
+\end_layout
+
+\begin_layout Standard
+Please follow this procedure to run Launchy from a USB stick.
+ It will configure Launchy to store its configuration files in the application
+ directory.
+\end_layout
+
+\begin_layout Enumerate
+Install Launchy normally
+\end_layout
+
+\begin_layout Enumerate
+Exit Launchy
+\end_layout
+
+\begin_layout Enumerate
+Copy the Launchy directory to your usb stick
+\end_layout
+
+\begin_layout Enumerate
+Run Launchy from the usb stick
+\end_layout
+
+\begin_layout Enumerate
+Select 
+\begin_inset Quotes eld
+\end_inset
+
+portable mode
+\begin_inset Quotes erd
+\end_inset
+
+ in the general options tab
+\end_layout
+
+\begin_layout Enumerate
+Exit Launchy
+\end_layout
+
+\begin_layout Section
+Contributors
+\end_layout
+
+\begin_layout Standard
+Launchy would not be where it is today without community support.
+ I would like to add special thanks to the following people:
+\end_layout
+
+\begin_layout Subsection*
+Graphic Designers
+\end_layout
+
+\begin_layout Itemize
+Tyler Sticka - For Launchy's beautiful new icon and skin
+\end_layout
+
+\begin_layout Itemize
+Sean (=gakuseisean) - For the use of his icons in the plugins
+\end_layout
+
+\begin_layout Itemize
+Peter Wooley - For the web page's current design
+\end_layout
+
+\begin_layout Itemize
+Juan Ignacio Serra - The first artist to offer assistance.
+ He created some of Launchy's first skins, including work on the Mercury
+ skin.
+\end_layout
+
+\begin_layout Subsection*
+Testers
+\end_layout
+
+\begin_layout Itemize
+Amadawn - The first to contribute significant testing work.
+ I'm sorry that you ever had to see such unusable versions of Launchy!
+\end_layout
+
+\begin_layout Section
+Change log
+\end_layout
+
+\begin_layout Subsection*
+1.98 (2.0 Alpha)
+\end_layout
+
+\begin_layout Itemize
+Launchy has been completely rewritten, it is now all in QT (was in MFC)
+\end_layout
+
+\begin_layout Itemize
+Options glued together into one cohesive dialog
+\end_layout
+
+\begin_layout Itemize
+Skin selection now shows previews of skins
+\end_layout
+
+\begin_layout Itemize
+No longer have to restart Launchy to use a new plugin or skin
+\end_layout
+
+\begin_layout Itemize
+Plugin options are integrated into the options dialog
+\end_layout
+
+\begin_layout Itemize
+Launchy can automatically hide when it loses focus
+\end_layout
+
+\begin_layout Itemize
+Launchy can now shallow scan a directory (customizable depth)
+\end_layout
+
+\begin_layout Itemize
+Much better plugin customization
+\end_layout
+
+\begin_layout Standard
+Bug fixes
+\end_layout
+
+\begin_layout Itemize
+Unfortunately there are too many to list!
+\end_layout
+
+\begin_layout Subsection*
+1.2.5
+\end_layout
+
+\begin_layout Itemize
+New control panel plugin (indexes control panel apps) 
+\end_layout
+
+\begin_layout Itemize
+Runny plugin (customizable commands) 
+\end_layout
+
+\begin_layout Itemize
+Notification of new Launchy Releases (can be turned off) 
+\end_layout
+
+\begin_layout Itemize
+Command line argument support (hit tab and type the arguments) 
+\end_layout
+
+\begin_layout Itemize
+Can use ‘.*’ as a filetype for directories 
+\end_layout
+
+\begin_layout Itemize
+Plugins can be enabled/disabled (right click on launchy, go to plugins)
+ 
+\end_layout
+
+\begin_layout Itemize
+Plugins can now have configurable options 
+\end_layout
+
+\begin_layout Itemize
+Always on top is now configurable 
+\end_layout
+
+\begin_layout Standard
+Bug Fixes: 
+\end_layout
+
+\begin_layout Itemize
+Removed startup crash bug 
+\end_layout
+
+\begin_layout Itemize
+Fixed Weby bug (it was hard to select Google) 
+\end_layout
+
+\begin_layout Itemize
+Fixed mouse disappearance in dropdown menu 
+\end_layout
+
+\begin_layout Itemize
+Launchy no longer jumps when you change skins 
+\end_layout
+
+\begin_layout Itemize
+Launchy no longer flashes on startup 
+\end_layout
+
+\begin_layout Itemize
+Calcy took priority over files with numbers, fixed 
+\end_layout
+
+\begin_layout Itemize
+Launchy can now be placed in the corner of the screen
+\end_layout
+
+\begin_layout Subsection*
+1.0.0
+\end_layout
+
+\begin_layout Itemize
+Launchy now supports plugins! Check out the “Plugins” folder inside your
+ Launchy directory, you can add and remove plugins from there when Launchy
+ is not running.
+ Following are the plugins that come with Launchy by default, I expect many
+ others to be developed by myself and the community.
+ 
+\end_layout
+
+\begin_layout Itemize
+Explory Plugin: A file explorer for Launchy! Now you can use launchy to
+ navigate your filesystem.
+ Try typing “c:” then hitting tab, keep on typing and hitting tab! 
+\end_layout
+
+\begin_layout Itemize
+Weby Plugin: Supports launching of url’s and adds quick launches for “Google”
+ “MSN” “Amazon” and many others, try typing “google” then hit tab then type
+ in a search query 
+\end_layout
+
+\begin_layout Itemize
+Foxy Plugin: With foxy your Firefox bookmarks will be added to the Launchy
+ index.
+ Even better, your firefox keywords are added to Launchy and behave like
+ quick launches do for Weby.
+ Not sure what firefox keywords are? Go here: http://www.mozilla.org/products/fire
+fox/smart-keywords.html (Note some firefox quick searches are currently incompati
+ble and will not be indexed) 
+\end_layout
+
+\begin_layout Itemize
+Calcy Plugin: Never have a calculator handy? With Calcy, Launchy knows when
+ you’re trying to do math and will display the result in the suggestions
+ box.
+ For instance, try typing in “(4 + 3) * 12” and 84 will result in the suggestion
+s box.
+ Support for + - * / ()’s currently exists.
+ 
+\end_layout
+
+\begin_layout Itemize
+Now Ctrl+Backspace deletes a word at a time and Alt+Backspace clears the
+ text 
+\end_layout
+
+\begin_layout Itemize
+Too many bug fixes to count or remember, good riddance! 
+\end_layout
+
+\begin_layout Itemize
+Special thanks to Sean Poon http://gakuseisean.deviantart.com for the use
+ of his wonderful icons for the plugins
+\end_layout
+
+\begin_layout Subsection*
+1.0.0 Beta
+\end_layout
+
+\begin_layout Itemize
+Launchy displays the full path and icon to files in the dropdown suggestions
+ box.
+ 
+\end_layout
+
+\begin_layout Itemize
+Filetypes can now be specifically set for each directory to index 
+\end_layout
+
+\begin_layout Itemize
+Always on top mode added 
+\end_layout
+
+\begin_layout Itemize
+USB Mode added 
+\end_layout
+
+\begin_layout Itemize
+Configurable index scan interval 
+\end_layout
+
+\begin_layout Itemize
+Configuration files moved to docs and settings
+\backslash
+username
+\backslash
+Applications
+\backslash
+Launchy
+\backslash
+ which is friendlier to users with limited access accounts.
+ 
+\end_layout
+
+\begin_layout Standard
+Bug Fixes: 
+\end_layout
+
+\begin_layout Itemize
+The Launchy startup on auto-login crash should be gone 
+\end_layout
+
+\begin_layout Itemize
+No longer presumes icon index is located in C:
+\backslash
+ 
+\end_layout
+
+\begin_layout Itemize
+Hotkey window now initializes with current hotkey 
+\end_layout
+
+\begin_layout Itemize
+Configuration files now less likely to be corrupted due to restart during
+ saving
+\end_layout
+
+\begin_layout Subsection*
+0.9.6
+\end_layout
+
+\begin_layout Itemize
+Launchy can now index directory names as well as files! 
+\end_layout
+
+\begin_layout Itemize
+A utilities folder with useful shortcuts is now included, it adds standard
+ control panel programs, system shutdown / logoff/ reboot, and special folders
+ such as My Documents, and My Music.
+ 
+\end_layout
+
+\begin_layout Itemize
+Unicode now fully supported.
+ All character sets should work.
+ 
+\end_layout
+
+\begin_layout Itemize
+The old style of matching by association is completely removed, it’s now
+ entirely based upon frequency of use 
+\end_layout
+
+\begin_layout Itemize
+Now has a “please donate” dialog that appears only once, sorry but I’ve
+ got to make a living! 
+\end_layout
+
+\begin_layout Standard
+Bug Fixes: 
+\end_layout
+
+\begin_layout Itemize
+Fixed up/down keys causing a dropdown when there are no matches 
+\end_layout
+
+\begin_layout Itemize
+Saves settings to ini directly after changes are made in case of system
+ crash 
+\end_layout
+
+\begin_layout Itemize
+Spaces are now ignored in user input, making it possible to search for “Johnny_c
+ash.mp3” with “john cash”
+\end_layout
+
+\begin_layout Subsection*
+0.9.3
+\end_layout
+
+\begin_layout Itemize
+Once again, Launchy is prettier.
+ The combobox has vanished.
+ 
+\end_layout
+
+\begin_layout Itemize
+New skins! Please see the Author.txt file in each skin’s directory to give
+ credit where credit is due.
+ 
+\end_layout
+
+\begin_layout Standard
+Bug Fixes: 
+\end_layout
+
+\begin_layout Itemize
+Sometimes windows shutdown prevented the database from being saved.
+ Now it saves more frequently just in case.
+ 
+\end_layout
+
+\begin_layout Itemize
+Arbitrarily long file extensions are now allowed, so you can filter on .mpeg
+ for instance and not just .mpg 
+\end_layout
+
+\begin_layout Itemize
+A couple of minor graphical glitches have been fixed 
+\end_layout
+
+\begin_layout Itemize
+Development Environment: 
+\end_layout
+
+\begin_layout Itemize
+The Boost library is no longer needed to compile Launchy, I’ve copied the
+ necessary Boost header files for smart pointers into the project.
+\end_layout
+
+\begin_layout Subsection*
+0.9.2
+\end_layout
+
+\begin_layout Itemize
+Frequency sorting took priority over exact matches, fixed.
+\end_layout
+
+\begin_layout Subsection*
+0.9.1
+\end_layout
+
+\begin_layout Itemize
+Search results sorted by frequency of use now.
+ 
+\end_layout
+
+\begin_layout Itemize
+Configuration files moved to the Users subdirectory of your installation.
+ This means that your configuration file will start fresh..
+ sorry! It also means that Launchy can be run from a memory stick.
+ 
+\end_layout
+
+\begin_layout Itemize
+You can now remove the start menu from the directories you scan if you so
+ desire.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bug fixes, hooray!
+\end_layout
+
+\begin_layout Subsection*
+0.9
+\end_layout
+
+\begin_layout Itemize
+Alpha channel support! Launchy is sexier now.
+ 
+\end_layout
+
+\begin_layout Itemize
+New skinning options.
+ 
+\end_layout
+
+\begin_layout Itemize
+Lots of skins! 
+\end_layout
+
+\begin_layout Itemize
+Minor bug fixes.
+ 
+\end_layout
+
+\begin_layout Itemize
+Ability to rescan index on demand.
+ 
+\end_layout
+
+\begin_layout Itemize
+This is a feature complete version of Launchy 1.0 From now until then I will
+ only post bug fixes.
+\end_layout
+
+\begin_layout Subsection*
+0.81
+\end_layout
+
+\begin_layout Itemize
+New installer, after this release upgrades should be much better.
+ 
+\end_layout
+
+\begin_layout Itemize
+Added icon support.
+ Now icons are shown as well as the file name.
+ The visual cue of the icon makes for faster launching.
+ (It’s also prettier) 
+\end_layout
+
+\begin_layout Itemize
+The combobox is now a bit more sane.
+ It won’t steal your focus away when it drops down.
+ 
+\end_layout
+
+\begin_layout Itemize
+Launchy will rescan directories on startup as opposed to waiting a couple
+ of minutes.
+\end_layout
+
+\begin_layout Subsection*
+0.8
+\end_layout
+
+\begin_layout Itemize
+Launchy now scans user specified directories and stores the results in a
+ compressed file to make startup faster.
+ 
+\end_layout
+
+\begin_layout Itemize
+You can now change the hotkey that activates Launchy 
+\end_layout
+
+\begin_layout Itemize
+You can now create/select skins for Launchy 
+\end_layout
+
+\begin_layout Itemize
+Launchy searches *much* faster than before, enabling indexing of thousands
+ of files
+\end_layout
+
+\begin_layout Subsection*
+0.7
+\end_layout
+
+\begin_layout Itemize
+Launchy has memory! It will associate your input with applications.
+\end_layout
+
+\begin_layout Subsection*
+0.61
+\end_layout
+
+\begin_layout Itemize
+Launchy no longer opens all programs maximized.
+\end_layout
+
+\begin_layout Subsection*
+0.6
+\end_layout
+
+\begin_layout Itemize
+This is the first C++ release.
+ As I became frustrated with C#’s large .NET framework requirements and users
+ lack of desire to install it, I decided to switch back to the faster language.
+ This release is functionally and visually equivalent to the 0.5 C# release.
+ The C# CVS version had some new features that I will soon add to the C++
+ branch.
+\end_layout
+
+\begin_layout Subsection*
+0.5 
+\end_layout
+
+\begin_layout Itemize
+This was the first public release.
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,37 @@
+#launchy {
+	border: 2px solid #8f8f91;
+	border-radius: 6px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f6f7fa, stop: 1 #dadbde);
+	qproperty-geometry: rect(0 0 700 110);
+}
+
+#input {
+	font:  16px Sans, Tahoma, Arial;
+	border-width: 0px;
+	background-color: rgba(0,244,120,0%);
+	border: 2px solid #8f8f91;
+	border-radius: 3px;
+	color: black;
+	qproperty-alignment: AlignLeft;
+	qproperty-geometry: rect(46 30 580 24)
+}
+
+#output {
+	font:  12px Sans, Tahoma, Arial;
+	color: black;
+	qproperty-alignment: AlignLeft;
+	qproperty-geometry: rect(48 60 580 24);
+}
+
+#outputIcon {
+	qproperty-geometry: rect(640 40 32 32);
+}
+
+#alternatives {
+	font:  12px Sans, Tahoma, Arial;
+	qproperty-geometry: rect(5 104 690 200);
+}
+
+#alternatives::item {
+	padding: 2px 0px;
+}

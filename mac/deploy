@@ -1,0 +1,18 @@
+#!/bin/bash
+cp Info.plist ../release/Launchy.app/Contents
+
+macdeployqt ../release/Launchy.app 
+
+cd ../release/Launchy.app/Contents/MacOS/plugins
+
+
+for bin in *.dylib
+do
+		for lib in QtGui QtCore QtNetwork
+		do
+				install_name_tool -change $lib.framework/Versions/4/$lib @executable_path/../Frameworks/$lib.framework/Versions/4/$lib $bin
+		done;
+done;
+
+cd ../../../../../mac
+

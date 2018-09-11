@@ -1,0 +1,17 @@
+Source: launchy
+Section: unknown
+Priority: extra
+Maintainer: Josh Karlin <karlinjf@sourceforge.net>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: launchy
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, xdg-utils
+Description: Open Source Keystroke Launcher
+    Launchy is a free, cross-platform utility, designed 
+    to help you forget about your start menu, the icons
+    on your desktop, and even your file manager.  Launchy 
+    indexes the programs in your start menu and can launch
+    your documents, project files, folders, and bookmarks
+    with just a few keystrokes!

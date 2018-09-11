@@ -1,0 +1,35 @@
+#launchy {
+}
+
+#input {
+	font: 14px Sans, Verdana, Arial;
+	border-width: 0px;
+	background-color: rgb(255,255,255);
+	border-style: solid;
+	color: black;
+	qproperty-alignment: AlignLeft;
+	qproperty-geometry: rect(19 61 221 25);
+}
+
+#output {
+	font: 12px Sans, Verdana, Arial;
+	border-width: 0px;
+	background-color: rgba(255,255,255,0%);
+	border-style: solid;
+	color: black;
+	qproperty-alignment: AlignCenter;
+	qproperty-geometry: rect(56 19 184 20);
+}
+
+#outputIcon {
+	qproperty-geometry: rect(19 11 32 32);
+}
+
+#alternatives {
+	font: 12px Sans, Verdana, Arial;
+	border-width: 0px;
+	background-color: rgb(255,255,255);
+	border-style: solid;
+	color: black;
+	qproperty-geometry: rect(19 85 350 100);
+}
