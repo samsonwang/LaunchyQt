@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "WinIconProvider.h"
 #include "minidump.h"
 
-
 // Override the main widget to handle incoming system messages. We could have done this in the QApplication
 // event handler, but then we'd have to filter out the duplicates for messages like WM_SETTINGCHANGE.
 class LaunchyWidgetWin : public LaunchyWidget
@@ -220,7 +219,7 @@ bool PlatformWin::getComputers(QStringList& computers) const
 	{
 		foreach(QString domain, domains)
 		{
-			EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, domain.utf16());
+            EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, (const TCHAR*)domain.utf16());
 		}
 
 		// If names have been retrieved from more than one domain, they'll need sorting

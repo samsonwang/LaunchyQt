@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <QtGui>
+#include <QtWidgets>
 #include <QtNetwork>
 #include <QFuture>
 
@@ -44,14 +45,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#define _WIN32_IE 0x0700
 #include <windows.h>
 #include <tchar.h>
-// 	#include <shlobj.h>
-// 	#include <shlguid.h>
-// 	#include <shobjidl.h>
-// 	#include <shellapi.h>
-// 	#include <commctrl.h>
-// 	#include <commoncontrols.h>
-// 	#include <userenv.h>
-// 	#include <lm.h>
+#include <shlobj.h>
+#include <shlguid.h>
+#include <shobjidl.h>
+#include <shellapi.h>
+#include <commctrl.h>
+#include <commoncontrols.h>
+#include <userenv.h>
+#include <lm.h>
 #endif
 
 

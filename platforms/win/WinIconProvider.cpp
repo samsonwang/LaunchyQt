@@ -119,8 +119,8 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 	{
 		HICON hIcon;
 		QString filePath = QDir::toNativeSeparators(info.filePath());
-		ExtractIconEx(filePath.utf16(), 0, &hIcon, NULL, 1);
-        retIcon = QIcon(QPixmap::fromWinHICON(hIcon));
+        ExtractIconEx((LPCTSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
+        // retIcon = QIcon(QPixmap::fromWinHICON(hIcon));
 		DestroyIcon(hIcon);
 	}
 	else
@@ -145,7 +145,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 		}
 		if (sfi.iIcon == 0)
 		{
-			SHGetFileInfo(filePath.utf16(), 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX);
+            SHGetFileInfo((LPCTSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX);
 		}
 
 		// An icon index of 3 is the generic file icon
@@ -204,7 +204,7 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 	}
 	if (hResult == S_OK && hIcon)
 	{
-		icon.addPixmap(QPixmap::fromWinHICON(hIcon));
+        //icon.addPixmap(QPixmap::fromWinHICON(hIcon));
 		DestroyIcon(hIcon);
 	}
 
@@ -222,7 +222,7 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 	if (fnSHCreateItemFromParsingName)
 	{
 		IShellItem* psi = NULL;
-		hr = fnSHCreateItemFromParsingName(filePath.utf16(), 0, IID_IShellItem, (void**)&psi);
+        hr = fnSHCreateItemFromParsingName((LPCTSTR)filePath.utf16(), 0, IID_IShellItem, (void**)&psi);
 		if (hr == S_OK)
 		{
 			IShellItemImageFactory* psiif = NULL;
@@ -234,9 +234,11 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 				hr = psiif->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY, &iconBitmap);
 				if (hr == S_OK)
 				{
-					QPixmap iconPixmap = QPixmap::fromWinHBITMAP(iconBitmap, QPixmap::PremultipliedAlpha);
+                    /*
+                    QPixmap iconPixmap = QPixmap::fromWinHBITMAP(iconBitmap, QPixmap::PremultipliedAlpha);
 					icon.addPixmap(iconPixmap);
 					DeleteObject(iconBitmap);
+                    */
 				}
 
 				psiif->Release();

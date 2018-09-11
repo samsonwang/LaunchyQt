@@ -54,7 +54,7 @@ HINSTANCE GetHInstance()
     TCHAR szModule[MAX_PATH];
 
     SetLastError(ERROR_SUCCESS);
-    if (VirtualQuery(GetHInstance,&mbi,sizeof(mbi)))
+    if (VirtualQuery((LPCVOID)GetHInstance, &mbi, sizeof(mbi)))
     {
         if (GetModuleFileName((HINSTANCE)mbi.AllocationBase, szModule, sizeof(szModule)))
         {
@@ -107,7 +107,7 @@ public:
                 , id_(0)
 				, connected(false)
         {
-			widgetWinId = winId();
+            widgetWinId = (HWND)winId();
 
 			if (convertKeySequence(ks, &mod, &key))
 			{
@@ -132,7 +132,7 @@ public:
 						connected = true;
 					break;
 				default:
-					if (RegisterHotKey(winId(), nextId, mod, key))
+                    if (RegisterHotKey((HWND)winId(), nextId, mod, key))
 					{
 						id_ = nextId++;
 						connected = true;
@@ -155,7 +155,7 @@ public:
 				connected = false;
 			}
 			else if (id_) {
-				UnregisterHotKey(winId(), id_);
+                UnregisterHotKey((HWND)winId(), id_);
 				connected = false;
 			}
         }
@@ -163,6 +163,7 @@ public:
         /**
          * Triggers activated() signal when the hotkey is activated.
          */
+        /*
         bool winEvent(MSG* m, long* result)
 		{
 			if ((m->message == WM_HOTKEY && m->wParam == id_) || m->message == WM_USER) {
@@ -171,6 +172,7 @@ public:
 			}
 			return QWidget::winEvent(m, result);
 		}
+        */
 
 private:
         KeyTrigger* trigger_;
@@ -187,7 +189,8 @@ private:
 
         static bool convertKeySequence(const QKeySequence& ks, UINT* mod_, UINT* key_)
         {
-                int code = ks;
+
+                int code = QVariant(ks).toInt();
 
 				// JK: I had to put the code -='s here and comment out code &= 0xffff
 				// to correctly identify the action key
