@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+
+# GUN global
+GPATH
+GTAGS
+GRTAGS
