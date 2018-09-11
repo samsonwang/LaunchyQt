@@ -36,3 +36,6 @@
 GPATH
 GTAGS
 GRTAGS
+
+# Qt creator
+*.pro.user

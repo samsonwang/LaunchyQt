@@ -3,17 +3,17 @@
 * Copyright(c) 2007 Ball Aerospace & Technologies Corporation
 * and is subject to the terms and conditions of the
 * GNU Lesser General Public License Version 2.1
-* The license text is available from   
+* The license text is available from
 * http://www.gnu.org/licenses/lgpl.html
 */
 
-#include <QtGui/QApplication>
-#include <QtGui/QBitmap>
-#include <QtGui/QCompleter>
-#include <QtGui/QDirModel>
-#include <QtGui/QFileDialog>
-#include <QtGui/QFocusEvent>
-#include <QtGui/QHBoxLayout>
+#include <QApplication>
+#include <QBitmap>
+#include <QCompleter>
+#include <QDirModel>
+#include <QFileDialog>
+#include <QFocusEvent>
+#include <QHBoxLayout>
 #include "FileBrowser.h"
 
 // Browse button

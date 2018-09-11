@@ -50,7 +50,7 @@ bool CommandHistory::load(const QString& filename)
 void CommandHistory::save(const QString& filename) const
 {
 	QByteArray ba;
-	QDataStream out(&ba, QIODevice::ReadWrite); 
+	QDataStream out(&ba, QIODevice::ReadWrite);
 	out.setVersion(LAUNCHY_VERSION);
 
 	foreach(InputDataList item, history)

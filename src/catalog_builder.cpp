@@ -110,7 +110,7 @@ void CatalogBuilder::indexDirectory(const QString& directory, const QStringList&
 	}
 	else
 	{
-		// Grab any shortcut directories 
+		// Grab any shortcut directories
 		// This is to work around a QT weirdness that treats shortcuts to directories as actual directories
 		for (int i = 0; i < dirs.count(); ++i)
 		{

@@ -37,7 +37,7 @@ class calcyPlugin : public QObject, public PluginInterface
 public:
 	calcyPlugin();
 	~calcyPlugin();
-	int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
+	int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 	void setPath(QString * path);
 	void getLabels(QList<InputData>*);
 	void getID(uint*);

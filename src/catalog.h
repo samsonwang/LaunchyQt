@@ -25,12 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QSet>
 
 
-/** 
+/**
 \brief CatItem (Catalog Item) stores a single item in the index
 */
 class CatItem {
 public:
-    
+
 	/** The full path of the indexed item */
 	QString fullPath;
 	/** The abbreviated name of the indexed item */
@@ -50,7 +50,7 @@ public:
 
 
 
-	CatItem(QString full, bool isDir = false) 
+	CatItem(QString full, bool isDir = false)
 		: fullPath(full) {
 			int last = fullPath.lastIndexOf("/");
 			if (last == -1) {
@@ -69,8 +69,8 @@ public:
 	}
 
 
-	CatItem(QString full, QString shortN) 
-		: fullPath(full), shortName(shortN) 
+	CatItem(QString full, QString shortN)
+		: fullPath(full), shortName(shortN)
 	{
 		lowName = shortName.toLower();
 		data = NULL;
@@ -78,14 +78,14 @@ public:
 		id = 0;
 	}
 
-	CatItem(QString full, QString shortN, uint i_d) 
+	CatItem(QString full, QString shortN, uint i_d)
 	    :  fullPath(full), shortName(shortN), id(i_d)
 	{
 		lowName = shortName.toLower();
 		data = NULL;
 		usage = 0;
 	}
-	/** This is the constructor most used by plugins 
+	/** This is the constructor most used by plugins
 	\param full The full path of the file to execute
 	\param The abbreviated name for the entry
 	\param i_d Your plugin id (0 for Launchy itself)
@@ -93,7 +93,7 @@ public:
 	\warning It is usually a good idea to append ".your_plugin_name" to the end of the full parameter
 	so that there are not multiple items in the index with the same full path.
 	*/
-	CatItem(QString full, QString shortN, uint i_d, QString iconPath) 
+	CatItem(QString full, QString shortN, uint i_d, QString iconPath)
 	    : fullPath(full), shortName(shortN), icon(iconPath), id(i_d)
 	{
 		lowName = shortName.toLower();
@@ -134,14 +134,14 @@ public:
 };
 
 
-/** InputData shows one segment (between tabs) of a user's query 
+/** InputData shows one segment (between tabs) of a user's query
 	A user's query is typically represented by List<InputData>
 	and each element of the list represents a segment of the query.
 
 	E.g.  query = "google <tab> this is my search" will have 2 InputData segments
 	in the list.  One for "google" and one for "this is my search"
 */
-class InputData 
+class InputData
 {
 private:
 	/** The user's entry */
@@ -164,7 +164,7 @@ public:
 
 	/** Set the id of this query
 
-	This can be used to override the owner of the selected catalog item, so that 
+	This can be used to override the owner of the selected catalog item, so that
 	no matter what item is chosen from the catalog, the given plugin will be the one
 	to execute it.
 
@@ -197,7 +197,7 @@ public:
 	friend QDataStream &operator>>(QDataStream &in, InputData &inputData);
 };
 
-bool CatLess(CatItem* left, CatItem* right); 
+bool CatLess(CatItem* left, CatItem* right);
 bool CatLessNoPtr(CatItem& a, CatItem& b);
 
 inline QDataStream &operator<<(QDataStream &out, const CatItem &item) {

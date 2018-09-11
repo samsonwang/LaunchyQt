@@ -29,7 +29,7 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 class LimitSingleInstance
 {
 public:
-	LimitSingleInstance(TCHAR *strMutexName)
+    LimitSingleInstance(const TCHAR *strMutexName)
 	{
 		//Make sure that you use a name that is unique for this application otherwise
 		//two apps may think they are the same if they are using same name for
@@ -38,7 +38,7 @@ public:
 		lastError = GetLastError(); //save for use later...
 	}
 
-	~LimitSingleInstance() 
+	~LimitSingleInstance()
 	{
 		if (mutex)  //Do not forget to close handles.
 		{
@@ -47,7 +47,7 @@ public:
 		}
 	}
 
-	bool IsAnotherInstanceRunning() 
+	bool IsAnotherInstanceRunning()
 	{
 		return (ERROR_ALREADY_EXISTS == lastError);
 	}

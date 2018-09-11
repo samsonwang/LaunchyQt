@@ -88,7 +88,7 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 	SERVER_INFO_100* serverInfo = 0;
 	DWORD read, totalOnNetwork;
 
-	NET_API_STATUS result = NetServerEnum(NULL, 100, (BYTE**)&serverInfo, MAX_PREFERRED_LENGTH, 
+	NET_API_STATUS result = NetServerEnum(NULL, 100, (BYTE**)&serverInfo, MAX_PREFERRED_LENGTH,
 		&read, &totalOnNetwork, serverType, domain, 0);
 	if (result == NERR_Success)
 	{
@@ -112,5 +112,3 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 
 	return result == NERR_Success;
 }
-
-

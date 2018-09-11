@@ -36,4 +36,4 @@ public:
 public slots:
 };
 
-#endif 
+#endif

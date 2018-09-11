@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "calcy.h"
 
 
-Gui::Gui(QWidget* parent) 
+Gui::Gui(QWidget* parent)
 : QWidget(parent)
 {
 	setupUi(this);

@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "minidump.h"
 
 
-class PlatformWin : public PlatformBase 
+class PlatformWin : public PlatformBase
 {
 	Q_OBJECT
 

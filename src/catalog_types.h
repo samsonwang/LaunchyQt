@@ -48,7 +48,7 @@ public:
 	static bool matches(CatItem* item, const QString& match);
 	static QString decorateText(const QString& text, const QString& match, bool outputRichText = false);
 
-protected:	
+protected:
 	virtual const CatItem& getItem(int) = 0;
 	virtual QList<CatItem*> search(const QString&) = 0;
 
@@ -57,11 +57,11 @@ protected:
 };
 
 
-// CatalogItem is used internally to store additional 
+// CatalogItem is used internally to store additional
 class CatalogItem : public CatItem
 {
 public:
-	CatalogItem() : 
+	CatalogItem() :
 	  timestamp(0)
 	{
 	}

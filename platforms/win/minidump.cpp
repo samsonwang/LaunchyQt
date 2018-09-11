@@ -44,7 +44,7 @@ LONG MiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo)
 	if (CreateMiniDump(_T("Mini"), exceptionInfo, MiniDumpNormal) &&
 		CreateMiniDump(_T("Midi"), exceptionInfo, MiniDumpWithPrivateReadWriteMemory))
 	{
-		MessageBox(NULL, 
+		MessageBox(NULL,
 			_T("Sorry, Launchy seems to have crashed. To help us work out what went wrong, crash dumps have been created in your temp directory. Please send them to us via the SourceForge forums."),
 			m_appName, MB_OK | MB_ICONEXCLAMATION);
 		result = EXCEPTION_EXECUTE_HANDLER;

@@ -49,7 +49,7 @@ UINT mod, key;
 
 
 HINSTANCE GetHInstance()
-{    
+{
     MEMORY_BASIC_INFORMATION mbi;
     TCHAR szModule[MAX_PATH];
 
@@ -97,7 +97,7 @@ LRESULT CALLBACK KeyboardHookProc(INT nCode, WPARAM wParam, LPARAM lParam)
 class GlobalShortcutManager::KeyTrigger::Impl : public QWidget
 {
 public:
-	
+
 	bool connected;
         /**
          * Constructor registers the hotkey.
@@ -117,7 +117,7 @@ public:
 				case VK_SCROLL:
 					if (!keyboardHook)
 					{
-						// Turn off capslock or scroll lock if they're on and we're not already 
+						// Turn off capslock or scroll lock if they're on and we're not already
 						// hooked. Nobody wants capslock turned on permanently do they?
 						if (GetKeyState(VK_CAPITAL) == 1)
 						{
@@ -189,7 +189,7 @@ private:
         {
                 int code = ks;
 
-				// JK: I had to put the code -='s here and comment out code &= 0xffff 
+				// JK: I had to put the code -='s here and comment out code &= 0xffff
 				// to correctly identify the action key
 
                 UINT mod = 0;
@@ -345,7 +345,7 @@ GlobalShortcutManager::KeyTrigger::~KeyTrigger()
 		*/
 }
 
-bool GlobalShortcutManager::KeyTrigger::isConnected() 
+bool GlobalShortcutManager::KeyTrigger::isConnected()
 {
 	if (!d) return false;
 	return d->connected;

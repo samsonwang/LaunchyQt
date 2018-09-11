@@ -59,7 +59,7 @@ bool Catalog::save(const QString& filename)
 	QMutexLocker locker(&mutex);
 
 	QByteArray ba;
-	QDataStream out(&ba, QIODevice::ReadWrite); 
+	QDataStream out(&ba, QIODevice::ReadWrite);
 	out.setVersion(QDataStream::Qt_4_2);
 
 	for (int i = 0; i < count(); i++)
@@ -95,14 +95,14 @@ bool Catalog::matches(CatItem* item, const QString& match)
 			{
 				return true;
 			}
-		} 
+		}
 	}
 
 	return false;
 }
 
 
-// Search the catalog, for items matching the text parameter and 
+// Search the catalog, for items matching the text parameter and
 // populate the out parameter
 void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out)
 {

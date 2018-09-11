@@ -94,7 +94,7 @@ bool CharLineEdit::focusNextPrevChild(bool next)
 {
 	QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, next ? Qt::NoModifier : Qt::ShiftModifier);
 	emit keyPressed(&event);
-	
+
 	return true;
 }
 

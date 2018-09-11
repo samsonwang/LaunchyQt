@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QScrollBar>
+#include <QMessageBox>
+#include <QDesktopWidget>
+#include <QMenu>
 
 #include "precompiled.h"
 
@@ -428,7 +432,7 @@ void LaunchyWidget::showAlternatives()
 
 	alternatives->show();
 	alternatives->setFocus();
-	qApp->syncX();
+    // qApp->syncX();
 }
 
 
@@ -1020,6 +1024,7 @@ void LaunchyWidget::catalogBuilt()
 
 void LaunchyWidget::checkForUpdate()
 {
+    /*
 	http = new QHttp(this);
 	verBuffer = new QBuffer(this);
 	counterBuffer = new QBuffer(this);
@@ -1029,6 +1034,7 @@ void LaunchyWidget::checkForUpdate()
 	connect(http, SIGNAL(done( bool)), this, SLOT(httpGetFinished(bool)));
 	http->setHost("www.launchy.net");
 	http->get("http://www.launchy.net/version2.html", verBuffer);
+    */
 }
 
 
@@ -1048,9 +1054,11 @@ void LaunchyWidget::httpGetFinished(bool error)
 						   <qt><a href=\"http://www.launchy.net/\">http://www.launchy.net</a></qt>"));
 			box.exec();
 		}
+        /*
 		if (http != NULL)
 			delete http;
 		http = NULL;
+        */
 	}
 	verBuffer->close();
 	counterBuffer->close();
@@ -1554,7 +1562,7 @@ void LaunchyWidget::showLaunchy(bool noFade)
 	input->activateWindow();
 	input->selectAll();
 	input->setFocus();
-	qApp->syncX();
+    //qApp->syncX();
 	// Let the plugins know
 	plugins.showLaunchy();
 }
@@ -1608,13 +1616,13 @@ int LaunchyWidget::getHotkey() const
 	int hotkey = gSettings->value("GenOps/hotkey", -1).toInt();
 	if (hotkey == -1)
 	{
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		int meta = Qt::AltModifier;
 #endif
-#ifdef  Q_WS_X11
+#ifdef  Q_OS_X11
 		int meta = Qt::ControlModifier;
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 		int meta = Qt::MetaModifier;
 #endif
 		hotkey = gSettings->value("GenOps/hotkeyModifier", meta).toInt() |
@@ -1655,7 +1663,7 @@ void fileLogMsgHandler(QtMsgType type, const char *msg)
 	if (file == 0)
 	{
 		// Create a file for appending in the user's temp directory
-		QString filename = QDir::toNativeSeparators(QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/launchylog.txt");
+        QString filename = "launchy.log";//QDir::toNativeSeparators(QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/launchylog.txt");
 		file = fopen(filename.toUtf8(), "a");
 	}
 
@@ -1725,7 +1733,7 @@ int main(int argc, char *argv[])
 			}
 			else if (arg.compare("log", Qt::CaseInsensitive) == 0)
 			{
-				qInstallMsgHandler(fileLogMsgHandler);
+                // qInstallMsgHandler(fileLogMsgHandler);
 			}
 			else if (arg.compare("profile", Qt::CaseInsensitive) == 0)
 			{

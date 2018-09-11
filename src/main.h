@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <QSystemTrayIcon>
+#include <QPushButton>
+
 #include "plugin_handler.h"
 #include "platform_util.h"
 #include "catalog.h"
@@ -174,7 +177,7 @@ private:
 	IconDelegate* listDelegate;
 	QAbstractItemDelegate* defaultListDelegate;
 
-	QHttp* http;
+    //QHttp* http;
 	QBuffer* verBuffer;
 	QBuffer* counterBuffer;
 };

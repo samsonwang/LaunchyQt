@@ -29,7 +29,7 @@ class Fader : public QThread
 public:
 	Fader(QObject* parent = NULL);
 	~Fader();
-	
+
 	void fadeIn(bool quick);
 	void fadeOut(bool quick);
 	void run();

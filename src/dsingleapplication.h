@@ -8,7 +8,7 @@
   and expects a correct answer, if it's correct then the app is running and
   we can talk to it.
 
-  Messages sent are in text and start with APP_ID+":", unles message has this three 
+  Messages sent are in text and start with APP_ID+":", unles message has this three
   bytes it is descarded. Each text message is prepended with int32 value of
   it's size.
 
@@ -17,7 +17,7 @@
   delimited by: [d_unique_port_start,d_unique_port_finish]
   and timeouts used: d_timeout_try_connect, d_timeout_try_read, d_timeout_try_write.
 
-  Todo: 
+  Todo:
   Implement another, faster and more robust cross-platform method to identify wheter
   another instance is running, once done then the port scan can be performed.
 
@@ -28,8 +28,8 @@
 
   History:
     02/08/2007 17:14 - First creation
-      
-  ver: 1       
+
+  ver: 1
 *******************************************************************************/
 
 /*
@@ -58,9 +58,9 @@ const int d_unique_port_start  = 23232;
 const int d_unique_port_finish = 23242;
 
 // timeouts are in ms
-const int d_timeout_try_connect = 10; 
-const int d_timeout_try_read    = 1000; 
-const int d_timeout_try_write   = 30000; 
+const int d_timeout_try_connect = 10;
+const int d_timeout_try_read    = 1000;
+const int d_timeout_try_write   = 30000;
 
 #include <QString>
 #include <QThread>
@@ -82,12 +82,12 @@ public:
   QString id() const;
   void initialize ( );
   bool isRunning () const;
- 
+
 public slots:
   bool sendMessage ( const QString & message );
 
 signals:
-  void messageReceived ( const QString & message ); 
+  void messageReceived ( const QString & message );
 
 
 
@@ -130,7 +130,7 @@ protected:
   void run();
 
 private:
-  PortStatus result; 
+  PortStatus result;
   QTcpSocket *tcpSocket;
   int port;
   QString app_id;
@@ -149,7 +149,7 @@ public:
   DTalker( const QString &id, QObject *parent = 0 );
 
 signals:
-  void messageReceived ( const QString & message ); 
+  void messageReceived ( const QString & message );
 
 protected slots:
   void onClientMessage( const QString & message );
@@ -176,7 +176,7 @@ public:
   ~DListner();
 
 signals:
-  void messageReceived ( const QString & message ); 
+  void messageReceived ( const QString & message );
 
 protected:
   void run();

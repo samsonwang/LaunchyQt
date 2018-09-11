@@ -1,17 +1,17 @@
 /*
   Launchy: Application Launcher
   Copyright (C) 2007-2010 Josh Karlin
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   as published by the Free Software Foundation; either version 2
   of the License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,7 +35,7 @@ struct pow_
 {
 	template <typename X, typename Y>
 	struct result { typedef X type; };
-	
+
 	template <typename X, typename Y>
 	X operator()(X x, Y y) const
 	{
@@ -57,21 +57,21 @@ struct calculator : public grammar<calculator, calc_closure::context_t>
 		definition(calculator const& self)
 		{
 			top = expression[self.val = arg1];
-		
+
 			expression
 				=   term[expression.val = arg1]
 		>> *(   ('+' >> term[expression.val += arg1])
 						|   ('-' >> term[expression.val -= arg1])
 						)
 				;
-		
+
 			term
 				=   factor[term.val = arg1]
 		>> *(   ('*' >> factor[term.val *= arg1])
 						|   ('/' >> factor[term.val /= arg1])
 						)
 				;
-		
+
 			factor
 				=   ureal_p[factor.val = arg1]
 				|   '(' >> expression[factor.val = arg1] >> ')'
@@ -83,7 +83,7 @@ struct calculator : public grammar<calculator, calc_closure::context_t>
 		typedef rule<ScannerT, calc_closure::context_t> rule_t;
 		rule_t expression, term, factor;
 		rule<ScannerT> top;
-	
+
 		rule<ScannerT> const&
 		start() const { return top; }
 	};
@@ -162,7 +162,7 @@ void calcyPlugin::getLabels(QList<InputData>* id)
 
 
 void calcyPlugin::getResults(QList<InputData>* id, QList<CatItem>* results)
-{   
+{
 	if (id->last().hasLabel(HASH_CALCY))
 	{
 		QString text = id->last().getText();
@@ -173,10 +173,10 @@ void calcyPlugin::getResults(QList<InputData>* id, QList<CatItem>* results)
 
 		QLocale c = (*settings)->value("calcy/useCommaForDecimal", false).toBool() ? QLocale(QLocale::German) : QLocale(QLocale::C);
 
-		
+
 		text = text.replace(group, "");
 		text = text.replace(decimal, ".");
-		
+
 
 		//double dbl = c.toDouble(text);
 		//qDebug() << text << dbl;
@@ -247,7 +247,7 @@ int calcyPlugin::msg(int msgId, void* wParam, void* lParam)
 {
 	bool handled = false;
 	switch (msgId)
-	{		
+	{
 	case MSG_INIT:
 		init();
 		handled = true;
@@ -282,7 +282,7 @@ int calcyPlugin::msg(int msgId, void* wParam, void* lParam)
 		endDialog(wParam != 0);
 		break;
 	case MSG_PATH:
-		setPath((QString*) wParam);	    
+		setPath((QString*) wParam);
 	default:
 		break;
 	}
@@ -291,4 +291,4 @@ int calcyPlugin::msg(int msgId, void* wParam, void* lParam)
 }
 
 
-Q_EXPORT_PLUGIN2(calcy, calcyPlugin) 
+Q_EXPORT_PLUGIN2(calcy, calcyPlugin)

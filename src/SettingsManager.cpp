@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
+#include <QMessageBox>
 #include "precompiled.h"
 #include "SettingsManager.h"
 #include "main.h"
@@ -139,7 +139,7 @@ void SettingsManager::setPortable(bool makePortable)
 			qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
 			if (makePortable)
 			{
-				QMessageBox::warning(gMainWidget, tr("Launchy"), 
+				QMessageBox::warning(gMainWidget, tr("Launchy"),
 					tr("Could not convert to portable mode. Please check you have write access to the %1 directory.").arg(newDir));
 			}
 		}

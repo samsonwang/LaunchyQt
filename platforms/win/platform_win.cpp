@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "minidump.h"
 
 
-// Override the main widget to handle incoming system messages. We could have done this in the QApplication 
+// Override the main widget to handle incoming system messages. We could have done this in the QApplication
 // event handler, but then we'd have to filter out the duplicates for messages like WM_SETTINGCHANGE.
 class LaunchyWidgetWin : public LaunchyWidget
 {
@@ -36,6 +36,7 @@ public:
 		commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
 	}
 
+    /*
 	virtual bool winEvent(MSG* msg, long* result)
 	{
 		switch (msg->message)
@@ -68,8 +69,9 @@ public:
 			}
 			break;
 		}
-		return LaunchyWidget::winEvent(msg, result);
+        return LaunchyWidget::winEvent(msg, result);
 	}
+    */
 
 private:
 	UINT commandMessageId;
@@ -144,7 +146,7 @@ QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 	tmp.name = GetShellDirectory(CSIDL_COMMON_STARTMENU);
 	tmp.types << "*.lnk";
 	list.append(tmp);
-	
+
 	tmp.name = GetShellDirectory(CSIDL_STARTMENU);
 	list.append(tmp);
 	tmp.name = "Utilities\\";
@@ -159,7 +161,7 @@ QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 }
 
 
-QString PlatformWin::expandEnvironmentVars(QString txt) 
+QString PlatformWin::expandEnvironmentVars(QString txt)
 {
 	QString result;
 

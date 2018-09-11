@@ -21,11 +21,12 @@
 #ifndef GLOBALSHORTCUTTRIGGER_H
 #define GLOBALSHORTCUTTRIGGER_H
 
+#include <memory>
 #include "platform_base_hotkey.h"
-#include <boost/shared_ptr.hpp>
+// #include <boost/shared_ptr.hpp>
 #include <QObject>
 
-using namespace boost;
+// using namespace boost;
 
 class GlobalShortcutManager::KeyTrigger : public QObject
 {
@@ -59,7 +60,7 @@ private:
          * Platform-specific helper
          */
         class Impl;
-        shared_ptr<Impl> d;
+        std::shared_ptr<Impl> d;
 };
 
 #endif

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __IShellItemImageFactory_INTERFACE_DEFINED__
 #define __IShellItemImageFactory_INTERFACE_DEFINED__
 
-#define SHIL_JUMBO 0x4 
+#define SHIL_JUMBO 0x4
 /* IShellItemImageFactory::GetImage() flags */
 enum _SIIGB {
     SIIGBF_RESIZETOFIT      = 0x00000000,
@@ -76,7 +76,7 @@ void WinIconProvider::setPreferredIconSize(int size)
 
 
 // This also exists in plugin_interface, need to remove both if I make a 64 build
-QString wicon_aliasTo64(QString path) 
+QString wicon_aliasTo64(QString path)
 {
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
 	QString pf32 = env.value("PROGRAMFILES");
@@ -185,7 +185,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 		else
 		{
 			retIcon = QFileIconProvider::icon(info);
-		}		
+		}
 	}
 
 	return retIcon;
