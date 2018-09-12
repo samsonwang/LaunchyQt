@@ -31,133 +31,133 @@ IconExtractor::IconExtractor()
 
 void IconExtractor::processIcon(const CatItem& item, bool highPriority)
 {
-	mutex.lock();
+    mutex.lock();
 
-	if (highPriority)
-	{
-		// use an id of -1 to indicate high priority
-		if (items.count() > 0 && items[0].id == -1)
-		{
-			items.replace(0, item);
-		}
-		else
-		{
-			items.push_front(item);
-		}
-		items[0].id = -1;
-	}
-	else
-	{
-		items.push_back(item);
-	}
-
-	mutex.unlock();
-#ifdef Q_WS_MAC
-        run();
-#else
-	if (!isRunning())
-		start(LowPriority);
-#endif
+    if (highPriority)
+    {
+        // use an id of -1 to indicate high priority
+        if (items.count() > 0 && items[0].id == -1)
+        {
+            items.replace(0, item);
+        }
+        else
+        {
+            items.push_front(item);
+        }
+        items[0].id = -1;
     }
+    else
+    {
+        items.push_back(item);
+    }
+
+    mutex.unlock();
+#ifdef Q_OS_MAC
+    run();
+#else
+    if (!isRunning())
+        start(LowPriority);
+#endif
+}
 
 
 void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset)
 {
-	mutex.lock();
+    mutex.lock();
 
-	int itemCount = items.size();
-	if (reset && itemCount > 0 && isRunning())
-	{
-		// reset the queue, but keep the most recent high priority item
-		CatItem item = items.dequeue();
-		items.clear();
-		if (item.id == -1)
-			items.append(item);
-		itemCount = items.size();
-	}
+    int itemCount = items.size();
+    if (reset && itemCount > 0 && isRunning())
+    {
+        // reset the queue, but keep the most recent high priority item
+        CatItem item = items.dequeue();
+        items.clear();
+        if (item.id == -1)
+            items.append(item);
+        itemCount = items.size();
+    }
 
-	items += newItems;
-	for (int i = itemCount; i < items.size(); ++i)
-		items[i].id = i - itemCount;
+    items += newItems;
+    for (int i = itemCount; i < items.size(); ++i)
+        items[i].id = i - itemCount;
 
-	mutex.unlock();
+    mutex.unlock();
 
-#ifdef Q_WS_MAC
-run();
+#ifdef Q_OS_MAC
+    run();
 #else
-
-	if (!isRunning())
-		start(IdlePriority);
+    if (!isRunning())
+        start(IdlePriority);
 #endif
 }
 
 
 void IconExtractor::stop()
 {
-	mutex.lock();
-	items.clear();
-	mutex.unlock();
+    mutex.lock();
+    items.clear();
+    mutex.unlock();
 }
 
 
 void IconExtractor::run()
 {
-#ifdef Q_WS_WIN
-	CoInitialize(NULL);
+#ifdef Q_OS_WIN
+    CoInitialize(NULL);
 #endif
 
-	CatItem item;
-	bool itemsRemaining = true;
+    CatItem item;
+    bool itemsRemaining = true;
 
-	do
-	{
-		mutex.lock();
-		itemsRemaining = items.size() > 0;
-		if (itemsRemaining)
-			item = items.dequeue();
-		mutex.unlock();
-		if (itemsRemaining)
-		{
-			QIcon icon = getIcon(item);
-			emit iconExtracted(item.id, item.fullPath, icon);
-		}
-	}
-	while (itemsRemaining);
+    do
+    {
+        mutex.lock();
+        itemsRemaining = items.size() > 0;
+        if (itemsRemaining)
+            item = items.dequeue();
+        mutex.unlock();
+        if (itemsRemaining)
+        {
+            QIcon icon = getIcon(item);
+            emit iconExtracted(item.id, item.fullPath, icon);
+        }
+    } while (itemsRemaining);
 
-#ifdef Q_WS_WIN
-	CoUninitialize();
+    /*
+#ifdef Q_OS_WIN
+    CoUninitialize();
 #endif
+*/
 }
 
 
 QIcon IconExtractor::getIcon(const CatItem& item)
 {
-	qDebug() << "Fetching icon for" << item.fullPath;
+    qDebug() << "Fetching icon for" << item.fullPath;
 
 #ifdef Q_WS_MAC
     if (item.icon.endsWith(".png") || item.icon.endsWith(".ico"))
         return QIcon(item.icon);
 #endif
 
-	if (item.icon.isNull())
-	{
+    if (item.icon.isNull())
+    {
 #ifdef Q_WS_X11
-		QFileInfo info(item.fullPath);
-		if (info.isDir())
-			return platform->icon(QFileIconProvider::Folder);
+        QFileInfo info(item.fullPath);
+        if (info.isDir())
+            return platform->icon(QFileIconProvider::Folder);
 #endif
-		if (item.fullPath.length() == 0)
-			return QIcon();
-		return platform->icon(QDir::toNativeSeparators(item.fullPath));
-	}
-	else
-	{
+        if (item.fullPath.length() == 0)
+            return QIcon();
+        return platform->icon(QDir::toNativeSeparators(item.fullPath));
+}
+    else
+    {
 #ifdef Q_WS_X11
-		if (QFile::exists(item.icon))
-		{
-			return QIcon(item.icon);
-		}
+        if (QFile::exists(item.icon))
+        {
+            return QIcon(item.icon);
+        }
 #endif
-		return platform->icon(QDir::toNativeSeparators(item.icon));
-	}
+        return platform->icon(QDir::toNativeSeparators(item.icon));
+    }
 }
