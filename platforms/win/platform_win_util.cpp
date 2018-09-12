@@ -87,7 +87,6 @@ QString GetShellDirectory(int type)
     return QString();
 }
 
-
 bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t* domain)
 {
     /*

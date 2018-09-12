@@ -33,7 +33,7 @@ class PlatformWin : public PlatformBase
 
 public:
 	PlatformWin(int& argc, char** argv);
-	~PlatformWin();
+	virtual ~PlatformWin();
 
 	virtual void setPreferredIconSize(int size);
 	virtual QKeySequence getHotkey() const;

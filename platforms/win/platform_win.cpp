@@ -76,18 +76,15 @@ private:
 	UINT commandMessageId;
 };
 
-
 // Create the main widget for the application
 LaunchyWidget* createLaunchyWidget(CommandFlags command)
 {
 	return new LaunchyWidgetWin(command);
 }
 
-
-
-PlatformWin::PlatformWin(int& argc, char** argv) :
-	PlatformBase(argc, argv),
-	minidumper(_T("Launchy"))
+PlatformWin::PlatformWin(int& argc, char** argv)
+    : PlatformBase(argc, argv),
+	  minidumper(_T("Launchy"))
 {
 	instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
 
@@ -99,7 +96,6 @@ PlatformWin::PlatformWin(int& argc, char** argv) :
 	icons = (QFileIconProvider*)new WinIconProvider();
 }
 
-
 PlatformWin::~PlatformWin()
 {
 	if (localMutex)
@@ -109,7 +105,6 @@ PlatformWin::~PlatformWin()
 	delete instance;
         instance = NULL;
 }
-
 
 void PlatformWin::setPreferredIconSize(int size)
 {

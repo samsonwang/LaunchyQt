@@ -60,8 +60,9 @@ class LaunchyWidget : public QWidget
 
 public:
 	LaunchyWidget(CommandFlags command);
-	~LaunchyWidget();
+	virtual ~LaunchyWidget();
 
+public:
 	void executeStartupCommand(int command);
 
 	void showLaunchy(bool noFade);
@@ -75,17 +76,19 @@ public:
 	void loadOptions();
 	int getHotkey() const;
 	void startUpdateTimer();
-
-public:
-    Catalog* catalog;
-	PluginHandler plugins;
+    void setOpaqueness(int level);
+    void buildCatalog();
 
 protected:
-    void paintEvent(QPaintEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
+    void saveSettings();
 
 public slots:
-    void focusInEvent(QFocusEvent* event);
-	void focusOutEvent(QFocusEvent* event);
+    void showLaunchy();
+
+protected slots:
+    virtual void focusInEvent(QFocusEvent* event);
+	virtual void focusOutEvent(QFocusEvent* event);
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
@@ -93,24 +96,21 @@ public slots:
 	void showOptionsDialog();
 	void onHotkey();
 	void dropTimeout();
-	void setOpaqueness(int level);
+	
 	void httpGetFinished(bool result);
 	void catalogProgressUpdated(int);
 	void catalogBuilt();
-	void buildCatalog();
+	
 	void inputMethodEvent(QInputMethodEvent* event);
 	void keyPressEvent(QKeyEvent* event);
 	void inputKeyPressEvent(QKeyEvent* event);
 	void alternativesRowChanged(int index);
 	void alternativesKeyPressEvent(QKeyEvent* event);
 	void setFadeLevel(double level);
-	void showLaunchy();
+	
 	void iconExtracted(int index, QString path, QIcon icon);
 	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 	void reloadSkin();
-
-protected:
-	void saveSettings();
 
 private:
 	void createActions();
@@ -123,7 +123,7 @@ private:
 	void updateAlternatives(bool resetSelection = true);
 	void showAlternatives();
 	void hideAlternatives();
-	void parseInput(const QString& text);
+	// void parseInput(const QString& text);
 	void updateOutputWidgets(bool resetAlternativesSelection = true);
 	void searchOnInput();
 	void loadPosition(QPoint pt);
@@ -133,8 +133,12 @@ private:
 	void doEnter();
 	void processKey();
 	void launchItem(CatItem& item);
-	void addToHistory(QList<InputData>& item);
+	// void addToHistory(QList<InputData>& item);
 	void startDropTimer();
+
+public:
+    Catalog* catalog;
+    PluginHandler plugins;
 
 private:
     QString currentSkin;
