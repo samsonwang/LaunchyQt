@@ -35,9 +35,10 @@ public:
 		commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
 	}
 
-    /*
-	virtual bool winEvent(MSG* msg, long* result)
+    
+	virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result)
 	{
+        MSG* msg = (MSG*)message;
 		switch (msg->message)
 		{
 		case WM_SETTINGCHANGE:
@@ -64,13 +65,13 @@ public:
 			if (msg->message == commandMessageId)
 			{
 				// A Launchy startup command
-				executeStartupCommand(msg->wParam);
+				executeStartupCommand((int)msg->wParam);
 			}
 			break;
 		}
-        return LaunchyWidget::winEvent(msg, result);
+        return LaunchyWidget::nativeEvent(eventType, message, result);
 	}
-    */
+    
 
 private:
 	UINT commandMessageId;
@@ -135,7 +136,7 @@ QHash<QString, QList<QString> > PlatformWin::getDirectories()
 QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 {
 	QList<Directory> list;
-    /*
+
     Directory tmp;
 
 	tmp.name = GetShellDirectory(CSIDL_COMMON_STARTMENU);
@@ -152,7 +153,7 @@ QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 	tmp2.name = "%appdata%\\Microsoft\\Internet Explorer\\Quick Launch";
 	tmp2.types << "*.*";
 	list.append(tmp2);
-    */
+
 	return list;
 }
 

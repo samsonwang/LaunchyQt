@@ -225,7 +225,6 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 // icon to the one shown in explorer and it scales automatically.
 bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) const
 {
-    /*
 	HRESULT hr = S_FALSE;
 
 	if (fnSHCreateItemFromParsingName)
@@ -244,7 +243,7 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 				if (hr == S_OK)
 				{
 
-                    QPixmap iconPixmap = QPixmap::fromWinHBITMAP(iconBitmap, QPixmap::PremultipliedAlpha);
+                    QPixmap iconPixmap = QtWin::fromHBITMAP(iconBitmap, QtWin::HBitmapPremultipliedAlpha);
 					icon.addPixmap(iconPixmap);
 					DeleteObject(iconBitmap);
 
@@ -257,7 +256,4 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 	}
 
 	return hr == S_OK;
-    */
-
-    return false;
 }

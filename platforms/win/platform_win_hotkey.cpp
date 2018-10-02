@@ -163,16 +163,17 @@ public:
         /**
          * Triggers activated() signal when the hotkey is activated.
          */
-        /*
-        bool winEvent(MSG* m, long* result)
+        
+        virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result)
 		{
+            MSG* m = (MSG*)message;
 			if ((m->message == WM_HOTKEY && m->wParam == id_) || m->message == WM_USER) {
 				emit trigger_->activated();
 				return true;
 			}
-			return QWidget::winEvent(m, result);
+			return QWidget::nativeEvent(eventType, message, result);
 		}
-        */
+        
 
 private:
         KeyTrigger* trigger_;
