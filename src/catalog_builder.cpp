@@ -49,7 +49,8 @@ void CatalogBuilder::buildCatalog()
 	while (currentItem < memDirs.count())
 	{
 		QString cur = platform->expandEnvironmentVars(memDirs[currentItem].name);
-		indexDirectory(cur, memDirs[currentItem].types, memDirs[currentItem].indexDirs, memDirs[currentItem].indexExe, memDirs[currentItem].depth);
+		indexDirectory(cur, memDirs[currentItem].types, memDirs[currentItem].indexDirs,
+                       memDirs[currentItem].indexExe, memDirs[currentItem].depth);
 		progressStep(currentItem);
 	}
 
@@ -79,7 +80,7 @@ void CatalogBuilder::indexDirectory(const QString& directory, const QStringList&
 				QString cur = dirs[i];
 				if (!cur.contains(".lnk"))
 				{
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
                                     // Special handling of app directories
                                     if (cur.endsWith(".app", Qt::CaseInsensitive)) {
                                         CatItem item(dir + "/" + cur);
@@ -151,7 +152,7 @@ void CatalogBuilder::indexDirectory(const QString& directory, const QStringList&
 		{
 			CatItem item(dir + "/" + files[i]);
 			platform->alterItem(&item);
-#ifdef Q_WS_X11
+#ifdef Q_OS_X11
                         if(item.fullPath.endsWith(".desktop") && item.icon == "")
                             continue;
 #endif

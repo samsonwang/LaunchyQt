@@ -154,7 +154,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     alternatives->setTextElideMode(Qt::ElideLeft);
     alternatives->setUniformItemSizes(true);
     listDelegate = new IconDelegate(this);
-    defaultListDelegate = alternatives->itemDelegate();
+    defaultListDelegate = alternatives->itemDelegate(); // ** not used for now
     setSuggestionListMode(gSettings->value("GenOps/condensedView", 2).toInt());
     altScroll = alternatives->verticalScrollBar();
     altScroll->setObjectName("altScroll");
@@ -229,9 +229,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 
 LaunchyWidget::~LaunchyWidget()
 {
-    delete updateTimer;
-    delete dropTimer;
-    delete alternatives;
+    // delete updateTimer;
+    // delete dropTimer;
+    // delete alternatives;
 }
 
 
@@ -597,7 +597,9 @@ void LaunchyWidget::alternativesKeyPressEvent(QKeyEvent* event)
         input->setFocus();
         event->ignore();
     }
-    else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter || event->key() == Qt::Key_Tab)
+    else if (event->key() == Qt::Key_Return
+             || event->key() == Qt::Key_Enter
+             || event->key() == Qt::Key_Tab)
     {
         if (searchResults.count() > 0)
         {
@@ -632,7 +634,8 @@ void LaunchyWidget::alternativesKeyPressEvent(QKeyEvent* event)
             }
         }
     }
-    else if (event->key() == Qt::Key_Delete && (event->modifiers() & Qt::ShiftModifier) != 0)
+    else if (event->key() == Qt::Key_Delete
+             && (event->modifiers() & Qt::ShiftModifier) != 0)
     {
         int row = alternatives->currentRow();
         if (row > -1)
@@ -655,8 +658,9 @@ void LaunchyWidget::alternativesKeyPressEvent(QKeyEvent* event)
             }
         }
     }
-    else if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right ||
-             event->text().length() > 0)
+    else if (event->key() == Qt::Key_Left
+             || event->key() == Qt::Key_Right
+             || event->text().length() > 0)
     {
         // Send text entry to the input control
         activateWindow();
@@ -679,13 +683,16 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
             hideLaunchy();
     }
 
-    else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
+    else if (event->key() == Qt::Key_Return
+             || event->key() == Qt::Key_Enter)
     {
         doEnter();
     }
 
-    else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_PageDown ||
-             event->key() == Qt::Key_Up || event->key() == Qt::Key_PageUp)
+    else if (event->key() == Qt::Key_Down
+             || event->key() == Qt::Key_PageDown
+             || event->key() == Qt::Key_Up
+             || event->key() == Qt::Key_PageUp)
     {
         if (alternatives->isVisible())
         {
@@ -704,7 +711,8 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
                 }
             }
         }
-        else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_PageDown)
+        else if (event->key() == Qt::Key_Down
+                 || event->key() == Qt::Key_PageDown)
         {
             // do a search and show the results, selecting the first one
             searchOnInput();
@@ -715,7 +723,9 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
             }
         }
     }
-    else if ((event->key() == Qt::Key_Tab || event->key() == Qt::Key_Backspace) && event->modifiers() == Qt::ShiftModifier)
+    else if ((event->key() == Qt::Key_Tab
+              || event->key() == Qt::Key_Backspace)
+             && event->modifiers() == Qt::ShiftModifier)
     {
         doBackTab();
         processKey();
@@ -725,14 +735,16 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
         doTab();
         processKey();
     }
-    else if (event->key() == Qt::Key_Slash || event->key() == Qt::Key_Backslash)
+    else if (event->key() == Qt::Key_Slash
+             || event->key() == Qt::Key_Backslash)
     {
         if (inputData.count() > 0 && inputData.last().hasLabel(LABEL_FILE) &&
             searchResults.count() > 0 && searchResults[0].id == HASH_LAUNCHYFILE)
             doTab();
         processKey();
     }
-    else if (event->key()== Qt::Key_Insert && event->modifiers() == Qt::ShiftModifier)
+    else if (event->key()== Qt::Key_Insert
+             && event->modifiers() == Qt::ShiftModifier)
     {
         // ensure pasting text with Shift+Insert also parses input
         // longer term parsing should be done using the TextChanged event
@@ -873,7 +885,8 @@ void LaunchyWidget::searchOnInput()
     gSearchText = searchTextLower;
     searchResults.clear();
 
-    if ((inputData.count() > 0 && inputData.first().hasLabel(LABEL_HISTORY)) || input->text().length() == 0)
+    if ((inputData.count() > 0 && inputData.first().hasLabel(LABEL_HISTORY))
+        || input->text().length() == 0)
     {
         // Add history items exclusively and unsorted so they remain in most recently used order
         qDebug() << "Searching history for" << searchText;
@@ -1487,7 +1500,7 @@ void LaunchyWidget::showOptionsDialog()
 #ifdef Q_OS_WIN
         // need to use this method in Windows to ensure that keyboard focus is set when
         // being activated via a message from another instance of Launchy
-        SetForegroundWindowEx((HWND)options.winId());
+        // SetForegroundWindowEx((HWND)options.winId());
 #endif
         options.exec();
 

@@ -180,6 +180,9 @@
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="precompiled.h.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationLabel.h">
@@ -277,9 +280,6 @@
     <CustomBuild Include="build\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <ClCompile Include="precompiled.h.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\translations\launchy_de.ts">

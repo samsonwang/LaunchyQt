@@ -20,31 +20,43 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PRECOMPILED_H
 #define PRECOMPILED_H
 
+
 #ifdef _MSC_VER
-#pragma warning(push,3)
+#pragma warning(push, 1)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+
+#include <windows.h>
+#include <tchar.h>
+#include <shellapi.h>
+#include <comdef.h>
+#include <commctrl.h>
+#include <objbase.h>
+#include <commoncontrols.h>
 
 #include <QtGui>
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QFuture>
+#include <QtWin>
+
 
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
-#include <stdlib.h>
+//#include <stdlib.h>
 
 // #include <boost/shared_ptr.hpp>
 // using namespace boost;
 
-#ifdef Q_OS_WIN
-#define _CRT_SECURE_NO_WARNINGS
+//#ifdef Q_OS_WIN
+//#define _CRT_SECURE_NO_WARNINGS
+
 //#define _WIN32_WINNT 0x0600
 //#define _WIN32_IE 0x0700
-#include <windows.h>
-#include <tchar.h>
+// #include <windows.h>
+// #include <tchar.h>
 // #include <shlobj.h>
 // #include <shlguid.h>
 // #include <shobjidl.h>
@@ -53,7 +65,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // #include <commoncontrols.h>
 // #include <userenv.h>
 // #include <lm.h>
-#endif
 
+//#endif // Q_OS_WIN
 
 #endif // PRECOMPILED_H

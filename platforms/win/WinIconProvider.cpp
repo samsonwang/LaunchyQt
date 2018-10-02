@@ -18,16 +18,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "precompiled.h"
+
 #include "platform_win_util.h"
 #include "WinIconProvider.h"
 
+#if 0
 // Temporary work around to avoid having to install the latest Windows SDK
-#ifndef __IShellItemImageFactory_INTERFACE_DEFINED__
+//#ifndef __IShellItemImageFactory_INTERFACE_DEFINED__
 #define __IShellItemImageFactory_INTERFACE_DEFINED__
 
-#define SHIL_JUMBO 0x4
-/* IShellItemImageFactory::GetImage() flags */
+// ** marcro redefination
+// #define SHIL_JUMBO 0x4
+
+// IShellItemImageFactory::GetImage() flags
 enum _SIIGB {
     SIIGBF_RESIZETOFIT      = 0x00000000,
     SIIGBF_BIGGERSIZEOK     = 0x00000001,
@@ -49,8 +52,8 @@ public:
 
 #endif
 
-HRESULT (WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
 
+HRESULT (WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
 
 WinIconProvider::WinIconProvider() :
 	preferredSize(32)
@@ -120,7 +123,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 		HICON hIcon;
 		QString filePath = QDir::toNativeSeparators(info.filePath());
         ExtractIconEx((LPCTSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
-        // retIcon = QIcon(QPixmap::fromWinHICON(hIcon));
+        retIcon = QIcon(QtWin::fromHICON(hIcon));
 		DestroyIcon(hIcon);
 	}
 	else
@@ -196,7 +199,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 
 bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const
 {
-    /*
+    
 	HICON hIcon = 0;
 	IImageList* imageList;
 	HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
@@ -207,13 +210,13 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 	}
 	if (hResult == S_OK && hIcon)
 	{
-        //icon.addPixmap(QPixmap::fromWinHICON(hIcon));
+        icon.addPixmap(QtWin::fromHICON(hIcon));
 		DestroyIcon(hIcon);
 	}
 
 	return SUCCEEDED(hResult);
-    */
-    return true;
+    
+    //return true;
 }
 
 
@@ -254,6 +257,7 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 	}
 
 	return hr == S_OK;
-            */
-    return true;
+    */
+
+    return false;
 }
