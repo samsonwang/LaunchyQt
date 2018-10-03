@@ -91,8 +91,8 @@ PlatformWin::PlatformWin(int& argc, char** argv)
 
 	// Create local and global application mutexes so that installer knows when
 	// Launchy is running
-	localMutex = CreateMutex(NULL,0,_T("LaunchyMutex"));
-	globalMutex = CreateMutex(NULL,0,_T("Global\\LaunchyMutex"));
+	localMutex = CreateMutex(NULL, 0, _T("LaunchyMutex"));
+	globalMutex = CreateMutex(NULL, 0, _T("Global\\LaunchyMutex"));
 
 	icons = (QFileIconProvider*)new WinIconProvider();
 }
@@ -111,7 +111,6 @@ void PlatformWin::setPreferredIconSize(int size)
 {
 	((WinIconProvider*)icons)->setPreferredIconSize(size);
 }
-
 
 QHash<QString, QList<QString> > PlatformWin::getDirectories()
 {
@@ -196,6 +195,8 @@ QKeySequence PlatformWin::getHotkey() const
 
 bool PlatformWin::setHotkey(const QKeySequence& newHotkey, QObject* receiver, const char* slot)
 {
+    QString strNewHotkey = newHotkey.toString();
+    QString strHotKey = hotkey.toString();
 	GlobalShortcutManager::disconnect(hotkey, receiver, slot);
 	GlobalShortcutManager::connect(newHotkey, receiver, slot);
 	hotkey = newHotkey;
@@ -211,6 +212,7 @@ bool PlatformWin::supportsAlphaBorder() const
 
 bool PlatformWin::getComputers(QStringList& computers) const
 {
+    Q_UNUSED(computers)
     /*
 	// Get a list of domains. This should return nothing or fail when we're on a workgroup
 	QStringList domains;

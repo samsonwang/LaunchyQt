@@ -23,44 +23,44 @@
 
 #include <memory>
 #include "platform_base_hotkey.h"
-// #include <boost/shared_ptr.hpp>
+ // #include <boost/shared_ptr.hpp>
 #include <QObject>
 
 // using namespace boost;
 
 class GlobalShortcutManager::KeyTrigger : public QObject
 {
-        Q_OBJECT
+    Q_OBJECT
 public:
-        /**
-         * Is there any slot connected to this hotkey?
-         */
-        bool isUsed() const
-        {
-                return QObject::receivers(SIGNAL(activated())) > 0;
-        }
+    /**
+     * Is there any slot connected to this hotkey?
+     */
+    bool isUsed() const
+    {
+        return QObject::receivers(SIGNAL(activated())) > 0;
+    }
 
 signals:
-        void activated();
+    void activated();
 
 private:
-        /**
-         * Registers the \a key.
-         */
-        KeyTrigger(const QKeySequence& key);
-        /**
-         * Unregisters the key.
-         */
-        ~KeyTrigger();
+    friend class GlobalShortcutManager;
+    /**
+     * Registers the \a key.
+     */
+    KeyTrigger(const QKeySequence& key);
+    /**
+     * Unregisters the key.
+     */
+    virtual ~KeyTrigger();
 
-        friend class GlobalShortcutManager;
-		bool isConnected();
+    bool isConnected();
 
-        /**
-         * Platform-specific helper
-         */
-        class Impl;
-        std::shared_ptr<Impl> d;
+    /**
+     * Platform-specific helper
+     */
+    class Impl;
+    std::shared_ptr<Impl> d;
 };
 
 #endif

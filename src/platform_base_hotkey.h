@@ -27,23 +27,25 @@
 
 
 class QObject;
-class KeyTrigger;
+//class KeyTrigger;
 
 class GlobalShortcutManager : public QObject
 {
 public:
-        static GlobalShortcutManager* instance();
-        static void connect(const QKeySequence& key, QObject* receiver, const char* slot);
-        static void disconnect(const QKeySequence& key, QObject* receiver, const char* slot);
-		static bool isConnected(const QKeySequence& key);
-		static void clear();
-        GlobalShortcutManager();
-        ~GlobalShortcutManager();
-private:
+    static GlobalShortcutManager* instance();
+    static void connect(const QKeySequence& key, QObject* receiver, const char* slot);
+    static void disconnect(const QKeySequence& key, QObject* receiver, const char* slot);
+    static bool isConnected(const QKeySequence& key);
+    static void clear();
 
-        static GlobalShortcutManager* instance_;
-        class KeyTrigger;
-        QMap<QKeySequence, KeyTrigger*> triggers_;
+private:
+    GlobalShortcutManager();
+    virtual ~GlobalShortcutManager();
+
+private:
+    static GlobalShortcutManager* instance_;
+    class KeyTrigger;
+    QMap<QKeySequence, KeyTrigger*> triggers_;
 };
 
 #endif
