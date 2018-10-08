@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMessageBox>
 #include "precompiled.h"
 #include "options.h"
-#include "main.h"
+#include "LaunchyWidget.h"
 #include "globals.h"
 #include "plugin_handler.h"
 #include "FileBrowserDelegate.h"
@@ -42,7 +42,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	restoreGeometry(windowGeometry);
 	tabWidget->setCurrentIndex(currentTab);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	about_homepage->setText(about_homepage->text() + \
 		"<p><br>If you would like to uninstall Launchy, please close Launchy and run \"Uninstall Launchy\" from the start menu.</br></p>");
 #endif

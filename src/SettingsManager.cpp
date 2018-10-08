@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMessageBox>
 #include "precompiled.h"
 #include "SettingsManager.h"
-#include "main.h"
+#include "LaunchyWidget.h"
 #include "globals.h"
-
+#include "platform_base.h"
 
 SettingsManager settings;
 
@@ -140,7 +140,9 @@ void SettingsManager::setPortable(bool makePortable)
 			if (makePortable)
 			{
 				QMessageBox::warning(gMainWidget, tr("Launchy"),
-					tr("Could not convert to portable mode. Please check you have write access to the %1 directory.").arg(newDir));
+                                     tr("Could not convert to portable mode."
+                                     " Please check you have write access to the %1 directory.")
+                                     .arg(newDir));
 			}
 		}
 
