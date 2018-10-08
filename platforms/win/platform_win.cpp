@@ -86,8 +86,7 @@ LaunchyWidget* createLaunchyWidget(CommandFlags command)
 
 PlatformWin::PlatformWin(int& argc, char** argv)
     : PlatformBase(argc, argv),
-      minidumper(_T("Launchy")),
-      m_pHotKey(new QHotKey(this))
+      minidumper(_T("Launchy"))
 {
 	instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
 
@@ -175,19 +174,16 @@ QString PlatformWin::expandEnvironmentVars(QString txt)
 	return result;
 }
 
-
 void PlatformWin::sendInstanceCommand(int command)
 {
 	UINT commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
 	PostMessage(HWND_BROADCAST, commandMessageId, command, 0);
 }
 
-
 bool PlatformWin::isAlreadyRunning() const
 {
 	return instance->IsAnotherInstanceRunning();
 }
-
 
 // Mandatory functions
 QKeySequence PlatformWin::getHotkey() const
@@ -197,10 +193,10 @@ QKeySequence PlatformWin::getHotkey() const
 
 bool PlatformWin::setHotkey(const QKeySequence& newHotkey, QObject* receiver, const char* slot)
 {
-    m_pHotKey->setKeySeq(newHotkey);
+    // m_pHotKey->setKeySeq(newHotkey);
 
     // this would connect multiple times, !!! should be fixed
-    connect(m_pHotKey, SIGNAL(activated()), receiver, slot);
+    // connect(m_pHotKey, SIGNAL(activated()), receiver, slot);
 
 	//GlobalShortcutManager::disconnect(hotkey, receiver, slot);
 	//GlobalShortcutManager::connect(newHotkey, receiver, slot);

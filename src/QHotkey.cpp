@@ -21,3 +21,9 @@ void QHotKey::setKeySeq(const QKeySequence& keySeq) {
     Q_D(QHotKey);
     d->setKeySeq(keySeq);
 }
+
+bool QHotKey::registered() const
+{
+    Q_D(const QHotKey);
+    return d->registered();
+}

@@ -13,6 +13,7 @@ public:
 public:
     const QKeySequence& keySeq() const;
     void setKeySeq(const QKeySequence& keySeq);
+    bool registered() const;
 
 Q_SIGNALS:
     void activated();

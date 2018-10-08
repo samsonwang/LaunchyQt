@@ -156,8 +156,8 @@ bool QHotKeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
     return false;
 }
 
-void QHotKeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
-    RegisterHotKey(NULL, keyId, mod, key);
+bool QHotKeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
+    return RegisterHotKey(NULL, keyId, mod, key) == TRUE;
 }
 
 void QHotKeyPrivate::unregisterKey(quint32 key, quint32 mod, int keyId) {

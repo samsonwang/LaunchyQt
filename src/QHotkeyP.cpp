@@ -30,6 +30,7 @@ void QHotKeyPrivate::unsetKey() {
             unregisterKey(keycode, mods, keyId);
         }
     }
+    m_bRegistered = false;
 }
 
 bool QHotKeyPrivate::activateHotKey(int keyId) {
@@ -76,13 +77,22 @@ void QHotKeyPrivate::setKeySeq(const QKeySequence& keySeq) {
     if (s_hotKeys.count(keyId) == 0) {
         quint32 keycode = toNativeKeycode(getKey(keySeq));
         quint32 mods = toNativeModifiers(getModifiers(keySeq));
-        registerKey(keycode, mods, keyId);
+        if (!registerKey(keycode, mods, keyId)) {
+            // register fail
+            return;
+        }
     }
 
     m_keySeq = keySeq;
 
     Q_Q(QHotKey);
     s_hotKeys.insert(keyId, q);
+
+    m_bRegistered = true;
+}
+
+bool QHotKeyPrivate::registered() const {
+    return m_bRegistered;
 }
 
 quint32 QHotKeyPrivate::toNativeKeycode(Qt::Key key) {
@@ -103,4 +113,3 @@ quint32 QHotKeyPrivate::toNativeModifiers(Qt::KeyboardModifiers mod) {
     }
     return modNative;
 }
-

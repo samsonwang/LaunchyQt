@@ -14,11 +14,12 @@ public:
 public:
     const QKeySequence& keySeq() const;
     void setKeySeq(const QKeySequence& keySeq);
+    bool registered() const;
 
 private:
     void init();
     void unsetKey();
-    
+
 
 private:
     static bool activateHotKey(int keyId);
@@ -28,7 +29,7 @@ private:
     static inline Qt::KeyboardModifiers getModifiers(const QKeySequence& keySeq);
     static quint32 toNativeKeycode(Qt::Key key);
     static quint32 toNativeModifiers(Qt::KeyboardModifiers mod);
-    static void registerKey(quint32 key, quint32 mod, int keyId);
+    static bool registerKey(quint32 key, quint32 mod, int keyId);
     static void unregisterKey(quint32 key, quint32 mod, int keyId);
 
 private:
@@ -42,6 +43,8 @@ private:
 private:
     QHotKey* q_ptr;
     QKeySequence m_keySeq;
+    bool m_bRegistered;
+
     static QScopedPointer<EventFilter> s_eventFilter;
     static QMultiHash<quint32, QHotKey*> s_hotKeys;
 

@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationLabel.h"
 #include "Fader.h"
 
+class QHotKey;
 
 enum CommandFlag
 {
@@ -184,6 +185,8 @@ private:
     //QHttp* http;
 	QBuffer* verBuffer;
 	QBuffer* counterBuffer;
+
+    QHotKey* m_pHotKey;
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);

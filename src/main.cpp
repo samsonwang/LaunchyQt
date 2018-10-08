@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "options.h"
 #include "plugin_interface.h"
 #include "FileSearch.h"
-
+#include "QHotkey.h"
 
 #ifdef Q_OS_WIN
 void SetForegroundWindowEx(HWND hWnd)
@@ -69,7 +69,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     alternatives(NULL),
     updateTimer(NULL),
     dropTimer(NULL),
-    condensedTempIcon(NULL)
+    condensedTempIcon(NULL),
+    m_pHotKey(new QHotKey(this))
 {
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
@@ -183,9 +184,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 
     // Set the hotkey
     QKeySequence hotkey = getHotkey();
-    if (!setHotkey(hotkey))
-    {
-        QMessageBox::warning(this, tr("Launchy"), tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
+    connect(m_pHotKey, &QHotKey::activated, this, &LaunchyWidget::onHotkey);
+    if (!setHotkey(hotkey)) {
+        QMessageBox::warning(this, tr("Launchy"),
+                             tr("The hotkey %1 is already in use, please select another.")
+                             .arg(hotkey.toString()));
         command = ShowLaunchy | ShowOptions;
     }
 
@@ -311,7 +314,11 @@ void LaunchyWidget::setSuggestionListMode(int mode)
 
 bool LaunchyWidget::setHotkey(QKeySequence hotkey)
 {
-    return platform->setHotkey(hotkey, this, SLOT(onHotkey()));
+    // QHotKey is cross platform new
+    m_pHotKey->setKeySeq(hotkey);
+
+    return m_pHotKey->registered();
+    //platform->setHotkey(hotkey, this, SLOT(onHotkey()));
 }
 
 

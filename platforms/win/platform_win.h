@@ -26,12 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // #include "platform_base_hotkey.h"
 #include "minidump.h"
 
-class QHotKey;
-
 class PlatformWin : public PlatformBase
 {
 	Q_OBJECT
-
 public:
 	PlatformWin(int& argc, char** argv);
 	virtual ~PlatformWin();
@@ -52,7 +49,6 @@ private:
 	HANDLE localMutex, globalMutex;
 	LimitSingleInstance* instance;
     MiniDumper minidumper;
-    QHotKey* m_pHotKey;
 };
 
 #endif
