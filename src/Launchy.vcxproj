@@ -147,6 +147,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\platforms\win\minidump.cpp" />
     <ClCompile Include="AnimationLabel.cpp" />
     <ClCompile Include="build\moc_catalog_builder.cpp" />
     <ClCompile Include="build\moc_CharLineEdit.cpp" />
@@ -159,7 +160,6 @@
     <ClCompile Include="build\moc_icon_extractor.cpp" />
     <ClCompile Include="build\moc_main.cpp" />
     <ClCompile Include="build\moc_options.cpp" />
-    <ClCompile Include="build\moc_platform_base_hottrigger.cpp" />
     <ClCompile Include="build\moc_platform_win.cpp" />
     <ClCompile Include="build\moc_QHotkey.cpp" />
     <ClCompile Include="build\moc_QHotkeyP.cpp" />
@@ -185,16 +185,14 @@
     <ClCompile Include="icon_delegate.cpp" />
     <ClCompile Include="icon_extractor.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\platforms\win\minidump.cpp" />
     <ClCompile Include="options.cpp" />
-    <ClCompile Include="platform_base_hotkey.cpp" />
     <ClCompile Include="..\platforms\win\platform_win.cpp" />
-    <ClCompile Include="..\platforms\win\platform_win_hotkey.cpp" />
     <ClCompile Include="..\platforms\win\platform_win_util.cpp" />
     <ClCompile Include="plugin_handler.cpp" />
     <ClCompile Include="plugin_interface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\platforms\win\minidump.h" />
     <ClInclude Include="AnimationLabel.h" />
     <CustomBuild Include="CharLineEdit.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -DQT_WINEXTRAS_LIB  "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras" "-fprecompiled.h" "-f../CharLineEdit.h"</Command>
@@ -325,7 +323,6 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
-    <ClInclude Include="..\platforms\win\minidump.h" />
     <CustomBuild Include="options.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -DQT_WINEXTRAS_LIB  "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras" "-fprecompiled.h" "-f../options.h"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing options.h...</Message>
@@ -338,16 +335,6 @@
     </CustomBuild>
     <ClInclude Include="platform_base.h" />
     <ClInclude Include="platform_base_hotkey.h" />
-    <CustomBuild Include="platform_base_hottrigger.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -DQT_WINEXTRAS_LIB  "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras" "-fprecompiled.h" "-f../platform_base_hottrigger.h"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing platform_base_hottrigger.h...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB  "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing platform_base_hottrigger.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\build\moc_%(Filename).cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\build\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-    </CustomBuild>
     <CustomBuild Include="..\platforms\win\platform_win.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -DQT_WINEXTRAS_LIB  "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras" "-fprecompiled.h" "-f../../platforms/win/platform_win.h"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing platform_win.h...</Message>
@@ -395,6 +382,39 @@ if errorlevel 1 goto VCEnd
 echo #include "precompiled.h"&gt;&gt;precompiled.h.cpp</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating precompiled header source file 'precompiled.h.cpp' ...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">precompiled.h.cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">echo /*-------------------------------------------------------------------- &gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * Precompiled header source file used by Visual Studio.NET to generate&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * the .pch file.&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo *&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * Due to issues with the dependencies checker within the IDE, it&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * sometimes fails to recompile the PCH file, if we force the IDE to&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * create the PCH file directly from the header file.&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo *&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * This file is auto-generated by qmake since no PRECOMPILED_SOURCE was&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * specified, and is used as the common stdafx.cpp. The file is only&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * generated when creating .vcxproj project files, and is not used for&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * command line compilations by nmake.&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo *&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo * WARNING: All changes made in this file will be lost.&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo --------------------------------------------------------------------*/&gt;&gt;precompiled.h.cpp
+if errorlevel 1 goto VCEnd
+echo #include "precompiled.h"&gt;&gt;precompiled.h.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating precompiled header source file 'precompiled.h.cpp' ...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">precompiled.h.cpp;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

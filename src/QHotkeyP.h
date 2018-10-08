@@ -12,7 +12,7 @@ public:
     virtual ~QHotKeyPrivate();
 
 public:
-    QKeySequence keySeq() const;
+    const QKeySequence& keySeq() const;
     void setKeySeq(const QKeySequence& keySeq);
 
 private:

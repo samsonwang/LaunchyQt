@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "main.h"
 #include "platform_win.h"
 #include "WinIconProvider.h"
+#include "QHotkey.h"
 #include "minidump.h"
 
 // Override the main widget to handle incoming system messages. We could have done this in the QApplication
@@ -85,7 +86,8 @@ LaunchyWidget* createLaunchyWidget(CommandFlags command)
 
 PlatformWin::PlatformWin(int& argc, char** argv)
     : PlatformBase(argc, argv),
-	  minidumper(_T("Launchy"))
+      minidumper(_T("Launchy")),
+      m_pHotKey(new QHotKey(this))
 {
 	instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
 
@@ -195,14 +197,18 @@ QKeySequence PlatformWin::getHotkey() const
 
 bool PlatformWin::setHotkey(const QKeySequence& newHotkey, QObject* receiver, const char* slot)
 {
-    QString strNewHotkey = newHotkey.toString();
-    QString strHotKey = hotkey.toString();
-	GlobalShortcutManager::disconnect(hotkey, receiver, slot);
-	GlobalShortcutManager::connect(newHotkey, receiver, slot);
-	hotkey = newHotkey;
-	return GlobalShortcutManager::isConnected(newHotkey);
-}
+    m_pHotKey->setKeySeq(newHotkey);
 
+    // this would connect multiple times, !!! should be fixed
+    connect(m_pHotKey, SIGNAL(activated()), receiver, slot);
+
+	//GlobalShortcutManager::disconnect(hotkey, receiver, slot);
+	//GlobalShortcutManager::connect(newHotkey, receiver, slot);
+
+	hotkey = newHotkey;
+
+    return true; //GlobalShortcutManager::isConnected(newHotkey);
+}
 
 bool PlatformWin::supportsAlphaBorder() const
 {

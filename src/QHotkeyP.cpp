@@ -63,7 +63,7 @@ Qt::KeyboardModifiers QHotKeyPrivate::getModifiers(const QKeySequence& keySeq) {
     return Qt::KeyboardModifiers(keySeq[0] & Qt::KeyboardModifierMask);
 }
 
-QKeySequence QHotKeyPrivate::keySeq() const {
+const QKeySequence& QHotKeyPrivate::keySeq() const {
     return m_keySeq;
 }
 

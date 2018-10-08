@@ -11,7 +11,7 @@ public:
     virtual ~QHotKey();
 
 public:
-    QKeySequence keySeq() const;
+    const QKeySequence& keySeq() const;
     void setKeySeq(const QKeySequence& keySeq);
 
 Q_SIGNALS:

@@ -117,19 +117,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platforms\win\minidump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platform_base_hotkey.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\platforms\win\platform_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\platforms\win\platform_win_hotkey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\platforms\win\platform_win_util.cpp">
@@ -157,9 +148,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_Fader.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_platform_base_hottrigger.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_CharListWidget.cpp">
@@ -200,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="QHotkeyWin.cpp">
       <Filter>GlobalHotKey</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platforms\win\minidump.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,9 +251,6 @@
     <CustomBuild Include="main.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="..\platforms\win\minidump.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="options.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -272,9 +260,6 @@
     <ClInclude Include="platform_base_hotkey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="platform_base_hottrigger.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\platforms\win\platform_win.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -292,6 +277,9 @@
     </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_options.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platforms\win\minidump.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

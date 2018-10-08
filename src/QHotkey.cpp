@@ -12,7 +12,7 @@ QHotKey::~QHotKey() {
 
 }
 
-QKeySequence QHotKey::keySeq() const {
+const QKeySequence& QHotKey::keySeq() const {
     Q_D(const QHotKey);
     return d->keySeq();
 }
