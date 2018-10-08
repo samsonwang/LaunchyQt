@@ -55,6 +55,9 @@
       <Extensions>ts;xlf</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
+    <Filter Include="GlobalHotKey">
+      <UniqueIdentifier>{71c7d8e2-bef8-4ca3-9539-3ffedf6cd634}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationLabel.cpp">
@@ -183,6 +186,21 @@
     <ClCompile Include="precompiled.h.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="QHotkey.cpp">
+      <Filter>GlobalHotKey</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_QHotkey.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QHotkeyP.cpp">
+      <Filter>GlobalHotKey</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_QHotkeyP.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QHotkeyWin.cpp">
+      <Filter>GlobalHotKey</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationLabel.h">
@@ -279,6 +297,12 @@
   <ItemGroup>
     <CustomBuild Include="build\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QHotkey.h">
+      <Filter>GlobalHotKey</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QHotkeyP.h">
+      <Filter>GlobalHotKey</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
