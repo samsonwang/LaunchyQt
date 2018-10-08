@@ -114,9 +114,6 @@
     <ClCompile Include="icon_extractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -153,9 +150,6 @@
     <ClCompile Include="build\moc_CharListWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="build\moc_main.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="build\moc_catalog_builder.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -190,6 +184,15 @@
       <Filter>GlobalHotKey</Filter>
     </ClCompile>
     <ClCompile Include="..\platforms\win\minidump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_LaunchyWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LaunchyWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -248,9 +251,6 @@
     <CustomBuild Include="icon_extractor.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="main.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="options.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -291,6 +291,9 @@
     </CustomBuild>
     <CustomBuild Include="QHotkeyP.h">
       <Filter>GlobalHotKey</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LaunchyWidget.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

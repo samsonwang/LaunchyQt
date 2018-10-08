@@ -54,11 +54,8 @@ enum CommandFlag
 Q_DECLARE_FLAGS(CommandFlags, CommandFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(CommandFlags)
 
-
-class LaunchyWidget : public QWidget
-{
+class LaunchyWidget : public QWidget {
 	Q_OBJECT
-
 public:
 	LaunchyWidget(CommandFlags command);
 	virtual ~LaunchyWidget();
