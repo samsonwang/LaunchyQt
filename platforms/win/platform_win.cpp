@@ -186,6 +186,7 @@ bool PlatformWin::isAlreadyRunning() const
 }
 
 // Mandatory functions
+/*
 QKeySequence PlatformWin::getHotkey() const
 {
 	return hotkey;
@@ -205,12 +206,12 @@ bool PlatformWin::setHotkey(const QKeySequence& newHotkey, QObject* receiver, co
 
     return true; //GlobalShortcutManager::isConnected(newHotkey);
 }
+*/
 
 bool PlatformWin::supportsAlphaBorder() const
 {
 	return true;
 }
-
 
 bool PlatformWin::getComputers(QStringList& computers) const
 {

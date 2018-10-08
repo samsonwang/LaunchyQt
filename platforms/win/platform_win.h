@@ -34,9 +34,9 @@ public:
 	virtual ~PlatformWin();
 
 	virtual void setPreferredIconSize(int size);
-	virtual QKeySequence getHotkey() const;
-	virtual bool setHotkey(const QKeySequence& newHotkey,
-                           QObject* receiver, const char* slot);
+//	virtual QKeySequence getHotkey() const;
+//	virtual bool setHotkey(const QKeySequence& newHotkey,
+//                           QObject* receiver, const char* slot);
 	virtual QHash<QString, QList<QString>> getDirectories();
 	virtual QList<Directory> getDefaultCatalogDirectories();
 	virtual QString expandEnvironmentVars(QString);

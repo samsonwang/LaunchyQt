@@ -331,7 +331,8 @@ void LaunchyWidget::showTrayIcon()
     {
         if (!trayIcon)
             trayIcon = new QSystemTrayIcon(this);
-        QKeySequence hotkey = platform->getHotkey();
+
+        QKeySequence hotkey = m_pHotKey->keySeq();
         trayIcon->setToolTip(tr("Launchy (press %1 to activate)").arg(hotkey.toString()));
         trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
         trayIcon->show();

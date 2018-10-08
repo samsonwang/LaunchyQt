@@ -55,8 +55,8 @@ public:
 	virtual void sendInstanceCommand(int command) { Q_UNUSED(command); }
 
 	// Set hotkey
-	virtual QKeySequence getHotkey() const = 0;
-	virtual bool setHotkey(const QKeySequence& key, QObject* receiver, const char* slot) = 0;
+	// virtual QKeySequence getHotkey() const = 0;
+	// virtual bool setHotkey(const QKeySequence& key, QObject* receiver, const char* slot) = 0;
 
 	// Need to alter an indexed item?  e.g. .desktop files
 	virtual void alterItem(CatItem*) { }
