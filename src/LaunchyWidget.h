@@ -125,7 +125,7 @@ private:
 	void updateOutputWidgets(bool resetAlternativesSelection = true);
 	void searchOnInput();
 	void loadPosition(QPoint pt);
-	void savePosition() { gSettings->setValue("Display/pos", pos()); }
+	void savePosition() { g_settings->setValue("Display/pos", pos()); }
 	void doTab();
 	void doBackTab();
 	void doEnter();

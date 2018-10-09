@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "globals.h"
 #include "platform_base.h"
 
-SettingsManager settings;
+SettingsManager g_settingMgr;
 
 const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";
@@ -39,23 +39,23 @@ SettingsManager::SettingsManager()
 
 void SettingsManager::load()
 {
-	if (gSettings != NULL)
+	if (g_settings != NULL)
 	{
-		delete gSettings;
-		gSettings = NULL;
+		delete g_settings;
+		g_settings = NULL;
 	}
 
 	// Load settings
-	dirs = platform->getDirectories();
+	dirs = g_platform->getDirectories();
 	portable = QFile::exists(dirs["portableConfig"][0] + iniName);
 
 	qDebug("Loading settings in %s mode from %s", portable ? "portable" : "installed", qPrintable(configDirectory(portable)));
 	QString iniPath = configDirectory(portable) + iniName;
-	gSettings = new QSettings(configDirectory(portable) + iniName, QSettings::IniFormat);
+	g_settings = new QSettings(configDirectory(portable) + iniName, QSettings::IniFormat);
 	if (!QFile::exists(iniPath))
 	{
 		// Ini file doesn't exist, create some defaults and save them to disk
-		QList<Directory> directories = platform->getDefaultCatalogDirectories();
+		QList<Directory> directories = g_platform->getDefaultCatalogDirectories();
 		writeCatalogDirectories(directories);
 	}
 }
@@ -112,10 +112,10 @@ void SettingsManager::setPortable(bool makePortable)
 		qDebug("Converting to %s mode", makePortable ? "portable" : "installed");
 
 		// Destroy the QSettings object first so it writes any changes to disk
-		if (gSettings != NULL)
+		if (g_settings != NULL)
 		{
-			delete gSettings;
-			gSettings = NULL;
+			delete g_settings;
+			g_settings = NULL;
 		}
 
 		QString oldDir = configDirectory(portable);
@@ -139,7 +139,7 @@ void SettingsManager::setPortable(bool makePortable)
 			qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
 			if (makePortable)
 			{
-				QMessageBox::warning(gMainWidget, tr("Launchy"),
+				QMessageBox::warning(g_mainWidget, tr("Launchy"),
                                      tr("Could not convert to portable mode."
                                      " Please check you have write access to the %1 directory.")
                                      .arg(newDir));
@@ -185,22 +185,22 @@ void SettingsManager::setProfileName(const QString& name)
 QList<Directory> SettingsManager::readCatalogDirectories()
 {
 	QList<Directory> result;
-	int size = gSettings->beginReadArray("directories");
+	int size = g_settings->beginReadArray("directories");
 	for (int i = 0; i < size; ++i)
 	{
-		gSettings->setArrayIndex(i);
+		g_settings->setArrayIndex(i);
 		Directory tmp;
-		tmp.name = gSettings->value("name").toString();
+		tmp.name = g_settings->value("name").toString();
 		if (tmp.name.length() > 0)
 		{
-			tmp.types = gSettings->value("types").toStringList();
-			tmp.indexDirs = gSettings->value("indexDirs", false).toBool();
-			tmp.indexExe = gSettings->value("indexExes", false).toBool();
-			tmp.depth = gSettings->value("depth", 100).toInt();
+			tmp.types = g_settings->value("types").toStringList();
+			tmp.indexDirs = g_settings->value("indexDirs", false).toBool();
+			tmp.indexExe = g_settings->value("indexExes", false).toBool();
+			tmp.depth = g_settings->value("depth", 100).toInt();
 			result.append(tmp);
 		}
 	}
-	gSettings->endArray();
+	g_settings->endArray();
 
 	return result;
 }
@@ -208,18 +208,18 @@ QList<Directory> SettingsManager::readCatalogDirectories()
 
 void SettingsManager::writeCatalogDirectories(QList<Directory>& directories)
 {
-	gSettings->beginWriteArray("directories");
+	g_settings->beginWriteArray("directories");
 	for (int i = 0; i < directories.count(); ++i)
 	{
 		if (directories[i].name.length() > 0)
 		{
-			gSettings->setArrayIndex(i);
-			gSettings->setValue("name", directories[i].name);
-			gSettings->setValue("types", directories[i].types);
-			gSettings->setValue("indexDirs", directories[i].indexDirs);
-			gSettings->setValue("indexExes", directories[i].indexExe);
-			gSettings->setValue("depth", directories[i].depth);
+			g_settings->setArrayIndex(i);
+			g_settings->setValue("name", directories[i].name);
+			g_settings->setValue("types", directories[i].types);
+			g_settings->setValue("indexDirs", directories[i].indexDirs);
+			g_settings->setValue("indexExes", directories[i].indexExe);
+			g_settings->setValue("depth", directories[i].depth);
 		}
 	}
-	gSettings->endArray();
+	g_settings->endArray();
 }

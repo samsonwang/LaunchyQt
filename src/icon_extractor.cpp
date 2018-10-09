@@ -142,11 +142,11 @@ QIcon IconExtractor::getIcon(const CatItem& item)
 #ifdef Q_OS_X11
         QFileInfo info(item.fullPath);
         if (info.isDir())
-            return platform->icon(QFileIconProvider::Folder);
+            return g_platform->icon(QFileIconProvider::Folder);
 #endif
         if (item.fullPath.length() == 0)
             return QIcon();
-        return platform->icon(QDir::toNativeSeparators(item.fullPath));
+        return g_platform->icon(QDir::toNativeSeparators(item.fullPath));
 }
     else
     {
@@ -156,6 +156,6 @@ QIcon IconExtractor::getIcon(const CatItem& item)
             return QIcon(item.icon);
         }
 #endif
-        return platform->icon(QDir::toNativeSeparators(item.icon));
+        return g_platform->icon(QDir::toNativeSeparators(item.icon));
     }
 }

@@ -37,12 +37,12 @@ class LaunchyWidget;
 class PlatformBase;
 class CatalogBuilder;
 
-extern PlatformBase* platform;
-extern LaunchyWidget* gMainWidget;
-extern QSettings* gSettings;
-extern SettingsManager settings;
-extern CatalogBuilder* gBuilder;
-extern QString gSearchText;
+extern PlatformBase* g_platform;
+extern LaunchyWidget* g_mainWidget;
+extern QSettings* g_settings;
+extern SettingsManager g_settingMgr;
+extern CatalogBuilder* g_builder;
+extern QString g_searchText;
 
 
 #endif

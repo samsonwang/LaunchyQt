@@ -53,7 +53,7 @@ void IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
 	longRect.setLeft(longRect.left() + 50);
 	longRect.setTop(longRect.top() + fontHeight);
 
-	QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), gSearchText);
+	QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), g_searchText);
 	painter->drawText(shortRect, Qt::AlignTop | Qt::TextShowMnemonic, text);
 
 	if (option.state & QStyle::State_Selected)

@@ -29,7 +29,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 	qDebug() << "Searching file system for" << searchText;
 
 	QString searchPath = QDir::fromNativeSeparators(searchText);
-	gSearchText = searchPath;
+	g_searchText = searchPath;
 
 	if (searchPath.startsWith("~"))
 		searchPath.replace("~", QDir::homePath());
@@ -75,7 +75,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 	if (searchPath.startsWith("//"))
 	{
 		// Exit if the user doesn't want to browse networks
-		if (!gSettings->value("GenOps/showNetwork", true).toBool())
+		if (!g_settings->value("GenOps/showNetwork", true).toBool())
 			return;
 
 		// Check for a search against just the network name
@@ -83,7 +83,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 		if (re.exactMatch(searchPath))
 		{
 			// Get a list of devices on the network. This will be filtered and sorted later.
-			platform->getComputers(itemList);
+			g_platform->getComputers(itemList);
 			isDirectory = false;
 			listPopulated = true;
 			sort = false;
@@ -104,7 +104,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 		filePart = filePart.toLower();
 #endif
 
-		if (gSettings->value("GenOps/showHiddenFiles", false).toBool())
+		if (g_settings->value("GenOps/showHiddenFiles", false).toBool())
 			filters |= QDir::Hidden;
 
 		itemList = dir.entryList(filters, QDir::DirsLast | QDir::IgnoreCase | QDir::LocaleAware);
@@ -123,7 +123,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 	}
 
 	// Set the sort and underline global to just the filename
-	gSearchText = filePart;
+	g_searchText = filePart;
 
 	if (isDirectory)
 	{

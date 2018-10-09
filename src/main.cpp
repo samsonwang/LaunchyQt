@@ -67,15 +67,15 @@ int main(int argc, char* argv[])
             {
                 if (++i < args.length())
                 {
-                    settings.setProfileName(args[i]);
+                    g_settingMgr.setProfileName(args[i]);
                 }
             }
         }
     }
 
-    if (!allowMultipleInstances && platform->isAlreadyRunning())
+    if (!allowMultipleInstances && g_platform->isAlreadyRunning())
     {
-        platform->sendInstanceCommand(command);
+        g_platform->sendInstanceCommand(command);
         exit(1);
     }
 
@@ -100,6 +100,6 @@ int main(int argc, char* argv[])
     delete widget;
     widget = NULL;
 
-    delete platform;
-    platform = NULL;
+    delete g_platform;
+    g_platform = NULL;
 }

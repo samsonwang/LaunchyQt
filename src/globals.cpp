@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "platform_base.h"
 
 
-PlatformBase* platform;
-LaunchyWidget* gMainWidget;
-QSettings* gSettings;
-QString gSearchText;
-CatalogBuilder* gBuilder;
+PlatformBase* g_platform;
+LaunchyWidget* g_mainWidget;
+QSettings* g_settings;
+QString g_searchText;
+CatalogBuilder* g_builder;

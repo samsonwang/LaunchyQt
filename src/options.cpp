@@ -48,34 +48,34 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 #endif
 	// Load General Options
 	if (QSystemTrayIcon::isSystemTrayAvailable())
-		genShowTrayIcon->setChecked(gSettings->value("GenOps/showtrayicon", true).toBool());
+		genShowTrayIcon->setChecked(g_settings->value("GenOps/showtrayicon", true).toBool());
 	else
 		genShowTrayIcon->hide();
-	genAlwaysShow->setChecked(gSettings->value("GenOps/alwaysshow", false).toBool());
-	genAlwaysTop->setChecked(gSettings->value("GenOps/alwaystop", false).toBool());
-	genPortable->setChecked(settings.isPortable());
-	genHideFocus->setChecked(gSettings->value("GenOps/hideiflostfocus", false).toBool());
-	genDecorateText->setChecked(gSettings->value("GenOps/decoratetext", false).toBool());
-	int center = gSettings->value("GenOps/alwayscenter", 3).toInt();
+	genAlwaysShow->setChecked(g_settings->value("GenOps/alwaysshow", false).toBool());
+	genAlwaysTop->setChecked(g_settings->value("GenOps/alwaystop", false).toBool());
+	genPortable->setChecked(g_settingMgr.isPortable());
+	genHideFocus->setChecked(g_settings->value("GenOps/hideiflostfocus", false).toBool());
+	genDecorateText->setChecked(g_settings->value("GenOps/decoratetext", false).toBool());
+	int center = g_settings->value("GenOps/alwayscenter", 3).toInt();
 	genHCenter->setChecked((center & 1) != 0);
 	genVCenter->setChecked((center & 2) != 0);
-	genShiftDrag->setChecked(gSettings->value("GenOps/dragmode", 0) == 1);
-	genUpdateCheck->setChecked(gSettings->value("GenOps/updatecheck", true).toBool());
-	genShowHidden->setChecked(gSettings->value("GenOps/showHiddenFiles", false).toBool());
-	genShowNetwork->setChecked(gSettings->value("GenOps/showNetwork", true).toBool());
-        genCondensed->setCurrentIndex(gSettings->value("GenOps/condensedView", 2).toInt());
-	genAutoSuggestDelay->setValue(gSettings->value("GenOps/autoSuggestDelay", 1000).toInt());
-	int updateInterval = gSettings->value("GenOps/updatetimer", 10).toInt();
+	genShiftDrag->setChecked(g_settings->value("GenOps/dragmode", 0) == 1);
+	genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
+	genShowHidden->setChecked(g_settings->value("GenOps/showHiddenFiles", false).toBool());
+	genShowNetwork->setChecked(g_settings->value("GenOps/showNetwork", true).toBool());
+        genCondensed->setCurrentIndex(g_settings->value("GenOps/condensedView", 2).toInt());
+	genAutoSuggestDelay->setValue(g_settings->value("GenOps/autoSuggestDelay", 1000).toInt());
+	int updateInterval = g_settings->value("GenOps/updatetimer", 10).toInt();
 	connect(genUpdateCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoUpdateCheckChanged(int)));
 	genUpdateMinutes->setValue(updateInterval);
 	genUpdateCatalog->setChecked(updateInterval > 0);
-	genMaxViewable->setValue(gSettings->value("GenOps/numviewable", 4).toInt());
-	genNumResults->setValue(gSettings->value("GenOps/numresults", 10).toInt());
-	genNumHistory->setValue(gSettings->value("GenOps/maxitemsinhistory", 20).toInt());
-	genOpaqueness->setValue(gSettings->value("GenOps/opaqueness", 100).toInt());
-	genFadeIn->setValue(gSettings->value("GenOps/fadein", 0).toInt());
-	genFadeOut->setValue(gSettings->value("GenOps/fadeout", 20).toInt());
-	connect(genOpaqueness, SIGNAL(sliderMoved(int)), gMainWidget, SLOT(setOpaqueness(int)));
+	genMaxViewable->setValue(g_settings->value("GenOps/numviewable", 4).toInt());
+	genNumResults->setValue(g_settings->value("GenOps/numresults", 10).toInt());
+	genNumHistory->setValue(g_settings->value("GenOps/maxitemsinhistory", 20).toInt());
+	genOpaqueness->setValue(g_settings->value("GenOps/opaqueness", 100).toInt());
+	genFadeIn->setValue(g_settings->value("GenOps/fadein", 0).toInt());
+	genFadeOut->setValue(g_settings->value("GenOps/fadeout", 20).toInt());
+	connect(genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
 
 #ifdef Q_WS_MAC
 	metaKeys << tr("") << tr("Alt") << tr("Command") << tr("Shift") << tr("Control") <<
@@ -119,7 +119,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 		';' << '\'' << '#' << '\\' << ',' << '.' << '/';
 
 	// Find the current hotkey
-	int hotkey = gMainWidget->getHotkey();
+	int hotkey = g_mainWidget->getHotkey();
 	int meta = hotkey & (Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
 	hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
 
@@ -138,15 +138,15 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	}
 
 	// Load up web proxy settings
-	genProxyHostname->setText(gSettings->value("WebProxy/hostAddress").toString());
-	genProxyPort->setText(gSettings->value("WebProxy/port").toString());
+	genProxyHostname->setText(g_settings->value("WebProxy/hostAddress").toString());
+	genProxyPort->setText(g_settings->value("WebProxy/port").toString());
 
 	// Load up the skins list
-	QString skinName = gSettings->value("GenOps/skin", "Default").toString();
+	QString skinName = g_settings->value("GenOps/skin", "Default").toString();
 
 	int skinRow = 0;
 	QHash<QString, bool> knownSkins;
-	foreach(QString szDir, settings.directory("skins"))
+	foreach(QString szDir, g_settingMgr.directory("skins"))
 	{
 		QDir dir(szDir);
 		QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
@@ -203,23 +203,23 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 
 	genOpaqueness->setRange(15, 100);
 
-	if (gMainWidget->catalog != NULL)
+	if (g_mainWidget->catalog != NULL)
 	{
-		catSize->setText(tr("Index has %n item(s)", "", gMainWidget->catalog->count()));
+		catSize->setText(tr("Index has %n item(s)", "", g_mainWidget->catalog->count()));
 	}
 
-	connect(gBuilder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-	connect(gBuilder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
-	if (gBuilder->isRunning())
+	connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+	connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+	if (g_builder->isRunning())
 	{
-		catalogProgressUpdated(gBuilder->getProgress());
+		catalogProgressUpdated(g_builder->getProgress());
 	}
 
 	// Load up the plugins		
 	connect(plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
 	connect(plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
-	gMainWidget->plugins.loadPlugins();
-	foreach(PluginInfo info, gMainWidget->plugins.getPlugins())
+	g_mainWidget->plugins.loadPlugins();
+	foreach(PluginInfo info, g_mainWidget->plugins.getPlugins())
 	{
 		plugList->addItem(info.name);
 		QListWidgetItem* item = plugList->item(plugList->count()-1);
@@ -244,10 +244,10 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 
 OptionsDialog::~OptionsDialog()
 {
-	if (gBuilder != NULL)
+	if (g_builder != NULL)
 	{
-		disconnect(gBuilder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-		disconnect(gBuilder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+		disconnect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+		disconnect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
 	}
 
 	currentTab = tabWidget->currentIndex();
@@ -269,48 +269,48 @@ void OptionsDialog::setVisible(bool visible)
 
 void OptionsDialog::accept()
 {
-	if (gSettings == NULL)
+	if (g_settings == NULL)
 		return;
 
 	// See if the new hotkey works, if not we're not leaving the dialog.
 	QKeySequence hotkey(iMetaKeys[genModifierBox->currentIndex()] + iActionKeys[genKeyBox->currentIndex()]);
-	if (!gMainWidget->setHotkey(hotkey))
+	if (!g_mainWidget->setHotkey(hotkey))
 	{
 		QMessageBox::warning(this, tr("Launchy"), tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
 		return;
 	}
 
-	gSettings->setValue("GenOps/hotkey", hotkey.count() > 0 ? hotkey[0] : 0);
+	g_settings->setValue("GenOps/hotkey", hotkey.count() > 0 ? hotkey[0] : 0);
 
 	// Save General Options
-	gSettings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
-	gSettings->setValue("GenOps/alwaysshow", genAlwaysShow->isChecked());
-	gSettings->setValue("GenOps/alwaystop", genAlwaysTop->isChecked());
-	gSettings->setValue("GenOps/updatecheck", genUpdateCheck->isChecked());
-	gSettings->setValue("GenOps/decoratetext", genDecorateText->isChecked());
-	gSettings->setValue("GenOps/hideiflostfocus", genHideFocus->isChecked());
-	gSettings->setValue("GenOps/alwayscenter", (genHCenter->isChecked() ? 1 : 0) | (genVCenter->isChecked() ? 2 : 0));
-	gSettings->setValue("GenOps/dragmode", genShiftDrag->isChecked() ? 1 : 0);
-	gSettings->setValue("GenOps/showHiddenFiles", genShowHidden->isChecked());
-	gSettings->setValue("GenOps/showNetwork", genShowNetwork->isChecked());
-	gSettings->setValue("GenOps/condensedView", genCondensed->currentIndex());
-	gSettings->setValue("GenOps/autoSuggestDelay", genAutoSuggestDelay->value());
-	gSettings->setValue("GenOps/updatetimer", genUpdateCatalog->isChecked() ? genUpdateMinutes->value() : 0);
-	gSettings->setValue("GenOps/numviewable", genMaxViewable->value());
-	gSettings->setValue("GenOps/numresults", genNumResults->value());
-	gSettings->setValue("GenOps/maxitemsinhistory", genNumHistory->value());
-	gSettings->setValue("GenOps/opaqueness", genOpaqueness->value());
-	gSettings->setValue("GenOps/fadein", genFadeIn->value());
-	gSettings->setValue("GenOps/fadeout", genFadeOut->value());
+	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
+	g_settings->setValue("GenOps/alwaysshow", genAlwaysShow->isChecked());
+	g_settings->setValue("GenOps/alwaystop", genAlwaysTop->isChecked());
+	g_settings->setValue("GenOps/updatecheck", genUpdateCheck->isChecked());
+	g_settings->setValue("GenOps/decoratetext", genDecorateText->isChecked());
+	g_settings->setValue("GenOps/hideiflostfocus", genHideFocus->isChecked());
+	g_settings->setValue("GenOps/alwayscenter", (genHCenter->isChecked() ? 1 : 0) | (genVCenter->isChecked() ? 2 : 0));
+	g_settings->setValue("GenOps/dragmode", genShiftDrag->isChecked() ? 1 : 0);
+	g_settings->setValue("GenOps/showHiddenFiles", genShowHidden->isChecked());
+	g_settings->setValue("GenOps/showNetwork", genShowNetwork->isChecked());
+	g_settings->setValue("GenOps/condensedView", genCondensed->currentIndex());
+	g_settings->setValue("GenOps/autoSuggestDelay", genAutoSuggestDelay->value());
+	g_settings->setValue("GenOps/updatetimer", genUpdateCatalog->isChecked() ? genUpdateMinutes->value() : 0);
+	g_settings->setValue("GenOps/numviewable", genMaxViewable->value());
+	g_settings->setValue("GenOps/numresults", genNumResults->value());
+	g_settings->setValue("GenOps/maxitemsinhistory", genNumHistory->value());
+	g_settings->setValue("GenOps/opaqueness", genOpaqueness->value());
+	g_settings->setValue("GenOps/fadein", genFadeIn->value());
+	g_settings->setValue("GenOps/fadeout", genFadeOut->value());
 
-	gSettings->setValue("WebProxy/hostAddress", genProxyHostname->text());
-	gSettings->setValue("WebProxy/port", genProxyPort->text());
+	g_settings->setValue("WebProxy/hostAddress", genProxyHostname->text());
+	g_settings->setValue("WebProxy/port", genProxyPort->text());
 
 	// Apply General Options
-	settings.setPortable(genPortable->isChecked());
-	gMainWidget->startUpdateTimer();
-	gMainWidget->setSuggestionListMode(genCondensed->currentIndex());
-	gMainWidget->loadOptions();
+	g_settingMgr.setPortable(genPortable->isChecked());
+	g_mainWidget->startUpdateTimer();
+	g_mainWidget->setSuggestionListMode(genCondensed->currentIndex());
+	g_mainWidget->loadOptions();
 
 	// Apply Directory Options
 	SettingsManager::writeCatalogDirectories(memDirs);
@@ -318,34 +318,34 @@ void OptionsDialog::accept()
 	if (curPlugin >= 0)
 	{
 		QListWidgetItem* item = plugList->item(curPlugin);
-		gMainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
+		g_mainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
 	}
 
-	gSettings->sync();
+	g_settings->sync();
 
 	QDialog::accept();
 
 	// Now save the options that require launchy to be shown or redrawed
-	bool show = gMainWidget->setAlwaysShow(genAlwaysShow->isChecked());
-	show |= gMainWidget->setAlwaysTop(genAlwaysTop->isChecked());
+	bool show = g_mainWidget->setAlwaysShow(genAlwaysShow->isChecked());
+	show |= g_mainWidget->setAlwaysTop(genAlwaysTop->isChecked());
 
-	gMainWidget->setOpaqueness(genOpaqueness->value());
+	g_mainWidget->setOpaqueness(genOpaqueness->value());
 
 	// Apply Skin Options
-	QString prevSkinName = gSettings->value("GenOps/skin", "Default").toString();
+	QString prevSkinName = g_settings->value("GenOps/skin", "Default").toString();
 	QString skinName = skinList->currentItem()->text();
 	if (skinList->currentRow() >= 0 && skinName != prevSkinName)
 	{
-		gSettings->setValue("GenOps/skin", skinName);
-		gMainWidget->setSkin(skinName);
+		g_settings->setValue("GenOps/skin", skinName);
+		g_mainWidget->setSkin(skinName);
 		show = false;
 	}
 
 	if (needRescan)
-		gMainWidget->buildCatalog();
+		g_mainWidget->buildCatalog();
 
 	if (show)
-		gMainWidget->showLaunchy();
+		g_mainWidget->showLaunchy();
 }
 
 
@@ -354,7 +354,7 @@ void OptionsDialog::reject()
 	if (curPlugin >= 0)
 	{
 		QListWidgetItem* item = plugList->item(curPlugin);
-		gMainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), false);
+		g_mainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), false);
 	}
 
 	QDialog::reject();
@@ -392,7 +392,7 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 		return;
 
 	// Find the skin with this name
-	QString directory = settings.skinPath(newSkin);
+	QString directory = g_settingMgr.skinPath(newSkin);
 
 	// Load up the author file
 	if (directory.length() == 0)
@@ -422,16 +422,16 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 	QPixmap pix;
 	if (pix.load(directory + "background.png"))
 	{
-		if (!platform->supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
+		if (!g_platform->supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
 			pix.load(directory + "background_nc.png");
 		if (pix.hasAlpha())
 			pix.setMask(pix.mask());
-		if (!platform->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
+		if (!g_platform->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
 			pix.setMask(QPixmap(directory + "mask_nc.png"));
 		else if (QFile::exists(directory + "mask.png"))
 			pix.setMask(QPixmap(directory + "mask.png"));
 
-		if (platform->supportsAlphaBorder())
+		if (g_platform->supportsAlphaBorder())
 		{
 			// Compose the alpha image with the background
 			QImage sourceImage(pix.toImage());
@@ -475,7 +475,7 @@ void OptionsDialog::pluginChanged(int row)
 	if (curPlugin >= 0)
 	{
 		QListWidgetItem* item = plugList->item(curPlugin);
-		gMainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
+		g_mainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
 	}
 
 	// Open the new plugin dialog
@@ -490,7 +490,7 @@ void OptionsDialog::pluginChanged(int row)
 
 void OptionsDialog::loadPluginDialog(QListWidgetItem* item)
 {
-	QWidget* win = gMainWidget->plugins.doDialog(plugBox, item->data(Qt::UserRole).toUInt());
+	QWidget* win = g_mainWidget->plugins.doDialog(plugBox, item->data(Qt::UserRole).toUInt());
 	if (win != NULL)
 	{
 		if (plugBox->layout() != NULL)
@@ -512,29 +512,29 @@ void OptionsDialog::pluginItemChanged(QListWidgetItem* iz)
 	if (curPlugin >= 0)
 	{
 		QListWidgetItem* item = plugList->item(curPlugin);
-		gMainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
+		g_mainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
 	}
 
 	// Write out the new config
-	gSettings->beginWriteArray("plugins");
+	g_settings->beginWriteArray("plugins");
 	for (int i = 0; i < plugList->count(); i++)
 	{
 		QListWidgetItem* item = plugList->item(i);
-		gSettings->setArrayIndex(i);
-		gSettings->setValue("id", item->data(Qt::UserRole).toUInt());
+		g_settings->setArrayIndex(i);
+		g_settings->setValue("id", item->data(Qt::UserRole).toUInt());
 		if (item->checkState() == Qt::Checked)
 		{
-			gSettings->setValue("load", true);
+			g_settings->setValue("load", true);
 		}
 		else
 		{
-			gSettings->setValue("load", false);
+			g_settings->setValue("load", false);
 		}
 	}
-	gSettings->endArray();
+	g_settings->endArray();
 
 	// Reload the plugins
-	gMainWidget->plugins.loadPlugins();
+	g_mainWidget->plugins.loadPlugins();
 
 	// If enabled, reload the dialog
 	if (iz->checkState() == Qt::Checked)
@@ -557,9 +557,9 @@ void OptionsDialog::catalogBuilt()
 {
 	catProgress->setVisible(false);
 	catRescan->setEnabled(true);
-	if (gMainWidget->catalog != NULL)
+	if (g_mainWidget->catalog != NULL)
 	{
-		catSize->setText(tr("Index has %n items", "", gMainWidget->catalog->count()));
+		catSize->setText(tr("Index has %n items", "", g_mainWidget->catalog->count()));
 		catSize->setVisible(true);
 	}
 }
@@ -574,7 +574,7 @@ void OptionsDialog::catRescanClicked(bool val)
 
 	needRescan = false;
 	catRescan->setEnabled(false);
-	gMainWidget->buildCatalog();
+	g_mainWidget->buildCatalog();
 }
 
 

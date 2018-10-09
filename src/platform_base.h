@@ -34,7 +34,7 @@ public:
 	PlatformBase(int& argc, char** argv) : 
 	  QApplication(argc, argv)
 	{
-		platform = this;
+		g_platform = this;
 	}
 
 	virtual ~PlatformBase()
