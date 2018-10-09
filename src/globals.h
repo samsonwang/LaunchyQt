@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "SettingsManager.h"
 #include <QSettings> // need this for os x
-#define LAUNCHY_VERSION 260
-#define LAUNCHY_VERSION_STRING "2.6 Beta 2"
+#define LAUNCHY_VERSION 300
+#define LAUNCHY_VERSION_STRING "3.0.0 alpha"
 
 #define HASH_LAUNCHY 0
 #define HASH_HISTORY 1
