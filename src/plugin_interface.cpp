@@ -78,7 +78,7 @@ QString aliasTo64(QString path)
 
 int getDesktop() { return DESKTOP_WINDOWS; }
 
-/*
+
 void runProgram(QString path, QString args) {
 
 	SHELLEXECUTEINFO ShExecInfo;
@@ -105,7 +105,7 @@ void runProgram(QString path, QString args) {
 
 	ShellExecuteEx(&ShExecInfo);	
 }
-*/
+
 void runProgram(QString path, QString args, bool translateSeparators) {
 
 	// This 64 bit aliasing needs to be gotten rid of if we have a 64 bit build
