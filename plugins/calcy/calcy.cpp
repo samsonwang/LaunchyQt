@@ -21,10 +21,10 @@
 #include "calcy.h"
 
 
-using namespace boost::spirit;
-using namespace phoenix;
+// using namespace boost::spirit;
+// using namespace phoenix;
 
-
+/*
 struct calc_closure : boost::spirit::closure<calc_closure, double>
 {
 	member1 val;
@@ -43,13 +43,13 @@ struct pow_
 		return pow(x, y);
 	}
 };
-
+*/
 
 //  Notice how power(x, y) is lazily implemented using Phoenix function.
-function<pow_> power;
+// function<pow_> power;
 
-
-struct calculator : public grammar<calculator, calc_closure::context_t>
+/*
+struct calculator //: public grammar<calculator, calc_closure::context_t>
 {
 	template <typename ScannerT>
 	struct definition
@@ -88,19 +88,19 @@ struct calculator : public grammar<calculator, calc_closure::context_t>
 		start() const { return top; }
 	};
 };
-
+*/
 
 bool DoCalculation(QString str, double& result)
 {
 	// Our parser
-	calculator calc;
+	//calculator calc;
 	double n = 0;
 
 
 	wchar_t* wstr = new wchar_t[str.length()+1];
 	str.toWCharArray(wstr);
 	wstr[str.length()] = 0;
-	parse_info<const wchar_t*> info = parse(wstr, calc[var(n) = arg1], space_p);
+//	parse_info<const wchar_t*> info = parse(wstr, calc[var(n) = arg1], space_p);
 	delete wstr;
 
 	//FOR SOME REASON IN LINUX info.full is false
@@ -224,8 +224,10 @@ void calcyPlugin::setPath(QString * path)
 
 void calcyPlugin::doDialog(QWidget* parent, QWidget** newDlg)
 {
-	if (gui != NULL)
-		return;
+    if (!gui.isNull()) {
+        return;
+    }
+		
 	gui.reset(new Gui(parent));
 	*newDlg = gui.get();
 	init();
@@ -290,5 +292,4 @@ int calcyPlugin::msg(int msgId, void* wParam, void* lParam)
 	return handled;
 }
 
-
-Q_EXPORT_PLUGIN2(calcy, calcyPlugin)
+// Q_EXPORT_PLUGIN2(calcy, calcyPlugin)

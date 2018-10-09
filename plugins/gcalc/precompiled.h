@@ -20,25 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PRECOMPILED_H
 #define PRECOMPILED_H
 
-#ifdef _MSC_VER
-#pragma warning(push,3)
-#endif
 
-#include <QtGui>
-#include <QtNetwork>
-#include <QFuture>
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
-#include <stdlib.h>
-// #include <boost/shared_ptr.hpp>
-
-// using namespace boost;
-
-
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <shlobj.h>
 #include <shlguid.h>
@@ -47,5 +30,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <commoncontrols.h>
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(push,3)
+#endif
+
+#include <stdlib.h>
+#include <QtGui>
+#include <QtNetwork>
+#include <QFuture>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+
+// #include <boost/shared_ptr.hpp>
+// using namespace boost;
 
 #endif // PRECOMPILED_H

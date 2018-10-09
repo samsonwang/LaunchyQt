@@ -29,7 +29,7 @@ class Process : public QObject {
 	Q_OBJECT
 public:
 	QString query;
-	QHttp http;
+	//QHttp http;
 	QBuffer resBuffer;
 	QString result;
 	QEventLoop loop;
@@ -50,6 +50,7 @@ class gcalcPlugin : public QObject, public PluginInterface
 {
 
 	Q_OBJECT
+    Q_PLUGIN_METADATA(IID "net.launchy.PluginInterface/1.0")
 	Q_INTERFACES(PluginInterface)
 //	QRegExp* reg;
 

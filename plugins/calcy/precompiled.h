@@ -21,16 +21,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PRECOMPILED_H
 
 #ifdef _MSC_VER
-#pragma warning(push,3)
+#pragma warning(push,1)
+#define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <stdlib.h>
+
 #include <QtGui>
+#include <QtWidgets>
 
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
-#include <stdlib.h>
+
+
 /*
 #include <boost/shared_ptr.hpp>
 
@@ -41,4 +46,5 @@ using namespace boost;
 #include <boost/spirit/include/classic_attribute.hpp>
 #include <boost/spirit/include/phoenix1_functions.hpp>
 */
+
 #endif // PRECOMPILED_H

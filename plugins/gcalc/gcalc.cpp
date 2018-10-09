@@ -41,9 +41,9 @@ void Process::run()
 		//	qDebug() << webQuery;
 		resBuffer.open(QIODevice::ReadWrite);
 
-		connect(&http, SIGNAL(done(bool)), this, SLOT(httpGetFinished(bool)));
-		http.setHost("www.google.com");
-		http.get(webQuery, &resBuffer);
+		//connect(&http, SIGNAL(done(bool)), this, SLOT(httpGetFinished(bool)));
+		//http.setHost("www.google.com");
+		//http.get(webQuery, &resBuffer);
 		id = ++currentId;
 		loop.exec();
 	}
@@ -63,7 +63,7 @@ void Process::httpGetFinished(bool error)
 		regex_res.setMinimal(true);
 		if (regex_res.indexIn(result) != -1)
 		{
-			result = regex_res.cap(regex_res.numCaptures());
+			result = regex_res.cap(regex_res.captureCount());
 			result = result.trimmed();
 		}
 		else
@@ -130,7 +130,7 @@ void gcalcPlugin::getResults(QList<InputData>* id, QList<CatItem>* results)
 	{
 		for (int i = 0; i < results->count(); ++i)
 		{
-                        if (results->at(i).id == (int) HASH_gcalc)
+            if (results->at(i).id == (int) HASH_gcalc)
 			{
 				results->removeAt(i);
 				break;
@@ -187,4 +187,4 @@ int gcalcPlugin::msg(int msgId, void* wParam, void* lParam)
 	return handled;
 }
 
-Q_EXPORT_PLUGIN2(gcalc, gcalcPlugin) 
+//Q_EXPORT_PLUGIN2(gcalc, gcalcPlugin) 
