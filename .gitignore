@@ -49,6 +49,7 @@ ipch
 x64
 build
 debug
+release
 .vs
 GeneratedFiles
 precompiled.h.cpp
