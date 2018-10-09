@@ -165,9 +165,6 @@
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="precompiled.h.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="QHotkey.cpp">
       <Filter>GlobalHotKey</Filter>
     </ClCompile>
@@ -194,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="precompiled.h.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
