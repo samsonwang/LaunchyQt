@@ -11,7 +11,8 @@ I have been using Launchy for years, and found that this project has not been up
 - non- =boost= dependency, C++11 supports =shared_ptr= , and I'm trying to get Launchy out of =boost= library.
 - whole new hotkey implemetation, the hotkey did not work, I tried hard to fix it, but it still failed, so I write a new one.
 
-Checkout detailed info at [[https://github.com/samsonwang/LaunchyQt/releases][release page]] .
+Checkout detailed info at [[https://github.com/samsonwang/LaunchyQt/releases][release page]].
+
 Download link: [[https://github.com/samsonwang/LaunchyQt/releases/download/v3.0.0-alpha/Launchy_300a.zip][Launchy_300a.zip]]
 
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
