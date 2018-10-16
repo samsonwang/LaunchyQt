@@ -17,40 +17,35 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-//#include "precompiled.h"
 #include "AnimationLabel.h"
 
-AnimationLabel::AnimationLabel(QWidget* parent) :
-	QLabel(parent)
-{
-	animation = new QMovie(this);
-	animation->setCacheMode(QMovie::CacheAll);
+AnimationLabel::AnimationLabel(QWidget* parent)
+    : QLabel(parent) {
+    animation = new QMovie(this);
+    animation->setCacheMode(QMovie::CacheAll);
 }
 
 
-AnimationLabel::~AnimationLabel()
-{
-	animation->deleteLater();
+AnimationLabel::~AnimationLabel() {
+    animation->deleteLater();
 }
 
 
-void AnimationLabel::LoadAnimation(const QString& animationPath)
-{
-	// Ensure the animation continues to run after loading a new graphic
-	// bool running = (animation->state() == QMovie::Running);
-	Stop();
+void AnimationLabel::LoadAnimation(const QString& animationPath) {
+    // Ensure the animation continues to run after loading a new graphic
+    // bool running = (animation->state() == QMovie::Running);
+    Stop();
 
-	animation->setFileName(animationPath);
-	if (animation->isValid()) {
-		setMovie(animation);
-		if (animation->state() == QMovie::Running)
-			Start();
-	}
+    animation->setFileName(animationPath);
+    if (animation->isValid()) {
+        setMovie(animation);
+        if (animation->state() == QMovie::Running)
+            Start();
+    }
 }
 
 
-void AnimationLabel::Start()
-{
+void AnimationLabel::Start() {
     // If the animation isn't already running, start it
     if (!animation.isNull() &&
         (animation->state() == QMovie::NotRunning
@@ -63,12 +58,11 @@ void AnimationLabel::Start()
 }
 
 
-void AnimationLabel::Stop()
-{
-	// If the animation is running, stop it
-	if (!animation.isNull() && animation->state() == QMovie::Running)
-	{
-		setHidden(true);
-		animation->stop();
-	}
+void AnimationLabel::Stop() {
+    // If the animation is running, stop it
+    if (!animation.isNull()
+        && animation->state() == QMovie::Running) {
+        setHidden(true);
+        animation->stop();
+    }
 }

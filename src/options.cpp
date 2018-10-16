@@ -389,33 +389,28 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 	QString directory = g_settingMgr.skinPath(newSkin);
 
 	// Load up the author file
-	if (directory.length() == 0)
-	{
+	if (directory.length() == 0) {
 		authorInfo->setText("");
 		return;
 	}
-	QFile author(directory + "author.txt"); 
-	if (!author.open(QIODevice::ReadOnly))
-	{
+	QFile fileAuthor(directory + "author.txt"); 
+	if (!fileAuthor.open(QIODevice::ReadOnly)) {
 		authorInfo->setText("");
 	}
 
-	QTextStream in(&author);
-
-	QString line, total;
+    QString line, total;
+	QTextStream in(&fileAuthor);
 	line = in.readLine();
-	while (!line.isNull())
-	{
+	while (!line.isNull()) {
 		total += line + "\n";
 		line = in.readLine();
 	}
 	authorInfo->setText(total);
-	author.close();
+	fileAuthor.close();
 
 	// Set the image preview
 	QPixmap pix;
-	if (pix.load(directory + "background.png"))
-	{
+	if (pix.load(directory + "background.png")) {
 		if (!g_platform->supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
 			pix.load(directory + "background_nc.png");
 		if (pix.hasAlpha())

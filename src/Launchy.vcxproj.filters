@@ -315,10 +315,10 @@
     <None Include="..\translations\launchy_rus.ts">
       <Filter>Translation Files</Filter>
     </None>
-    <None Include="..\translations\launchy_zh.ts">
+    <None Include="..\translations\launchy_zh_TW.ts">
       <Filter>Translation Files</Filter>
     </None>
-    <None Include="..\translations\launchy_zh_TW.ts">
+    <None Include="..\translations\launchy_zh_CN.ts">
       <Filter>Translation Files</Filter>
     </None>
   </ItemGroup>

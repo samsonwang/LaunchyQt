@@ -791,6 +791,21 @@
           <string>Select a skin</string>
          </property>
          <layout class="QHBoxLayout">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <property name="topMargin">
+           <number>9</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
+          <property name="bottomMargin">
+           <number>9</number>
+          </property>
           <item>
            <widget class="QListWidget" name="skinList">
             <property name="maximumSize">
@@ -806,6 +821,9 @@
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="spacing">
+          <number>3</number>
+         </property>
          <item>
           <widget class="QGroupBox" name="groupBox_8">
            <property name="minimumSize">
@@ -818,6 +836,21 @@
             <string>Author information</string>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="spacing">
+             <number>3</number>
+            </property>
+            <property name="leftMargin">
+             <number>9</number>
+            </property>
+            <property name="topMargin">
+             <number>3</number>
+            </property>
+            <property name="rightMargin">
+             <number>3</number>
+            </property>
+            <property name="bottomMargin">
+             <number>3</number>
+            </property>
             <item>
              <widget class="QLabel" name="authorInfo">
               <property name="sizePolicy">
@@ -852,12 +885,27 @@
             <string>Skin preview</string>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="spacing">
+             <number>3</number>
+            </property>
+            <property name="leftMargin">
+             <number>3</number>
+            </property>
+            <property name="topMargin">
+             <number>3</number>
+            </property>
+            <property name="rightMargin">
+             <number>3</number>
+            </property>
+            <property name="bottomMargin">
+             <number>3</number>
+            </property>
             <item>
              <widget class="QLabel" name="skinPreview">
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>116</height>
+                <height>0</height>
                </size>
               </property>
               <property name="text">

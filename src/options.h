@@ -27,17 +27,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class OptionsDialog : public QDialog, private Ui::OptionsDlg
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 	OptionsDialog(QWidget* parent = 0);
-	~OptionsDialog();
+	virtual ~OptionsDialog();
 
     virtual void setVisible(bool visible);
 
 public slots:
-	void accept();
-	void reject();
+	virtual void accept();
+	virtual void reject();
 	void autoUpdateCheckChanged(int state);
 	void tabChanged(int tab);
 	void skinChanged(const QString& newSkin);

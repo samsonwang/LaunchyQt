@@ -48,7 +48,6 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Launchy</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</IgnoreImportLibrary>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Launchy</TargetName>
@@ -80,10 +79,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(QTDIR)\lib\qtmain.lib;shell32.lib;shell32.lib;user32.lib;gdi32.lib;ole32.lib;comctl32.lib;advapi32.lib;userenv.lib;netapi32.lib;$(QTDIR)\lib\Qt5Widgets.lib;$(QTDIR)\lib\Qt5Gui.lib;$(QTDIR)\lib\Qt5Network.lib;$(QTDIR)\lib\Qt5Core.lib;Qt5WinExtras.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;C:\utils\my_sql\my_sql\lib;C:\utils\postgresql\pgsql\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <LinkIncremental>false</LinkIncremental>
       <OutputFile>$(OutDir)\Launchy.exe</OutputFile>
@@ -100,7 +97,8 @@
       <PreprocessorDefinitions>_WINDOWS;VC_EXTRALEAN;WIN32;_UNICODE;UNICODE;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
-      <Command>taskkill /im "Launchy.exe" /f
+      <Command>taskkill /im "Launchy.exe" /f 2&gt;nul 1&gt;nul
+echo try to kill running Launchy process
 exit 0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -148,7 +146,8 @@ exit 0</Command>
       <PreprocessorDefinitions>_DEBUG;WIN32;_UNICODE;UNICODE;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
-      <Command>taskkill /im "Launchy.exe" /f
+      <Command>taskkill /im "Launchy.exe" /f 2&gt;nul 1&gt;nul
+echo try to kill running Launchy process
 exit 0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -451,7 +450,7 @@ echo #include "precompiled.h"&gt;&gt;precompiled.h.cpp</Command>
     <None Include="..\translations\launchy_ja.ts" />
     <None Include="..\translations\launchy_nl.ts" />
     <None Include="..\translations\launchy_rus.ts" />
-    <None Include="..\translations\launchy_zh.ts" />
+    <None Include="..\translations\launchy_zh_CN.ts" />
     <None Include="..\translations\launchy_zh_TW.ts" />
   </ItemGroup>
   <ItemGroup>

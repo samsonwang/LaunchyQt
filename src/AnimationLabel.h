@@ -17,20 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QANIMATIONLABEL_H
-#define QANIMATIONLABEL_H
+#pragma once
 
-
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QMovie>
-
 
 class AnimationLabel : public QLabel
 {
 public:
 	AnimationLabel(QWidget* parent);
 	virtual ~AnimationLabel();
+
+public:
 	void LoadAnimation(const QString& animationPath);
 
 public slots:
@@ -41,5 +39,3 @@ private:
 	QPointer<QMovie> animation;
 };
 
-
-#endif

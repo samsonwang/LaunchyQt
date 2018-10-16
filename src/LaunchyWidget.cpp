@@ -127,7 +127,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     QMacStyle::setFocusRectPolicy(input, QMacStyle::FocusDisabled);
 #endif
     input->setObjectName("input");
-    connect(input, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(inputKeyPressEvent(QKeyEvent*)));
+    connect(input, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(inputKeyPressed(QKeyEvent*)));
     connect(input, SIGNAL(focusIn(QFocusEvent*)), this, SLOT(focusInEvent(QFocusEvent*)));
     connect(input, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
     connect(input, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(inputMethodEvent(QInputMethodEvent*)));
@@ -161,7 +161,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     altScroll = alternatives->verticalScrollBar();
     altScroll->setObjectName("altScroll");
     connect(alternatives, SIGNAL(currentRowChanged(int)), this, SLOT(alternativesRowChanged(int)));
-    connect(alternatives, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(alternativesKeyPressEvent(QKeyEvent*)));
+    connect(alternatives, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(alternativesKeyPressed(QKeyEvent*)));
     connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
 
     alternativesPath = new QLabel(alternatives);
@@ -585,7 +585,7 @@ void LaunchyWidget::alternativesRowChanged(int index)
 }
 
 
-void LaunchyWidget::inputKeyPressEvent(QKeyEvent* event)
+void LaunchyWidget::inputKeyPressed(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Tab)
     {
@@ -598,7 +598,7 @@ void LaunchyWidget::inputKeyPressEvent(QKeyEvent* event)
 }
 
 
-void LaunchyWidget::alternativesKeyPressEvent(QKeyEvent* event)
+void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Escape)
     {
@@ -1157,8 +1157,7 @@ void LaunchyWidget::saveSettings()
 }
 
 
-void LaunchyWidget::startUpdateTimer()
-{
+void LaunchyWidget::startUpdateTimer() {
     int time = g_settings->value("GenOps/updatetimer", 10).toInt();
     if (time != 0)
         updateTimer->start(time * 60000);
@@ -1167,34 +1166,26 @@ void LaunchyWidget::startUpdateTimer()
 }
 
 
-void LaunchyWidget::onHotkey()
-{
-    if (menuOpen || optionsOpen)
-    {
+void LaunchyWidget::onHotkey() {
+    if (menuOpen || optionsOpen) {
         showLaunchy(true);
         return;
     }
-    if (!alwaysShowLaunchy && isVisible() && !fader->isFading() && QApplication::activeWindow() !=0)
-    {
+    if (!alwaysShowLaunchy
+        && isVisible()
+        && !fader->isFading()
+        && QApplication::activeWindow() !=0) {
         hideLaunchy();
     }
-    else
-    {
+    else {
         showLaunchy();
     }
 }
 
-
-void LaunchyWidget::closeEvent(QCloseEvent* event)
-{
-    builderThread.exit();
-    fader->stop();
-    saveSettings();
-
-    event->accept();
-    qApp->quit();
+void LaunchyWidget::closeEvent(QCloseEvent* event) {
+    event->ignore();
+    hideLaunchy();
 }
-
 
 bool LaunchyWidget::setAlwaysShow(bool alwaysShow)
 {
@@ -1235,6 +1226,12 @@ void LaunchyWidget::reloadSkin()
     setSkin(currentSkin);
 }
 
+void LaunchyWidget::exit() {
+    builderThread.exit();
+    fader->stop();
+    saveSettings();
+    qApp->quit();
+}
 
 void LaunchyWidget::applySkin(const QString& name)
 {
@@ -1591,7 +1588,7 @@ void LaunchyWidget::createActions()
     addAction(actOptions);
 
     actExit = new QAction(tr("Exit"), this);
-    connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(actExit, SIGNAL(triggered()), this, SLOT(exit()));
 }
 
 

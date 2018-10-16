@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
 
 #include <QSystemTrayIcon>
 #include <QPushButton>
@@ -79,60 +78,60 @@ public:
 
 protected:
     virtual void paintEvent(QPaintEvent* event);
+    virtual void closeEvent(QCloseEvent* event);
+    virtual void focusInEvent(QFocusEvent* event);
+    virtual void focusOutEvent(QFocusEvent* event);
+    virtual void inputMethodEvent(QInputMethodEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseMoveEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
+    virtual void contextMenuEvent(QContextMenuEvent* event);
+
     void saveSettings();
+
+private:
+    void createActions();
+    void applySkin(const QString& name);
+    void hideLaunchy(bool noFade = false);
+    void updateVersion(int oldVersion);
+    void checkForUpdate();
+    void shouldDonate();
+    void updateAlternatives(bool resetSelection = true);
+    void showAlternatives();
+    void hideAlternatives();
+    // void parseInput(const QString& text);
+    void updateOutputWidgets(bool resetAlternativesSelection = true);
+    void searchOnInput();
+    void loadPosition(QPoint pt);
+    void savePosition() { g_settings->setValue("Display/pos", pos()); }
+    void doTab();
+    void doBackTab();
+    void doEnter();
+    void processKey();
+    void launchItem(CatItem& item);
+    // void addToHistory(QList<InputData>& item);
+    void startDropTimer();
+
 
 public slots:
     void showLaunchy();
 
 protected slots:
-    virtual void focusInEvent(QFocusEvent* event);
-	virtual void focusOutEvent(QFocusEvent* event);
-	void mousePressEvent(QMouseEvent* event);
-	void mouseMoveEvent(QMouseEvent* event);
-	void mouseReleaseEvent(QMouseEvent* event);
-	void contextMenuEvent(QContextMenuEvent* event);
 	void showOptionsDialog();
 	void onHotkey();
 	void dropTimeout();
-	
+    void inputKeyPressed(QKeyEvent* event);
 	void httpGetFinished(bool result);
 	void catalogProgressUpdated(int);
 	void catalogBuilt();
-	
-	void inputMethodEvent(QInputMethodEvent* event);
-	void keyPressEvent(QKeyEvent* event);
-	void inputKeyPressEvent(QKeyEvent* event);
 	void alternativesRowChanged(int index);
-	void alternativesKeyPressEvent(QKeyEvent* event);
+	void alternativesKeyPressed(QKeyEvent* event);
 	void setFadeLevel(double level);
-	
 	void iconExtracted(int index, QString path, QIcon icon);
 	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 	void reloadSkin();
-
-private:
-	void createActions();
-	void applySkin(const QString& name);
-	void closeEvent(QCloseEvent* event);
-	void hideLaunchy(bool noFade = false);
-	void updateVersion(int oldVersion);
-	void checkForUpdate();
-	void shouldDonate();
-	void updateAlternatives(bool resetSelection = true);
-	void showAlternatives();
-	void hideAlternatives();
-	// void parseInput(const QString& text);
-	void updateOutputWidgets(bool resetAlternativesSelection = true);
-	void searchOnInput();
-	void loadPosition(QPoint pt);
-	void savePosition() { g_settings->setValue("Display/pos", pos()); }
-	void doTab();
-	void doBackTab();
-	void doEnter();
-	void processKey();
-	void launchItem(CatItem& item);
-	// void addToHistory(QList<InputData>& item);
-	void startDropTimer();
+    void exit();
 
 public:
     Catalog* catalog;
@@ -187,5 +186,3 @@ private:
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);
-
-#endif
