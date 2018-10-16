@@ -41,8 +41,7 @@ void AnimationLabel::LoadAnimation(const QString& animationPath)
 	Stop();
 
 	animation->setFileName(animationPath);
-	if (animation->isValid())
-	{
+	if (animation->isValid()) {
 		setMovie(animation);
 		if (animation->state() == QMovie::Running)
 			Start();
@@ -52,13 +51,15 @@ void AnimationLabel::LoadAnimation(const QString& animationPath)
 
 void AnimationLabel::Start()
 {
-	// If the animation isn't already running, start it
-	if (!animation.isNull() &&
-		(animation->state() == QMovie::NotRunning || animation->state() == QMovie::Paused))
-	{
-		animation->start();
-		setHidden(false);
-	}
+    // If the animation isn't already running, start it
+    if (!animation.isNull() &&
+        (animation->state() == QMovie::NotRunning
+         || animation->state() == QMovie::Paused))
+    {
+        animation->setScaledSize(size());
+        animation->start();
+        setHidden(false);
+    }
 }
 
 

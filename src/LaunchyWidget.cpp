@@ -1316,9 +1316,9 @@ void LaunchyWidget::applySkin(const QString& name)
         }
     }
 
-    if (QFile::exists(directory + "spinner.mng"))
+    if (QFile::exists(directory + "spinner.gif"))
     {
-        workingAnimation->LoadAnimation(directory + "spinner.mng");
+        workingAnimation->LoadAnimation(directory + "spinner.gif");
     }
 
     if (validFrame)
