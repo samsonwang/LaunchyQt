@@ -6,7 +6,7 @@
   border-width: 0px;
   border-bottom: 1px;
   border-color: grey;
-  background-color: rgba(0,244,120,0%);
+  background-color: rgba(0,0,0,0%);
   border-style: solid;
   color: white;
   qproperty-alignment: AlignLeft;
@@ -15,7 +15,7 @@
 #output {
   font: 14px Sans, Verdana, Arial;
   border-width: 0px;
-  background-color: rgba(0,244,120,0%);
+  background-color: rgba(0,0,0,0%);
   border-style: solid;
   color: white;
   qproperty-alignment: AlignCenter;
@@ -44,8 +44,8 @@
 #alternatives {
   font: 12px Sans, Verdana, Arial;
   color: white;
-  background-color: rgb(60, 60, 60);
-  alternate-background-color: rgb(80, 80, 80);
+  background-color: rgb(60,60,60);
+  alternate-background-color: rgb(80,80,80);
   selection-background-color: rgb(68,124,184);
   border-style: solid;
   border-width: 0px;
