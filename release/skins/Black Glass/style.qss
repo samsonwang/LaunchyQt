@@ -49,7 +49,7 @@
   selection-background-color: rgb(68,124,184);
   border-style: solid;
   border-width: 0px;
-  qproperty-geometry: rect(25 54 380 100);
+  qproperty-geometry: rect(30 54 380 100);
 }
 
 #alternativesPath {
