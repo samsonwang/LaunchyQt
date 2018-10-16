@@ -27,7 +27,7 @@
 }
 
 #output {
-	font: 12px Sans, Verdana, Arial; 
+	font: 12px Sans, Verdana, Arial;
 	border-width: 0px;
 	background-color: rgba(0,244,120,0%);
 	border-style: solid;
@@ -68,6 +68,7 @@ QScrollBar#altScroll:vertical {
 }
 
 QScrollBar#altScroll::handle:vertical {
+    margin: 0 1px 0 1px;
 	background: qlineargradient(x1:0, y1:0.5, x2:1, y2:0.5, stop:0 white, stop:0.1 rgb(85,85,85), stop:0.7 rgb(40,40,40), stop:0.9 rgb(60,60,60), stop:1 white);
 }
 
@@ -75,7 +76,7 @@ QScrollBar#altScroll::sub-line:vertical {
 	width: 16px;
 	height: 16px;
 	subcontrol-position: top;
-	subcontrol-origin: margin; 
+	subcontrol-origin: margin;
 	image: url(scrollUp.png);
 }
 
@@ -89,7 +90,7 @@ QScrollBar#altScroll::sub-page:vertical {
 
 QScrollBar#altScroll::add-line:vertical {
 	width: 16px;
-	height: 16px; 
+	height: 16px;
 	subcontrol-position: bottom;
 	subcontrol-origin: margin;
 	image: url(scrollDown.png);
