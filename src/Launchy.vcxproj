@@ -99,6 +99,10 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_WINDOWS;VC_EXTRALEAN;WIN32;_UNICODE;UNICODE;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>taskkill /im "Launchy.exe" /f
+exit 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -143,6 +147,10 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;WIN32;_UNICODE;UNICODE;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>taskkill /im "Launchy.exe" /f
+exit 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\platforms\win\minidump.cpp" />

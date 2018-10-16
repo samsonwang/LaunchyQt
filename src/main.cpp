@@ -87,13 +87,13 @@ int main(int argc, char* argv[])
     translator.load(QString("tr/launchy_" + locale));
     qApp->installTranslator(&translator);
 
-    qApp->setStyleSheet(":/resources/basicskin.qss");
-
 #ifdef Q_OS_WIN
     LaunchyWidget* widget = createLaunchyWidget(command);
 #else
     LaunchyWidget* widget = new LaunchyWidget(command);
 #endif
+
+    // g_mainWidget->setStyleSheet(":/resources/basicskin.qss");
 
     qApp->exec();
 

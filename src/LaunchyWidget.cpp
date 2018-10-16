@@ -74,18 +74,16 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 {
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     setWindowIcon(QIcon(":/resources/launchy128.png"));
-#endif
-#ifdef Q_OS_MAC
+#elif defined(Q_OS_MAC)
     setWindowIcon(QIcon("../Resources/launchy_icon_mac.icns"));
     //setAttribute(Qt::WA_MacAlwaysShowToolWindow);
 #endif
 
     setAttribute(Qt::WA_AlwaysShowToolTips);
     setAttribute(Qt::WA_InputMethodEnabled);
-    if (g_platform->supportsAlphaBorder())
-    {
+    if (g_platform->supportsAlphaBorder()) {
         setAttribute(Qt::WA_TranslucentBackground);
     }
     setFocusPolicy(Qt::ClickFocus);
@@ -1261,105 +1259,22 @@ void LaunchyWidget::applySkin(const QString& name)
     // Set a few defaults
     delete frameGraphic;
     frameGraphic = NULL;
+
     closeButton->setGeometry(QRect());
     optionsButton->setGeometry(QRect());
     input->setAlignment(Qt::AlignLeft);
     output->setAlignment(Qt::AlignCenter);
     alternativesRect = QRect();
 
-    if (!QFile::exists(directory + "misc.txt"))
-    {
-        // Loading use file:/// syntax allows relative paths in the stylesheet to be rooted
-        // in the same directory as the stylesheet
-        qApp->setStyleSheet("file:///" + directory + "style.qss");
-    }
-    else
-    {
-        // Set positions, this will signify an older launchy skin
-        // Read the style sheet
-        QFile file(directory + "style.qss");
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            return;
-        QString styleSheet = QLatin1String(file.readAll());
-        file.close();
-
-        // Remove incorrect selectors from the stylesheet
-        styleSheet.replace("QLineEdit#", "#");
-        styleSheet.replace("QPushButton#", "#");
-        styleSheet.replace("QListWidget#", "#");
-
-        // This is causing the ::destroyed connect errors
-        qApp->setStyleSheet(styleSheet);
-
-        file.setFileName(directory + "misc.txt");
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            QTextStream in(&file);
-            while (!in.atEnd())
-            {
-                QString line = in.readLine();
-                if (line.startsWith(";")) continue;
-                QStringList spl = line.split("=");
-                if (spl.size() == 2)
-                {
-                    QStringList sizes = spl.at(1).trimmed().split(",");
-                    QRect rect;
-                    if (sizes.size() == 4)
-                    {
-                        rect.setRect(sizes[0].toInt(), sizes[1].toInt(), sizes[2].toInt(), sizes[3].toInt());
-                    }
-
-                    if (spl.at(0).trimmed().compare("input", Qt::CaseInsensitive) == 0)
-                        input->setGeometry(rect);
-                    else if (spl.at(0).trimmed().compare("inputAlignment", Qt::CaseInsensitive) == 0)
-                        input->setAlignment(
-                            sizes[0].trimmed().compare("left", Qt::CaseInsensitive) == 0 ? Qt::AlignLeft :
-                            sizes[0].trimmed().compare("right", Qt::CaseInsensitive) == 0 ? Qt::AlignRight : Qt::AlignHCenter);
-                    else if (spl.at(0).trimmed().compare("output", Qt::CaseInsensitive) == 0)
-                        output->setGeometry(rect);
-                    else if (spl.at(0).trimmed().compare("outputAlignment", Qt::CaseInsensitive) == 0)
-                        output->setAlignment(
-                            sizes[0].trimmed().compare("left", Qt::CaseInsensitive) == 0 ? Qt::AlignLeft :
-                            sizes[0].trimmed().compare("right", Qt::CaseInsensitive) == 0 ? Qt::AlignRight : Qt::AlignHCenter);
-                    else if (spl.at(0).trimmed().compare("alternatives", Qt::CaseInsensitive) == 0)
-                        alternativesRect = rect;
-                    else if (spl.at(0).trimmed().compare("boundary", Qt::CaseInsensitive) == 0)
-                        resize(rect.size());
-                    else if (spl.at(0).trimmed().compare("icon", Qt::CaseInsensitive) == 0)
-                        outputIcon->setGeometry(rect);
-                    else if (spl.at(0).trimmed().compare("optionsbutton", Qt::CaseInsensitive) == 0)
-                    {
-                        optionsButton->setGeometry(rect);
-                        optionsButton->show();
-                    }
-                    else if (spl.at(0).trimmed().compare("closebutton", Qt::CaseInsensitive) == 0)
-                    {
-                        closeButton->setGeometry(rect);
-                        closeButton->show();
-                    }
-                    else if (spl.at(0).trimmed().compare("dropPathColor", Qt::CaseInsensitive) == 0)
-                    {
-                        listDelegate->setColor(spl.at(1));
-                    }
-                    else if (spl.at(0).trimmed().compare("dropPathSelColor", Qt::CaseInsensitive) == 0)
-                        listDelegate->setColor(spl.at(1), true);
-                    else if (spl.at(0).trimmed().compare("dropPathFamily", Qt::CaseInsensitive) == 0)
-                        listDelegate->setFamily(spl.at(1));
-                    else if (spl.at(0).trimmed().compare("dropPathSize", Qt::CaseInsensitive) == 0)
-                        listDelegate->setSize(spl.at(1).toInt());
-                    else if (spl.at(0).trimmed().compare("dropPathWeight", Qt::CaseInsensitive) == 0)
-                        listDelegate->setWeight(spl.at(1).toInt());
-                    else if (spl.at(0).trimmed().compare("dropPathItalics", Qt::CaseInsensitive) == 0)
-                        listDelegate->setItalics(spl.at(1).toInt());
-                }
-            }
-            file.close();
-        }
-    }
+    QFile fileStyle(directory + "style.qss");
+    fileStyle.open(QFile::ReadOnly);
+    QString strStyleSheet(fileStyle.readAll());
+    // transform stylesheet for external resources
+    strStyleSheet.replace("url(", "url("+directory);
+    this->setStyleSheet(strStyleSheet);
 
     bool validFrame = false;
     QPixmap frame;
-
     if (g_platform->supportsAlphaBorder())
     {
         if (frame.load(directory + "frame.png"))
@@ -1500,13 +1415,11 @@ void LaunchyWidget::buildCatalog()
 }
 
 
-void LaunchyWidget::showOptionsDialog()
-{
-    if (!optionsOpen)
-    {
+void LaunchyWidget::showOptionsDialog() {
+    if (!optionsOpen) {
         hideAlternatives();
         optionsOpen = true;
-        OptionsDialog options(this);
+        OptionsDialog options(NULL);
         options.setObjectName("options");
 #ifdef Q_OS_WIN
         // need to use this method in Windows to ensure that keyboard focus is set when
@@ -1521,19 +1434,18 @@ void LaunchyWidget::showOptionsDialog()
     }
 }
 
-
-void LaunchyWidget::shouldDonate()
-{
+void LaunchyWidget::shouldDonate() {
     QDateTime time = QDateTime::currentDateTime();
     QDateTime donateTime = g_settings->value("donateTime", time.addDays(21)).toDateTime();
     if (donateTime.isNull()) return;
     g_settings->setValue("donateTime", donateTime);
 
-    if (donateTime <= time)
-    {
-#ifdef Q_WS_WIN
+    if (donateTime <= time) {
+/*
+#ifdef Q_OS_WIN
         runProgram("http://www.launchy.net/donate.html", "");
 #endif
+*/
         QDateTime def;
         g_settings->setValue("donateTime", def);
     }

@@ -37,6 +37,11 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 {
 	setupUi(this);
 
+    Qt::WindowFlags windowsFlags = windowFlags();
+    windowsFlags = windowsFlags & (~Qt::WindowContextHelpButtonHint);
+    windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint;
+    setWindowFlags(windowsFlags);
+
 	curPlugin = -1;
 
 	restoreGeometry(windowGeometry);
@@ -47,25 +52,25 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 		"<p><br>If you would like to uninstall Launchy, please close Launchy and run \"Uninstall Launchy\" from the start menu.</br></p>");
 #endif
     */
-	// Load General Options
-	if (QSystemTrayIcon::isSystemTrayAvailable())
-		genShowTrayIcon->setChecked(g_settings->value("GenOps/showtrayicon", true).toBool());
-	else
-		genShowTrayIcon->hide();
+
+	// Load General Options		
 	genAlwaysShow->setChecked(g_settings->value("GenOps/alwaysshow", false).toBool());
 	genAlwaysTop->setChecked(g_settings->value("GenOps/alwaystop", false).toBool());
 	genPortable->setChecked(g_settingMgr.isPortable());
 	genHideFocus->setChecked(g_settings->value("GenOps/hideiflostfocus", false).toBool());
 	genDecorateText->setChecked(g_settings->value("GenOps/decoratetext", false).toBool());
+
 	int center = g_settings->value("GenOps/alwayscenter", 3).toInt();
 	genHCenter->setChecked((center & 1) != 0);
 	genVCenter->setChecked((center & 2) != 0);
+
 	genShiftDrag->setChecked(g_settings->value("GenOps/dragmode", 0) == 1);
 	genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
 	genShowHidden->setChecked(g_settings->value("GenOps/showHiddenFiles", false).toBool());
 	genShowNetwork->setChecked(g_settings->value("GenOps/showNetwork", true).toBool());
-        genCondensed->setCurrentIndex(g_settings->value("GenOps/condensedView", 2).toInt());
+    genCondensed->setCurrentIndex(g_settings->value("GenOps/condensedView", 2).toInt());
 	genAutoSuggestDelay->setValue(g_settings->value("GenOps/autoSuggestDelay", 1000).toInt());
+
 	int updateInterval = g_settings->value("GenOps/updatetimer", 10).toInt();
 	connect(genUpdateCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoUpdateCheckChanged(int)));
 	genUpdateMinutes->setValue(updateInterval);
@@ -78,7 +83,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	genFadeOut->setValue(g_settings->value("GenOps/fadeout", 20).toInt());
 	connect(genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	metaKeys << tr("") << tr("Alt") << tr("Command") << tr("Shift") << tr("Control") <<
 				tr("Command+Alt") << tr("Command+Shift") << tr("Command+Control");
 #else
@@ -102,13 +107,12 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 		Qt::Key_F1 << Qt::Key_F2 << Qt::Key_F3 << Qt::Key_F4 << Qt::Key_F5 << Qt::Key_F6 << Qt::Key_F7 << Qt::Key_F8 <<
 		Qt::Key_F9 << Qt::Key_F10 << Qt::Key_F11 << Qt::Key_F12 << Qt::Key_F13 << Qt::Key_F14 << Qt::Key_F15;
 
-	for (int i = '0'; i <= '9'; i++) 
-	{
+	for (int i = '0'; i <= '9'; i++) {
 		actionKeys << QString(QChar(i));
 		iActionKeys << i;
 	}
-	for (int i = 'A'; i <= 'Z'; i++) 
-	{
+
+	for (int i = 'A'; i <= 'Z'; i++) {
 		actionKeys << QString(QChar(i));
 		iActionKeys << i;
 	}
@@ -124,15 +128,13 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	int meta = hotkey & (Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
 	hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
 
-	for (int i = 0; i < metaKeys.count(); ++i)
-	{
+	for (int i = 0; i < metaKeys.count(); ++i) {
 		genModifierBox->addItem(metaKeys[i]);
 		if (iMetaKeys[i] == meta) 
 			genModifierBox->setCurrentIndex(i);
 	}
 
-	for (int i = 0; i < actionKeys.count(); ++i)
-	{
+	for (int i = 0; i < actionKeys.count(); ++i) {
 		genKeyBox->addItem(actionKeys[i]);
 		if (iActionKeys[i] == hotkey) 
 			genKeyBox->setCurrentIndex(i);
@@ -147,13 +149,11 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 
 	int skinRow = 0;
 	QHash<QString, bool> knownSkins;
-	foreach(QString szDir, g_settingMgr.directory("skins"))
-	{
+	foreach(QString szDir, g_settingMgr.directory("skins")) {
 		QDir dir(szDir);
 		QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
-		foreach(QString d, dirs)
-		{
+		foreach(QString d, dirs) {
 			if (knownSkins.contains(d))
 				continue;
 			knownSkins[d] = true;
@@ -193,26 +193,24 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	catProgress->setVisible(false);
 
 	memDirs = SettingsManager::readCatalogDirectories();
-	for (int i = 0; i < memDirs.count(); ++i)
-	{
+	for (int i = 0; i < memDirs.count(); ++i) {
 		catDirectories->addItem(memDirs[i].name);
 		QListWidgetItem* it = catDirectories->item(i);
 		it->setFlags(it->flags() | Qt::ItemIsEditable);
 	}
+
 	if (catDirectories->count() > 0)
 		catDirectories->setCurrentRow(0);
 
 	genOpaqueness->setRange(15, 100);
 
-	if (g_mainWidget->catalog != NULL)
-	{
+	if (g_mainWidget->catalog != NULL) {
 		catSize->setText(tr("Index has %n item(s)", "", g_mainWidget->catalog->count()));
 	}
 
 	connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
 	connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
-	if (g_builder->isRunning())
-	{
+	if (g_builder->isRunning()) {
 		catalogProgressUpdated(g_builder->getProgress());
 	}
 
@@ -220,8 +218,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	connect(plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
 	connect(plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
 	g_mainWidget->plugins.loadPlugins();
-	foreach(PluginInfo info, g_mainWidget->plugins.getPlugins())
-	{
+	foreach(PluginInfo info, g_mainWidget->plugins.getPlugins()) {
 		plugList->addItem(info.name);
 		QListWidgetItem* item = plugList->item(plugList->count()-1);
 		item->setData(Qt::UserRole, info.id);
@@ -232,8 +229,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 			item->setCheckState(Qt::Unchecked);
 	}
 	plugList->sortItems();
-	if (plugList->count() > 0)
-	{
+	if (plugList->count() > 0) {
 		plugList->setCurrentRow(currentPlugin);
 	}
 	aboutVer->setText(tr("This is Launchy %1").arg(LAUNCHY_VERSION_STRING));
@@ -284,7 +280,7 @@ void OptionsDialog::accept()
 	g_settings->setValue("GenOps/hotkey", hotkey.count() > 0 ? hotkey[0] : 0);
 
 	// Save General Options
-	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
+//	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
 	g_settings->setValue("GenOps/alwaysshow", genAlwaysShow->isChecked());
 	g_settings->setValue("GenOps/alwaystop", genAlwaysTop->isChecked());
 	g_settings->setValue("GenOps/updatecheck", genUpdateCheck->isChecked());
@@ -362,16 +358,13 @@ void OptionsDialog::reject()
 }
 
 
-void OptionsDialog::tabChanged(int tab)
-{
-	tab = tab; // Compiler warning
+void OptionsDialog::tabChanged(int tab) {
+    Q_UNUSED(tab)
 	// Redraw the current skin (necessary because of dialog resizing issues)
-	if (tabWidget->currentWidget()->objectName() == "Skins")
-	{
+	if (tabWidget->currentWidget()->objectName() == "Skins") {
 		skinChanged(skinList->currentItem()->text());
 	}
-	else if (tabWidget->currentWidget()->objectName() == "Plugins")
-	{
+	else if (tabWidget->currentWidget()->objectName() == "Plugins") {
 		// We've currently no way of checking if a plugin requires a catalog rescan
 		// so assume that we need one if the user has viewed the plugins tab
 		needRescan = true;
@@ -432,8 +425,7 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 		else if (QFile::exists(directory + "mask.png"))
 			pix.setMask(QPixmap(directory + "mask.png"));
 
-		if (g_platform->supportsAlphaBorder())
-		{
+		if (g_platform->supportsAlphaBorder()) {
 			// Compose the alpha image with the background
 			QImage sourceImage(pix.toImage());
 			QImage destinationImage(directory + "alpha.png");
@@ -452,13 +444,11 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 			skinPreview->setPixmap(scaled);
 		}
 	}
-	else if (pix.load(directory + "frame.png"))
-	{
+	else if (pix.load(directory + "frame.png")) {
 		QPixmap scaled = pix.scaled(skinPreview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		skinPreview->setPixmap(scaled);
 	}
-	else
-	{
+	else {
 		skinPreview->clear();
 	}
 }
@@ -492,8 +482,7 @@ void OptionsDialog::pluginChanged(int row)
 void OptionsDialog::loadPluginDialog(QListWidgetItem* item)
 {
 	QWidget* win = g_mainWidget->plugins.doDialog(plugBox, item->data(Qt::UserRole).toUInt());
-	if (win != NULL)
-	{
+	if (win != NULL) {
 		if (plugBox->layout() != NULL)
 			plugBox->layout()->addWidget(win);
 		win->show();
@@ -510,25 +499,21 @@ void OptionsDialog::pluginItemChanged(QListWidgetItem* iz)
 		return;
 
 	// Close any current plugin dialogs
-	if (curPlugin >= 0)
-	{
+	if (curPlugin >= 0) {
 		QListWidgetItem* item = plugList->item(curPlugin);
 		g_mainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
 	}
 
 	// Write out the new config
 	g_settings->beginWriteArray("plugins");
-	for (int i = 0; i < plugList->count(); i++)
-	{
+	for (int i = 0; i < plugList->count(); i++) {
 		QListWidgetItem* item = plugList->item(i);
 		g_settings->setArrayIndex(i);
 		g_settings->setValue("id", item->data(Qt::UserRole).toUInt());
-		if (item->checkState() == Qt::Checked)
-		{
+		if (item->checkState() == Qt::Checked) {
 			g_settings->setValue("load", true);
 		}
-		else
-		{
+		else {
 			g_settings->setValue("load", false);
 		}
 	}
@@ -538,8 +523,7 @@ void OptionsDialog::pluginItemChanged(QListWidgetItem* iz)
 	g_mainWidget->plugins.loadPlugins();
 
 	// If enabled, reload the dialog
-	if (iz->checkState() == Qt::Checked)
-	{
+	if (iz->checkState() == Qt::Checked) {
 		loadPluginDialog(iz);
 	}
 }
