@@ -372,8 +372,7 @@ void OptionsDialog::tabChanged(int tab) {
 }
 
 
-void OptionsDialog::autoUpdateCheckChanged(int state)
-{
+void OptionsDialog::autoUpdateCheckChanged(int state) {
 	genUpdateMinutes->setEnabled(state > 0);
 	if (genUpdateMinutes->value() <= 0)
 		genUpdateMinutes->setValue(10);
@@ -435,12 +434,14 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 			painter.end();
 
 			pix = QPixmap::fromImage(resultImage);
-			QPixmap scaled = pix.scaled(skinPreview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			QPixmap scaled = pix.scaled(skinPreview->size(),
+                                        Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			skinPreview->setPixmap(scaled);
 		}
 	}
 	else if (pix.load(directory + "frame.png")) {
-		QPixmap scaled = pix.scaled(skinPreview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		QPixmap scaled = pix.scaled(skinPreview->size(),
+                                    Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		skinPreview->setPixmap(scaled);
 	}
 	else {
