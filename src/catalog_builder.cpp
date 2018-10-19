@@ -34,8 +34,7 @@ CatalogBuilder::CatalogBuilder(PluginHandler* plugs) :
 }
 
 
-void CatalogBuilder::buildCatalog()
-{
+void CatalogBuilder::buildCatalog() {
 	progress = CATALOG_PROGRESS_MIN;
 	emit catalogIncrement(progress);
 	catalog->incrementTimestamp();
@@ -46,8 +45,7 @@ void CatalogBuilder::buildCatalog()
 	totalItems = memDirs.count() + pluginsInfo.count();
 	currentItem = 0;
 
-	while (currentItem < memDirs.count())
-	{
+	while (currentItem < memDirs.count()) {
 		QString cur = g_platform->expandEnvironmentVars(memDirs[currentItem].name);
 		indexDirectory(cur, memDirs[currentItem].types, memDirs[currentItem].indexDirs,
                        memDirs[currentItem].indexExe, memDirs[currentItem].depth);

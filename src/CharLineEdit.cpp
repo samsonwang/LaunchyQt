@@ -21,9 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CharLineEdit.h"
 
 
-CharLineEdit::CharLineEdit(QWidget* parent) :
-	QLineEdit(parent)
-{
+CharLineEdit::CharLineEdit(QWidget* parent)\
+    : QLineEdit(parent) {
 	setAttribute(Qt::WA_InputMethodEnabled);
 }
 
@@ -99,19 +98,15 @@ bool CharLineEdit::focusNextPrevChild(bool next)
 }
 
 
-void CharLineEdit::focusInEvent(QFocusEvent* event)
-{
-	QLineEdit::focusInEvent(event);
-
-	emit focusIn(event);
+void CharLineEdit::focusInEvent(QFocusEvent* event) {
+	emit focusIn();
+    QLineEdit::focusInEvent(event);
 }
 
 
-void CharLineEdit::focusOutEvent(QFocusEvent* event)
-{
-	QLineEdit::focusOutEvent(event);
-
-	emit focusOut(event);
+void CharLineEdit::focusOutEvent(QFocusEvent* event) {
+	emit focusOut();
+    QLineEdit::focusOutEvent(event);
 }
 
 

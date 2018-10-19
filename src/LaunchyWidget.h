@@ -74,13 +74,13 @@ public:
 	int getHotkey() const;
 	void startUpdateTimer();
     void setOpaqueness(int level);
-    void buildCatalog();
+
 
 protected:
     virtual void paintEvent(QPaintEvent* event);
     virtual void closeEvent(QCloseEvent* event);
-    virtual void focusInEvent(QFocusEvent* event);
-    virtual void focusOutEvent(QFocusEvent* event);
+    //virtual void focusInEvent(QFocusEvent* event);
+    //virtual void focusOutEvent(QFocusEvent* event);
     virtual void inputMethodEvent(QInputMethodEvent* event);
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
@@ -116,6 +116,7 @@ private:
 
 public slots:
     void showLaunchy();
+    void buildCatalog();
 
 protected slots:
 	void showOptionsDialog();
@@ -132,6 +133,8 @@ protected slots:
 	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 	void reloadSkin();
     void exit();
+    void onInputFocusOut();
+
 
 public:
     Catalog* catalog;

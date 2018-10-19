@@ -23,24 +23,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QLineEdit>
 
-class CharLineEdit : public QLineEdit
-{
+class CharLineEdit : public QLineEdit {
 	Q_OBJECT
-
 public:
 	CharLineEdit(QWidget* parent = 0);
 
 	void keyPressEvent(QKeyEvent* event);
 	bool focusNextPrevChild(bool next);
-    void focusInEvent(QFocusEvent* event);
-	void focusOutEvent(QFocusEvent* event);
 	void inputMethodEvent(QInputMethodEvent *event);
 	QString separatorText() const;
 
+protected:
+    virtual void focusInEvent(QFocusEvent* event);
+    virtual void focusOutEvent(QFocusEvent* event);
+
 signals:
 	void keyPressed(QKeyEvent*);
-	void focusIn(QFocusEvent* evt);
-	void focusOut(QFocusEvent* evt);
+	void focusIn();
+	void focusOut();
 	void inputMethod(QInputMethodEvent *e);
 
 private:

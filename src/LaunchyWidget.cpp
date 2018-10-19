@@ -128,8 +128,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 #endif
     input->setObjectName("input");
     connect(input, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(inputKeyPressed(QKeyEvent*)));
-    connect(input, SIGNAL(focusIn(QFocusEvent*)), this, SLOT(focusInEvent(QFocusEvent*)));
-    connect(input, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
+   // connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
+    connect(input, SIGNAL(focusOut()), this, SLOT(onInputFocusOut()));
     connect(input, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(inputMethodEvent(QInputMethodEvent*)));
 
     outputIcon = new QLabel(this);
@@ -312,48 +312,30 @@ void LaunchyWidget::setSuggestionListMode(int mode)
     }
 }
 
-
-bool LaunchyWidget::setHotkey(QKeySequence hotkey)
-{
-    // QHotKey is cross platform new
+bool LaunchyWidget::setHotkey(QKeySequence hotkey) {
     m_pHotKey->setKeySeq(hotkey);
-
     return m_pHotKey->registered();
-    //platform->setHotkey(hotkey, this, SLOT(onHotkey()));
 }
 
-
-void LaunchyWidget::showTrayIcon()
-{
-    if (!QSystemTrayIcon::isSystemTrayAvailable())
-        return;
-
-    if (g_settings->value("GenOps/showtrayicon", true).toBool())
-    {
-        if (!trayIcon)
-            trayIcon = new QSystemTrayIcon(this);
-
-        QKeySequence hotkey = m_pHotKey->keySeq();
-        trayIcon->setToolTip(tr("Launchy (press %1 to activate)").arg(hotkey.toString()));
-        trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
-        trayIcon->show();
-        connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-                this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
-
-        QMenu* trayMenu = new QMenu(this);
-        trayMenu->addAction(actShow);
-        trayMenu->addAction(actRebuild);
-        trayMenu->addAction(actOptions);
-        trayMenu->addSeparator();
-        trayMenu->addAction(actExit);
-
-        trayIcon->setContextMenu(trayMenu);
+void LaunchyWidget::showTrayIcon() {
+    if (!trayIcon) {
+        trayIcon = new QSystemTrayIcon(this);
     }
-    else if (trayIcon)
-    {
-        delete trayIcon;
-        trayIcon = NULL;
-    }
+
+    QKeySequence hotkey = m_pHotKey->keySeq();
+    trayIcon->setToolTip(tr("Launchy\npress %1 to activate").arg(hotkey.toString()));
+    trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
+    trayIcon->show();
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+
+    QMenu* trayMenu = new QMenu(this);
+    trayMenu->addAction(actShow);
+    trayMenu->addAction(actRebuild);
+    trayMenu->addAction(actOptions);
+    trayMenu->addSeparator();
+    trayMenu->addAction(actExit);
+    trayIcon->setContextMenu(trayMenu);
 }
 
 
@@ -441,7 +423,6 @@ void LaunchyWidget::showAlternatives()
 
     alternatives->show();
     alternatives->setFocus();
-    // qApp->syncX();
 }
 
 
@@ -509,31 +490,27 @@ void LaunchyWidget::launchItem(CatItem& item)
     history.addItem(inputData);
 }
 
-
-void LaunchyWidget::focusInEvent(QFocusEvent* event)
-{
+/*
+void LaunchyWidget::focusInEvent(QFocusEvent* event) {
     if (event->gotFocus() && fader->isFading())
         fader->fadeIn(false);
-
 
     QWidget::focusInEvent(event);
 }
 
-
-void LaunchyWidget::focusOutEvent(QFocusEvent* event)
-{
-    if (event->reason() == Qt::ActiveWindowFocusReason)
-    {
+void LaunchyWidget::focusOutEvent(QFocusEvent* event) {
+    Qt::FocusReason reason = event->reason();
+    if (event->reason() == Qt::ActiveWindowFocusReason) {
         if (g_settings->value("GenOps/hideiflostfocus", false).toBool()
             && !isActiveWindow()
             && !alternatives->isActiveWindow()
             && !optionsOpen
-            && !fader->isFading())
-        {
+            && !fader->isFading()) {
             hideLaunchy();
         }
     }
 }
+*/
 
 void LaunchyWidget::alternativesRowChanged(int index)
 {
@@ -1120,8 +1097,7 @@ void LaunchyWidget::updateVersion(int oldVersion)
 }
 
 
-void LaunchyWidget::loadPosition(QPoint pt)
-{
+void LaunchyWidget::loadPosition(QPoint pt) {
     // Get the dimensions of the screen containing the new center point
     QRect rect = geometry();
     QPoint newCenter = pt + QPoint(rect.width()/2, rect.height()/2);
@@ -1231,6 +1207,16 @@ void LaunchyWidget::exit() {
     fader->stop();
     saveSettings();
     qApp->quit();
+}
+
+void LaunchyWidget::onInputFocusOut() {
+    if (g_settings->value("GenOps/hideiflostfocus", false).toBool()
+        && !isActiveWindow()
+        && !alternatives->isActiveWindow()
+        && !optionsOpen
+        && !fader->isFading()) {
+        hideLaunchy();
+    }
 }
 
 void LaunchyWidget::applySkin(const QString& name)
@@ -1370,8 +1356,7 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event)
 }
 
 
-void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event)
-{
+void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event) {
     QMenu menu(this);
     menu.addAction(actRebuild);
     menu.addAction(actReloadSkin);
@@ -1384,10 +1369,8 @@ void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event)
 }
 
 
-void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    switch (reason)
-    {
+void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+    switch (reason) {
     case QSystemTrayIcon::Trigger:
         showLaunchy();
         break;
@@ -1400,13 +1383,12 @@ void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 
 
-void LaunchyWidget::buildCatalog()
-{
+void LaunchyWidget::buildCatalog() {
     updateTimer->stop();
     saveSettings();
 
     // Use the catalog builder to refresh the catalog in a worker thread
-    QMetaObject::invokeMethod(g_builder, "buildCatalog", Qt::AutoConnection);
+    QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
 
     startUpdateTimer();
 }
@@ -1471,9 +1453,8 @@ void LaunchyWidget::setFadeLevel(double level)
 }
 
 
-void LaunchyWidget::showLaunchy(bool noFade)
-{
-    shouldDonate();
+void LaunchyWidget::showLaunchy(bool noFade) {
+    // shouldDonate();
     hideAlternatives();
 
     loadPosition(pos());
@@ -1497,7 +1478,7 @@ void LaunchyWidget::showLaunchy(bool noFade)
     input->activateWindow();
     input->selectAll();
     input->setFocus();
-    //qApp->syncX();
+
     // Let the plugins know
     plugins.showLaunchy();
 }
