@@ -55,6 +55,6 @@ private:
 
     static struct NativeModMap {
         Qt::KeyboardModifier qtMod;
-        quint32      nativeMod;
+        quint32 nativeMod;
     } s_modMap[];
 };
