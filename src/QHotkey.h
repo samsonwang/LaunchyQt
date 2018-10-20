@@ -2,13 +2,13 @@
 
 #include <QObject>
 
-class QHotKeyPrivate;
+class QHotkeyPrivate;
 
-class QHotKey : public QObject {
+class QHotkey : public QObject {
     Q_OBJECT
 public:
-    explicit QHotKey(QObject* parent = nullptr);
-    virtual ~QHotKey();
+    explicit QHotkey(QObject* parent = nullptr);
+    virtual ~QHotkey();
 
 public:
     const QKeySequence& keySeq() const;
@@ -19,7 +19,7 @@ Q_SIGNALS:
     void activated();
 
 private:
-    QScopedPointer<QHotKeyPrivate> const d_ptr;
-    Q_DECLARE_PRIVATE(QHotKey)
-    Q_DISABLE_COPY(QHotKey)
+    QScopedPointer<QHotkeyPrivate> const d_ptr;
+    Q_DECLARE_PRIVATE(QHotkey)
+    Q_DISABLE_COPY(QHotkey)
 };

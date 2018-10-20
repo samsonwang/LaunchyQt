@@ -1,15 +1,17 @@
 #pragma once
 
 #include <QObject>
-#include "QHotKey.h"
+#include <QAbstractNativeEventFilter>
+#include <QKeySequence>
+#include "QHotkey.h"
 
-class QHotKeyPrivate : public QObject {
+class QHotkeyPrivate : public QObject {
     Q_OBJECT
 public:
-    Q_DECLARE_PUBLIC(QHotKey)
+    Q_DECLARE_PUBLIC(QHotkey)
 
-    explicit QHotKeyPrivate(QHotKey* q);
-    virtual ~QHotKeyPrivate();
+    explicit QHotkeyPrivate(QHotkey* q);
+    virtual ~QHotkeyPrivate();
 
 public:
     const QKeySequence& keySeq() const;
@@ -41,12 +43,12 @@ private:
     };
 
 private:
-    QHotKey* q_ptr;
+    QHotkey* q_ptr;
     QKeySequence m_keySeq;
     bool m_bRegistered;
 
     static QScopedPointer<EventFilter> s_eventFilter;
-    static QMultiHash<quint32, QHotKey*> s_hotKeys;
+    static QMultiHash<quint32, QHotkey*> s_hotKeys;
 
     static struct NativeKeyMap {
         Qt::Key qtKey;

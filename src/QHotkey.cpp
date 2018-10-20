@@ -1,29 +1,29 @@
 
-#include "QHotKey.h"
-#include "QHotKeyP.h"
+#include "QHotkey.h"
+#include "QHotkeyP.h"
 
-QHotKey::QHotKey(QObject* parent)
+QHotkey::QHotkey(QObject* parent)
     : QObject(parent),
-      d_ptr(new QHotKeyPrivate(this)) {
+      d_ptr(new QHotkeyPrivate(this)) {
 
 }
 
-QHotKey::~QHotKey() {
+QHotkey::~QHotkey() {
 
 }
 
-const QKeySequence& QHotKey::keySeq() const {
-    Q_D(const QHotKey);
+const QKeySequence& QHotkey::keySeq() const {
+    Q_D(const QHotkey);
     return d->keySeq();
 }
 
-void QHotKey::setKeySeq(const QKeySequence& keySeq) {
-    Q_D(QHotKey);
+void QHotkey::setKeySeq(const QKeySequence& keySeq) {
+    Q_D(QHotkey);
     d->setKeySeq(keySeq);
 }
 
-bool QHotKey::registered() const
+bool QHotkey::registered() const
 {
-    Q_D(const QHotKey);
+    Q_D(const QHotkey);
     return d->registered();
 }
