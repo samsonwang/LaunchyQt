@@ -9,12 +9,13 @@ PRECOMPILED_HEADER = precompiled.h
 INCLUDEPATH += ../common
 QT += network widgets
 SOURCES = main.cpp \
+    LaunchyWidget.cpp \
     globals.cpp \
     options.cpp \
     catalog.cpp \
     catalog_builder.cpp \
     plugin_handler.cpp \
-    platform_base_hotkey.cpp \
+    #platform_base_hotkey.cpp \
     icon_delegate.cpp \
     plugin_interface.cpp \
     catalog_types.cpp \
@@ -29,10 +30,12 @@ SOURCES = main.cpp \
     InputDataList.cpp \
     FileSearch.cpp \
     AnimationLabel.cpp \
-    SettingsManager.cpp
+    SettingsManager.cpp \
+    QHotkeyP.cpp \
+    QHotkey.cpp
 HEADERS = platform_base.h \
     globals.h \
-    main.h \
+    LaunchyWidget.h \
     catalog.h \
     catalog_builder.h \
     plugin_interface.h \
@@ -52,18 +55,21 @@ HEADERS = platform_base.h \
     InputDataList.h \
     FileSearch.h \
     AnimationLabel.h \
-    SettingsManager.h
+    SettingsManager.h \
+    QHotkeyP.h \
+    QHotkey.h
 FORMS = options.ui
 unix:!macx {
+    QT += x11extras
     ICON = Launchy.ico
     SOURCES += ../platforms/unix/platform_unix.cpp \
-               ../platforms/unix/platform_unix_util.cpp \
-               ../platforms/unix/platform_x11_hotkey.cpp
+               ../platforms/unix/platform_unix_util.cpp
+               #../platforms/unix/platform_x11_hotkey.cpp
     HEADERS += ../platforms/unix/platform_unix.h \
-               ../platforms/unix/platform_unix_util.h \
-               ../platforms/unix/platform_x11_hotkey.h \
-               platform_base_hotkey.h \
-               platform_base_hottrigger.h
+               ../platforms/unix/platform_unix_util.h
+    #           ../platforms/unix/platform_x11_hotkey.h \
+    #           platform_base_hotkey.h \
+    #           platform_base_hottrigger.h
     PREFIX = /usr
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
         PLUGINS_PATH=\\\"$$PREFIX/lib/launchy/plugins/\\\" \
@@ -165,14 +171,15 @@ macx {
         translations \
         dmg
 }
-TRANSLATIONS = ../translations/launchy_fr.ts \
+TRANSLATIONS =\
+    ../translations/launchy_fr.ts \
     ../translations/launchy_nl.ts \
     ../translations/launchy_zh.ts \
     ../translations/launchy_es.ts \
     ../translations/launchy_de.ts \
     ../translations/launchy_ja.ts \
-	../translations/launchy_zh_TW.ts \
-	../translations/launchy_rus.ts
+    ../translations/launchy_zh_TW.ts \
+    ../translations/launchy_rus.ts
 OBJECTS_DIR = build
 MOC_DIR = build
 RESOURCES += launchy.qrc

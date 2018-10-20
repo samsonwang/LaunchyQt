@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PRECOMPILED_H
 #define PRECOMPILED_H
 
-#pragma warning (disable : 4091)
-
 #ifdef _MSC_VER
+#pragma warning (disable : 4091)
 #pragma warning(push, 1)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <tchar.h>
 #include <shellapi.h>
@@ -39,13 +39,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <commoncontrols.h>
 #include <userenv.h>
 #include <lm.h>
+#include <QtWin>
+#endif
 
 #include <QtGui>
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QFuture>
-#include <QtWin>
-
 
 #ifdef _MSC_VER
 #pragma warning(pop)

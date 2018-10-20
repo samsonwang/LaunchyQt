@@ -70,7 +70,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     updateTimer(NULL),
     dropTimer(NULL),
     condensedTempIcon(NULL),
-    m_pHotKey(new QHotKey(this))
+    m_pHotKey(new QHotkey(this))
 {
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
@@ -185,7 +185,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 
     // Set the hotkey
     QKeySequence hotkey = getHotkey();
-    connect(m_pHotKey, &QHotKey::activated, this, &LaunchyWidget::onHotkey);
+    connect(m_pHotKey, &QHotkey::activated, this, &LaunchyWidget::onHotkey);
     if (!setHotkey(hotkey)) {
         QMessageBox::warning(this, tr("Launchy"),
                              tr("The hotkey %1 is already in use, please select another.")
@@ -1532,13 +1532,11 @@ int LaunchyWidget::getHotkey() const
     int hotkey = g_settings->value("GenOps/hotkey", -1).toInt();
     if (hotkey == -1)
     {
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
         int meta = Qt::AltModifier;
-#endif
-#ifdef  Q_OS_X11
+#elif defined(Q_OS_LINUX)
         int meta = Qt::ControlModifier;
-#endif
-#ifdef Q_OS_MAC
+#elif defined(Q_OS_MAC)
         int meta = Qt::MetaModifier;
 #endif
         hotkey = g_settings->value("GenOps/hotkeyModifier", meta).toInt() |
