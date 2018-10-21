@@ -72,6 +72,7 @@ unix:!macx {
     #           platform_base_hotkey.h \
     #           platform_base_hottrigger.h
     PREFIX = /usr
+    LIBS += -lxcb
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
         PLUGINS_PATH=\\\"$$PREFIX/lib/launchy/plugins/\\\" \
         PLATFORMS_PATH=\\\"$$PREFIX/lib/launchy/\\\"

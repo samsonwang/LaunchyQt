@@ -161,7 +161,7 @@ void runProgram(QString path, QString args, bool translateSeparators)
 #endif
 
 
-#ifdef Q_OS_X11
+#ifdef Q_OS_LINUX
 
 
 int getDesktop()
