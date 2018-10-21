@@ -180,7 +180,7 @@ int getDesktop()
 
 
 void runProgram(QString path, QString args, bool translateSeparators) {
-
+    Q_UNUSED(translateSeparators)
     QString fullname = path.split(" ")[0];
     QFileInfo info(fullname);
 

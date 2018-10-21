@@ -81,9 +81,9 @@ QList<Directory> PlatformUnix::getDefaultCatalogDirectories() {
     l << "*.desktop";
     
     for(int i = 0; i < 5; i++)
-	list.append(Directory(dirs[i],l,false,false,100));
+    list.append(Directory(dirs[i], l, false, true, 100));
 
-    list.append(Directory("~",QStringList(),true,false,0));
+    list.append(Directory("~", QStringList(), true, false, 0));
     
     return list;
 }
@@ -137,14 +137,11 @@ bool PlatformUnix::supportsAlphaBorder() const
 
 //Q_EXPORT_PLUGIN2(platform_unix, PlatformUnix)
 
-
 void PlatformUnix::alterItem(CatItem* item) {
     if (!item->fullPath.endsWith(".desktop", Qt::CaseInsensitive))
 	return;
 
     QString locale = QLocale::system().name();
-    
-    
 
     QFile file(item->fullPath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -158,11 +155,8 @@ void PlatformUnix::alterItem(CatItem* item) {
 	
 	if (line.startsWith("Name[" + locale, Qt::CaseInsensitive)) 
 	    name = line.split("=")[1].trimmed();
-	
-
 	else if (line.startsWith("Name=", Qt::CaseInsensitive)) 
 	    name = line.split("=")[1].trimmed();
-
 	else if (line.startsWith("Icon", Qt::CaseInsensitive))
 	    icon = line.split("=")[1].trimmed();
 	else if (line.startsWith("Exec", Qt::CaseInsensitive))
@@ -177,7 +171,6 @@ void PlatformUnix::alterItem(CatItem* item) {
     if (icon.trimmed() == "")
         return;
 
-
     /* fill in some specifiers while we have the info */
     exe.replace("%i", "--icon " + icon);
     exe.replace("%c", name);
@@ -190,11 +183,10 @@ void PlatformUnix::alterItem(CatItem* item) {
     allExe.removeFirst();
     //    exe = exe.trimmed().split(" ")[0];
 
-    
     /* if an absolute or relative path is supplied we can just skip this
        everything else should be checked to avoid picking up [unwanted]
        stuff from the working directory - if it doesnt exsist, use it anyway */
-    if(!exe.contains(QRegExp("^.?.?/"))){
+    if(!exe.contains(QRegExp("^.?.?/"))) {
         foreach(QString line, QProcess::systemEnvironment()) {
             if (!line.startsWith("Path", Qt::CaseInsensitive))
                 continue;
@@ -270,9 +262,7 @@ QString PlatformUnix::expandEnvironmentVars(QString txt)
 	return out;
 }
 
-
 // Create the application object
-QApplication* createApplication(int& argc, char** argv)
-{
-        return new PlatformUnix(argc, argv);
+QApplication* createApplication(int& argc, char** argv) {
+    return new PlatformUnix(argc, argv);
 }

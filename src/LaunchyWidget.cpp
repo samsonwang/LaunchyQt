@@ -54,16 +54,13 @@ void SetForegroundWindowEx(HWND hWnd)
 
 
 LaunchyWidget::LaunchyWidget(CommandFlags command) :
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
-#endif
-#ifdef Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
     QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
-#endif
-#ifdef Q_OS_MAC
+#elif defined(Q_OS_MAC)
     QWidget(NULL, Qt::FramelessWindowHint),
 #endif
-
     frameGraphic(NULL),
     trayIcon(NULL),
     alternatives(NULL),
@@ -74,6 +71,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 {
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
+
 #if defined(Q_OS_WIN)
     setWindowIcon(QIcon(":/resources/launchy128.png"));
 #elif defined(Q_OS_MAC)
@@ -130,7 +128,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     connect(input, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(inputKeyPressed(QKeyEvent*)));
    // connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
     connect(input, SIGNAL(focusOut()), this, SLOT(onInputFocusOut()));
-    connect(input, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(inputMethodEvent(QInputMethodEvent*)));
+    //connect(input, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(inputMethodEvent(QInputMethodEvent*)));
 
     outputIcon = new QLabel(this);
     outputIcon->setObjectName("outputIcon");
@@ -143,8 +141,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     g_settingMgr.load();
 
     // If this is the first time running or a new version, call updateVersion
-    if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION)
-    {
+    if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION) {
         updateVersion(g_settings->value("version", 0).toInt());
         command |= ShowLaunchy;
     }
@@ -162,7 +159,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     altScroll->setObjectName("altScroll");
     connect(alternatives, SIGNAL(currentRowChanged(int)), this, SLOT(alternativesRowChanged(int)));
     connect(alternatives, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(alternativesKeyPressed(QKeyEvent*)));
-    connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
+    //connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
 
     alternativesPath = new QLabel(alternatives);
     alternativesPath->setObjectName("alternativesPath");
@@ -178,8 +175,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     setAlwaysTop(g_settings->value("GenOps/alwaystop", false).toBool());
 
     // Check for udpates?
-    if (g_settings->value("GenOps/updatecheck", true).toBool())
-    {
+    if (g_settings->value("GenOps/updatecheck", true).toBool()) {
         checkForUpdate();
     }
 
@@ -212,8 +208,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     builderThread.setObjectName("CatalogBuilder");
 
     catalog = g_builder->getCatalog();
-    if (!catalog->load(g_settingMgr.catalogFilename()))
-    {
+    if (!catalog->load(g_settingMgr.catalogFilename())) {
         command |= Rescan;
     }
 
@@ -231,18 +226,15 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 }
 
 
-LaunchyWidget::~LaunchyWidget()
-{
+LaunchyWidget::~LaunchyWidget() {
     // delete updateTimer;
     // delete dropTimer;
     // delete alternatives;
 }
 
 
-void LaunchyWidget::executeStartupCommand(int command)
-{
-    if (command & ResetPosition)
-    {
+void LaunchyWidget::executeStartupCommand(int command) {
+    if (command & ResetPosition) {
         QRect r = geometry();
         int primary = qApp->desktop()->primaryScreen();
         QRect scr = qApp->desktop()->availableGeometry(primary);
@@ -251,8 +243,7 @@ void LaunchyWidget::executeStartupCommand(int command)
         move(pt);
     }
 
-    if (command & ResetSkin)
-    {
+    if (command & ResetSkin) {
         setOpaqueness(100);
         showTrayIcon();
         applySkin("Default");
@@ -272,8 +263,7 @@ void LaunchyWidget::executeStartupCommand(int command)
 }
 
 
-void LaunchyWidget::paintEvent(QPaintEvent* event)
-{
+void LaunchyWidget::paintEvent(QPaintEvent* event) {
     // Do the default draw first to render any background specified in the stylesheet
     QStyleOption styleOption;
     styleOption.init(this);
@@ -282,30 +272,24 @@ void LaunchyWidget::paintEvent(QPaintEvent* event)
     style()->drawPrimitive(QStyle::PE_Widget, &styleOption, &painter, this);
 
     // Now draw the standard frame.png graphic if there is one
-    if (frameGraphic)
-    {
+    if (frameGraphic) {
         painter.drawPixmap(0, 0, *frameGraphic);
     }
 
     QWidget::paintEvent(event);
 }
 
-
-void LaunchyWidget::setSuggestionListMode(int mode)
-{
-    if (mode)
-    {
+void LaunchyWidget::setSuggestionListMode(int mode) {
+    if (mode) {
         // The condensed mode needs an icon placeholder or it repositions text when the icon becomes available
-        if (!condensedTempIcon)
-        {
+        if (!condensedTempIcon) {
             QPixmap pixmap(16, 16);
             pixmap.fill(Qt::transparent);
             condensedTempIcon = new QIcon(pixmap);
         }
         alternatives->setItemDelegate(defaultListDelegate);
     }
-    else
-    {
+    else {
         delete condensedTempIcon;
         condensedTempIcon = NULL;
         alternatives->setItemDelegate(listDelegate);

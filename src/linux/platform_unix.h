@@ -71,24 +71,6 @@ class PlatformUnix :  public PlatformBase
     void setPreferredIconSize(int size) { size = size; return; }
 
     //virtual shared_ptr<QApplication> init(int & argc, char** argv);
-    // Mandatory functions
-    // Mandatory functions
-    bool setHotkey(const QKeySequence& key, QObject* receiver, const char* slot) {
-/*
-	GlobalShortcutManager::disconnect(oldKey, receiver, slot);
-	GlobalShortcutManager::connect(key, receiver, slot);
-	oldKey = key;
-        qDebug() << key << GlobalShortcutManager::isConnected(key);
-	return GlobalShortcutManager::isConnected(key);
-    */
-        return true;
-    }
-    
-
-    QKeySequence getHotkey() const
-    {
-        return oldKey;
-    }
 
     QString GetSettingsDirectory() { 
 	return "";
@@ -119,9 +101,9 @@ class PlatformUnix :  public PlatformBase
     */
 
     virtual void alterItem(CatItem*);
-    signals:
-    void xkeyPressed(XEvent*);
 
+signals:
+    void xkeyPressed(XEvent*);
 };
 
 

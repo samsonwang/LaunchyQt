@@ -91,19 +91,15 @@ unix:!macx {
 win32 {
     ICON = Launchy.ico
     if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
-    SOURCES += ../platforms/win/platform_win.cpp \
-        ../platforms/win/platform_win_hotkey.cpp \
-        ../platforms/win/platform_win_util.cpp \
-        ../platforms/win/WinIconProvider.cpp \
-        ../platforms/win/minidump.cpp
-    HEADERS += ../platforms/win/WinIconProvider.h \
-        platform_base_hotkey.h \
-        platform_base_hottrigger.h \
-        ../platforms/win/platform_win.h \
-        ../platforms/win/platform_win_util.h \
-        ../platforms/win/minidump.h
-    CONFIG += embed_manifest_exe
-    RC_FILE = ../win/launchy.rc
+    SOURCES += win/platform_win.cpp \
+               win/WinIconProvider.cpp \
+               win/minidump.cpp
+    HEADERS += win/WinIconProvider.h \
+               win/platform_win.h \
+               win/platform_win_util.h \
+               win/minidump.h
+    CONFIG  += embed_manifest_exe
+    RC_FILE  = ../win/launchy.rc
        LIBS += shell32.lib \
                 user32.lib \
                 gdi32.lib \
@@ -111,15 +107,11 @@ win32 {
                 comctl32.lib \
                 advapi32.lib \
                 userenv.lib \
-        netapi32.lib
+                netapi32.lib
     DEFINES = VC_EXTRALEAN \
-        WIN32 \
-        _UNICODE \
-        UNICODE
-        #WINVER=0x0600 \
-        #_WIN32_WINNT=0x0600 \
-        #_WIN32_WINDOWS=0x0600 \
-        #_WIN32_IE=0x0700
+              WIN32 \
+              _UNICODE \
+              UNICODE
     if(!debug_and_release|build_pass) {
         CONFIG(debug, debug|release):DESTDIR = ../debug/
         CONFIG(release, debug|release):DESTDIR = ../release/
@@ -129,12 +121,12 @@ win32 {
 }
 macx {
     ICON = ../misc/Launchy_Icon/launchy_icon_mac.icns
-    SOURCES += ../platforms/mac/platform_mac.cpp \
-        ../platforms/mac/platform_mac_hotkey.cpp
-    HEADERS += ../platforms/mac/platform_mac.h \
-        ../platforms/mac/platform_mac_hotkey.h \
-        platform_base_hotkey.h \
-        platform_base_hottrigger.h
+    SOURCES += mac/platform_mac.cpp \
+               mac/platform_mac_hotkey.cpp
+    HEADERS += mac/platform_mac.h \
+               mac/platform_mac_hotkey.h \
+               platform_base_hotkey.h \
+               platform_base_hottrigger.h
     if(!debug_and_release|build_pass) {
         CONFIG(debug, debug|release):DESTDIR = ../debug/
         CONFIG(release, debug|release):DESTDIR = ../release/
@@ -167,14 +159,15 @@ macx {
         translations \
         dmg
 }
-TRANSLATIONS =\
+TRANSLATIONS = \
+    ../translations/launchy_zh_CN.ts \
+    ../translations/launchy_zh_TW.ts \
     ../translations/launchy_fr.ts \
     ../translations/launchy_nl.ts \
     ../translations/launchy_zh.ts \
     ../translations/launchy_es.ts \
     ../translations/launchy_de.ts \
     ../translations/launchy_ja.ts \
-    ../translations/launchy_zh_TW.ts \
     ../translations/launchy_rus.ts
 OBJECTS_DIR = build
 MOC_DIR = build
