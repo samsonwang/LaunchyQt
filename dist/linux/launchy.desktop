@@ -1,12 +1,10 @@
 [Desktop Entry]
-Version=1.0
-Name=Launchy
+Categories=Utility;
 Comment=Keystroke Launcher
 Exec=launchy %u
-Terminal=false
-X-MultipleArgs=false
-Type=Application
 Icon=launchy_icon
-Categories=Utility;
-
-
+Name=Launchy
+Terminal=false
+Type=Application
+Version=1.0
+X-MultipleArgs=false

@@ -15,14 +15,13 @@ SOURCES = main.cpp \
     catalog.cpp \
     catalog_builder.cpp \
     plugin_handler.cpp \
-    #platform_base_hotkey.cpp \
     icon_delegate.cpp \
     plugin_interface.cpp \
     catalog_types.cpp \
     icon_extractor.cpp \
-    ../common/FileBrowserDelegate.cpp \
-    ../common/FileBrowser.cpp \
-    ../common/DropListWidget.cpp \
+    FileBrowserDelegate.cpp \
+    FileBrowser.cpp \
+    DropListWidget.cpp \
     Fader.cpp \
     CharListWidget.cpp \
     CharLineEdit.cpp \
@@ -44,9 +43,9 @@ HEADERS = platform_base.h \
     catalog_types.h \
     icon_delegate.h \
     icon_extractor.h \
-    ../common/FileBrowserDelegate.h \
-    ../common/FileBrowser.h \
-    ../common/DropListWidget.h \
+    FileBrowserDelegate.h \
+    FileBrowser.h \
+    DropListWidget.h \
     CharListWidget.h \
     CharLineEdit.h \
     Fader.h \
@@ -62,15 +61,11 @@ FORMS = options.ui
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
-    SOURCES += ../platforms/unix/platform_unix.cpp \
-               ../platforms/unix/platform_unix_util.cpp \
+    SOURCES += linux/platform_unix.cpp \
+               linux/platform_unix_util.cpp \
                linux/QHotkeyX11.cpp
-               #../platforms/unix/platform_x11_hotkey.cpp
-    HEADERS += ../platforms/unix/platform_unix.h \
-               ../platforms/unix/platform_unix_util.h
-    #           ../platforms/unix/platform_x11_hotkey.h \
-    #           platform_base_hotkey.h \
-    #           platform_base_hottrigger.h
+    HEADERS += linux/platform_unix.h \
+               linux/platform_unix_util.h
     PREFIX = /usr
     LIBS += -lxcb
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
@@ -108,7 +103,6 @@ win32 {
         ../platforms/win/platform_win_util.h \
         ../platforms/win/minidump.h
     CONFIG += embed_manifest_exe
-   # INCLUDEPATH += c:/boost/
     RC_FILE = ../win/launchy.rc
        LIBS += shell32.lib \
                 user32.lib \
