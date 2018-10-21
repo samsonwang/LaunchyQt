@@ -23,7 +23,7 @@ void QHotkeyPrivate::init() {
 }
 
 void QHotkeyPrivate::unsetKey() {
-    quint32 keyId = calcHotKeyId(m_keySeq);
+    quint32 keyId = calcHotkeyId(m_keySeq);
     Q_Q(QHotkey);
     if (s_hotKeys.remove(keyId, q) > 0) {
         if (s_hotKeys.count(keyId) == 0) {
@@ -45,11 +45,13 @@ bool QHotkeyPrivate::activateHotKey(int keyId) {
     return false;
 }
 
-int QHotkeyPrivate::calcHotKeyId(const QKeySequence& keySeq) {
+int QHotkeyPrivate::calcHotkeyId(const QKeySequence& keySeq) {
     if (keySeq.isEmpty()) {
         return 0;
     }
-    return keySeq[0];
+    quint32 key = toNativeKeycode(getKey(keySeq));
+    quint32 mod = toNativeModifiers(getModifiers(keySeq));
+    return calcHotkeyId(key, mod);
 }
 
 Qt::Key QHotkeyPrivate::getKey(const QKeySequence& keySeq) {
@@ -75,7 +77,7 @@ void QHotkeyPrivate::setKeySeq(const QKeySequence& keySeq) {
         unsetKey();
     }
 
-    quint32 keyId = calcHotKeyId(keySeq);
+    quint32 keyId = calcHotkeyId(keySeq);
     if (s_hotKeys.count(keyId) == 0) {
         quint32 keycode = toNativeKeycode(getKey(keySeq));
         quint32 mods = toNativeModifiers(getModifiers(keySeq));

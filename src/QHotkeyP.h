@@ -25,8 +25,8 @@ private:
 
 private:
     static bool activateHotKey(int keyId);
-    static inline int calcHotKeyId(const QKeySequence& keySeq);
-    //static inline int calcHotKeyId(quint32 mod, quint32 key);
+    static inline int calcHotkeyId(const QKeySequence& keySeq);
+    static inline int calcHotkeyId(quint32 key, quint32 mod);
     static inline Qt::Key getKey(const QKeySequence& keySeq);
     static inline Qt::KeyboardModifiers getModifiers(const QKeySequence& keySeq);
     static quint32 toNativeKeycode(Qt::Key key);
