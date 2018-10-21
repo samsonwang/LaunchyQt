@@ -1598,6 +1598,8 @@ void fileLogMsgHandler(QtMsgType type, const char *msg)
             fprintf(file, "Fatal: %s\n", msg);
             abort();
             break;
+        default:
+            break;
         }
 
         fflush(file);

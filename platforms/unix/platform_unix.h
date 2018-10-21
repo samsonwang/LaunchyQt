@@ -21,16 +21,16 @@
 
 #include "platform_unix_util.h"
 #include "platform_base.h"
-#include "platform_base_hotkey.h"
-#include "platform_base_hottrigger.h"
+// #include "platform_base_hotkey.h"
+// #include "platform_base_hottrigger.h"
 
 #include <QX11Info>
-#include <boost/shared_ptr.hpp>
+// #include <boost/shared_ptr.hpp>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-using namespace boost;
+// using namespace boost;
 
 /*
   This QAPP scans all x events for keypresses
@@ -73,14 +73,15 @@ class PlatformUnix :  public PlatformBase
     //virtual shared_ptr<QApplication> init(int & argc, char** argv);
     // Mandatory functions
     // Mandatory functions
-    bool setHotkey(const QKeySequence& key, QObject* receiver, const char* slot)
-    {
-
+    bool setHotkey(const QKeySequence& key, QObject* receiver, const char* slot) {
+/*
 	GlobalShortcutManager::disconnect(oldKey, receiver, slot);
 	GlobalShortcutManager::connect(key, receiver, slot);
 	oldKey = key;
         qDebug() << key << GlobalShortcutManager::isConnected(key);
 	return GlobalShortcutManager::isConnected(key);
+    */
+        return true;
     }
     
 

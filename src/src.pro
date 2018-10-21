@@ -63,7 +63,8 @@ unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
     SOURCES += ../platforms/unix/platform_unix.cpp \
-               ../platforms/unix/platform_unix_util.cpp
+               ../platforms/unix/platform_unix_util.cpp \
+               linux/QHotkeyX11.cpp
                #../platforms/unix/platform_x11_hotkey.cpp
     HEADERS += ../platforms/unix/platform_unix.h \
                ../platforms/unix/platform_unix_util.h

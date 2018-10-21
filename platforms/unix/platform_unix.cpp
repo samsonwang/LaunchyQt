@@ -22,13 +22,9 @@
 #include <QApplication>
 #include <QX11Info>
 #include "platform_unix.h"
-#include <boost/pointer_cast.hpp>  
+// #include <boost/pointer_cast.hpp>
 #include <X11/Xlib.h>
 #include <QFileIconProvider>
-
-
-
-
 
 PlatformUnix::PlatformUnix(int& argc, char** argv) :
         PlatformBase(argc, argv)
@@ -70,7 +66,7 @@ shared_ptr<QApplication> PlatformUnix::init(int & argc, char** argv)
 */
 PlatformUnix::~PlatformUnix()
 { 
-    GlobalShortcutManager::clear();
+    // GlobalShortcutManager::clear();
 //    delete icons;
 }
 
