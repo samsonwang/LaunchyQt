@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Josh Karlin</author>
- <class>OptionsDlg</class>
- <widget class="QDialog" name="OptionsDlg">
+ <class>OptionDialog</class>
+ <widget class="QDialog" name="OptionDialog">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
@@ -1562,7 +1562,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>OptionsDlg</receiver>
+   <receiver>OptionDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1578,7 +1578,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>OptionsDlg</receiver>
+   <receiver>OptionDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

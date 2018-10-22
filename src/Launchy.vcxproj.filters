@@ -58,17 +58,11 @@
     <Filter Include="GlobalHotKey">
       <UniqueIdentifier>{71c7d8e2-bef8-4ca3-9539-3ffedf6cd634}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Widgets">
+      <UniqueIdentifier>{2e563e79-d236-4335-b57b-008e9b2b97a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationLabel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CharLineEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CharListWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CommandHistory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -102,9 +96,6 @@
     <ClCompile Include="icon_extractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="options.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="plugin_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,9 +120,6 @@
     <ClCompile Include="build\moc_icon_delegate.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="build\moc_options.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -150,9 +138,6 @@
     <ClCompile Include="build\moc_LaunchyWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="LaunchyWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -167,9 +152,6 @@
     </ClCompile>
     <ClCompile Include="build\moc_FileBrowserDelegate.cpp">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DropListWidget.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FileBrowser.cpp">
       <Filter>Source Files</Filter>
@@ -195,17 +177,29 @@
     <ClCompile Include="build\moc_platform_win.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationLabel.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="CharLineEdit.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="CharListWidget.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="DropListWidget.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="LaunchyWidget.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_OptionDialog.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionDialog.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationLabel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="CharLineEdit.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="CharListWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="CommandHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -242,9 +236,6 @@
     <CustomBuild Include="icon_extractor.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="options.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="platform_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -260,14 +251,17 @@
     <CustomBuild Include="precompiled.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="GeneratedFiles\ui_options.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\platforms\win\minidump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Directory.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <CustomBuild Include="CharLineEdit.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <ClInclude Include="GeneratedFiles\ui_OptionDialog.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -280,12 +274,6 @@
     <CustomBuild Include="QHotkeyP.h">
       <Filter>GlobalHotKey</Filter>
     </CustomBuild>
-    <CustomBuild Include="LaunchyWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="DropListWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="FileBrowser.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -294,6 +282,21 @@
     </CustomBuild>
     <CustomBuild Include="win\platform_win.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CharListWidget.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LaunchyWidget.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DropListWidget.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OptionDialog.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OptionDialog.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -323,11 +326,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="options.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="resources\basicskin.qss">
       <Filter>Resource Files</Filter>
     </None>
@@ -345,5 +343,10 @@
     <ResourceCompile Include="win\launchy.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AnimationLabel.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

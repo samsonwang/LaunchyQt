@@ -16,21 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#include "LaunchyWidget.h"
 
 #include <QScrollBar>
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QMenu>
-
-#include "precompiled.h"
-
 #ifdef Q_OS_MAC
 #include <QMacStyle>
 #endif
+
+#include "precompiled.h"
 #include "icon_delegate.h"
-#include "LaunchyWidget.h"
 #include "globals.h"
-#include "options.h"
+#include "OptionDialog.h"
 #include "plugin_interface.h"
 #include "FileSearch.h"
 #include "QHotkey.h"
@@ -1382,7 +1381,7 @@ void LaunchyWidget::showOptionsDialog() {
     if (!optionsOpen) {
         hideAlternatives();
         optionsOpen = true;
-        OptionsDialog options(NULL);
+        OptionDialog options(NULL);
         options.setObjectName("options");
 #ifdef Q_OS_WIN
         // need to use this method in Windows to ensure that keyboard focus is set when
