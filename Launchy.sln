@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Launchy", "src\Launchy.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "controly", "plugins\controly\controly.vcxproj", "{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiTest", "..\QtTest\GuiTest\GuiTest.vcxproj", "{A2F4CCCD-128D-4084-8185-4D75E2B1DC9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -50,6 +52,10 @@ Global
 		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Debug|x64.Build.0 = Debug|x64
 		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Release|x64.ActiveCfg = Release|x64
 		{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}.Release|x64.Build.0 = Release|x64
+		{A2F4CCCD-128D-4084-8185-4D75E2B1DC9C}.Debug|x64.ActiveCfg = Debug|x64
+		{A2F4CCCD-128D-4084-8185-4D75E2B1DC9C}.Debug|x64.Build.0 = Debug|x64
+		{A2F4CCCD-128D-4084-8185-4D75E2B1DC9C}.Release|x64.ActiveCfg = Release|x64
+		{A2F4CCCD-128D-4084-8185-4D75E2B1DC9C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

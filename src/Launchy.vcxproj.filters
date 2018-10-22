@@ -72,16 +72,7 @@
     <ClCompile Include="CommandHistory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\DropListWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Fader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\FileBrowser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\FileBrowserDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FileSearch.cpp">
@@ -91,9 +82,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SettingsManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\platforms\win\WinIconProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="catalog.cpp">
@@ -117,12 +105,6 @@
     <ClCompile Include="options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\platforms\win\platform_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\platforms\win\platform_win_util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="plugin_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,18 +112,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_icon_extractor.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_FileBrowserDelegate.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_platform_win.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_FileBrowser.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_DropListWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_Fader.cpp">
@@ -177,12 +147,6 @@
     <ClCompile Include="build\moc_QHotkeyP.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="QHotkeyWin.cpp">
-      <Filter>GlobalHotKey</Filter>
-    </ClCompile>
-    <ClCompile Include="..\platforms\win\minidump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="build\moc_LaunchyWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -193,6 +157,42 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="precompiled.h.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_DropListWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_FileBrowser.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_FileBrowserDelegate.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DropListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBrowserDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\minidump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\platform_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\platform_win_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\WinIconProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\QHotkeyWin.cpp">
+      <Filter>GlobalHotKey</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_platform_win.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -209,16 +209,7 @@
     <ClInclude Include="CommandHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="..\common\DropListWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="Fader.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\common\FileBrowser.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\common\FileBrowserDelegate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <ClInclude Include="FileSearch.h">
@@ -257,12 +248,6 @@
     <ClInclude Include="platform_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="platform_base_hotkey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="..\platforms\win\platform_win.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="..\platforms\win\platform_win_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -281,6 +266,9 @@
     <ClInclude Include="..\platforms\win\minidump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Directory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="build\moc_predefs.h.cbt">
@@ -293,6 +281,18 @@
       <Filter>GlobalHotKey</Filter>
     </CustomBuild>
     <CustomBuild Include="LaunchyWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DropListWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FileBrowser.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FileBrowserDelegate.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="win\platform_win.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -342,6 +342,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\win\launchy.rc" />
+    <ResourceCompile Include="win\launchy.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -2,17 +2,14 @@
 #define DROPTABLEWIDGET_H
 
 
-#include <QtGui/QTableWidget>
-
+#include <QTableWidget>
 
 class DropTableWidget : public QTableWidget
 {
    Q_OBJECT
-
 public:
-
     DropTableWidget(QWidget* pParent = NULL);
-   ~DropTableWidget();
+    virtual ~DropTableWidget();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

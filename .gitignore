@@ -47,7 +47,7 @@ GRTAGS
 *.opendb
 ipch
 x64
-build
+build*
 debug
 release
 .vs

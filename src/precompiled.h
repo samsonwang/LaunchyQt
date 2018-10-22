@@ -17,14 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PRECOMPILED_H
-#define PRECOMPILED_H
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning (disable : 4091)
-#pragma warning(push, 1)
+#pragma warning (push, 1)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+
+#include <QtGlobal> // for OS detection
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -62,11 +63,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#define _WIN32_WINNT 0x0600
 //#define _WIN32_IE 0x0700
 
-// 
-//
-// 
-// 
 
-//#endif // Q_OS_WIN
-
-#endif // PRECOMPILED_H

@@ -1,7 +1,7 @@
 
 #include "QHotKeyP.h"
 
-QHotKeyPrivate::NativeKeyMap QHotKeyPrivate::s_keyMap[] = {
+QHotkeyPrivate::NativeKeyMap QHotkeyPrivate::s_keyMap[] = {
     {Qt::Key_Escape,      VK_ESCAPE},
     {Qt::Key_Tab,         VK_TAB},
     {Qt::Key_Backtab,     0},
@@ -132,7 +132,7 @@ QHotKeyPrivate::NativeKeyMap QHotKeyPrivate::s_keyMap[] = {
     {Qt::Key_unknown,     0},
 };
 
-QHotKeyPrivate::NativeModMap QHotKeyPrivate::s_modMap[] = {
+QHotkeyPrivate::NativeModMap QHotkeyPrivate::s_modMap[] = {
     {Qt::ShiftModifier,        MOD_SHIFT},
     {Qt::ControlModifier,      MOD_CONTROL},
     {Qt::AltModifier,          MOD_ALT},
@@ -145,7 +145,7 @@ int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
     return key | mod;
 }
 
-bool QHotKeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
+bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
                                                     void *message,
                                                     long *result) {
     Q_UNUSED(eventType)
@@ -160,11 +160,11 @@ bool QHotKeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
     return false;
 }
 
-bool QHotKeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
+bool QHotkeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
     return RegisterHotKey(NULL, keyId, mod, key) == TRUE;
 }
 
-void QHotKeyPrivate::unregisterKey(quint32 key, quint32 mod, int keyId) {
+void QHotkeyPrivate::unregisterKey(quint32 key, quint32 mod, int keyId) {
     Q_UNUSED(key)
     Q_UNUSED(mod)
 
