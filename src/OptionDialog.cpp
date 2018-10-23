@@ -76,7 +76,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->genOpaqueness->setValue(g_settings->value("GenOps/opaqueness", 100).toInt());
     m_pUi->genFadeIn->setValue(g_settings->value("GenOps/fadein", 0).toInt());
     m_pUi->genFadeOut->setValue(g_settings->value("GenOps/fadeout", 20).toInt());
-    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
+    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
 
 #ifdef Q_OS_MAC
     metaKeys << tr("") << tr("Alt") << tr("Command") << tr("Shift") << tr("Control") <<
@@ -203,8 +203,8 @@ OptionDialog::OptionDialog(QWidget * parent)
         m_pUi->catSize->setText(tr("Index has %n item(s)", "", g_mainWidget->catalog->count()));
     }
 
-    connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+    connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     if (g_builder->isRunning()) {
         catalogProgressUpdated(g_builder->getProgress());
     }
@@ -236,8 +236,8 @@ OptionDialog::OptionDialog(QWidget * parent)
 
 OptionDialog::~OptionDialog() {
     if (g_builder != NULL) {
-        disconnect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-        disconnect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+        disconnect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+        disconnect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     }
 
     s_currentTab = m_pUi->tabWidget->currentIndex();

@@ -17,12 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#pragma once
 
-
+#include <QScopedPointer>
+#include <QString>
 #include "SettingsManager.h"
-#include <QSettings> // need this for os x
+
 #define LAUNCHY_VERSION 300
 #define LAUNCHY_VERSION_STRING "3.0.0 alpha"
 
@@ -33,16 +33,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LABEL_AUTOSUGGEST 1
 #define LABEL_HISTORY 2
 
-class LaunchyWidget;
+
 class PlatformBase;
+class LaunchyWidget;
+class QSettings;
 class CatalogBuilder;
 
-extern PlatformBase* g_platform;
-extern LaunchyWidget* g_mainWidget;
-extern QSettings* g_settings;
+extern QScopedPointer<PlatformBase> g_platform;
+extern QScopedPointer<LaunchyWidget> g_mainWidget;
+extern QScopedPointer<QSettings> g_settings;
 extern SettingsManager g_settingMgr;
-extern CatalogBuilder* g_builder;
+extern QScopedPointer<CatalogBuilder> g_builder;
 extern QString g_searchText;
 
-
-#endif

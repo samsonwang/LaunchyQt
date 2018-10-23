@@ -569,7 +569,7 @@ public:
 	double value = set->value("weby/version", 0.0);
 	\endverbatim
 	*/
-	QSettings** settings;
+	QScopedPointer<QSettings>* settings;
 };
 
 

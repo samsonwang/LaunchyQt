@@ -22,29 +22,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QApplication>
 #include <QFileIconProvider>
-//#include <QtGui> // OSX needs this
 #include "Directory.h"
 #include "catalog.h"
 #include "globals.h"
 
-
-class PlatformBase : public QApplication
-{
+class PlatformBase : public QApplication {
 public:
-	PlatformBase(int& argc, char** argv) : 
-	  QApplication(argc, argv)
-	{
-		g_platform = this;
-	}
+    PlatformBase(int& argc, char** argv)
+        : QApplication(argc, argv) {
+        g_platform.reset(this);
+        setQuitOnLastWindowClosed(false);
+        setApplicationName("Launchy");
+        setOrganizationDomain("Launchy");
 
-	virtual ~PlatformBase()
-	{
-		if (icons)
-		{
-			delete icons;
-			icons = NULL;
-		}
-	}
+        QString locale = QLocale::system().name();
+        QTranslator translator;
+        if (translator.load(QString("tr/launchy_" + locale))) {
+            installTranslator(&translator);
+        }
+    }
+
+    virtual ~PlatformBase() {
+        if (icons) {
+            delete icons;
+            icons = NULL;
+        }
+    }
 
 	QIcon icon(const QFileInfo& info) { return icons->icon(info); }
     QIcon icon(QFileIconProvider::IconType type) { return icons->icon(type); }
@@ -66,10 +69,8 @@ public:
 	virtual bool supportsAlphaBorder() const { return false; }
 	virtual bool getComputers(QStringList& computers) const { Q_UNUSED(computers); return false; }
 
-
 protected:
     QFileIconProvider* icons;
-	QKeySequence hotkey;
 };
 
 

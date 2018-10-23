@@ -19,87 +19,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "LaunchyWidget.h"
 
-int main(int argc, char* argv[])
-{
-    createApplication(argc, argv);
+int main(int argc, char* argv[]) {
 
-    qApp->setQuitOnLastWindowClosed(false);
+    createApplication(argc, argv);
 
     QStringList args = qApp->arguments();
     CommandFlags command = None;
     bool allowMultipleInstances = false;
-
-    for (int i = 0; i < args.size(); ++i)
-    {
+    for (int i = 0; i < args.size(); ++i) {
         QString arg = args[i];
-        if (arg.startsWith("-") || arg.startsWith("/"))
-        {
+        if (arg.startsWith("-") || arg.startsWith("/")) {
             arg = arg.mid(1);
-            if (arg.compare("rescue", Qt::CaseInsensitive) == 0)
-            {
+            if (arg.compare("rescue", Qt::CaseInsensitive) == 0) {
                 command = ResetSkin | ResetPosition | ShowLaunchy;
             }
-            else if (arg.compare("show", Qt::CaseInsensitive) == 0)
-            {
+            else if (arg.compare("show", Qt::CaseInsensitive) == 0) {
                 command |= ShowLaunchy;
             }
-            else if (arg.compare("options", Qt::CaseInsensitive) == 0)
-            {
+            else if (arg.compare("options", Qt::CaseInsensitive) == 0) {
                 command |= ShowOptions;
             }
-            else if (arg.compare("multiple", Qt::CaseInsensitive) == 0)
-            {
+            else if (arg.compare("multiple", Qt::CaseInsensitive) == 0) {
                 allowMultipleInstances = true;
             }
-            else if (arg.compare("rescan", Qt::CaseInsensitive) == 0)
-            {
+            else if (arg.compare("rescan", Qt::CaseInsensitive) == 0) {
                 command |= Rescan;
             }
-            else if (arg.compare("exit", Qt::CaseInsensitive) == 0)
-            {
+            else if (arg.compare("exit", Qt::CaseInsensitive) == 0) {
                 command |= Exit;
             }
-            else if (arg.compare("log", Qt::CaseInsensitive) == 0)
-            {
+            else if (arg.compare("log", Qt::CaseInsensitive) == 0) {
                 // qInstallMsgHandler(fileLogMsgHandler);
             }
-            else if (arg.compare("profile", Qt::CaseInsensitive) == 0)
-            {
-                if (++i < args.length())
-                {
+            else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
+                if (++i < args.length()) {
                     g_settingMgr.setProfileName(args[i]);
                 }
             }
         }
     }
 
-    if (!allowMultipleInstances && g_platform->isAlreadyRunning())
-    {
+    if (!allowMultipleInstances && g_platform->isAlreadyRunning()) {
         g_platform->sendInstanceCommand(command);
         exit(1);
     }
 
-    QCoreApplication::setApplicationName("Launchy");
-    QCoreApplication::setOrganizationDomain("Launchy");
-
-    QString locale = QLocale::system().name();
-    QTranslator translator;
-    translator.load(QString("tr/launchy_" + locale));
-    qApp->installTranslator(&translator);
-
-#ifdef Q_OS_WIN
-    LaunchyWidget* widget = createLaunchyWidget(command);
-#else
-    LaunchyWidget* widget = new LaunchyWidget(command);
-#endif
-
-    // g_mainWidget->setStyleSheet(":/resources/basicskin.qss");
+    createLaunchyWidget(command);
 
     qApp->exec();
-
-    delete widget;
-    widget = NULL;
-
-    delete g_platform;
-    g_platform = NULL;
 }

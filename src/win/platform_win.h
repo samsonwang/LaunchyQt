@@ -17,17 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PLATFORM_WIN
-#define PLATFORM_WIN
-
+#pragma once
 
 #include "platform_base.h"
 #include "platform_win_util.h"
-// #include "platform_base_hotkey.h"
 #include "minidump.h"
 
-class PlatformWin : public PlatformBase
-{
+class PlatformWin : public PlatformBase {
 	Q_OBJECT
 public:
 	PlatformWin(int& argc, char** argv);
@@ -51,4 +47,3 @@ private:
     MiniDumper minidumper;
 };
 
-#endif

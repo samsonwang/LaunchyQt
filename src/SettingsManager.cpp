@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "globals.h"
 #include "platform_base.h"
 
-SettingsManager g_settingMgr;
-
 const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";
 const char* historyName = "/history.db";
@@ -37,23 +35,15 @@ SettingsManager::SettingsManager()
 }
 
 
-void SettingsManager::load()
-{
-	if (g_settings != NULL)
-	{
-		delete g_settings;
-		g_settings = NULL;
-	}
-
+void SettingsManager::load() {
 	// Load settings
 	dirs = g_platform->getDirectories();
 	portable = QFile::exists(dirs["portableConfig"][0] + iniName);
 
 	qDebug("Loading settings in %s mode from %s", portable ? "portable" : "installed", qPrintable(configDirectory(portable)));
 	QString iniPath = configDirectory(portable) + iniName;
-	g_settings = new QSettings(configDirectory(portable) + iniName, QSettings::IniFormat);
-	if (!QFile::exists(iniPath))
-	{
+	g_settings.reset(new QSettings(configDirectory(portable) + iniName, QSettings::IniFormat));
+	if (!QFile::exists(iniPath)) {
 		// Ini file doesn't exist, create some defaults and save them to disk
 		QList<Directory> directories = g_platform->getDefaultCatalogDirectories();
 		writeCatalogDirectories(directories);
@@ -112,11 +102,7 @@ void SettingsManager::setPortable(bool makePortable)
 		qDebug("Converting to %s mode", makePortable ? "portable" : "installed");
 
 		// Destroy the QSettings object first so it writes any changes to disk
-		if (g_settings != NULL)
-		{
-			delete g_settings;
-			g_settings = NULL;
-		}
+        g_settings.reset(nullptr);
 
 		QString oldDir = configDirectory(portable);
 		QString oldIniName = oldDir + iniName;
@@ -139,7 +125,7 @@ void SettingsManager::setPortable(bool makePortable)
 			qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
 			if (makePortable)
 			{
-				QMessageBox::warning(g_mainWidget, tr("Launchy"),
+				QMessageBox::warning(g_mainWidget.data(), tr("Launchy"),
                                      tr("Could not convert to portable mode."
                                      " Please check you have write access to the %1 directory.")
                                      .arg(newDir));

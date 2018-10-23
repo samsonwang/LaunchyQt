@@ -66,8 +66,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     updateTimer(NULL),
     dropTimer(NULL),
     condensedTempIcon(NULL),
-    m_pHotKey(new QHotkey(this))
-{
+    m_pHotKey(new QHotkey(this)) {
+
+    g_mainWidget.reset(this);
+
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
 
@@ -87,7 +89,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 
     createActions();
 
-    g_mainWidget = this;
     menuOpen = false;
     optionsOpen = false;
     dragging = false;
@@ -199,10 +200,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     startUpdateTimer();
 
     // Load the catalog
-    g_builder = new CatalogBuilder(&plugins);
+    g_builder.reset(new CatalogBuilder(&plugins));
     g_builder->moveToThread(&builderThread);
-    connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+    connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     builderThread.start(QThread::IdlePriority);
     builderThread.setObjectName("CatalogBuilder");
 
@@ -215,6 +216,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     history.load(g_settingMgr.historyFilename());
 
     // Load the skin
+    //setStyleSheet(":/resources/basicskin.qss");
     applySkin(g_settings->value("GenOps/skin", "Default").toString());
 
     // Move to saved position
@@ -1371,7 +1373,7 @@ void LaunchyWidget::buildCatalog() {
     saveSettings();
 
     // Use the catalog builder to refresh the catalog in a worker thread
-    QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
+    QMetaObject::invokeMethod(g_builder.data(), &CatalogBuilder::buildCatalog);
 
     startUpdateTimer();
 }

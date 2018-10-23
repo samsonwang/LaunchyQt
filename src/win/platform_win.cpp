@@ -113,8 +113,7 @@ void PlatformWin::setPreferredIconSize(int size)
 	((WinIconProvider*)icons)->setPreferredIconSize(size);
 }
 
-QHash<QString, QList<QString> > PlatformWin::getDirectories()
-{
+QHash<QString, QList<QString> > PlatformWin::getDirectories() {
     QHash<QString, QList<QString> > out;
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "Launchy", "Launchy");
     QString iniFilename = settings.fileName();
@@ -133,8 +132,7 @@ QHash<QString, QList<QString> > PlatformWin::getDirectories()
 }
 
 
-QList<Directory> PlatformWin::getDefaultCatalogDirectories()
-{
+QList<Directory> PlatformWin::getDefaultCatalogDirectories() {
 	QList<Directory> list;
 
     Directory tmp;
@@ -145,6 +143,7 @@ QList<Directory> PlatformWin::getDefaultCatalogDirectories()
 
 	tmp.name = GetShellDirectory(CSIDL_STARTMENU);
 	list.append(tmp);
+
 	tmp.name = "Utilities\\";
 	tmp.indexDirs = false;
 	list.append(tmp);
@@ -242,7 +241,6 @@ bool PlatformWin::getComputers(QStringList& computers) const
 
 
 // Create the application object
-QApplication* createApplication(int& argc, char** argv)
-{
-	return new PlatformWin(argc, argv);
+QApplication* createApplication(int& argc, char** argv) {
+    return new PlatformWin(argc, argv);
 }

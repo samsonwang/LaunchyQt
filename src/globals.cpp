@@ -21,10 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "precompiled.h"
 #include "globals.h"
 #include "platform_base.h"
+#include "LaunchyWidget.h"
 
-
-PlatformBase* g_platform;
-LaunchyWidget* g_mainWidget;
-QSettings* g_settings;
+QScopedPointer<PlatformBase> g_platform;
+QScopedPointer<LaunchyWidget> g_mainWidget;
+QScopedPointer<QSettings> g_settings;
+SettingsManager g_settingMgr;
+QScopedPointer<CatalogBuilder> g_builder;
 QString g_searchText;
-CatalogBuilder* g_builder;
