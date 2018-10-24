@@ -23,16 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QString>
 #include "SettingsManager.h"
 
-#define LAUNCHY_VERSION 300
-#define LAUNCHY_VERSION_STRING "3.0.0 alpha"
+extern const int LAUNCHY_VERSION;
+extern const char* LAUNCHY_VERSION_STRING;
 
-#define HASH_LAUNCHY 0
-#define HASH_HISTORY 1
-#define HASH_LAUNCHYFILE 2
-#define LABEL_FILE 0
-#define LABEL_AUTOSUGGEST 1
-#define LABEL_HISTORY 2
-
+extern const int HASH_LAUNCHY;
+extern const int HASH_HISTORY;
+extern const int HASH_LAUNCHYFILE;
+extern const uint LABEL_FILE;
+extern const uint LABEL_AUTOSUGGEST;
+extern const uint LABEL_HISTORY;
 
 class PlatformBase;
 class LaunchyWidget;
