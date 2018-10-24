@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "plugin_handler.h"
 #include "globals.h"
 #include "catalog_types.h"
-
+#include "SettingsManager.h"
 
 int PluginInfo::sendMessage(int msgId, void* wParam, void* lParam)
 {
@@ -154,7 +154,7 @@ void PluginHandler::loadPlugins()
 	}
 	g_settings->endArray();
 
-	foreach(QString directory, g_settingMgr.directory("plugins"))
+	foreach(QString directory, SettingsManager::instance().directory("plugins"))
 	{
 		// Load up the plugins in the plugins/ directory
 		QDir pluginsDir(directory);

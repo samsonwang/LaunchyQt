@@ -38,6 +38,5 @@ extern const uint LABEL_HISTORY = 2;
 QScopedPointer<PlatformBase> g_platform;
 QScopedPointer<LaunchyWidget> g_mainWidget;
 QScopedPointer<QSettings> g_settings;
-SettingsManager g_settingMgr;
 QScopedPointer<CatalogBuilder> g_builder;
 QString g_searchText;

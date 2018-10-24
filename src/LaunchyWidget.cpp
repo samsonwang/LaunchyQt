@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "plugin_interface.h"
 #include "FileSearch.h"
 #include "QHotkey.h"
+#include "SettingsManager.h"
 
 #ifdef Q_OS_WIN
 void SetForegroundWindowEx(HWND hWnd)
@@ -138,7 +139,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     workingAnimation->setGeometry(QRect());
 
     // Load settings
-    g_settingMgr.load();
+    SettingsManager::instance().load();
 
     // If this is the first time running or a new version, call updateVersion
     if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION) {
@@ -208,12 +209,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     builderThread.setObjectName("CatalogBuilder");
 
     catalog = g_builder->getCatalog();
-    if (!catalog->load(g_settingMgr.catalogFilename())) {
+    if (!catalog->load(SettingsManager::instance().catalogFilename())) {
         command |= Rescan;
     }
 
     // Load the history
-    history.load(g_settingMgr.historyFilename());
+    history.load(SettingsManager::instance().historyFilename());
 
     // Load the skin
     //setStyleSheet(":/resources/basicskin.qss");
@@ -1065,8 +1066,8 @@ void LaunchyWidget::updateVersion(int oldVersion)
 {
     if (oldVersion < 199)
     {
-        g_settingMgr.removeAll();
-        g_settingMgr.load();
+        SettingsManager::instance().removeAll();
+        SettingsManager::instance().load();
     }
 
     if (oldVersion < 249)
@@ -1113,8 +1114,8 @@ void LaunchyWidget::saveSettings()
     qDebug() << "Save settings";
     savePosition();
     g_settings->sync();
-    catalog->save(g_settingMgr.catalogFilename());
-    history.save(g_settingMgr.historyFilename());
+    catalog->save(SettingsManager::instance().catalogFilename());
+    history.save(SettingsManager::instance().historyFilename());
 }
 
 
@@ -1211,12 +1212,12 @@ void LaunchyWidget::applySkin(const QString& name)
     if (listDelegate == NULL)
         return;
 
-    QString directory = g_settingMgr.skinPath(name);
+    QString directory = SettingsManager::instance().skinPath(name);
     // Use default skin if this one doesn't exist or isn't valid
     if (directory.length() == 0)
     {
-        QString defaultSkin = g_settingMgr.directory("defSkin")[0];
-        directory = g_settingMgr.skinPath(defaultSkin);
+        QString defaultSkin = SettingsManager::instance().directory("defSkin")[0];
+        directory = SettingsManager::instance().skinPath(defaultSkin);
         // If still no good then fail with an ugly default
         if (directory.length() == 0)
             return;
@@ -1553,41 +1554,5 @@ void LaunchyWidget::createActions()
 
     actExit = new QAction(tr("Exit"), this);
     connect(actExit, SIGNAL(triggered()), this, SLOT(exit()));
-}
-
-
-void fileLogMsgHandler(QtMsgType type, const char *msg)
-{
-    static FILE* file;
-    if (file == 0)
-    {
-        // Create a file for appending in the user's temp directory
-        QString filename = "launchy.log";//QDir::toNativeSeparators(QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/launchylog.txt");
-        file = fopen(filename.toUtf8(), "a");
-    }
-
-    if (file)
-    {
-        switch (type)
-        {
-        case QtDebugMsg:
-            fprintf(file, "Debug: %s\n", msg);
-            break;
-        case QtWarningMsg:
-            fprintf(file, "Warning: %s\n", msg);
-            break;
-        case QtCriticalMsg:
-            fprintf(file, "Critical: %s\n", msg);
-            break;
-        case QtFatalMsg:
-            fprintf(file, "Fatal: %s\n", msg);
-            abort();
-            break;
-        default:
-            break;
-        }
-
-        fflush(file);
-    }
 }
 

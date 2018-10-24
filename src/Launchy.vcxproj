@@ -177,6 +177,7 @@ exit 0</Command>
     <ClCompile Include="FileSearch.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp" />
     <ClCompile Include="InputDataList.cpp" />
+    <ClCompile Include="QLogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QHotkey.cpp" />
     <ClCompile Include="QHotkeyP.cpp" />
@@ -198,8 +199,8 @@ exit 0</Command>
     <ClCompile Include="win\WinIconProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\platforms\win\minidump.h" />
     <ClInclude Include="AnimationLabel.h" />
+    <ClInclude Include="win\minidump.h" />
     <CustomBuild Include="win\platform_win.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing platform_win.h...</Message>
@@ -295,6 +296,7 @@ exit 0</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\build\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp" "-fprecompiled.h" "-f../QHotkeyP.h"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -DQT_WINEXTRAS_LIB "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras"</Command>
     </CustomBuild>
+    <ClInclude Include="QLogger.h" />
     <ClInclude Include="SettingsManager.h" />
     <ClInclude Include="..\platforms\win\WinIconProvider.h" />
     <ClInclude Include="catalog.h" />
@@ -450,7 +452,7 @@ echo #include "precompiled.h"&gt;&gt;precompiled.h.cpp</Command>
     <None Include="..\translations\launchy_ja.ts" />
     <None Include="..\translations\launchy_nl.ts" />
     <None Include="..\translations\launchy_rus.ts" />
-    <None Include="..\translations\launchy_zh_CN.ts" />
+    <None Include="..\translations\launchy_zh.ts" />
     <None Include="..\translations\launchy_zh_TW.ts" />
   </ItemGroup>
   <ItemGroup>

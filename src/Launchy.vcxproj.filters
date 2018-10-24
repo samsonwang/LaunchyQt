@@ -198,6 +198,9 @@
     <ClCompile Include="OptionDialog.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="QLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -251,9 +254,6 @@
     <CustomBuild Include="precompiled.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="..\platforms\win\minidump.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Directory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -262,6 +262,12 @@
     </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_OptionDialog.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QLogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win\minidump.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -321,7 +327,7 @@
     <None Include="..\translations\launchy_zh_TW.ts">
       <Filter>Translation Files</Filter>
     </None>
-    <None Include="..\translations\launchy_zh_CN.ts">
+    <None Include="..\translations\launchy_zh.ts">
       <Filter>Translation Files</Filter>
     </None>
   </ItemGroup>

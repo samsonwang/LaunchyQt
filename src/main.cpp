@@ -18,12 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "LaunchyWidget.h"
+#include "SettingsManager.h"
+#include "QLogger.h"
 
 int main(int argc, char* argv[]) {
 
+    //QLogger::setLogLevel(QtDebugMsg);
+
     createApplication(argc, argv);
 
-    QString locale = QLocale::system().name();
     QTranslator translator;
     if (translator.load(QLocale(),
                         QString("launchy"),
@@ -32,6 +35,7 @@ int main(int argc, char* argv[]) {
         qApp->installTranslator(&translator);
     }
 
+    // improve code below with QCommandlinePareser
     QStringList args = qApp->arguments();
     CommandFlags command = None;
     bool allowMultipleInstances = false;
@@ -58,11 +62,11 @@ int main(int argc, char* argv[]) {
                 command |= Exit;
             }
             else if (arg.compare("log", Qt::CaseInsensitive) == 0) {
-                // qInstallMsgHandler(fileLogMsgHandler);
+                QLogger::setLogLevel(QtDebugMsg);
             }
             else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
                 if (++i < args.length()) {
-                    g_settingMgr.setProfileName(args[i]);
+                    SettingsManager::instance().setProfileName(args[i]);
                 }
             }
         }

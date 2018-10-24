@@ -17,20 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-#ifndef SETTINGSMANAGER_H
-#define SETTINGSMANAGER_H
-
+#pragma once
 
 #include <QString>
 #include <QHash>
+#include <QList>
 #include "Directory.h"
 
-
-class SettingsManager : public QObject
-{
+class SettingsManager {
 public:
-	SettingsManager();
+    static SettingsManager& instance();
+
+public:
 	void load();
 
 	bool isPortable() const;
@@ -42,15 +40,18 @@ public:
 	void removeAll();
 	void setProfileName(const QString& name);
 	static QList<Directory> readCatalogDirectories();
-	static void writeCatalogDirectories(QList<Directory>& directories);
+	void writeCatalogDirectories(QList<Directory>& directories);
+
+private:
+    SettingsManager();
+    Q_DISABLE_COPY(SettingsManager)
 
 private:
 	QString configDirectory(bool portable) const;
 
-	bool portable;
-	QString profileName;
-	QHash<QString, QList<QString> > dirs;
+private:
+	bool m_portable;
+	QString m_profileName;
+	QHash<QString, QList<QString>> m_dirs;
 };
 
-
-#endif

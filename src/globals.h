@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QScopedPointer>
 #include <QString>
-#include "SettingsManager.h"
 
 extern const int LAUNCHY_VERSION;
 extern const char* LAUNCHY_VERSION_STRING;
@@ -41,7 +40,6 @@ class CatalogBuilder;
 extern QScopedPointer<PlatformBase> g_platform;
 extern QScopedPointer<LaunchyWidget> g_mainWidget;
 extern QScopedPointer<QSettings> g_settings;
-extern SettingsManager g_settingMgr;
 extern QScopedPointer<CatalogBuilder> g_builder;
 extern QString g_searchText;
 

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "globals.h"
 #include "platform_base.h"
 #include "Directory.h"
-
+#include "SettingsManager.h"
 
 CatalogBuilder::CatalogBuilder(PluginHandler* plugs) :
 	plugins(plugs),

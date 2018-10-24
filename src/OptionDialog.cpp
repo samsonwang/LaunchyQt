@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "globals.h"
 #include "plugin_handler.h"
 #include "FileBrowserDelegate.h"
-
+#include "SettingsManager.h"
 
 QByteArray OptionDialog::s_windowGeometry;
 int OptionDialog::s_currentTab;
@@ -51,7 +51,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     // Load General Options		
     m_pUi->genAlwaysShow->setChecked(g_settings->value("GenOps/alwaysshow", false).toBool());
     m_pUi->genAlwaysTop->setChecked(g_settings->value("GenOps/alwaystop", false).toBool());
-    m_pUi->genPortable->setChecked(g_settingMgr.isPortable());
+    m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
     m_pUi->genHideFocus->setChecked(g_settings->value("GenOps/hideiflostfocus", false).toBool());
     m_pUi->genDecorateText->setChecked(g_settings->value("GenOps/decoratetext", false).toBool());
 
@@ -144,7 +144,7 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     int skinRow = 0;
     QHash<QString, bool> knownSkins;
-    foreach(QString szDir, g_settingMgr.directory("skins")) {
+    foreach(QString szDir, SettingsManager::instance().directory("skins")) {
         QDir dir(szDir);
         QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
@@ -300,13 +300,13 @@ void OptionDialog::accept()
     g_settings->setValue("WebProxy/port", m_pUi->genProxyPort->text());
 
     // Apply General Options
-    g_settingMgr.setPortable(m_pUi->genPortable->isChecked());
+    SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
     g_mainWidget->startUpdateTimer();
     g_mainWidget->setSuggestionListMode(m_pUi->genCondensed->currentIndex());
     g_mainWidget->loadOptions();
 
     // Apply Directory Options
-    SettingsManager::writeCatalogDirectories(memDirs);
+    SettingsManager::instance().writeCatalogDirectories(memDirs);
 
     if (curPlugin >= 0)
     {
@@ -381,7 +381,7 @@ void OptionDialog::skinChanged(const QString& newSkin)
         return;
 
     // Find the skin with this name
-    QString directory = g_settingMgr.skinPath(newSkin);
+    QString directory = SettingsManager::instance().skinPath(newSkin);
 
     // Load up the author file
     if (directory.length() == 0) {
@@ -547,7 +547,7 @@ void OptionDialog::catRescanClicked(bool val)
     val = val; // Compiler warning
 
     // Apply Directory Options
-    SettingsManager::writeCatalogDirectories(memDirs);
+    SettingsManager::instance().writeCatalogDirectories(memDirs);
 
     needRescan = false;
     m_pUi->catRescan->setEnabled(false);
