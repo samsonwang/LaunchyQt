@@ -11,7 +11,7 @@ QT += network widgets
 SOURCES = main.cpp \
     LaunchyWidget.cpp \
     globals.cpp \
-    options.cpp \
+    OptionDialog.cpp \
     catalog.cpp \
     catalog_builder.cpp \
     plugin_handler.cpp \
@@ -39,7 +39,7 @@ HEADERS = platform_base.h \
     catalog_builder.h \
     plugin_interface.h \
     plugin_handler.h \
-    options.h \
+    OptionDialog.h \
     catalog_types.h \
     icon_delegate.h \
     icon_extractor.h \
@@ -57,7 +57,7 @@ HEADERS = platform_base.h \
     SettingsManager.h \
     QHotkeyP.h \
     QHotkey.h
-FORMS = options.ui
+FORMS = OptionDialog.ui
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
@@ -89,9 +89,12 @@ unix:!macx {
         desktop
 }
 win32 {
+    QT += winextras
     ICON = Launchy.ico
     if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
     SOURCES += win/platform_win.cpp \
+               win/platform_win_util.cpp \
+               win/QHotkeyWin.cpp \
                win/WinIconProvider.cpp \
                win/minidump.cpp
     HEADERS += win/WinIconProvider.h \
