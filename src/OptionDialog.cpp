@@ -80,21 +80,24 @@ OptionDialog::OptionDialog(QWidget * parent)
     connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
 
 #ifdef Q_OS_MAC
-    metaKeys << tr("") << tr("Alt") << tr("Command") << tr("Shift") << tr("Control") <<
-        tr("Command+Alt") << tr("Command+Shift") << tr("Command+Control");
+    metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
+        << QString("Command+Alt") << QString("Command+Shift") << QString("Command+Control");
 #else
-    metaKeys << tr("") << tr("Alt") << tr("Control") << tr("Shift") << tr("Win") <<
-        tr("Ctrl+Alt") << tr("Ctrl+Shift") << tr("Ctrl+Win");
+    metaKeys << QString("") << QString("Alt") << QString("Control") << QString("Shift") << QString("Win")
+        << QString("Ctrl+Alt") << QString("Ctrl+Shift") << QString("Ctrl+Win");
 #endif
-    iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier <<
-        (Qt::ControlModifier | Qt::AltModifier) << (Qt::ControlModifier | Qt::ShiftModifier) << (Qt::ControlModifier | Qt::MetaModifier);
+    iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier
+        << (Qt::ControlModifier | Qt::AltModifier) << (Qt::ControlModifier | Qt::ShiftModifier)
+        << (Qt::ControlModifier | Qt::MetaModifier);
 
-    actionKeys << tr("Space") << tr("Tab") << tr("Caps Lock") << tr("Backspace") << tr("Enter") << tr("Esc") <<
-        tr("Insert") << tr("Delete") << tr("Home") << tr("End") << tr("Page Up") << tr("Page Down") <<
-        tr("Print") << tr("Scroll Lock") << tr("Pause") << tr("Num Lock") <<
-        tr("Up") << tr("Down") << tr("Left") << tr("Right") <<
-        tr("F1") << tr("F2") << tr("F3") << tr("F4") << tr("F5") << tr("F6") << tr("F7") << tr("F8") <<
-        tr("F9") << tr("F10") << tr("F11") << tr("F12") << tr("F13") << tr("F14") << tr("F15");
+    actionKeys << QString("Space") << QString("Tab") << QString("Caps Lock") << QString("Backspace")
+        << QString("Enter") << QString("Esc") << QString("Insert") << QString("Delete") << QString("Home")
+        << QString("End") << QString("Page Up") << QString("Page Down") << QString("Print") << QString("Scroll Lock")
+        << QString("Pause") << QString("Num Lock")
+        << tr("Up") << tr("Down") << tr("Left") << tr("Right")
+        << QString("F1") << QString("F2") << QString("F3") << QString("F4") << QString("F5")
+        << QString("F6") << QString("F7") << QString("F8") << QString("F9") << QString("F10")
+        << QString("F11") << QString("F12") << QString("F13") << QString("F14") << QString("F15");
 
     iActionKeys << Qt::Key_Space << Qt::Key_Tab << Qt::Key_CapsLock << Qt::Key_Backspace << Qt::Key_Enter << Qt::Key_Escape <<
         Qt::Key_Insert << Qt::Key_Delete << Qt::Key_Home << Qt::Key_End << Qt::Key_PageUp << Qt::Key_PageDown <<
@@ -103,12 +106,12 @@ OptionDialog::OptionDialog(QWidget * parent)
         Qt::Key_F1 << Qt::Key_F2 << Qt::Key_F3 << Qt::Key_F4 << Qt::Key_F5 << Qt::Key_F6 << Qt::Key_F7 << Qt::Key_F8 <<
         Qt::Key_F9 << Qt::Key_F10 << Qt::Key_F11 << Qt::Key_F12 << Qt::Key_F13 << Qt::Key_F14 << Qt::Key_F15;
 
-    for (int i = '0'; i <= '9'; i++) {
+    for (int i = '0'; i <= '9'; ++i) {
         actionKeys << QString(QChar(i));
         iActionKeys << i;
     }
 
-    for (int i = 'A'; i <= 'Z'; i++) {
+    for (int i = 'A'; i <= 'Z'; ++i) {
         actionKeys << QString(QChar(i));
         iActionKeys << i;
     }
@@ -201,7 +204,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->genOpaqueness->setRange(15, 100);
 
     if (g_mainWidget->catalog != NULL) {
-        m_pUi->catSize->setText(tr("Index has %n item(s)", "", g_mainWidget->catalog->count()));
+        m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_mainWidget->catalog->count()));
     }
 
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
