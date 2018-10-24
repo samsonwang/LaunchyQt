@@ -16,10 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#include "precompiled.h"
 
 #include "OptionDialog.h"
 #include <QMessageBox>
-#include "precompiled.h"
+#include "AppBase.h"
 #include "ui_OptionDialog.h"
 #include "LaunchyWidget.h"
 #include "globals.h"
@@ -406,16 +407,16 @@ void OptionDialog::skinChanged(const QString& newSkin)
     // Set the image preview
     QPixmap pix;
     if (pix.load(directory + "background.png")) {
-        if (!g_platform->supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
+        if (!g_app->supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
             pix.load(directory + "background_nc.png");
         if (pix.hasAlpha())
             pix.setMask(pix.mask());
-        if (!g_platform->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
+        if (!g_app->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
             pix.setMask(QPixmap(directory + "mask_nc.png"));
         else if (QFile::exists(directory + "mask.png"))
             pix.setMask(QPixmap(directory + "mask.png"));
 
-        if (g_platform->supportsAlphaBorder()) {
+        if (g_app->supportsAlphaBorder()) {
             // Compose the alpha image with the background
             QImage sourceImage(pix.toImage());
             QImage destinationImage(directory + "alpha.png");

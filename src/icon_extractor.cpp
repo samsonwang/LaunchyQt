@@ -20,17 +20,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "precompiled.h"
 #include "icon_extractor.h"
+#include "AppBase.h"
 #include "globals.h"
 //#include "main.h"
-
 
 IconExtractor::IconExtractor()
 {
 }
 
 
-void IconExtractor::processIcon(const CatItem& item, bool highPriority)
-{
+void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
     mutex.lock();
 
     if (highPriority)
@@ -142,11 +141,11 @@ QIcon IconExtractor::getIcon(const CatItem& item)
 #ifdef Q_OS_X11
         QFileInfo info(item.fullPath);
         if (info.isDir())
-            return g_platform->icon(QFileIconProvider::Folder);
+            return g_app->icon(QFileIconProvider::Folder);
 #endif
         if (item.fullPath.length() == 0)
             return QIcon();
-        return g_platform->icon(QDir::toNativeSeparators(item.fullPath));
+        return g_app->icon(QDir::toNativeSeparators(item.fullPath));
 }
     else
     {
@@ -156,6 +155,6 @@ QIcon IconExtractor::getIcon(const CatItem& item)
             return QIcon(item.icon);
         }
 #endif
-        return g_platform->icon(QDir::toNativeSeparators(item.icon));
+        return g_app->icon(QDir::toNativeSeparators(item.icon));
     }
 }

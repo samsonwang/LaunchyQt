@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include "platform_base.h"
+#include "AppBase.h"
 #include "platform_win_util.h"
 #include "minidump.h"
 
-class PlatformWin : public PlatformBase {
+class PlatformWin : public AppBase {
 	Q_OBJECT
 public:
 	PlatformWin(int& argc, char** argv);

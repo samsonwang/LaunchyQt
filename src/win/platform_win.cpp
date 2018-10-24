@@ -85,7 +85,7 @@ LaunchyWidget* createLaunchyWidget(CommandFlags command)
 }
 
 PlatformWin::PlatformWin(int& argc, char** argv)
-    : PlatformBase(argc, argv),
+    : AppBase(argc, argv),
       minidumper(_T("Launchy"))
 {
 	instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));

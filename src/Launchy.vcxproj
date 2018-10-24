@@ -153,6 +153,7 @@ exit 0</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnimationLabel.cpp" />
+    <ClCompile Include="AppBase.cpp" />
     <ClCompile Include="build\moc_catalog_builder.cpp" />
     <ClCompile Include="build\moc_CharLineEdit.cpp" />
     <ClCompile Include="build\moc_CharListWidget.cpp" />
@@ -352,7 +353,7 @@ exit 0</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
-    <ClInclude Include="platform_base.h" />
+    <ClInclude Include="AppBase.h" />
     <ClInclude Include="..\platforms\win\platform_win_util.h" />
     <ClInclude Include="plugin_handler.h" />
     <ClInclude Include="plugin_interface.h" />

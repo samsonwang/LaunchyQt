@@ -21,13 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ICON_EXTRACTOR
 
 #include "precompiled.h"
-#include "platform_base.h"
+#include "catalog.h"
 
-
-class IconExtractor : public QThread
-{
+class IconExtractor : public QThread {
 	Q_OBJECT
-
 public:
 	IconExtractor();
 	void processIcon(const CatItem& item, bool highPriority = true);

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "precompiled.h"
 #include "FileSearch.h"
-#include "platform_base.h"
+#include "AppBase.h"
 #include "globals.h"
 #include "catalog_types.h"
 
@@ -83,7 +83,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 		if (re.exactMatch(searchPath))
 		{
 			// Get a list of devices on the network. This will be filtered and sorted later.
-			g_platform->getComputers(itemList);
+			g_app->getComputers(itemList);
 			isDirectory = false;
 			listPopulated = true;
 			sort = false;

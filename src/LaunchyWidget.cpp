@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+#include "precompiled.h"
 #include "LaunchyWidget.h"
 
 #include <QScrollBar>
@@ -26,7 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMacStyle>
 #endif
 
-#include "precompiled.h"
 #include "icon_delegate.h"
 #include "globals.h"
 #include "OptionDialog.h"
@@ -34,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSearch.h"
 #include "QHotkey.h"
 #include "SettingsManager.h"
+#include "AppBase.h"
 
 #ifdef Q_OS_WIN
 void SetForegroundWindowEx(HWND hWnd)
@@ -83,7 +85,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 
     setAttribute(Qt::WA_AlwaysShowToolTips);
     setAttribute(Qt::WA_InputMethodEnabled);
-    if (g_platform->supportsAlphaBorder()) {
+    if (g_app->supportsAlphaBorder()) {
         setAttribute(Qt::WA_TranslucentBackground);
     }
     setFocusPolicy(Qt::ClickFocus);
@@ -1244,7 +1246,7 @@ void LaunchyWidget::applySkin(const QString& name)
 
     bool validFrame = false;
     QPixmap frame;
-    if (g_platform->supportsAlphaBorder())
+    if (g_app->supportsAlphaBorder())
     {
         if (frame.load(directory + "frame.png"))
         {
@@ -1301,7 +1303,7 @@ void LaunchyWidget::applySkin(const QString& name)
 
     int maxIconSize = outputIcon->width();
     maxIconSize = qMax(maxIconSize, outputIcon->height());
-    g_platform->setPreferredIconSize(maxIconSize);
+    g_app->setPreferredIconSize(maxIconSize);
 }
 
 

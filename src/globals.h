@@ -32,12 +32,12 @@ extern const uint LABEL_FILE;
 extern const uint LABEL_AUTOSUGGEST;
 extern const uint LABEL_HISTORY;
 
-class PlatformBase;
+class AppBase;
 class LaunchyWidget;
 class QSettings;
 class CatalogBuilder;
 
-extern QScopedPointer<PlatformBase> g_platform;
+extern QScopedPointer<AppBase> g_app;
 extern QScopedPointer<LaunchyWidget> g_mainWidget;
 extern QScopedPointer<QSettings> g_settings;
 extern QScopedPointer<CatalogBuilder> g_builder;

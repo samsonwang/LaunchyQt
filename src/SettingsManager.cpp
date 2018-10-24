@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMessageBox>
 #include "LaunchyWidget.h"
 #include "globals.h"
-#include "platform_base.h"
+#include "AppBase.h"
 
 const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";
@@ -41,7 +41,7 @@ SettingsManager & SettingsManager::instance() {
 
 void SettingsManager::load() {
 	// Load settings
-	m_dirs = g_platform->getDirectories();
+	m_dirs = g_app->getDirectories();
 	m_portable = QFile::exists(m_dirs["portableConfig"][0] + iniName);
 
 	qDebug("Loading settings in %s mode from %s", m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
@@ -49,7 +49,7 @@ void SettingsManager::load() {
 	g_settings.reset(new QSettings(configDirectory(m_portable) + iniName, QSettings::IniFormat));
 	if (!QFile::exists(iniPath)) {
 		// Ini file doesn't exist, create some defaults and save them to disk
-		QList<Directory> directories = g_platform->getDefaultCatalogDirectories();
+		QList<Directory> directories = g_app->getDefaultCatalogDirectories();
 		writeCatalogDirectories(directories);
 	}
 }

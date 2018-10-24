@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "catalog_types.h"
 #include "catalog_builder.h"
 #include "globals.h"
-#include "platform_base.h"
+#include "AppBase.h"
 #include "Directory.h"
 #include "SettingsManager.h"
 
@@ -46,7 +46,7 @@ void CatalogBuilder::buildCatalog() {
 	currentItem = 0;
 
 	while (currentItem < memDirs.count()) {
-		QString cur = g_platform->expandEnvironmentVars(memDirs[currentItem].name);
+		QString cur = g_app->expandEnvironmentVars(memDirs[currentItem].name);
 		indexDirectory(cur, memDirs[currentItem].types, memDirs[currentItem].indexDirs,
                        memDirs[currentItem].indexExe, memDirs[currentItem].depth);
 		progressStep(currentItem);
@@ -82,7 +82,7 @@ void CatalogBuilder::indexDirectory(const QString& directory, const QStringList&
                                     // Special handling of app directories
                                     if (cur.endsWith(".app", Qt::CaseInsensitive)) {
                                         CatItem item(dir + "/" + cur);
-                                        g_platform->alterItem(&item);
+                                        g_app->alterItem(&item);
                                         catalog->addItem(item);
                                     }
                                     else
@@ -149,7 +149,7 @@ void CatalogBuilder::indexDirectory(const QString& directory, const QStringList&
 		if (!indexed.contains(dir + "/" + files[i]))
 		{
 			CatItem item(dir + "/" + files[i]);
-			g_platform->alterItem(&item);
+			g_app->alterItem(&item);
 #ifdef Q_OS_X11
                         if(item.fullPath.endsWith(".desktop") && item.icon == "")
                             continue;

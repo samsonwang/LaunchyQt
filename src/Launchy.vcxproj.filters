@@ -201,6 +201,9 @@
     <ClCompile Include="QLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AppBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -239,9 +242,6 @@
     <CustomBuild Include="icon_extractor.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="platform_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\platforms\win\platform_win_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,6 +267,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win\minidump.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

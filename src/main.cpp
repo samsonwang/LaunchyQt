@@ -17,13 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "AppBase.h"
 #include "LaunchyWidget.h"
 #include "SettingsManager.h"
 #include "QLogger.h"
 
 int main(int argc, char* argv[]) {
 
-    //QLogger::setLogLevel(QtDebugMsg);
+    QLogger::setLogLevel(QtDebugMsg);
 
     createApplication(argc, argv);
 
@@ -72,8 +73,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (!allowMultipleInstances && g_platform->isAlreadyRunning()) {
-        g_platform->sendInstanceCommand(command);
+    if (!allowMultipleInstances && g_app->isAlreadyRunning()) {
+        g_app->sendInstanceCommand(command);
         exit(1);
     }
 
