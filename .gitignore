@@ -39,7 +39,7 @@ GRTAGS
 
 # Qt creator
 *.pro.user
-
+*.qm
 
 # Visual Studio
 *.vcxproj.user

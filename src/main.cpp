@@ -23,6 +23,15 @@ int main(int argc, char* argv[]) {
 
     createApplication(argc, argv);
 
+    QString locale = QLocale::system().name();
+    QTranslator translator;
+    if (translator.load(QLocale(),
+                        QString("launchy"),
+                        QString("_"),
+                        QString("translation"))) {
+        qApp->installTranslator(&translator);
+    }
+
     QStringList args = qApp->arguments();
     CommandFlags command = None;
     bool allowMultipleInstances = false;

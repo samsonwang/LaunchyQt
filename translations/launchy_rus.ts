@@ -108,255 +108,255 @@ You can download it at 						   &lt;qt&gt;&lt;a href=&quot;http://www.launchy.ne
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="144"/>
+        <location filename="../src/OptionDialog.ui" line="157"/>
         <source>horizontally</source>
         <translation type="unfinished">горизонтально</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="151"/>
+        <location filename="../src/OptionDialog.ui" line="164"/>
         <source>vertically</source>
         <translation type="unfinished">вертикально</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="160"/>
+        <location filename="../src/OptionDialog.ui" line="173"/>
         <source>Only allow dragging whilst Shift is pressed</source>
         <translation type="unfinished">Разрешить перетаскивание только с зажатой клавишей Shift</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="172"/>
-        <source>&amp;Hotkey: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.ui" line="207"/>
+        <location filename="../src/OptionDialog.ui" line="220"/>
         <source> + </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="269"/>
+        <location filename="../src/OptionDialog.ui" line="282"/>
         <source>Suggestion List</source>
         <translation type="unfinished">Список предложений</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="302"/>
+        <location filename="../src/OptionDialog.ui" line="315"/>
         <source>Underline matched text</source>
         <translation type="unfinished">Подчеркивать соответствующий текст</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="335"/>
+        <location filename="../src/OptionDialog.ui" line="348"/>
         <source>Suggestions display</source>
         <translation type="unfinished">Показывать предложения</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="370"/>
+        <location filename="../src/OptionDialog.ui" line="383"/>
         <source>Name and path</source>
         <translation type="unfinished">Имя и путь</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="375"/>
+        <location filename="../src/OptionDialog.ui" line="388"/>
         <source>Path only</source>
         <translation type="unfinished">Только путь</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="380"/>
+        <location filename="../src/OptionDialog.ui" line="393"/>
         <source>Name only</source>
         <translation type="unfinished">Только имя</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="419"/>
+        <location filename="../src/OptionDialog.ui" line="432"/>
         <source>Auto open delay</source>
         <translation type="unfinished">Задержка на автооткрытие</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="440"/>
+        <location filename="../src/OptionDialog.ui" line="459"/>
         <source> ms</source>
         <translation type="unfinished"> мс</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="462"/>
+        <location filename="../src/OptionDialog.ui" line="481"/>
         <source>Simultaneously visible suggestions</source>
         <translation type="unfinished">Одновременно предложений</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="497"/>
+        <location filename="../src/OptionDialog.ui" line="516"/>
         <source>Max number of suggestions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="532"/>
+        <location filename="../src/OptionDialog.ui" line="551"/>
         <source>Max number of history items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="574"/>
+        <location filename="../src/OptionDialog.ui" line="593"/>
         <source>Visual Effects</source>
         <translation type="unfinished">Визуальные эффекты</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="609"/>
+        <location filename="../src/OptionDialog.ui" line="628"/>
         <source>Opaqueness</source>
         <translation type="unfinished">Прозрачность</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="647"/>
+        <location filename="../src/OptionDialog.ui" line="666"/>
         <source>Fade in time</source>
         <translation type="unfinished">Затухание при появлении</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="682"/>
+        <location filename="../src/OptionDialog.ui" line="701"/>
         <source>Fade out time</source>
         <translation type="unfinished">Затухание после запуска</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="725"/>
+        <location filename="../src/OptionDialog.ui" line="744"/>
         <source>Internet Proxy</source>
         <translation type="unfinished">Настройка прокси</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="745"/>
-        <source>Server:  </source>
+        <location filename="../src/OptionDialog.ui" line="185"/>
+        <source>Hotkey:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="771"/>
+        <location filename="../src/OptionDialog.ui" line="764"/>
+        <source>Server:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="790"/>
         <source>:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="835"/>
+        <location filename="../src/OptionDialog.ui" line="854"/>
         <source>System Options</source>
         <translation type="unfinished">Системные настройки</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="852"/>
+        <location filename="../src/OptionDialog.ui" line="871"/>
         <source>Auto rescan catalog every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="877"/>
+        <location filename="../src/OptionDialog.ui" line="915"/>
         <source> minutes</source>
         <translation type="unfinished"> минут</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="895"/>
+        <location filename="../src/OptionDialog.ui" line="933"/>
         <source>Show hidden files in browse mode</source>
         <translation type="unfinished">Показывать скрытые файлы в режиме просмотра</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="902"/>
+        <location filename="../src/OptionDialog.ui" line="940"/>
         <source>Show network in browse mode</source>
         <translation type="unfinished">Показывать сети в режиме просмотра</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="909"/>
+        <location filename="../src/OptionDialog.ui" line="947"/>
         <source>Check for new versions on startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="916"/>
+        <location filename="../src/OptionDialog.ui" line="954"/>
         <source>Portable mode (USB stick)</source>
         <translation type="unfinished">Портативный режим (USB-флеш)</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="927"/>
+        <location filename="../src/OptionDialog.ui" line="965"/>
         <source>Skins</source>
         <translation type="unfinished">Внешний вид</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="945"/>
+        <location filename="../src/OptionDialog.ui" line="983"/>
         <source>Select a skin</source>
         <translation type="unfinished">Выберите скин</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="990"/>
+        <location filename="../src/OptionDialog.ui" line="1028"/>
         <source>Author information</source>
         <translation type="unfinished">Информация об авторе</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1039"/>
+        <location filename="../src/OptionDialog.ui" line="1077"/>
         <source>Skin preview</source>
         <translation type="unfinished">Предварительный просмотр</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1082"/>
+        <location filename="../src/OptionDialog.ui" line="1120"/>
         <source>Catalog</source>
         <translation type="unfinished">Каталог</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1090"/>
+        <location filename="../src/OptionDialog.ui" line="1128"/>
         <source>Directories</source>
         <translation type="unfinished">Каталоги</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1114"/>
-        <location filename="../src/OptionDialog.ui" line="1236"/>
+        <location filename="../src/OptionDialog.ui" line="1152"/>
+        <location filename="../src/OptionDialog.ui" line="1274"/>
         <source>+</source>
         <translation type="unfinished">+</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1121"/>
-        <location filename="../src/OptionDialog.ui" line="1249"/>
+        <location filename="../src/OptionDialog.ui" line="1159"/>
+        <location filename="../src/OptionDialog.ui" line="1287"/>
         <source>-</source>
         <translation type="unfinished">-</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1148"/>
+        <location filename="../src/OptionDialog.ui" line="1186"/>
         <source>Rescan Catalog</source>
         <translation type="unfinished">Сканировать каталог</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1180"/>
+        <location filename="../src/OptionDialog.ui" line="1218"/>
         <source>Indexing 0 items</source>
         <translation type="unfinished">Всего 0 пунктов</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1206"/>
+        <location filename="../src/OptionDialog.ui" line="1244"/>
         <source>File Types</source>
         <translation type="unfinished">Типы файлов</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1258"/>
+        <location filename="../src/OptionDialog.ui" line="1296"/>
         <source>Include executables</source>
         <translation type="unfinished">Вкл. исполняемые</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1265"/>
+        <location filename="../src/OptionDialog.ui" line="1303"/>
         <source>Include directories</source>
         <translation type="unfinished">Вкл. каталоги</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1274"/>
+        <location filename="../src/OptionDialog.ui" line="1312"/>
         <source>Depth:</source>
         <translation type="unfinished">Глубина:</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1300"/>
+        <location filename="../src/OptionDialog.ui" line="1338"/>
         <source>Plugins</source>
         <translation type="unfinished">Плагины</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1312"/>
+        <location filename="../src/OptionDialog.ui" line="1350"/>
         <source>Available plugins</source>
         <translation type="unfinished">Доступные плагины</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1334"/>
+        <location filename="../src/OptionDialog.ui" line="1372"/>
         <location filename="../src/OptionDialog.cpp" line="451"/>
         <source>Plugin options</source>
         <translation type="unfinished">Настройки плагина</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1362"/>
+        <location filename="../src/OptionDialog.ui" line="1400"/>
         <source>About Launchy</source>
         <translation type="unfinished">О Launchy</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1394"/>
+        <location filename="../src/OptionDialog.ui" line="1432"/>
         <source>Ver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1419"/>
+        <location filename="../src/OptionDialog.ui" line="1457"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -366,12 +366,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1443"/>
+        <location filename="../src/OptionDialog.ui" line="1481"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Launchy Qt&apos;s &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github page&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1474"/>
+        <location filename="../src/OptionDialog.ui" line="1512"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }

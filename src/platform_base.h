@@ -34,12 +34,6 @@ public:
         setQuitOnLastWindowClosed(false);
         setApplicationName("Launchy");
         setOrganizationDomain("Launchy");
-
-        QString locale = QLocale::system().name();
-        QTranslator translator;
-        if (translator.load(QString("tr/launchy_" + locale))) {
-            installTranslator(&translator);
-        }
     }
 
     virtual ~PlatformBase() {
