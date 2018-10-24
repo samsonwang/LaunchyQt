@@ -163,7 +163,7 @@ macx {
         dmg
 }
 TRANSLATIONS = \
-    ../translations/launchy_zh_CN.ts \
+    ../translations/launchy_zh.ts \
     ../translations/launchy_zh_TW.ts \
     ../translations/launchy_fr.ts \
     ../translations/launchy_nl.ts \
