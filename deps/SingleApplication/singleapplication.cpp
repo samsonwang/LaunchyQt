@@ -133,21 +133,21 @@ SingleApplication::~SingleApplication()
     delete d;
 }
 
-bool SingleApplication::isPrimary()
+bool SingleApplication::isPrimary() const
 {
-    Q_D(SingleApplication);
+    Q_D(const SingleApplication);
     return d->server != nullptr;
 }
 
-bool SingleApplication::isSecondary()
+bool SingleApplication::isSecondary() const
 {
-    Q_D(SingleApplication);
+    Q_D(const SingleApplication);
     return d->server == nullptr;
 }
 
-quint32 SingleApplication::instanceId()
+quint32 SingleApplication::instanceId() const
 {
-    Q_D(SingleApplication);
+    Q_D(const SingleApplication);
     return d->instanceNumber;
 }
 
