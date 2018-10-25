@@ -20,11 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include "AppBase.h"
-#include "platform_win_util.h"
-#include "minidump.h"
+class CrashDumper;
 
 class AppWin : public AppBase {
-    Q_OBJECT
 public:
     AppWin(int& argc, char** argv);
     virtual ~AppWin();
@@ -34,13 +32,13 @@ public:
     virtual QList<Directory> getDefaultCatalogDirectories();
     virtual QString expandEnvironmentVars(QString);
     virtual bool supportsAlphaBorder() const;
-    virtual bool isAlreadyRunning() const;
     virtual void sendInstanceCommand(int command);
     virtual bool getComputers(QStringList& computers) const;
 
 private:
-    HANDLE localMutex, globalMutex;
-    LimitSingleInstance* instance;
-    MiniDumper minidumper;
+    HANDLE localMutex;
+    HANDLE globalMutex;
+    // LimitSingleInstance* instance;
+    CrashDumper* m_crashDumper;
 };
 

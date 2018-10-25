@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QApplication>
+#include <SingleApplication/singleapplication.h>
 #include <QList>
 #include <QHash>
 #include <QString>
@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class QFileIconProvider;
 class CatItem;
 
-class AppBase : public QApplication {
+class AppBase : public SingleApplication {
 public:
     AppBase(int& argc, char** argv);
     virtual ~AppBase();
@@ -37,7 +37,7 @@ public:
     virtual void setPreferredIconSize(int size) = 0;
 
     virtual QList<Directory> getDefaultCatalogDirectories() = 0;
-    virtual bool isAlreadyRunning() const = 0;
+    virtual bool isAlreadyRunning() const;
     virtual void sendInstanceCommand(int command);
 
     // Need to alter an indexed item?  e.g. .desktop files
@@ -49,7 +49,7 @@ public:
     virtual bool getComputers(QStringList& computers) const;
 
 protected:
-    QFileIconProvider* icons;
+    QFileIconProvider* m_iconProvider;
 };
 
 QApplication* createApplication(int& argc, char** argv);

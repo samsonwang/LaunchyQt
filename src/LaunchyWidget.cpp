@@ -227,8 +227,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
     loadOptions();
 
     executeStartupCommand(command);
-}
 
+    connect(g_app.data(), &SingleApplication::instanceStarted,
+            this, &LaunchyWidget::onSecondInstance);
+}
 
 LaunchyWidget::~LaunchyWidget() {
     // delete updateTimer;
@@ -1204,6 +1206,13 @@ void LaunchyWidget::onInputFocusOut() {
         && !optionsOpen
         && !fader->isFading()) {
         hideLaunchy();
+    }
+}
+
+void LaunchyWidget::onSecondInstance() {
+    if (trayIcon) {
+        trayIcon->showMessage(tr("Launchy"), tr("Launchy is already running!"),
+                              QIcon(":/resources/launchy128.png"));
     }
 }
 

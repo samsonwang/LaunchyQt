@@ -24,7 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "globals.h"
 
 AppBase::AppBase(int& argc, char** argv)
-    : QApplication(argc, argv) {
+    : SingleApplication(argc, argv, false, Mode::User, 100),
+      m_iconProvider(nullptr) {
     g_app.reset(this);
     setQuitOnLastWindowClosed(false);
     setApplicationName("Launchy");
@@ -34,18 +35,22 @@ AppBase::AppBase(int& argc, char** argv)
 }
 
 AppBase::~AppBase() {
-    if (icons) {
-        delete icons;
-        icons = NULL;
+    if (m_iconProvider) {
+        delete m_iconProvider;
+        m_iconProvider = NULL;
     }
 }
 
 QIcon AppBase::icon(const QFileInfo& info) {
-    return icons->icon(info);
+    return m_iconProvider->icon(info);
 }
 
 QIcon AppBase::icon(QFileIconProvider::IconType type) {
-    return icons->icon(type);
+    return m_iconProvider->icon(type);
+}
+
+bool AppBase::isAlreadyRunning() const {
+    return this->isSecondary();
 }
 
 void AppBase::sendInstanceCommand(int command) {
@@ -58,6 +63,7 @@ void AppBase::alterItem(CatItem*) {
 bool AppBase::supportsAlphaBorder() const {
     return false;
 }
+
 bool AppBase::getComputers(QStringList& computers) const {
     Q_UNUSED(computers);
     return false;

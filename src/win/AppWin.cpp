@@ -20,9 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "precompiled.h"
 #include "AppWin.h"
+#include "UtilWin.h"
 #include "LaunchyWidget.h"
-#include "WinIconProvider.h"
-#include "minidump.h"
+#include "IconProviderWin.h"
+#include "CrashDumper.h"
 
 // Override the main widget to handle incoming system messages. We could have done this in the QApplication
 // event handler, but then we'd have to filter out the duplicates for messages like WM_SETTINGCHANGE.
@@ -76,15 +77,15 @@ LaunchyWidget* createLaunchyWidget(CommandFlags command) {
 
 AppWin::AppWin(int& argc, char** argv)
     : AppBase(argc, argv),
-    minidumper(_T("Launchy")) {
-    instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
+      m_crashDumper(new CrashDumper(_T("Launchy"))) {
+    // instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
 
     // Create local and global application mutexes so that installer knows when
     // Launchy is running
     localMutex = CreateMutex(NULL, 0, _T("LaunchyMutex"));
     globalMutex = CreateMutex(NULL, 0, _T("Global\\LaunchyMutex"));
 
-    icons = (QFileIconProvider*)new WinIconProvider();
+    m_iconProvider = new IconProviderWin();
 }
 
 AppWin::~AppWin() {
@@ -92,13 +93,16 @@ AppWin::~AppWin() {
         CloseHandle(localMutex);
     if (globalMutex)
         CloseHandle(globalMutex);
-    delete instance;
-    instance = NULL;
+    if (m_crashDumper) {
+        delete m_crashDumper;
+        m_crashDumper = nullptr;
+    }
+    //delete instance;
+    //instance = NULL;
 }
 
-void AppWin::setPreferredIconSize(int size)
-{
-    ((WinIconProvider*)icons)->setPreferredIconSize(size);
+void AppWin::setPreferredIconSize(int size) {
+    ((IconProviderWin*)m_iconProvider)->setPreferredIconSize(size);
 }
 
 QHash<QString, QList<QString> > AppWin::getDirectories() {
@@ -164,39 +168,27 @@ void AppWin::sendInstanceCommand(int command) {
     PostMessage(HWND_BROADCAST, commandMessageId, command, 0);
 }
 
-bool AppWin::isAlreadyRunning() const {
-    return instance->IsAnotherInstanceRunning();
-}
-
 bool AppWin::supportsAlphaBorder() const {
     return true;
 }
 
-bool AppWin::getComputers(QStringList& computers) const
-{
-    Q_UNUSED(computers)
-        /*
-        // Get a list of domains. This should return nothing or fail when we're on a workgroup
-        QStringList domains;
-        if (EnumerateNetworkServers(domains, SV_TYPE_DOMAIN_ENUM))
-        {
-            foreach(QString domain, domains)
-            {
-                EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, (const TCHAR*)domain.utf16());
-            }
-
-            // If names have been retrieved from more than one domain, they'll need sorting
-            if (domains.length() > 1)
-            {
-                computers.sort();
-            }
-
-            return true;
+bool AppWin::getComputers(QStringList& computers) const {
+    // Get a list of domains. This should return nothing or fail when we're on a workgroup
+    QStringList domains;
+    if (EnumerateNetworkServers(domains, SV_TYPE_DOMAIN_ENUM)) {
+        foreach(QString domain, domains) {
+            EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, (const TCHAR*)domain.utf16());
         }
 
-        return EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
-        */
+        // If names have been retrieved from more than one domain, they'll need sorting
+        if (domains.length() > 1) {
+            computers.sort();
+        }
+
         return true;
+    }
+
+    return EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
 }
 
 // Create the application object

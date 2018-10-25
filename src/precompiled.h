@@ -48,6 +48,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QtNetwork>
 #include <QFuture>
 
+// deps, 3rd party modules
+#include "SingleApplication/singleapplication.h"
+#include "QHotkey/QHotkey.h"
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

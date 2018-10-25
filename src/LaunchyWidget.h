@@ -134,6 +134,7 @@ protected slots:
 	void reloadSkin();
     void exit();
     void onInputFocusOut();
+    void onSecondInstance();
 
 
 public:
