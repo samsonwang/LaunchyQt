@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     QStringList args = qApp->arguments();
     CommandFlags command = Default;
     bool allowMultipleInstances = false;
-    for (int i = 0; i < args.size(); ++i) {
+    for (int i = 1; i < args.size(); ++i) {
         QString arg = args[i];
         if (arg.startsWith("-") || arg.startsWith("/")) {
             arg = arg.mid(1);
