@@ -55,9 +55,7 @@ void SetForegroundWindowEx(HWND hWnd) {
 
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
-#if defined(Q_OS_WIN)
-    : QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
-#elif defined(Q_OS_LINUX)
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     : QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
 #elif defined(Q_OS_MAC)
     : QWidget(NULL, Qt::FramelessWindowHint),
