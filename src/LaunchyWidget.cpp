@@ -149,10 +149,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     alternatives = new CharListWidget(this);
     alternatives->setObjectName("alternatives");
-    alternatives->setWindowFlags(Qt::Window | Qt::Tool | Qt::FramelessWindowHint);
-    alternatives->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    alternatives->setTextElideMode(Qt::ElideLeft);
-    alternatives->setUniformItemSizes(true);
     listDelegate = new IconDelegate(this);
     defaultListDelegate = alternatives->itemDelegate();
     setSuggestionListMode(g_settings->value("GenOps/condensedView", 2).toInt());
