@@ -34,8 +34,8 @@ int OptionDialog::s_currentPlugin;
 
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
-    m_pUi(new Ui::OptionDialog),
-    directoryItemDelegate(this, FileBrowser::Directory) {
+      m_pUi(new Ui::OptionDialog),
+      directoryItemDelegate(this, FileBrowser::Directory) {
 
     m_pUi->setupUi(this);
 
@@ -252,13 +252,12 @@ OptionDialog::~OptionDialog() {
 }
 
 
-void OptionDialog::setVisible(bool visible)
-{
+void OptionDialog::setVisible(bool visible) {
     QDialog::setVisible(visible);
 
-    if (visible)
-    {
-        connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)), this, SLOT(skinChanged(const QString)));
+    if (visible) {
+        connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
+                this, SLOT(skinChanged(const QString)));
         skinChanged(m_pUi->skinList->currentItem()->text());
     }
 }

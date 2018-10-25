@@ -61,6 +61,9 @@
     <Filter Include="Widgets">
       <UniqueIdentifier>{2e563e79-d236-4335-b57b-008e9b2b97a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{6391ff04-2099-4a6a-96de-cbf68673a03f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandHistory.cpp">
@@ -138,9 +141,6 @@
     <ClCompile Include="build\moc_LaunchyWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="precompiled.h.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -159,23 +159,8 @@
     <ClCompile Include="FileBrowserDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win\minidump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win\platform_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win\platform_win_util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win\WinIconProvider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win\QHotkeyWin.cpp">
       <Filter>GlobalHotKey</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_platform_win.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="AnimationLabel.cpp">
       <Filter>Widgets</Filter>
@@ -201,8 +186,26 @@
     <ClCompile Include="QLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AppBase.cpp">
+    <ClCompile Include="build\moc_AppWin.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\platform_win_util.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="win\AppWin.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win\minidump.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="win\WinIconProvider.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="AppBase.cpp">
+      <Filter>Application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -219,9 +222,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SettingsManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\platforms\win\WinIconProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="catalog.h">
@@ -242,9 +242,6 @@
     <CustomBuild Include="icon_extractor.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="..\platforms\win\platform_win_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="plugin_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -266,11 +263,17 @@
     <ClInclude Include="QLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="win\minidump.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AppBase.h">
-      <Filter>Header Files</Filter>
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platforms\win\platform_win_util.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="win\minidump.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platforms\win\WinIconProvider.h">
+      <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -289,9 +292,6 @@
     <CustomBuild Include="FileBrowserDelegate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="win\platform_win.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="CharListWidget.h">
       <Filter>Widgets</Filter>
     </CustomBuild>
@@ -306,6 +306,9 @@
     </CustomBuild>
     <CustomBuild Include="OptionDialog.ui">
       <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="win\AppWin.h">
+      <Filter>Application</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
