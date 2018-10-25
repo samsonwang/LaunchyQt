@@ -19,116 +19,98 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "precompiled.h"
-#include "icon_extractor.h"
+#include "IconExtractor.h"
 #include "AppBase.h"
 #include "globals.h"
 //#include "main.h"
 
-IconExtractor::IconExtractor()
-{
+IconExtractor::IconExtractor() {
 }
-
 
 void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
-    mutex.lock();
+    m_mutex.lock();
 
-    if (highPriority)
-    {
+    if (highPriority) {
         // use an id of -1 to indicate high priority
-        if (items.count() > 0 && items[0].id == -1)
-        {
-            items.replace(0, item);
+        if (m_items.count() > 0 && m_items[0].id == -1) {
+            m_items.replace(0, item);
         }
-        else
-        {
-            items.push_front(item);
+        else {
+            m_items.push_front(item);
         }
-        items[0].id = -1;
+        m_items[0].id = -1;
     }
-    else
-    {
-        items.push_back(item);
+    else {
+        m_items.push_back(item);
     }
 
-    mutex.unlock();
-#ifdef Q_OS_MAC
-    run();
-#else
+    m_mutex.unlock();
+
     if (!isRunning())
         start(LowPriority);
-#endif
 }
 
 
-void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset)
-{
-    mutex.lock();
+void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
+    m_mutex.lock();
 
-    int itemCount = items.size();
-    if (reset && itemCount > 0 && isRunning())
-    {
+    int itemCount = m_items.size();
+    if (reset && itemCount > 0 && isRunning()) {
         // reset the queue, but keep the most recent high priority item
-        CatItem item = items.dequeue();
-        items.clear();
+        CatItem item = m_items.dequeue();
+        m_items.clear();
         if (item.id == -1)
-            items.append(item);
-        itemCount = items.size();
+            m_items.append(item);
+        itemCount = m_items.size();
     }
 
-    items += newItems;
-    for (int i = itemCount; i < items.size(); ++i)
-        items[i].id = i - itemCount;
+    m_items += newItems;
+    for (int i = itemCount; i < m_items.size(); ++i)
+        m_items[i].id = i - itemCount;
 
-    mutex.unlock();
+    m_mutex.unlock();
 
-#ifdef Q_OS_MAC
-    run();
-#else
     if (!isRunning())
         start(IdlePriority);
-#endif
 }
 
 
-void IconExtractor::stop()
-{
-    mutex.lock();
-    items.clear();
-    mutex.unlock();
+void IconExtractor::stop() {
+    m_mutex.lock();
+    m_items.clear();
+    m_mutex.unlock();
 }
 
 
-void IconExtractor::run()
-{
+void IconExtractor::run() {
+/*
 #ifdef Q_OS_WIN
     CoInitialize(NULL);
 #endif
-
+*/
     CatItem item;
     bool itemsRemaining = true;
 
-    do
-    {
-        mutex.lock();
-        itemsRemaining = items.size() > 0;
+    do {
+        m_mutex.lock();
+        itemsRemaining = m_items.size() > 0;
         if (itemsRemaining)
-            item = items.dequeue();
-        mutex.unlock();
-        if (itemsRemaining)
-        {
+            item = m_items.dequeue();
+        m_mutex.unlock();
+        if (itemsRemaining) {
             QIcon icon = getIcon(item);
             emit iconExtracted(item.id, item.fullPath, icon);
         }
     } while (itemsRemaining);
-
+/*
 #ifdef Q_OS_WIN
     CoUninitialize();
 #endif
+*/
 }
 
 
-QIcon IconExtractor::getIcon(const CatItem& item)
-{
+QIcon IconExtractor::getIcon(const CatItem& item) {
     qDebug() << "Fetching icon for" << item.fullPath;
 
 #ifdef Q_OS_MAC
@@ -136,22 +118,19 @@ QIcon IconExtractor::getIcon(const CatItem& item)
         return QIcon(item.icon);
 #endif
 
-    if (item.icon.isNull())
-    {
-#ifdef Q_OS_X11
+    if (item.icon.isNull()) {
+#ifdef Q_OS_LINUX
         QFileInfo info(item.fullPath);
         if (info.isDir())
             return g_app->icon(QFileIconProvider::Folder);
 #endif
-        if (item.fullPath.length() == 0)
+        if (item.fullPath.isEmpty())
             return QIcon();
         return g_app->icon(QDir::toNativeSeparators(item.fullPath));
-}
-    else
-    {
-#ifdef Q_OS_X11
-        if (QFile::exists(item.icon))
-        {
+    }
+    else {
+#ifdef Q_OS_LINUX
+        if (QFile::exists(item.icon)) {
             return QIcon(item.icon);
         }
 #endif

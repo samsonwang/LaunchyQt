@@ -33,5 +33,5 @@ private:
 	bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
 	bool addIconFromShellFactory(QString filePath, QIcon& icon) const;
 
-	int preferredSize;
+	int m_preferredSize;
 };

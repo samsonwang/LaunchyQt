@@ -17,28 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CATALOG_BUILDER
-#define CATALOG_BUILDER
-
+#pragma once
 
 #include <QThread>
 #include "catalog_types.h"
 #include "plugin_handler.h"
 
-
-#define CATALOG_PROGRESS_MIN 0
-#define CATALOG_PROGRESS_MAX 100
-
-
-class CatalogBuilder : public QObject, public INotifyProgressStep
-{
+class CatalogBuilder : public QObject, public INotifyProgressStep {
 	Q_OBJECT
-
 public:
-	CatalogBuilder(PluginHandler* plugs);
-	Catalog* getCatalog() const { return catalog; }
-	int getProgress() const { return progress; }
-	int isRunning() const { return progress < CATALOG_PROGRESS_MAX; }
+	CatalogBuilder(PluginHandler* plugin);
+    virtual ~CatalogBuilder();
+
+	Catalog* getCatalog() const;
+	int getProgress() const;
+	int isRunning() const;
 	bool progressStep(int newStep);
 
 public slots:
@@ -49,15 +42,14 @@ signals:
 	void catalogFinished();
 
 private:
-	void indexDirectory(const QString& dir, const QStringList& filters, bool fdirs, bool fbin, int depth);
+	void indexDirectory(const QString& dir, const QStringList& filters,
+                        bool fdirs, bool fbin, int depth);
 
-	PluginHandler* plugins;
-	Catalog* catalog;
-	QSet<QString> indexed;
-	int progress;
-	int currentItem;
-	int totalItems;
+	PluginHandler* m_plugin;
+	Catalog* m_catalog;
+	QSet<QString> m_indexed;
+	int m_progress;
+	int m_currentItem;
+	int m_totalItems;
 };
 
-
-#endif

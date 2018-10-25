@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-#include "platform_win_util.h"
+#include "UtilWin.h"
 #include "IconProviderWin.h"
 
 #if 0
@@ -56,7 +56,7 @@ public:
 HRESULT (WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
 
 IconProviderWin::IconProviderWin()
-    : preferredSize(32) {
+    : m_preferredSize(32) {
 	// Load Vista/7 specific API pointers
 	HMODULE hLib = GetModuleHandleW(L"shell32");
 	if (hLib) {
@@ -68,15 +68,13 @@ IconProviderWin::~IconProviderWin() {
 
 }
 
-void IconProviderWin::setPreferredIconSize(int size)
-{
-	preferredSize = size;
+void IconProviderWin::setPreferredIconSize(int size) {
+	m_preferredSize = size;
 }
 
 
 // This also exists in plugin_interface, need to remove both if I make a 64 build
-QString wicon_aliasTo64(QString path)
-{
+QString wicon_aliasTo64(QString path) {
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
 	QString pf32 = env.value("PROGRAMFILES");
 	QString pf64 = env.value("PROGRAMW6432");
@@ -109,20 +107,17 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 	if (fileExtension == "png" ||
 		fileExtension == "bmp" ||
 		fileExtension == "jpg" ||
-		fileExtension == "jpeg")
-	{
+		fileExtension == "jpeg") {
 		retIcon = QIcon(info.filePath());
 	}
-	else if (fileExtension == "cpl")
-	{
+	else if (fileExtension == "cpl") {
 		HICON hIcon;
 		QString filePath = QDir::toNativeSeparators(info.filePath());
         ExtractIconEx((LPCTSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
         retIcon = QIcon(QtWin::fromHICON(hIcon));
 		DestroyIcon(hIcon);
 	}
-	else
-	{
+	else {
 		// This 64 bit mapping needs to go away if we produce a 64 bit build of launchy
 		QString filePath = wicon_aliasTo64(QDir::toNativeSeparators(info.filePath()));
 
@@ -130,43 +125,36 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 		SHFILEINFO sfi = {0};
 
 		QRegExp re("\\\\\\\\([a-z0-9\\-]+\\\\?)?$", Qt::CaseInsensitive);
-		if (re.exactMatch(filePath))
-		{
-            /*
+		if (re.exactMatch(filePath)) {
 			// To avoid network hangs, explicitly fetch the My Computer icon for UNCs
 			LPITEMIDLIST pidl;
-			if (SHGetSpecialFolderLocation(NULL, CSIDL_DRIVES, &pidl) == S_OK)
-			{
+			if (SHGetSpecialFolderLocation(NULL, CSIDL_DRIVES, &pidl) == S_OK) {
 				SHGetFileInfo((LPCTSTR)pidl, 0, &sfi, sizeof(sfi), SHGFI_PIDL | SHGFI_SYSICONINDEX);
 				// Set the file path to the My Computer GUID for any later fetches
 				filePath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
 			}
-            */
 		}
-		if (sfi.iIcon == 0)
-		{
+		if (sfi.iIcon == 0) {
             SHGetFileInfo((LPCTSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX);
 		}
 
 		// An icon index of 3 is the generic file icon
-		if (sfi.iIcon > 0 && sfi.iIcon != 3)
-		{
+		if (sfi.iIcon > 0 && sfi.iIcon != 3) {
 			// Retrieve the system image list.
 			// To get the 48x48 icons, use SHIL_EXTRALARGE
 			// To get the 256x256 icons (Vista only), use SHIL_JUMBO
 			int imageListIndex;
-			if (preferredSize <= 16)
+			if (m_preferredSize <= 16)
 				imageListIndex = SHIL_SMALL;
-			else if (preferredSize <= 32)
+			else if (m_preferredSize <= 32)
 				imageListIndex = SHIL_LARGE;
-			else if (preferredSize <= 48)
+			else if (m_preferredSize <= 48)
 				imageListIndex = SHIL_EXTRALARGE;
 			else
 				imageListIndex = SHIL_JUMBO;
 
 			// If the OS supports SHCreateItemFromParsingName, get a 256x256 icon
-			if (!addIconFromShellFactory(filePath, retIcon))
-			{
+			if (!addIconFromShellFactory(filePath, retIcon)) {
 				// otherwise get the largest appropriate size
 				if (!addIconFromImageList(imageListIndex, sfi.iIcon, retIcon) && imageListIndex == SHIL_JUMBO)
 					addIconFromImageList(SHIL_EXTRALARGE, sfi.iIcon, retIcon);
@@ -177,13 +165,12 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 			if (imageListIndex == SHIL_EXTRALARGE || imageListIndex == SHIL_JUMBO)
 				addIconFromImageList(SHIL_LARGE, sfi.iIcon, retIcon);
 		}
-		else if (info.isSymLink() || fileExtension == "lnk") // isSymLink is case sensitive when it perhaps shouldn't be
-		{
+        // isSymLink is case sensitive when it perhaps shouldn't be
+		else if (info.isSymLink() || fileExtension == "lnk") {
 			QFileInfo targetInfo(info.symLinkTarget());
 			retIcon = icon(targetInfo);
 		}
-		else
-		{
+		else {
 			retIcon = QFileIconProvider::icon(info);
 		}
 	}
@@ -191,64 +178,48 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 	return retIcon;
 }
 
-
-bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const
-{
-    
-	HICON hIcon = 0;
-	IImageList* imageList;
-	HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
-	if (hResult == S_OK)
-	{
-		hResult = ((IImageList*)imageList)->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
-		imageList->Release();
-	}
-	if (hResult == S_OK && hIcon)
-	{
+bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const {
+    HICON hIcon = 0;
+    IImageList* imageList;
+    HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
+    if (hResult == S_OK) {
+        hResult = ((IImageList*)imageList)->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
+        imageList->Release();
+    }
+    if (hResult == S_OK && hIcon) {
         icon.addPixmap(QtWin::fromHICON(hIcon));
-		DestroyIcon(hIcon);
-	}
+        DestroyIcon(hIcon);
+    }
 
-	return SUCCEEDED(hResult);
-    
-    //return true;
+    return SUCCEEDED(hResult);
 }
 
 
 // On Vista or 7 we could use SHIL_JUMBO to get a 256x256 icon,
 // but we'll use SHCreateItemFromParsingName as it'll give an identical
 // icon to the one shown in explorer and it scales automatically.
-bool IconProviderWin::addIconFromShellFactory(QString filePath, QIcon& icon) const
-{
-	HRESULT hr = S_FALSE;
-
-	if (fnSHCreateItemFromParsingName)
-	{
-		IShellItem* psi = NULL;
+bool IconProviderWin::addIconFromShellFactory(QString filePath, QIcon& icon) const {
+    HRESULT hr = S_FALSE;
+    if (fnSHCreateItemFromParsingName) {
+        IShellItem* psi = NULL;
         hr = fnSHCreateItemFromParsingName((LPCTSTR)filePath.utf16(), 0, IID_IShellItem, (void**)&psi);
-		if (hr == S_OK)
-		{
-			IShellItemImageFactory* psiif = NULL;
-			hr = psi->QueryInterface(IID_IShellItemImageFactory, (void**)&psiif);
-			if (hr == S_OK)
-			{
-				HBITMAP iconBitmap = NULL;
-				SIZE iconSize = {preferredSize, preferredSize};
-				hr = psiif->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY, &iconBitmap);
-				if (hr == S_OK)
-				{
-
+        if (hr == S_OK) {
+            IShellItemImageFactory* psiif = NULL;
+            hr = psi->QueryInterface(IID_IShellItemImageFactory, (void**)&psiif);
+            if (hr == S_OK) {
+                HBITMAP iconBitmap = NULL;
+                SIZE iconSize = {m_preferredSize, m_preferredSize};
+                hr = psiif->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY, &iconBitmap);
+                if (hr == S_OK) {
                     QPixmap iconPixmap = QtWin::fromHBITMAP(iconBitmap, QtWin::HBitmapPremultipliedAlpha);
-					icon.addPixmap(iconPixmap);
-					DeleteObject(iconBitmap);
+                    icon.addPixmap(iconPixmap);
+                    DeleteObject(iconBitmap);
+                }
+                psiif->Release();
+            }
+            psi->Release();
+        }
+    }
 
-				}
-
-				psiif->Release();
-			}
-			psi->Release();
-		}
-	}
-
-	return hr == S_OK;
+    return hr == S_OK;
 }

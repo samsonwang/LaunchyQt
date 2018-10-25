@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "plugin_handler.h"
 #include "FileBrowserDelegate.h"
 #include "SettingsManager.h"
+#include "QLogger.h"
 
 QByteArray OptionDialog::s_windowGeometry;
 int OptionDialog::s_currentTab;
@@ -61,7 +62,8 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->genVCenter->setChecked((center & 2) != 0);
 
     m_pUi->genShiftDrag->setChecked(g_settings->value("GenOps/dragmode", 0) == 1);
-    m_pUi->genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
+//    m_pUi->genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
+    m_pUi->genLog->setCurrentIndex(g_settings->value("GenOps/logLevel", 2).toInt());
     m_pUi->genShowHidden->setChecked(g_settings->value("GenOps/showHiddenFiles", false).toBool());
     m_pUi->genShowNetwork->setChecked(g_settings->value("GenOps/showNetwork", true).toBool());
     m_pUi->genCondensed->setCurrentIndex(g_settings->value("GenOps/condensedView", 2).toInt());
@@ -191,7 +193,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     connect(m_pUi->catRescan, SIGNAL(clicked(bool)), this, SLOT(catRescanClicked(bool)));
     m_pUi->catProgress->setVisible(false);
 
-    memDirs = SettingsManager::readCatalogDirectories();
+    memDirs = SettingsManager::instance().readCatalogDirectories();
     for (int i = 0; i < memDirs.count(); ++i) {
         m_pUi->catDirectories->addItem(memDirs[i].name);
         QListWidgetItem* it = m_pUi->catDirectories->item(i);
@@ -203,8 +205,8 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     m_pUi->genOpaqueness->setRange(15, 100);
 
-    if (g_mainWidget->catalog != NULL) {
-        m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_mainWidget->catalog->count()));
+    if (g_builder->getCatalog() != NULL) {
+        m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_builder->getCatalog()->count()));
     }
 
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
@@ -263,15 +265,13 @@ void OptionDialog::setVisible(bool visible) {
 }
 
 
-void OptionDialog::accept()
-{
+void OptionDialog::accept() {
     if (g_settings == NULL)
         return;
 
     // See if the new hotkey works, if not we're not leaving the dialog.
     QKeySequence hotkey(iMetaKeys[m_pUi->genModifierBox->currentIndex()] + iActionKeys[m_pUi->genKeyBox->currentIndex()]);
-    if (!g_mainWidget->setHotkey(hotkey))
-    {
+    if (!g_mainWidget->setHotkey(hotkey)) {
         QMessageBox::warning(this, tr("Launchy"), tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
         return;
     }
@@ -282,7 +282,8 @@ void OptionDialog::accept()
 //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
     g_settings->setValue("GenOps/alwaysshow", m_pUi->genAlwaysShow->isChecked());
     g_settings->setValue("GenOps/alwaystop", m_pUi->genAlwaysTop->isChecked());
-    g_settings->setValue("GenOps/updatecheck", m_pUi->genUpdateCheck->isChecked());
+//    g_settings->setValue("GenOps/updatecheck", m_pUi->genUpdateCheck->isChecked());
+    g_settings->setValue("GenOps/logLevel", m_pUi->genLog->currentIndex());
     g_settings->setValue("GenOps/decoratetext", m_pUi->genDecorateText->isChecked());
     g_settings->setValue("GenOps/hideiflostfocus", m_pUi->genHideFocus->isChecked());
     g_settings->setValue("GenOps/alwayscenter", (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
@@ -524,8 +525,11 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* iz)
 }
 
 
-void OptionDialog::catalogProgressUpdated(int value)
-{
+void OptionDialog::logLevelChanged(int index) {
+    QLogger::setLogLevel(index);
+}
+
+void OptionDialog::catalogProgressUpdated(int value) {
     m_pUi->catSize->setVisible(false);
     m_pUi->catProgress->setValue(value);
     m_pUi->catProgress->setVisible(true);
@@ -537,9 +541,8 @@ void OptionDialog::catalogBuilt()
 {
     m_pUi->catProgress->setVisible(false);
     m_pUi->catRescan->setEnabled(true);
-    if (g_mainWidget->catalog != NULL)
-    {
-        m_pUi->catSize->setText(tr("Index has %n items", "", g_mainWidget->catalog->count()));
+    if (g_builder->getCatalog() != NULL) {
+        m_pUi->catSize->setText(tr("Index has %n items", "", g_builder->getCatalog()->count()));
         m_pUi->catSize->setVisible(true);
     }
 }

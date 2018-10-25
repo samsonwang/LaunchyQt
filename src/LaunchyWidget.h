@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "platform_util.h"
 #include "catalog.h"
 #include "catalog_builder.h"
-#include "icon_delegate.h"
-#include "icon_extractor.h"
+#include "IconDelegate.h"
+#include "IconExtractor.h"
 #include "globals.h"
 #include "InputDataList.h"
 #include "CommandHistory.h"
@@ -39,44 +39,47 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class QHotkey;
 
-enum CommandFlag
-{
-	None = 0,
-	ShowLaunchy = 1,
-	ShowOptions = 2,
-	ResetPosition = 4,
-	ResetSkin = 8,
-	Rescan = 16,
-	Exit = 32
+enum CommandFlag {
+    None = 0,
+    ShowLaunchy = 1,
+    ShowOptions = 2,
+    ResetPosition = 4,
+    ResetSkin = 8,
+    Rescan = 16,
+    Exit = 32
 };
 
 Q_DECLARE_FLAGS(CommandFlags, CommandFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(CommandFlags)
 
 class LaunchyWidget : public QWidget {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	LaunchyWidget(CommandFlags command);
-	virtual ~LaunchyWidget();
+    LaunchyWidget(CommandFlags command);
+    virtual ~LaunchyWidget();
 
 public:
-	void executeStartupCommand(int command);
+    void executeStartupCommand(int command);
 
-	void showLaunchy(bool noFade);
-	void showTrayIcon();
+    void showLaunchy(bool noFade);
+    void showTrayIcon();
 
-	void setSuggestionListMode(int mode);
-	bool setHotkey(QKeySequence);
-	bool setAlwaysShow(bool);
-	bool setAlwaysTop(bool);
-	void setSkin(const QString& name);
-	void loadOptions();
-	int getHotkey() const;
-	void startUpdateTimer();
+    void setSuggestionListMode(int mode);
+    bool setHotkey(QKeySequence);
+    bool setAlwaysShow(bool);
+    bool setAlwaysTop(bool);
+    void setSkin(const QString& name);
+    void loadOptions();
+    int getHotkey() const;
+    void startUpdateTimer();
     void setOpaqueness(int level);
 
+    public slots:
+    void showLaunchy();
+    void buildCatalog();
 
 protected:
+    virtual void showEvent(QShowEvent *event);
     virtual void paintEvent(QPaintEvent* event);
     virtual void closeEvent(QCloseEvent* event);
     //virtual void focusInEvent(QFocusEvent* event);
@@ -89,6 +92,24 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* event);
 
     void saveSettings();
+
+protected slots:
+    void showOptionsDialog();
+    void onHotkey();
+    void dropTimeout();
+    void inputKeyPressed(QKeyEvent* event);
+    void httpGetFinished(bool result);
+    void catalogProgressUpdated(int);
+    void catalogBuilt();
+    void alternativesRowChanged(int index);
+    void alternativesKeyPressed(QKeyEvent* event);
+    void setFadeLevel(double level);
+    void iconExtracted(int index, QString path, QIcon icon);
+    void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+    void reloadSkin();
+    void exit();
+    void onInputFocusOut();
+    void onSecondInstance();
 
 private:
     void createActions();
@@ -113,78 +134,56 @@ private:
     // void addToHistory(QList<InputData>& item);
     void startDropTimer();
 
-
-public slots:
-    void showLaunchy();
-    void buildCatalog();
-
-protected slots:
-	void showOptionsDialog();
-	void onHotkey();
-	void dropTimeout();
-    void inputKeyPressed(QKeyEvent* event);
-	void httpGetFinished(bool result);
-	void catalogProgressUpdated(int);
-	void catalogBuilt();
-	void alternativesRowChanged(int index);
-	void alternativesKeyPressed(QKeyEvent* event);
-	void setFadeLevel(double level);
-	void iconExtracted(int index, QString path, QIcon icon);
-	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-	void reloadSkin();
-    void exit();
-    void onInputFocusOut();
-    void onSecondInstance();
-
-
 public:
-    Catalog* catalog;
     PluginHandler plugins;
 
 private:
     QString currentSkin;
+    bool m_skinChanged;
 
-	Fader* fader;
-	QPixmap* frameGraphic;
-	QSystemTrayIcon* trayIcon;
-	CharLineEdit* input;
-	QLabel* output;
-	QLabel* outputIcon;
-	CharListWidget* alternatives;
-	QRect alternativesRect;
-	QPushButton* optionsButton;
-	QPushButton* closeButton;
-	QScrollBar* altScroll;
-	QLabel* alternativesPath;
-	AnimationLabel* workingAnimation;
+    Catalog* catalog;
 
-	QAction* actShow;
-	QAction* actRebuild;
+    Fader* fader;
+    QPixmap* frameGraphic;
+    QSystemTrayIcon* trayIcon;
+    CharLineEdit* input;
+    QLabel* output;
+    QLabel* outputIcon;
+    CharListWidget* alternatives;
+    QRect alternativesRect;
+    QPushButton* optionsButton;
+    QPushButton* closeButton;
+    QScrollBar* altScroll;
+    QLabel* alternativesPath;
+    AnimationLabel* workingAnimation;
+
+    QAction* actShow;
+    QAction* actRebuild;
     QAction* actReloadSkin;
-	QAction* actOptions;
-	QAction* actExit;
+    QAction* actOptions;
+    QAction* actExit;
 
-	QTimer* updateTimer;
-	QTimer* dropTimer;
-	QThread builderThread;
-	IconExtractor iconExtractor;
-	QIcon* condensedTempIcon;
-	CatItem outputItem;
-	QList<CatItem> searchResults;
-	InputDataList inputData;
-	CommandHistory history;
-	bool alwaysShowLaunchy;
-	bool dragging;
-	QPoint dragStartPoint;
-	bool menuOpen;
-	bool optionsOpen;
+    QTimer* updateTimer;
+    QTimer* dropTimer;
+    QThread builderThread;
+    IconExtractor iconExtractor;
+    QIcon* condensedTempIcon;
+    CatItem outputItem;
+    QList<CatItem> searchResults;
+    InputDataList inputData;
+    CommandHistory history;
+    bool alwaysShowLaunchy;
+    bool dragging;
+    QPoint dragStartPoint;
+    bool menuOpen;
+    bool optionsOpen;
 
-	IconDelegate* listDelegate;
-	QAbstractItemDelegate* defaultListDelegate;
+    IconDelegate* listDelegate;
+    QAbstractItemDelegate* defaultListDelegate;
 
     //QHttp* http;
-	QBuffer* verBuffer;
-	QBuffer* counterBuffer;
+    QBuffer* verBuffer;
+    QBuffer* counterBuffer;
 
     QHotkey* m_pHotKey;
 };

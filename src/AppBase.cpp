@@ -30,8 +30,8 @@ AppBase::AppBase(int& argc, char** argv)
     setQuitOnLastWindowClosed(false);
     setApplicationName("Launchy");
     setOrganizationDomain("Launchy");
-    qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
-        << "(build" << __DATE__ << __TIME__ << ")";
+
+
 }
 
 AppBase::~AppBase() {

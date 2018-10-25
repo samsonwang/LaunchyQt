@@ -55,9 +55,6 @@
       <Extensions>ts;xlf</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="GlobalHotKey">
-      <UniqueIdentifier>{71c7d8e2-bef8-4ca3-9539-3ffedf6cd634}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Widgets">
       <UniqueIdentifier>{2e563e79-d236-4335-b57b-008e9b2b97a2}</UniqueIdentifier>
     </Filter>
@@ -66,6 +63,12 @@
     </Filter>
     <Filter Include="SingleApplication">
       <UniqueIdentifier>{1629723e-3465-48c1-9841-da5390f9faf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugin">
+      <UniqueIdentifier>{e4b012c8-d7ac-4991-9dfe-8b61a92d4b00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QHotKey">
+      <UniqueIdentifier>{71c7d8e2-bef8-4ca3-9539-3ffedf6cd634}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -96,21 +99,6 @@
     <ClCompile Include="globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="icon_delegate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="icon_extractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="plugin_handler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="plugin_interface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_icon_extractor.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="build\moc_Fader.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -121,9 +109,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_CharLineEdit.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_icon_delegate.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp">
@@ -184,19 +169,19 @@
       <Filter>Application</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\QHotkey\QHotkey.cpp">
-      <Filter>GlobalHotKey</Filter>
+      <Filter>QHotKey</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_QHotkey.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\QHotkey\QHotkeyP.cpp">
-      <Filter>GlobalHotKey</Filter>
+      <Filter>QHotKey</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_QHotkeyP.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\QHotkey\QHotkeyWin.cpp">
-      <Filter>GlobalHotKey</Filter>
+      <Filter>QHotKey</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\SingleApplication\singleapplication.cpp">
       <Filter>SingleApplication</Filter>
@@ -218,6 +203,24 @@
     </ClCompile>
     <ClCompile Include="win\CrashDumper.cpp">
       <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="plugin_handler.cpp">
+      <Filter>Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="plugin_interface.cpp">
+      <Filter>Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="IconExtractor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_IconExtractor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_IconDelegate.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IconDelegate.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -248,18 +251,6 @@
     <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="icon_delegate.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="icon_extractor.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="plugin_handler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="plugin_interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="precompiled.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -286,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="win\CrashDumper.h">
       <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="plugin_handler.h">
+      <Filter>Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="plugin_interface.h">
+      <Filter>Plugin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -317,16 +314,22 @@
       <Filter>Application</Filter>
     </CustomBuild>
     <CustomBuild Include="..\deps\QHotkey\QHotkey.h">
-      <Filter>GlobalHotKey</Filter>
+      <Filter>QHotKey</Filter>
     </CustomBuild>
     <CustomBuild Include="..\deps\QHotkey\QHotkeyP.h">
-      <Filter>GlobalHotKey</Filter>
+      <Filter>QHotKey</Filter>
     </CustomBuild>
     <CustomBuild Include="..\deps\SingleApplication\singleapplication.h">
       <Filter>SingleApplication</Filter>
     </CustomBuild>
     <CustomBuild Include="..\deps\SingleApplication\singleapplication_p.h">
       <Filter>SingleApplication</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IconExtractor.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IconDelegate.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

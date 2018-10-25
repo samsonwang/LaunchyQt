@@ -4,6 +4,30 @@
 FILE* QLogger::s_logFile = nullptr;
 QtMsgType QLogger::s_logLevel;
 
+void QLogger::stopLogging() {
+    qInstallMessageHandler(0);
+    if (s_logFile) {
+        fflush(s_logFile);
+        fclose(s_logFile);
+        s_logFile = nullptr;
+    }
+}
+
+
+void QLogger::setLogLevel(int index) {
+    switch (index) {
+    case 0:
+        stopLogging();
+        break;
+    case 1:
+        setLogLevel(QtDebugMsg);
+        break;
+    default:
+        setLogLevel(QtSystemMsg);
+        break;
+    }
+}
+
 void QLogger::setLogLevel(QtMsgType type) {
     s_logLevel = type;
     if (s_logFile == nullptr) {
@@ -23,7 +47,7 @@ void QLogger::setLogLevel(QtMsgType type) {
 void QLogger::messageHandler(QtMsgType type,
                             const QMessageLogContext& context,
                             const QString& msg) {
-    if (type < s_logLevel) {
+    if (type <= s_logLevel || s_logFile == nullptr) {
         return;
     }
     QDateTime time = QDateTime::currentDateTime();

@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMacStyle>
 #endif
 
-#include "icon_delegate.h"
+#include "IconDelegate.h"
 #include "globals.h"
 #include "OptionDialog.h"
 #include "plugin_interface.h"
@@ -38,8 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppBase.h"
 
 #ifdef Q_OS_WIN
-void SetForegroundWindowEx(HWND hWnd)
-{
+void SetForegroundWindowEx(HWND hWnd) {
     // Attach foreground window thread to our thread
     const DWORD foreGroundID = GetWindowThreadProcessId(GetForegroundWindow(), NULL);
     const DWORD currentID = GetCurrentThreadId();
@@ -55,21 +54,22 @@ void SetForegroundWindowEx(HWND hWnd)
 #endif
 
 
-LaunchyWidget::LaunchyWidget(CommandFlags command) :
+LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN)
-    QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
+    : QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
 #elif defined(Q_OS_LINUX)
-    QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
+    : QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
 #elif defined(Q_OS_MAC)
-    QWidget(NULL, Qt::FramelessWindowHint),
+    : QWidget(NULL, Qt::FramelessWindowHint),
 #endif
-    frameGraphic(NULL),
-    trayIcon(NULL),
-    alternatives(NULL),
-    updateTimer(NULL),
-    dropTimer(NULL),
-    condensedTempIcon(NULL),
-    m_pHotKey(new QHotkey(this)) {
+      m_skinChanged(false),
+      frameGraphic(NULL),
+      trayIcon(NULL),
+      alternatives(NULL),
+      updateTimer(NULL),
+      dropTimer(NULL),
+      condensedTempIcon(NULL),
+      m_pHotKey(new QHotkey(this)) {
 
     g_mainWidget.reset(this);
 
@@ -135,13 +135,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 
     outputIcon = new QLabel(this);
     outputIcon->setObjectName("outputIcon");
+    outputIcon->setGeometry(QRect());
 
     workingAnimation = new AnimationLabel(this);
     workingAnimation->setObjectName("workingAnimation");
     workingAnimation->setGeometry(QRect());
-
-    // Load settings
-    SettingsManager::instance().load();
 
     // If this is the first time running or a new version, call updateVersion
     if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION) {
@@ -268,6 +266,17 @@ void LaunchyWidget::executeStartupCommand(int command) {
         close();
 }
 
+void LaunchyWidget::showEvent(QShowEvent *event) {
+    if (m_skinChanged) {
+        // output icon may changed with skin
+        int maxIconSize = outputIcon->width();
+        maxIconSize = qMax(maxIconSize, outputIcon->height());
+        qDebug() << "output icon size:" << maxIconSize;
+        g_app->setPreferredIconSize(maxIconSize);
+        m_skinChanged = false;
+    }
+    QWidget::showEvent(event);
+}
 
 void LaunchyWidget::paintEvent(QPaintEvent* event) {
     // Do the default draw first to render any background specified in the stylesheet
@@ -818,8 +827,7 @@ void LaunchyWidget::doEnter()
         launchItem(item);
         hideLaunchy();
     }
-    else
-    {
+    else {
         qDebug("Nothing to launch");
     }
 }
@@ -901,10 +909,10 @@ void LaunchyWidget::searchOnInput()
 
 
 // If there are current results, update the output text and icon
-void LaunchyWidget::updateOutputWidgets(bool resetAlternativesSelection)
-{
-    if (searchResults.count() > 0 && (inputData.count() > 1 || input->text().length() > 0))
-    {
+void LaunchyWidget::updateOutputWidgets(bool resetAlternativesSelection) {
+    if (searchResults.count() > 0 
+        && (inputData.count() > 1
+            || input->text().length() > 0)) {
         qDebug() << "Setting output text to" << searchResults[0].shortName;
 
         QString outputText = Catalog::decorateText(searchResults[0].shortName, g_searchText, true);
@@ -912,15 +920,13 @@ void LaunchyWidget::updateOutputWidgets(bool resetAlternativesSelection)
         outputText += QString(" (%1 launches)").arg(searchResults[0].usage);
 #endif
         output->setText(outputText);
-        if (outputItem != searchResults[0])
-        {
+        if (outputItem != searchResults[0]) {
             outputItem = searchResults[0];
             outputIcon->clear();
-            iconExtractor.processIcon(searchResults[0]);
+            iconExtractor.processIcon(searchResults[0], true);
         }
 
-        if (outputItem.id != HASH_HISTORY)
-        {
+        if (outputItem.id != HASH_HISTORY) {
             // Did the plugin take control of the input?
             if (inputData.last().getID() != 0)
                 outputItem.id = inputData.last().getID();
@@ -928,13 +934,11 @@ void LaunchyWidget::updateOutputWidgets(bool resetAlternativesSelection)
         }
 
         // Only update the alternatives list if it is visible
-        if (alternatives->isVisible())
-        {
+        if (alternatives->isVisible()) {
             updateAlternatives(resetAlternativesSelection);
         }
     }
-    else
-    {
+    else {
         // No results to show, clear the output UI and hide the alternatives list
         output->clear();
         outputIcon->clear();
@@ -967,12 +971,10 @@ void LaunchyWidget::dropTimeout()
 
 void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon)
 {
-    if (itemIndex == -1)
-    {
+    if (itemIndex == -1) {
         // An index of -1 means update the output icon, check that it is also
         // the same item as was originally requested
-        if (path == outputItem.fullPath)
-        {
+        if (path == outputItem.fullPath) {
             outputIcon->setPixmap(icon.pixmap(outputIcon->size()));
         }
     }
@@ -1066,21 +1068,17 @@ void LaunchyWidget::setSkin(const QString& name)
 }
 
 
-void LaunchyWidget::updateVersion(int oldVersion)
-{
-    if (oldVersion < 199)
-    {
+void LaunchyWidget::updateVersion(int oldVersion) {
+    if (oldVersion < 199) {
         SettingsManager::instance().removeAll();
         SettingsManager::instance().load();
     }
 
-    if (oldVersion < 249)
-    {
+    if (oldVersion < 249) {
         g_settings->setValue("GenOps/skin", "Default");
     }
 
-    if (oldVersion < LAUNCHY_VERSION)
-    {
+    if (oldVersion < LAUNCHY_VERSION) {
         g_settings->setValue("donateTime", QDateTime::currentDateTime().addDays(21));
         g_settings->setValue("version", LAUNCHY_VERSION);
     }
@@ -1179,16 +1177,13 @@ bool LaunchyWidget::setAlwaysTop(bool alwaysTop)
 }
 
 
-void LaunchyWidget::setOpaqueness(int level)
-{
+void LaunchyWidget::setOpaqueness(int level) {
     double value = level / 100.0;
     setWindowOpacity(value);
     alternatives->setWindowOpacity(value);
 }
 
-
-void LaunchyWidget::reloadSkin()
-{
+void LaunchyWidget::reloadSkin() {
     setSkin(currentSkin);
 }
 
@@ -1216,21 +1211,22 @@ void LaunchyWidget::onSecondInstance() {
     }
 }
 
-void LaunchyWidget::applySkin(const QString& name)
-{
+void LaunchyWidget::applySkin(const QString& name) {
     currentSkin = name;
+    m_skinChanged = true;
+
+    qDebug() << "apply skin:" << name;
 
     if (listDelegate == NULL)
         return;
 
-    QString directory = SettingsManager::instance().skinPath(name);
+    QString skinPath = SettingsManager::instance().skinPath(name);
     // Use default skin if this one doesn't exist or isn't valid
-    if (directory.length() == 0)
-    {
+    if (skinPath.isEmpty()) {
         QString defaultSkin = SettingsManager::instance().directory("defSkin")[0];
-        directory = SettingsManager::instance().skinPath(defaultSkin);
+        skinPath = SettingsManager::instance().skinPath(defaultSkin);
         // If still no good then fail with an ugly default
-        if (directory.length() == 0)
+        if (skinPath.isEmpty())
             return;
 
         g_settings->setValue("GenOps/skin", defaultSkin);
@@ -1246,30 +1242,25 @@ void LaunchyWidget::applySkin(const QString& name)
     output->setAlignment(Qt::AlignCenter);
     alternativesRect = QRect();
 
-    QFile fileStyle(directory + "style.qss");
+    QFile fileStyle(skinPath + "style.qss");
     fileStyle.open(QFile::ReadOnly);
     QString strStyleSheet(fileStyle.readAll());
     // transform stylesheet for external resources
-    strStyleSheet.replace("url(", "url("+directory);
+    strStyleSheet.replace("url(", "url("+skinPath);
     this->setStyleSheet(strStyleSheet);
 
     bool validFrame = false;
     QPixmap frame;
-    if (g_app->supportsAlphaBorder())
-    {
-        if (frame.load(directory + "frame.png"))
-        {
+    if (g_app->supportsAlphaBorder()) {
+        if (frame.load(skinPath + "frame.png")) {
             validFrame = true;
         }
-        else if (frame.load(directory + "background.png"))
-        {
+        else if (frame.load(skinPath + "background.png")) {
             QPixmap border;
-            if (border.load(directory + "mask.png"))
-            {
+            if (border.load(skinPath + "mask.png")) {
                 frame.setMask(border);
             }
-            if (border.load(directory + "alpha.png"))
-            {
+            if (border.load(skinPath + "alpha.png")) {
                 QPainter surface(&frame);
                 surface.drawPixmap(0, 0, border);
             }
@@ -1277,17 +1268,14 @@ void LaunchyWidget::applySkin(const QString& name)
         }
     }
 
-    if (!validFrame)
-    {
+    if (!validFrame) {
         // Set the background image
-        if (frame.load(directory + "background_nc.png"))
-        {
+        if (frame.load(skinPath + "background_nc.png")) {
             validFrame = true;
 
             // Set the background mask
             QPixmap mask;
-            if (mask.load(directory + "mask_nc.png"))
-            {
+            if (mask.load(skinPath + "mask_nc.png")) {
                 // For some reason, w/ compiz setmask won't work
                 // for rectangular areas.  This is due to compiz and
                 // XShapeCombineMask
@@ -1296,32 +1284,22 @@ void LaunchyWidget::applySkin(const QString& name)
         }
     }
 
-    if (QFile::exists(directory + "spinner.gif"))
-    {
-        workingAnimation->LoadAnimation(directory + "spinner.gif");
+    if (QFile::exists(skinPath + "spinner.gif")) {
+        workingAnimation->LoadAnimation(skinPath + "spinner.gif");
     }
 
-    if (validFrame)
-    {
+    if (validFrame) {
         frameGraphic = new QPixmap(frame);
-        if (frameGraphic)
-        {
+        if (frameGraphic) {
             resize(frameGraphic->size());
         }
     }
-
-    int maxIconSize = outputIcon->width();
-    maxIconSize = qMax(maxIconSize, outputIcon->height());
-    g_app->setPreferredIconSize(maxIconSize);
 }
 
-
-void LaunchyWidget::mousePressEvent(QMouseEvent *e)
-{
-    if (e->buttons() == Qt::LeftButton)
-    {
-        if (g_settings->value("GenOps/dragmode", 0).toInt() == 0 || (e->modifiers() & Qt::ShiftModifier))
-        {
+void LaunchyWidget::mousePressEvent(QMouseEvent *e) {
+    if (e->buttons() == Qt::LeftButton) {
+        if (g_settings->value("GenOps/dragmode", 0).toInt() == 0
+            || (e->modifiers() & Qt::ShiftModifier)) {
             dragging = true;
             dragStartPoint = e->pos();
         }

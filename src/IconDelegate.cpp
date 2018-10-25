@@ -19,23 +19,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "precompiled.h"
-#include "icon_delegate.h"
+#include "IconDelegate.h"
 #include "globals.h"
 #include "catalog_types.h"
 
-extern QLabel* alternativesPath;
-
-IconDelegate::IconDelegate(QObject *parent) :
-	QStyledItemDelegate(parent)
-{
+IconDelegate::IconDelegate(QObject *parent)
+    : QStyledItemDelegate(parent) {
 }
 
 void IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-						 const QModelIndex &index) const
-{
+						 const QModelIndex &index) const {
 	painter->save();
-	if (option.state & QStyle::State_Selected)
-	{
+	if (option.state & QStyle::State_Selected) {
 		painter->fillRect(option.rect, option.palette.highlight());
 		painter->setPen(option.palette.color(QPalette::HighlightedText));
 	}
@@ -74,7 +69,39 @@ void IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
 
 
 QSize IconDelegate::sizeHint(const QStyleOptionViewItem & /* option */,
-							 const QModelIndex & /* index */) const
-{
+							 const QModelIndex & /* index */) const {
 	return QSize(10, 32);
+}
+
+
+void IconDelegate::setColor(QString line, bool hi) {
+    if (!line.contains(","))
+        color = QColor(line);
+
+    QStringList spl = line.split(",");
+    if (spl.count() != 3) return;
+    if (!hi)
+        color = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
+    else
+        hicolor = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
+}
+
+void IconDelegate::setFamily(QString fam) {
+    family = fam;
+}
+
+void IconDelegate::setSize(int s) {
+    size = s;
+}
+
+void IconDelegate::setWeight(int w) {
+    weight = w;
+}
+
+void IconDelegate::setItalics(int i) {
+    italics = i;
+}
+
+void IconDelegate::setAlternativesPathWidget(QLabel* label) {
+    alternativesPath = label;
 }

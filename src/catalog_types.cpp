@@ -219,21 +219,17 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
 }
 
 
-void SlowCatalog::addItem(const CatItem& item)
-{
+void SlowCatalog::addItem(const CatItem& item) {
 	// Prevent other threads accessing the catalog
 	QMutexLocker locker(&mutex);
 
 	bool replaced = false;
 
-	if (timestamp > 0)
-	{
+	if (timestamp > 0) {
 		// If we're not loading the catalog, search for an existing matching catalog item
 		// and replace it if it exists
-		for (int i = 0; i < catalogItems.size(); ++i)
-		{
-			if (item == catalogItems[i])
-			{
+		for (int i = 0; i < catalogItems.size(); ++i) {
+			if (item == catalogItems[i]) {
 				int usage = catalogItems[i].usage;
 				catalogItems[i] = CatalogItem(item, timestamp);
 				catalogItems[i].usage = usage;
@@ -243,8 +239,7 @@ void SlowCatalog::addItem(const CatItem& item)
 		}
 	}
 
-	if (!replaced)
-	{
+	if (!replaced) {
 		// If no match found, append the item to the catalog
 		qDebug() << "Adding" << item.fullPath;
 		catalogItems.push_back(CatalogItem(item, timestamp));

@@ -125,6 +125,12 @@
             </property>
             <item>
              <widget class="QLabel" name="label_5">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
               <property name="text">
                <string>Always center</string>
               </property>
@@ -848,9 +854,9 @@
          <property name="title">
           <string>System Options</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <property name="spacing">
-           <number>1</number>
+           <number>3</number>
           </property>
           <property name="topMargin">
            <number>3</number>
@@ -937,18 +943,57 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="genUpdateCheck">
-            <property name="text">
-             <string>Check for new versions on startup</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="genPortable">
             <property name="text">
              <string>Portable mode (USB stick)</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>Logging Level</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QComboBox" name="genLog">
+              <item>
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Debug</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Normal</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -1570,7 +1615,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>genUpdateMinutes</tabstop>
   <tabstop>genShowHidden</tabstop>
   <tabstop>genShowNetwork</tabstop>
-  <tabstop>genUpdateCheck</tabstop>
   <tabstop>genPortable</tabstop>
   <tabstop>genProxyHostname</tabstop>
   <tabstop>genProxyPort</tabstop>

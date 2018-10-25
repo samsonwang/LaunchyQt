@@ -55,6 +55,7 @@ public slots:
     void catRescanClicked(bool);
     void pluginChanged(int row);
     void pluginItemChanged(QListWidgetItem* state);
+    void logLevelChanged(int index);
 
 private:
     void addDirectory(const QString& directory, bool edit = false);

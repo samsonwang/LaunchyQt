@@ -483,8 +483,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	any settings in Launchy's permanent configuration file, please 
 	refer to the settings member variable.
 */
-class PluginInterface
-{
+class PluginInterface {
 public:
 	virtual ~PluginInterface() {};
 

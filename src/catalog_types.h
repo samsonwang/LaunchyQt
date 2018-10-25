@@ -86,8 +86,7 @@ public:
 // The slow catalog searches slowly but
 // adding items is fast and uses less memory
 // than FastCatalog
-class SlowCatalog : public Catalog
-{
+class SlowCatalog : public Catalog {
 public:
 	SlowCatalog() : Catalog() {}
 	virtual int count() { return catalogItems.count(); }

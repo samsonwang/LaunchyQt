@@ -17,30 +17,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ICON_EXTRACTOR
-#define ICON_EXTRACTOR
+#pragma once
 
-#include "precompiled.h"
+#include <QThread>
+#include <QList>
+#include <QString>
+#include <QIcon>
 #include "catalog.h"
 
 class IconExtractor : public QThread {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	IconExtractor();
-	void processIcon(const CatItem& item, bool highPriority = true);
-	void processIcons(const QList<CatItem>& newItems, bool reset = true);
-	void stop();
-	void run();
+    IconExtractor();
+    void processIcon(const CatItem& item, bool highPriority = false);
+    void processIcons(const QList<CatItem>& newItems, bool reset = true);
+    void stop();
+    void run();
 
 signals:
     void iconExtracted(int itemIndex, QString path, QIcon icon);
 
 private:
-	QIcon getIcon(const CatItem& item);
+    QIcon getIcon(const CatItem& item);
 
-	QMutex mutex;
-	QQueue<CatItem> items;
+    QMutex m_mutex;
+    QQueue<CatItem> m_items;
 };
-
-
-#endif

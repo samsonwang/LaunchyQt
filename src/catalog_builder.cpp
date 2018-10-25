@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #include "precompiled.h"
 #include "catalog_types.h"
 #include "catalog_builder.h"
@@ -26,153 +25,158 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Directory.h"
 #include "SettingsManager.h"
 
-CatalogBuilder::CatalogBuilder(PluginHandler* plugs) :
-	plugins(plugs),
-	progress(CATALOG_PROGRESS_MAX)
-{
-	catalog = new SlowCatalog();
+#define CATALOG_PROGRESS_MIN 0
+#define CATALOG_PROGRESS_MAX 100
+
+CatalogBuilder::CatalogBuilder(PluginHandler* plugin)
+    : m_plugin(plugin),
+    m_progress(CATALOG_PROGRESS_MAX),
+    m_catalog(new SlowCatalog) {
 }
 
 
 void CatalogBuilder::buildCatalog() {
-	progress = CATALOG_PROGRESS_MIN;
-	emit catalogIncrement(progress);
-	catalog->incrementTimestamp();
-	indexed.clear();
+    m_progress = CATALOG_PROGRESS_MIN;
+    emit catalogIncrement(m_progress);
+    m_catalog->incrementTimestamp();
+    m_indexed.clear();
 
-	QList<Directory> memDirs = SettingsManager::readCatalogDirectories();
-	QHash<uint, PluginInfo> pluginsInfo = plugins->getPlugins();
-	totalItems = memDirs.count() + pluginsInfo.count();
-	currentItem = 0;
+    QList<Directory> memDirs = SettingsManager::instance().readCatalogDirectories();
+    QHash<uint, PluginInfo> pluginsInfo = m_plugin->getPlugins();
+    m_totalItems = memDirs.count() + pluginsInfo.count();
+    m_currentItem = 0;
 
-	while (currentItem < memDirs.count()) {
-		QString cur = g_app->expandEnvironmentVars(memDirs[currentItem].name);
-		indexDirectory(cur, memDirs[currentItem].types, memDirs[currentItem].indexDirs,
-                       memDirs[currentItem].indexExe, memDirs[currentItem].depth);
-		progressStep(currentItem);
-	}
+    while (m_currentItem < memDirs.count()) {
+        QString cur = g_app->expandEnvironmentVars(memDirs[m_currentItem].name);
+        indexDirectory(cur, memDirs[m_currentItem].types, memDirs[m_currentItem].indexDirs,
+                       memDirs[m_currentItem].indexExe, memDirs[m_currentItem].depth);
+        progressStep(m_currentItem);
+    }
 
-	// Don't call the pluginhandler to request catalog because we need to track progress
-	plugins->getCatalogs(catalog, this);
+    // Don't call the pluginhandler to request catalog because we need to track progress
+    m_plugin->getCatalogs(m_catalog, this);
 
-	catalog->purgeOldItems();
-	indexed.clear();
-	progress = CATALOG_PROGRESS_MAX;
-	emit catalogFinished();
+    m_catalog->purgeOldItems();
+    m_indexed.clear();
+    m_progress = CATALOG_PROGRESS_MAX;
+    emit catalogFinished();
 }
 
+void CatalogBuilder::indexDirectory(const QString& directory,
+                                    const QStringList& filters,
+                                    bool fdirs,
+                                    bool fbin,
+                                    int depth) {
+    QString dir = QDir::toNativeSeparators(directory);
+    QDir qd(dir);
+    dir = qd.absolutePath();
+    QStringList dirs = qd.entryList(QDir::AllDirs);
 
-void CatalogBuilder::indexDirectory(const QString& directory, const QStringList& filters, bool fdirs, bool fbin, int depth)
-{
-	QString dir = QDir::toNativeSeparators(directory);
-	QDir qd(dir);
-	dir = qd.absolutePath();
-	QStringList dirs = qd.entryList(QDir::AllDirs);
-
-	if (depth > 0)
-	{
-		for (int i = 0; i < dirs.count(); ++i)
-		{
-			if (!dirs[i].startsWith("."))
-			{
-				QString cur = dirs[i];
-				if (!cur.contains(".lnk"))
-				{
+    if (depth > 0) {
+        for (int i = 0; i < dirs.count(); ++i) {
+            if (!dirs[i].startsWith(".")) {
+                QString cur = dirs[i];
+                if (!cur.contains(".lnk")) {
 #ifdef Q_OS_MAC
-                                    // Special handling of app directories
-                                    if (cur.endsWith(".app", Qt::CaseInsensitive)) {
-                                        CatItem item(dir + "/" + cur);
-                                        g_app->alterItem(&item);
-                                        catalog->addItem(item);
-                                    }
-                                    else
+                    // Special handling of app directories
+                    if (cur.endsWith(".app", Qt::CaseInsensitive)) {
+                        CatItem item(dir + "/" + cur);
+                        g_app->alterItem(&item);
+                        m_catalog->addItem(item);
+                    }
+                    else
 #endif
-					indexDirectory(dir + "/" + dirs[i], filters, fdirs, fbin, depth-1);
-				}
-			}
-		}
-	}
+                        indexDirectory(dir + "/" + dirs[i], filters, fdirs, fbin, depth-1);
+                }
+            }
+        }
+    }
 
-	if (fdirs)
-	{
-		for (int i = 0; i < dirs.count(); ++i)
-		{
-			if (!dirs[i].startsWith(".") && !indexed.contains(dir + "/" + dirs[i]))
-			{
-				bool isShortcut = dirs[i].endsWith(".lnk", Qt::CaseInsensitive);
+    if (fdirs) {
+        for (int i = 0; i < dirs.count(); ++i) {
+            if (!dirs[i].startsWith(".") && !m_indexed.contains(dir + "/" + dirs[i])) {
+                bool isShortcut = dirs[i].endsWith(".lnk", Qt::CaseInsensitive);
 
-				CatItem item(dir + "/" + dirs[i], !isShortcut);
-				catalog->addItem(item);
-				indexed.insert(dir + "/" + dirs[i]);
-			}
-		}
-	}
-	else
-	{
-		// Grab any shortcut directories
-		// This is to work around a QT weirdness that treats shortcuts to directories as actual directories
-		for (int i = 0; i < dirs.count(); ++i)
-		{
-			if (!dirs[i].startsWith(".") && dirs[i].endsWith(".lnk",Qt::CaseInsensitive))
-			{
-				if (!indexed.contains(dir + "/" + dirs[i]))
-				{
-					CatItem item(dir + "/" + dirs[i], true);
-					catalog->addItem(item);
-					indexed.insert(dir + "/" + dirs[i]);
-				}
-			}
-		}
-	}
+                CatItem item(dir + "/" + dirs[i], !isShortcut);
+                m_catalog->addItem(item);
+                m_indexed.insert(dir + "/" + dirs[i]);
+            }
+        }
+    }
+    else {
+        // Grab any shortcut directories
+        // This is to work around a QT weirdness that treats shortcuts to directories as actual directories
+        for (int i = 0; i < dirs.count(); ++i) {
+            if (!dirs[i].startsWith(".") && dirs[i].endsWith(".lnk", Qt::CaseInsensitive)) {
+                if (!m_indexed.contains(dir + "/" + dirs[i])) {
+                    CatItem item(dir + "/" + dirs[i], true);
+                    m_catalog->addItem(item);
+                    m_indexed.insert(dir + "/" + dirs[i]);
+                }
+            }
+        }
+    }
 
-	if (fbin)
-	{
-		QStringList bins = qd.entryList(QDir::Files | QDir::Executable);
-		for (int i = 0; i < bins.count(); ++i)
-		{
-			if (!indexed.contains(dir + "/" + bins[i]))
-			{
-				CatItem item(dir + "/" + bins[i]);
-				catalog->addItem(item);
-				indexed.insert(dir + "/" + bins[i]);
-			}
-		}
-	}
+    if (fbin) {
+        QStringList bins = qd.entryList(QDir::Files | QDir::Executable);
+        for (int i = 0; i < bins.count(); ++i) {
+            if (!m_indexed.contains(dir + "/" + bins[i])) {
+                CatItem item(dir + "/" + bins[i]);
+                m_catalog->addItem(item);
+                m_indexed.insert(dir + "/" + bins[i]);
+            }
+        }
+    }
 
-	// Don't want a null file filter, that matches everything..
-	if (filters.count() == 0)
-		return;
+    // Don't want a null file filter, that matches everything..
+    if (filters.count() == 0)
+        return;
 
-	QStringList files = qd.entryList(filters, QDir::Files | QDir::System, QDir::Unsorted );
-	for (int i = 0; i < files.count(); ++i)
-	{
-		if (!indexed.contains(dir + "/" + files[i]))
-		{
-			CatItem item(dir + "/" + files[i]);
-			g_app->alterItem(&item);
-#ifdef Q_OS_X11
-                        if(item.fullPath.endsWith(".desktop") && item.icon == "")
-                            continue;
+    QStringList files = qd.entryList(filters, QDir::Files | QDir::System, QDir::Unsorted);
+    for (int i = 0; i < files.count(); ++i) {
+        if (!m_indexed.contains(dir + "/" + files[i])) {
+            CatItem item(dir + "/" + files[i]);
+            g_app->alterItem(&item);
+#ifdef Q_OS_LINUX
+            if (item.fullPath.endsWith(".desktop") && item.icon == "")
+                continue;
 #endif
-			catalog->addItem(item);
+            m_catalog->addItem(item);
 
-			indexed.insert(dir + "/" + files[i]);
-		}
-	}
+            m_indexed.insert(dir + "/" + files[i]);
+        }
+    }
 }
 
 
-bool CatalogBuilder::progressStep(int newStep)
-{
-	newStep = newStep;
+CatalogBuilder::~CatalogBuilder() {
+    if (m_catalog) {
+        delete m_catalog;
+        m_catalog = nullptr;
+    }
+}
 
-	++currentItem;
-	int newProgress = (int)(CATALOG_PROGRESS_MAX * (float)currentItem / totalItems);
-	if (newProgress != progress)
-	{
-		progress = newProgress;
-		emit catalogIncrement(progress);
-	}
+Catalog* CatalogBuilder::getCatalog() const {
+    return m_catalog;
+}
 
-	return true;
+int CatalogBuilder::getProgress() const {
+    return m_progress;
+}
+
+int CatalogBuilder::isRunning() const {
+    return m_progress < CATALOG_PROGRESS_MAX;
+}
+
+bool CatalogBuilder::progressStep(int newStep) {
+    newStep = newStep;
+
+    ++m_currentItem;
+    int newProgress = (int)(CATALOG_PROGRESS_MAX * (float)m_currentItem / m_totalItems);
+    if (newProgress != m_progress) {
+        m_progress = newProgress;
+        emit catalogIncrement(m_progress);
+    }
+
+    return true;
 }

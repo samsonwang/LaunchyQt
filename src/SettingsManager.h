@@ -39,7 +39,7 @@ public:
 	void setPortable(bool makePortable);
 	void removeAll();
 	void setProfileName(const QString& name);
-	static QList<Directory> readCatalogDirectories();
+	QList<Directory> readCatalogDirectories();
 	void writeCatalogDirectories(QList<Directory>& directories);
 
 private:

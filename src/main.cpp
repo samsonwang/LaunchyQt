@@ -24,9 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 int main(int argc, char* argv[]) {
 
-    QLogger::setLogLevel(QtDebugMsg);
-
     createApplication(argc, argv);
+    
+    // Load settings
+    SettingsManager::instance().load();
 
     QTranslator translator;
     if (translator.load(QLocale(),

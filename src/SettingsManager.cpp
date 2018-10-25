@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyWidget.h"
 #include "globals.h"
 #include "AppBase.h"
+#include "QLogger.h"
 
 const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";
@@ -44,7 +45,6 @@ void SettingsManager::load() {
 	m_dirs = g_app->getDirectories();
 	m_portable = QFile::exists(m_dirs["portableConfig"][0] + iniName);
 
-	qDebug("Loading settings in %s mode from %s", m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 	QString iniPath = configDirectory(m_portable) + iniName;
 	g_settings.reset(new QSettings(configDirectory(m_portable) + iniName, QSettings::IniFormat));
 	if (!QFile::exists(iniPath)) {
@@ -52,8 +52,15 @@ void SettingsManager::load() {
 		QList<Directory> directories = g_app->getDefaultCatalogDirectories();
 		writeCatalogDirectories(directories);
 	}
-}
 
+    int logLevel = g_settings->value("GenOps/logLevel", 2).toInt();
+    QLogger::setLogLevel(logLevel);
+
+    qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
+        << "(build" << __DATE__ << __TIME__ << ")";
+    qInfo("Loading settings in %s mode from %s", 
+          m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
+}
 
 bool SettingsManager::isPortable() const {
 	return m_portable;
@@ -91,7 +98,7 @@ QString SettingsManager::skinPath(const QString& skinName) const {
 // Switch between portable and installed mode
 void SettingsManager::setPortable(bool makePortable) {
 	if (makePortable != m_portable) {
-		qDebug("Converting to %s mode", makePortable ? "portable" : "installed");
+		qInfo("Converting to %s mode", makePortable ? "portable" : "installed");
 
 		// Destroy the QSettings object first so it writes any changes to disk
         g_settings.reset(nullptr);
