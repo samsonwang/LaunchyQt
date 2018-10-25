@@ -6,19 +6,20 @@ CONFIG += debug_and_release
 PRECOMPILED_HEADER = precompiled.h
 
 # CONFIG += qt release
-INCLUDEPATH += ../common
+INCLUDEPATH += ../deps
 QT += network widgets
 SOURCES = main.cpp \
+    AppBase.cpp \
     LaunchyWidget.cpp \
     globals.cpp \
     OptionDialog.cpp \
     catalog.cpp \
     catalog_builder.cpp \
     plugin_handler.cpp \
-    icon_delegate.cpp \
+    IconDelegate.cpp \
     plugin_interface.cpp \
     catalog_types.cpp \
-    icon_extractor.cpp \
+    IconExtractor.cpp \
     FileBrowserDelegate.cpp \
     FileBrowser.cpp \
     DropListWidget.cpp \
@@ -30,9 +31,8 @@ SOURCES = main.cpp \
     FileSearch.cpp \
     AnimationLabel.cpp \
     SettingsManager.cpp \
-    QHotkeyP.cpp \
-    QHotkey.cpp
-HEADERS = platform_base.h \
+    QLogger.cpp
+HEADERS = AppBase.h \
     globals.h \
     LaunchyWidget.h \
     catalog.h \
@@ -41,8 +41,8 @@ HEADERS = platform_base.h \
     plugin_handler.h \
     OptionDialog.h \
     catalog_types.h \
-    icon_delegate.h \
-    icon_extractor.h \
+    IconDelegate.h \
+    IconExtractor.h \
     FileBrowserDelegate.h \
     FileBrowser.h \
     DropListWidget.h \
@@ -55,19 +55,19 @@ HEADERS = platform_base.h \
     FileSearch.h \
     AnimationLabel.h \
     SettingsManager.h \
-    QHotkeyP.h \
-    QHotkey.h
+    QLogger.h
 FORMS = OptionDialog.ui
+include(../deps/SingleApplication/singleapplication.pri)
+DEFINES += QAPPLICATION_CLASS=QApplication
+include(../deps/QHotkey/QHotkey.pri)
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
     SOURCES += linux/platform_unix.cpp \
-               linux/platform_unix_util.cpp \
-               linux/QHotkeyX11.cpp
+               linux/platform_unix_util.cpp
     HEADERS += linux/platform_unix.h \
                linux/platform_unix_util.h
     PREFIX = /usr
-    LIBS += -lxcb
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
         PLUGINS_PATH=\\\"$$PREFIX/lib/launchy/plugins/\\\" \
         PLATFORMS_PATH=\\\"$$PREFIX/lib/launchy/\\\"
@@ -75,7 +75,6 @@ unix:!macx {
         CONFIG(debug, debug|release):DESTDIR = ../debug/
         CONFIG(release, debug|release):DESTDIR = ../release/
     }
-    SOURCES +=
     target.path = $$PREFIX/bin/
     skins.path = $$PREFIX/share/launchy/skins/
     skins.files = ../skins/*
@@ -94,7 +93,6 @@ win32 {
     if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
     SOURCES += win/platform_win.cpp \
                win/platform_win_util.cpp \
-               win/QHotkeyWin.cpp \
                win/WinIconProvider.cpp \
                win/minidump.cpp
     HEADERS += win/WinIconProvider.h \

@@ -1,6 +1,7 @@
 
 #pragma once
 #include <QtGlobal>
+#include <cstdio>
 
 class QLogger {
 public:

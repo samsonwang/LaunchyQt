@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include <QWidget>
 #include <QSystemTrayIcon>
 #include <QPushButton>
 
@@ -40,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class QHotkey;
 
 enum CommandFlag {
-    None = 0,
+    Default = 0,
     ShowLaunchy = 1,
     ShowOptions = 2,
     ResetPosition = 4,

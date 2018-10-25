@@ -19,76 +19,25 @@
 
 #pragma once
 
+#include "AppBase.h"
 #include "platform_unix_util.h"
-#include "platform_base.h"
-// #include "platform_base_hotkey.h"
-// #include "platform_base_hottrigger.h"
 
-#include <QX11Info>
-// #include <boost/shared_ptr.hpp>
-
-#include <X11/X.h>
-#include <X11/Xlib.h>
-
-// using namespace boost;
-
-/*
-  This QAPP scans all x events for keypresses
-  and sends them off to the hotkey manager
-*/
-
-/*
-class MyApp : public QApplication {
+class PlatformUnix :  public AppBase {
     Q_OBJECT
-    public:
-        MyApp(int argc, char** argv) : QApplication(argc,argv) {}
-	bool x11EventFilter ( XEvent * event ) {
-	    if (event->type == KeyPress) {
-		emit xkeyPressed(event);
-	    }
-	return false;
-    }    
-signals:
-    void xkeyPressed(XEvent*);
-};
-*/
-class PlatformUnix :  public PlatformBase
-{
-    Q_OBJECT
-
-    bool x11EventFilter ( XEvent * event ) {
-        if (event->type == KeyPress) {
-            emit xkeyPressed(event);
-        }
-        return false;
-    }
-
-    QKeySequence oldKey;
  public:
-    PlatformUnix(int & argc, char** argv);
-    ~PlatformUnix();
+    PlatformUnix(int& argc, char** argv);
+    virtual ~PlatformUnix();
     
     void setPreferredIconSize(int size) { size = size; return; }
 
-    //virtual shared_ptr<QApplication> init(int & argc, char** argv);
-
-    QString GetSettingsDirectory() { 
-	return "";
-    }
-
-    
+    QString GetSettingsDirectory() { return ""; }
     QList<Directory> getDefaultCatalogDirectories();
     
     
-    void AddToNotificationArea() {};
-    void RemoveFromNotificationArea() {};
-    
-    bool isAlreadyRunning() const {
-	return false;
-    }
+    void AddToNotificationArea() {}
+    void RemoveFromNotificationArea() {}
 
-
-    virtual QHash<QString, QList<QString> > getDirectories();
+    virtual QHash<QString, QList<QString>> getDirectories();
 	virtual QString expandEnvironmentVars(QString txt);
 
     bool supportsAlphaBorder() const;
@@ -101,9 +50,6 @@ class PlatformUnix :  public PlatformBase
     */
 
     virtual void alterItem(CatItem*);
-
-signals:
-    void xkeyPressed(XEvent*);
 };
 
 

@@ -1,5 +1,8 @@
 
 #include "QLogger.h"
+#include <QDir>
+#include <QString>
+#include <QDateTime>
 
 FILE* QLogger::s_logFile = nullptr;
 QtMsgType QLogger::s_logLevel;
@@ -12,7 +15,6 @@ void QLogger::stopLogging() {
         s_logFile = nullptr;
     }
 }
-
 
 void QLogger::setLogLevel(int index) {
     switch (index) {

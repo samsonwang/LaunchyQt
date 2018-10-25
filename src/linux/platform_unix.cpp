@@ -1,90 +1,70 @@
 /*
   Launchy: Application Launcher
   Copyright (C) 2007  Josh Karlin
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   as published by the Free Software Foundation; either version 2
   of the License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "precompiled.h"
+#include "platform_unix.h"
 #include <QtGui>
 #include <QApplication>
 #include <QX11Info>
-#include "platform_unix.h"
-// #include <boost/pointer_cast.hpp>
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <QFileIconProvider>
+#include "AppBase.h"
+#include "catalog.h"
+#include "LaunchyWidget.h"
 
-PlatformUnix::PlatformUnix(int& argc, char** argv) :
-        PlatformBase(argc, argv)
-{
-    /*
-        instance = new LimitSingleInstance(TEXT("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
-
-        // Create local and global application mutexes so that installer knows when
-        // Launchy is running
-        localMutex = CreateMutex(NULL,0,_T("LaunchyMutex"));
-        globalMutex = CreateMutex(NULL,0,_T("Global\\LaunchyMutex"));
-        */
-    icons = new UnixIconProvider();
-
-//    init(argc,argv);
-//        alpha.reset();
-  //      icons->reset();
+PlatformUnix::PlatformUnix(int& argc, char** argv)
+    : AppBase(argc, argv) {
+    m_iconProvider = new UnixIconProvider();
 }
 
 /*
-PlatformUnix::PlatformUnix() : PlatformBase() 		
-{
-	alpha.reset();
-//    alpha = NULL;
-    icons.reset();
-}
-*/
-
-/*
-shared_ptr<QApplication> PlatformUnix::init(int & argc, char** argv)
-{        
-    //    QApplication * app = new QApplication(*argc, argv);
-    shared_ptr<QApplication> app(new MyApp(argc, argv));
-    icons = new UnixIconProvider();
+  shared_ptr<QApplication> PlatformUnix::init(int & argc, char** argv)
+  {
+  //    QApplication * app = new QApplication(*argc, argv);
+  shared_ptr<QApplication> app(new MyApp(argc, argv));
+  icons = new UnixIconProvider();
 
 //    icons.reset( (QFileIconProvider *) new UnixIconProvider());
-    return app;
+return app;
 }
 */
-PlatformUnix::~PlatformUnix()
-{ 
+PlatformUnix::~PlatformUnix() {
     // GlobalShortcutManager::clear();
-//    delete icons;
+    // delete icons;
 }
 
 QList<Directory> PlatformUnix::getDefaultCatalogDirectories() {
     QList<Directory> list;
-    const char *dirs[] = { "/usr/share/applications/",
-			   "/usr/local/share/applications/",
-			   "/usr/share/gdm/applications/",
-			   "/usr/share/applications/kde/",
-			   "~/.local/share/applications/"};
+    const char *dirs[] = {"/usr/share/applications/",
+                          "/usr/local/share/applications/",
+                          "/usr/share/gdm/applications/",
+                          "/usr/share/applications/kde/",
+                          "~/.local/share/applications/"};
     QStringList l;
     l << "*.desktop";
-    
+
     for(int i = 0; i < 5; i++)
-    list.append(Directory(dirs[i], l, false, true, 100));
+        list.append(Directory(dirs[i], l, false, true, 100));
 
     list.append(Directory("~", QStringList(), true, false, 0));
-    
+
     return list;
 }
 
@@ -93,7 +73,7 @@ QHash<QString, QList<QString> > PlatformUnix::getDirectories() {
     QHash<QString, QList<QString> > out;
     QDir d;
     d.mkdir(QDir::homePath() + "/.launchy");
-    
+
     out["skins"] += qApp->applicationDirPath() + "/skins";
     out["skins"] += QDir::homePath() + "/.launchy/skins";
     out["skins"] += SKINS_PATH;
@@ -104,11 +84,11 @@ QHash<QString, QList<QString> > PlatformUnix::getDirectories() {
 
     out["config"] += QDir::homePath() + "/.launchy";
     out["portableConfig"] += qApp->applicationDirPath();
-    
+
     if (QFile::exists(out["skins"].last() + "/Default"))
-	out["defSkin"] += out["skins"].last() + "/Default";
+        out["defSkin"] += out["skins"].last() + "/Default";
     else
-      out["defSkin"] += out["skins"].first() + "/Default";
+        out["defSkin"] += out["skins"].first() + "/Default";
 
     out["platforms"] += qApp->applicationDirPath();
     out["platforms"] += PLATFORMS_PATH;
@@ -118,53 +98,51 @@ QHash<QString, QList<QString> > PlatformUnix::getDirectories() {
 
 
 /*
-bool PlatformUnix::CreateAlphaBorder(QWidget* w, QString ImageName)
-{
+  bool PlatformUnix::CreateAlphaBorder(QWidget* w, QString ImageName)
+  {
 //   if (alpha)
 //	delete alpha;
-  
-    if (ImageName == "")
-	ImageName = alphaFile;
-    alphaFile = ImageName;
-    alpha.reset( new AlphaBorder(w, ImageName) ); 
-    return true;
+
+if (ImageName == "")
+ImageName = alphaFile;
+alphaFile = ImageName;
+alpha.reset( new AlphaBorder(w, ImageName) );
+return true;
 }
 */
-bool PlatformUnix::supportsAlphaBorder() const
-{
+bool PlatformUnix::supportsAlphaBorder() const {
     return QX11Info::isCompositingManagerRunning();
 }
 
-//Q_EXPORT_PLUGIN2(platform_unix, PlatformUnix)
 
 void PlatformUnix::alterItem(CatItem* item) {
     if (!item->fullPath.endsWith(".desktop", Qt::CaseInsensitive))
-	return;
+        return;
 
     QString locale = QLocale::system().name();
 
     QFile file(item->fullPath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-	return;
+        return;
 
     QString name = "";
     QString icon = "";
     QString exe = "";
     while(!file.atEnd()) {
-	QString line = QString::fromUtf8(file.readLine());
-	
-	if (line.startsWith("Name[" + locale, Qt::CaseInsensitive)) 
-	    name = line.split("=")[1].trimmed();
-	else if (line.startsWith("Name=", Qt::CaseInsensitive)) 
-	    name = line.split("=")[1].trimmed();
-	else if (line.startsWith("Icon", Qt::CaseInsensitive))
-	    icon = line.split("=")[1].trimmed();
-	else if (line.startsWith("Exec", Qt::CaseInsensitive))
-	    exe = line.split("=")[1].trimmed();	
+        QString line = QString::fromUtf8(file.readLine());
+
+        if (line.startsWith("Name[" + locale, Qt::CaseInsensitive))
+            name = line.split("=")[1].trimmed();
+        else if (line.startsWith("Name=", Qt::CaseInsensitive))
+            name = line.split("=")[1].trimmed();
+        else if (line.startsWith("Icon", Qt::CaseInsensitive))
+            icon = line.split("=")[1].trimmed();
+        else if (line.startsWith("Exec", Qt::CaseInsensitive))
+            exe = line.split("=")[1].trimmed();
     }
     if (name.size() >= item->shortName.size() - 8) {
-	item->shortName = name;
-	item->lowName = item->shortName.toLower();
+        item->shortName = name;
+        item->lowName = item->shortName.toLower();
     }
 
     // Don't index desktop items wthout icons
@@ -178,7 +156,7 @@ void PlatformUnix::alterItem(CatItem* item) {
 
     QStringList allExe = exe.trimmed().split(" ",QString::SkipEmptyParts);
     if (allExe.size() == 0 || allExe[0].size() == 0 )
-            return;
+        return;
     exe = allExe[0];
     allExe.removeFirst();
     //    exe = exe.trimmed().split(" ")[0];
@@ -203,16 +181,16 @@ void PlatformUnix::alterItem(CatItem* item) {
             break;
         }
     }
-    
-    
+
+
     item->fullPath = exe + " " + allExe.join(" ");
 
     // Cache the icon for this desktop file
     //shared_ptr<UnixIconProvider> u(dynamic_pointer_cast<UnixIconProvider>(icons));
 //    shared_ptr<UnixIconProvider> u((UnixIconProvider*) icons.get());
-    
+
     //icon = u->getDesktopIcon(file.fileName(), icon);
-    icon = ((UnixIconProvider*)icons)->getDesktopIcon(file.fileName(), icon);
+    icon = ((UnixIconProvider*)m_iconProvider)->getDesktopIcon(file.fileName(), icon);
 
     QFileInfo inf(icon);
     if (!inf.exists()) {
@@ -239,7 +217,7 @@ QString PlatformUnix::expandEnvironmentVars(QString txt)
 	while(curPos != -1)
 	{
 		int nextPos = txt.indexOf("$", curPos+1);
-		if (nextPos == -1) 
+		if (nextPos == -1)
 		{
 			out += txt.mid(curPos+1);
 			break;
@@ -253,7 +231,7 @@ QString PlatformUnix::expandEnvironmentVars(QString txt)
 				found = true;
 				out += s.mid(var.length()+1);
 				break;
-			}			
+			}
 		}
 		if (!found)
 			out += "$" + var;
@@ -265,4 +243,9 @@ QString PlatformUnix::expandEnvironmentVars(QString txt)
 // Create the application object
 QApplication* createApplication(int& argc, char** argv) {
     return new PlatformUnix(argc, argv);
+}
+
+// Create the main widget for the application
+LaunchyWidget* createLaunchyWidget(CommandFlags command) {
+    return new LaunchyWidget(command);
 }

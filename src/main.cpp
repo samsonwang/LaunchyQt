@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     // improve code below with QCommandlinePareser
     QStringList args = qApp->arguments();
-    CommandFlags command = None;
+    CommandFlags command = Default;
     bool allowMultipleInstances = false;
     for (int i = 0; i < args.size(); ++i) {
         QString arg = args[i];
