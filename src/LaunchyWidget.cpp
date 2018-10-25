@@ -111,7 +111,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     optionsButton->setToolTip(tr("Launchy Options"));
     optionsButton->setGeometry(QRect());
     connect(optionsButton, SIGNAL(clicked()),
-            this, SLOT(showOptionsDialog()));
+            this, SLOT(showOptionDialog()));
 
     closeButton = new QPushButton(this);
     closeButton->setObjectName("closeButton");
@@ -257,7 +257,7 @@ void LaunchyWidget::executeStartupCommand(int command) {
         showLaunchy();
 
     if (command & ShowOptions)
-        showOptionsDialog();
+        showOptionDialog();
 
     if (command & Rescan)
         buildCatalog();
@@ -311,7 +311,7 @@ void LaunchyWidget::setSuggestionListMode(int mode) {
     }
 }
 
-bool LaunchyWidget::setHotkey(QKeySequence hotkey) {
+bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
     m_pHotKey->setKeySeq(hotkey);
     return m_pHotKey->registered();
 }
@@ -454,7 +454,7 @@ void LaunchyWidget::launchItem(CatItem& item)
                 close();
                 break;
             case MSG_CONTROL_OPTIONS:
-                showOptionsDialog();
+                showOptionDialog();
                 break;
             case MSG_CONTROL_REBUILD:
                 buildCatalog();
@@ -1369,9 +1369,9 @@ void LaunchyWidget::buildCatalog() {
 }
 
 
-void LaunchyWidget::showOptionsDialog() {
+void LaunchyWidget::showOptionDialog() {
     if (!optionsOpen) {
-        hideAlternatives();
+        showLaunchy(true);
         optionsOpen = true;
         OptionDialog options(NULL);
         options.setObjectName("options");
@@ -1458,15 +1458,7 @@ void LaunchyWidget::showLaunchy(bool noFade) {
     plugins.showLaunchy();
 }
 
-
-void LaunchyWidget::showLaunchy()
-{
-    showLaunchy(false);
-}
-
-
-void LaunchyWidget::hideLaunchy(bool noFade)
-{
+void LaunchyWidget::hideLaunchy(bool noFade) {
     if (!isVisible() || isHidden())
         return;
 
@@ -1475,8 +1467,7 @@ void LaunchyWidget::hideLaunchy(bool noFade)
     if (alwaysShowLaunchy)
         return;
 
-    if (isVisible())
-    {
+    if (isVisible()) {
         fader->fadeOut(noFade);
     }
 
@@ -1502,11 +1493,9 @@ void LaunchyWidget::loadOptions()
 }
 
 
-int LaunchyWidget::getHotkey() const
-{
+int LaunchyWidget::getHotkey() const {
     int hotkey = g_settings->value("GenOps/hotkey", -1).toInt();
-    if (hotkey == -1)
-    {
+    if (hotkey == -1) {
 #if defined(Q_OS_WIN)
         int meta = Qt::AltModifier;
 #elif defined(Q_OS_LINUX)
@@ -1538,7 +1527,7 @@ void LaunchyWidget::createActions()
 
     actOptions = new QAction(tr("Options"), this);
     actOptions->setShortcut(QKeySequence(Qt::Key_Comma | Qt::CTRL));
-    connect(actOptions, SIGNAL(triggered()), this, SLOT(showOptionsDialog()));
+    connect(actOptions, SIGNAL(triggered()), this, SLOT(showOptionDialog()));
     addAction(actOptions);
 
     actExit = new QAction(tr("Exit"), this);

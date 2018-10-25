@@ -60,23 +60,20 @@ public:
 
 public:
     void executeStartupCommand(int command);
-
-    void showLaunchy(bool noFade);
     void showTrayIcon();
-
     void setSuggestionListMode(int mode);
-    bool setHotkey(QKeySequence);
+    bool setHotkey(const QKeySequence& hotkey);
     bool setAlwaysShow(bool);
     bool setAlwaysTop(bool);
     void setSkin(const QString& name);
     void loadOptions();
     int getHotkey() const;
     void startUpdateTimer();
-    void setOpaqueness(int level);
 
-    public slots:
-    void showLaunchy();
+public slots:
+    void showLaunchy(bool noFade = false);
     void buildCatalog();
+    void setOpaqueness(int level);
 
 protected:
     virtual void showEvent(QShowEvent *event);
@@ -94,7 +91,7 @@ protected:
     void saveSettings();
 
 protected slots:
-    void showOptionsDialog();
+    void showOptionDialog();
     void onHotkey();
     void dropTimeout();
     void inputKeyPressed(QKeyEvent* event);

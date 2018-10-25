@@ -47,7 +47,7 @@ void QLogger::setLogLevel(QtMsgType type) {
 void QLogger::messageHandler(QtMsgType type,
                             const QMessageLogContext& context,
                             const QString& msg) {
-    if (type <= s_logLevel || s_logFile == nullptr) {
+    if (type < s_logLevel || s_logFile == nullptr) {
         return;
     }
     QDateTime time = QDateTime::currentDateTime();

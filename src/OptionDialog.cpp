@@ -64,6 +64,8 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->genShiftDrag->setChecked(g_settings->value("GenOps/dragmode", 0) == 1);
 //    m_pUi->genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
     m_pUi->genLog->setCurrentIndex(g_settings->value("GenOps/logLevel", 2).toInt());
+    connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
+
     m_pUi->genShowHidden->setChecked(g_settings->value("GenOps/showHiddenFiles", false).toBool());
     m_pUi->genShowNetwork->setChecked(g_settings->value("GenOps/showNetwork", true).toBool());
     m_pUi->genCondensed->setCurrentIndex(g_settings->value("GenOps/condensedView", 2).toInt());
