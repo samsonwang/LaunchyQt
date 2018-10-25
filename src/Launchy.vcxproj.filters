@@ -126,18 +126,6 @@
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="QHotkey.cpp">
-      <Filter>GlobalHotKey</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_QHotkey.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QHotkeyP.cpp">
-      <Filter>GlobalHotKey</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_QHotkeyP.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="build\moc_LaunchyWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -158,9 +146,6 @@
     </ClCompile>
     <ClCompile Include="FileBrowserDelegate.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win\QHotkeyWin.cpp">
-      <Filter>GlobalHotKey</Filter>
     </ClCompile>
     <ClCompile Include="AnimationLabel.cpp">
       <Filter>Widgets</Filter>
@@ -206,6 +191,21 @@
     </ClCompile>
     <ClCompile Include="AppBase.cpp">
       <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\QHotkey\QHotkey.cpp">
+      <Filter>GlobalHotKey</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_QHotkey.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\QHotkey\QHotkeyP.cpp">
+      <Filter>GlobalHotKey</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_QHotkeyP.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\QHotkey\QHotkeyWin.cpp">
+      <Filter>GlobalHotKey</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,25 +266,19 @@
     <ClInclude Include="AppBase.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\platforms\win\platform_win_util.h">
-      <Filter>Application</Filter>
-    </ClInclude>
     <ClInclude Include="win\minidump.h">
       <Filter>Application</Filter>
     </ClInclude>
     <ClInclude Include="..\platforms\win\WinIconProvider.h">
       <Filter>Application</Filter>
     </ClInclude>
+    <ClInclude Include="win\platform_win_util.h">
+      <Filter>Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="build\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QHotkey.h">
-      <Filter>GlobalHotKey</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QHotkeyP.h">
-      <Filter>GlobalHotKey</Filter>
     </CustomBuild>
     <CustomBuild Include="FileBrowser.h">
       <Filter>Header Files</Filter>
@@ -309,6 +303,12 @@
     </CustomBuild>
     <CustomBuild Include="win\AppWin.h">
       <Filter>Application</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\deps\QHotkey\QHotkey.h">
+      <Filter>GlobalHotKey</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\deps\QHotkey\QHotkeyP.h">
+      <Filter>GlobalHotKey</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
