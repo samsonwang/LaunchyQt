@@ -17,15 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __WINICONPROVIDER_H
-#define __WINICONPROVIDER_H
+#pragma once
 
+#include <QFileIconProvider>
 
-class WinIconProvider : QFileIconProvider
-{
+class IconProviderWin : public QFileIconProvider {
 public:
-	WinIconProvider();
-	~WinIconProvider();
+	IconProviderWin();
+	virtual ~IconProviderWin();
 
 	virtual QIcon icon(const QFileInfo& info) const;
 	void setPreferredIconSize(int size);
@@ -36,6 +35,3 @@ private:
 
 	int preferredSize;
 };
-
-
-#endif

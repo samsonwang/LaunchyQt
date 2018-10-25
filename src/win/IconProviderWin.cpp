@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "platform_win_util.h"
-#include "WinIconProvider.h"
+#include "IconProviderWin.h"
 
 #if 0
 // Temporary work around to avoid having to install the latest Windows SDK
@@ -55,24 +55,20 @@ public:
 
 HRESULT (WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
 
-WinIconProvider::WinIconProvider() :
-	preferredSize(32)
-{
+IconProviderWin::IconProviderWin()
+    : preferredSize(32) {
 	// Load Vista/7 specific API pointers
 	HMODULE hLib = GetModuleHandleW(L"shell32");
-	if (hLib)
-	{
+	if (hLib) {
 		(FARPROC&)fnSHCreateItemFromParsingName = GetProcAddress(hLib, "SHCreateItemFromParsingName");
 	}
 }
 
+IconProviderWin::~IconProviderWin() {
 
-WinIconProvider::~WinIconProvider()
-{
 }
 
-
-void WinIconProvider::setPreferredIconSize(int size)
+void IconProviderWin::setPreferredIconSize(int size)
 {
 	preferredSize = size;
 }
@@ -106,8 +102,7 @@ QString wicon_aliasTo64(QString path)
 	return path;
 }
 
-QIcon WinIconProvider::icon(const QFileInfo& info) const
-{
+QIcon IconProviderWin::icon(const QFileInfo& info) const {
 	QIcon retIcon;
 	QString fileExtension = info.suffix().toLower();
 
@@ -197,7 +192,7 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 }
 
 
-bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const
+bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const
 {
     
 	HICON hIcon = 0;
@@ -223,7 +218,7 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 // On Vista or 7 we could use SHIL_JUMBO to get a 256x256 icon,
 // but we'll use SHCreateItemFromParsingName as it'll give an identical
 // icon to the one shown in explorer and it scales automatically.
-bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) const
+bool IconProviderWin::addIconFromShellFactory(QString filePath, QIcon& icon) const
 {
 	HRESULT hr = S_FALSE;
 

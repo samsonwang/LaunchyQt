@@ -19,14 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "precompiled.h"
+#include "UtilWin.h"
 #include "AppWin.h"
 #include "globals.h"
-//#include "main.h"
-
 
 // Replace this process' environment with the current system environment
-void UpdateEnvironment()
-{
+void UpdateEnvironment() {
 	// Fetch the current environment for the user
 	HANDLE accessToken;
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | TOKEN_QUERY, &accessToken))

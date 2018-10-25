@@ -18,13 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "precompiled.h"
-#include "minidump.h"
+#include "CrashDumper.h"
 #include <tchar.h>
 
-TCHAR* MiniDumper::m_appName;
-MINIDUMPWRITEDUMP MiniDumper::m_dumpFunction;
+TCHAR* CrashDumper::m_appName;
+MINIDUMPWRITEDUMP CrashDumper::m_dumpFunction;
 
-MiniDumper::MiniDumper(const TCHAR* appName) {
+CrashDumper::CrashDumper(const TCHAR* appName) {
     if (m_appName == NULL) {
         m_appName = _tcsdup(appName);
 #ifndef DEBUG
@@ -33,19 +33,16 @@ MiniDumper::MiniDumper(const TCHAR* appName) {
     }
 }
 
-
-LONG MiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo)
-{
+LONG CrashDumper::TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo) {
     LONG result = EXCEPTION_CONTINUE_SEARCH;
 
-    if (CreateMiniDump(_T("Mini"), exceptionInfo, MiniDumpNormal) &&
-        CreateMiniDump(_T("Midi"), exceptionInfo, MiniDumpWithPrivateReadWriteMemory))
-    {
+    if (CreateMiniDump(_T("Normal"), exceptionInfo, MiniDumpNormal) &&
+        CreateMiniDump(_T("PRWMem"), exceptionInfo, MiniDumpWithPrivateReadWriteMemory)) {
         MessageBox(NULL,
                    _T("Sorry, Launchy seems to have crashed. "
                       "To help us work out what went wrong, "
                       "crash dumps have been created in your temp directory. "
-                      "Please send them to us via the SourceForge forums."),
+                      "Please contact me via Launchy github issue."),
                    m_appName, MB_OK | MB_ICONEXCLAMATION);
         result = EXCEPTION_EXECUTE_HANDLER;
     }
@@ -54,7 +51,7 @@ LONG MiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo)
 }
 
 
-bool MiniDumper::CreateMiniDump(const TCHAR* postfix,
+bool CrashDumper::CreateMiniDump(const TCHAR* postfix,
                                 struct _EXCEPTION_POINTERS *exceptionInfo,
                                 MINIDUMP_TYPE dumpType) {
     bool result = false;
@@ -114,7 +111,7 @@ bool MiniDumper::CreateMiniDump(const TCHAR* postfix,
 }
 
 
-MINIDUMPWRITEDUMP MiniDumper::GetMiniDumpWriteFunction() {
+MINIDUMPWRITEDUMP CrashDumper::GetMiniDumpWriteFunction() {
     if (!m_dumpFunction) {
         // Find dbghelp.dll and check it exports the MiniDumpWriteDump function
         HMODULE hDll = NULL;
@@ -139,7 +136,7 @@ MINIDUMPWRITEDUMP MiniDumper::GetMiniDumpWriteFunction() {
     return m_dumpFunction;
 }
 
-BOOL MiniDumper::DirectoryExists(LPCTSTR szPath) {
+BOOL CrashDumper::DirectoryExists(LPCTSTR szPath) {
     DWORD dwAttrib = GetFileAttributes(szPath);
 
     return (dwAttrib != INVALID_FILE_ATTRIBUTES

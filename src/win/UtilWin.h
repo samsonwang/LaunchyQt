@@ -17,17 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __PLATFORM_WIN_UTIL_H
-#define __PLATFORM_WIN_UTIL_H
-
+#pragma once
 
 void UpdateEnvironment();
 QString GetShellDirectory(int type);
 bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t* domain = NULL);
 
-
-class LimitSingleInstance
-{
+class LimitSingleInstance {
 public:
     LimitSingleInstance(const TCHAR *strMutexName)
 	{
@@ -56,6 +52,3 @@ private:
 	HANDLE mutex;
 	DWORD  lastError;
 };
-
-
-#endif

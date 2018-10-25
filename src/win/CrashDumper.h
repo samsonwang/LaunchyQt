@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include "dbghelp.h"
+#include <dbghelp.h>
 
 // from dbghelp.h
 typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -27,10 +27,9 @@ typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFi
                                         CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
                                         CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
 
-class MiniDumper
-{
+class CrashDumper {
 public:
-    MiniDumper(const TCHAR* appName);
+    CrashDumper(const TCHAR* appName);
 private:
     static LONG WINAPI TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo);
     static MINIDUMPWRITEDUMP GetMiniDumpWriteFunction();
