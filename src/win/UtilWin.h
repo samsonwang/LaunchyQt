@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void UpdateEnvironment();
 QString GetShellDirectory(int type);
 bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t* domain = NULL);
-
+/*
 class LimitSingleInstance {
 public:
     LimitSingleInstance(const TCHAR *strMutexName)
@@ -52,3 +52,4 @@ private:
 	HANDLE mutex;
 	DWORD  lastError;
 };
+*/

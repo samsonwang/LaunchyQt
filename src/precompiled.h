@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef _MSC_VER
 #pragma warning (disable : 4091)
+#pragma warning (disable : 4099)
 #pragma warning (push, 1)
 #define _CRT_SECURE_NO_WARNINGS
 #endif

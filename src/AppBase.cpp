@@ -24,14 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "globals.h"
 
 AppBase::AppBase(int& argc, char** argv)
-    : SingleApplication(argc, argv, false, Mode::User, 100),
+    : SingleApplication(argc, argv, false, Mode::User),
       m_iconProvider(nullptr) {
     g_app.reset(this);
     setQuitOnLastWindowClosed(false);
     setApplicationName("Launchy");
     setOrganizationDomain("Launchy");
-
-
 }
 
 AppBase::~AppBase() {

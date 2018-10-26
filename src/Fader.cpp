@@ -21,105 +21,89 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Fader.h"
 #include "globals.h"
 
+Fader::Fader(QObject* parent)
+    : QThread(parent),
+      m_keepRunning(true) {
+    setObjectName("Fader");
+}
 
-Fader::Fader(QObject* parent) :
-	QThread(parent),
-	keepRunning(true)
-{
-	setObjectName("Fader");
+Fader::~Fader() {
+
+}
+
+void Fader::fadeIn(bool quick) {
+    int time = g_settings->value("GenOps/fadein", 0).toInt();
+
+    m_mutex.lock();
+    m_targetLevel = g_settings->value("GenOps/opaqueness", 100).toInt() / 100.0;
+    m_delta = 0.05;
+    m_delay = quick ? 0 : (int)(time * m_delta / m_targetLevel);
+    if (m_delay > 10) {
+        m_delta /= 10;
+        m_delay /= 10;
+    }
+    m_mutex.unlock();
+
+    if (quick || m_delay == 0) {
+        // stop any current slow fades
+        stop();
+        wait();
+        emit fadeLevel(m_targetLevel);
+    }
+    else if (!isRunning()) {
+        m_level = 0;
+        start();
+    }
 }
 
 
-Fader::~Fader()
-{
+void Fader::fadeOut(bool quick) {
+    int time = g_settings->value("GenOps/fadeout", 0).toInt();
+    double opaqueness = g_settings->value("GenOps/opaqueness", 100).toInt() / 100.0;
+
+    m_mutex.lock();
+    m_targetLevel = 0;
+    m_delta = -0.05;
+    m_delay = quick ? 0 : (int)(time * -m_delta / opaqueness);
+    if (m_delay > 10) {
+        m_delta /= 10;
+        m_delay /= 10;
+    }
+    m_mutex.unlock();
+
+    // qDebug() << level << " to " << targetLevel << " delay " << delay;
+
+    if (quick || m_delay == 0) {
+        // stop any current slow fades
+        stop();
+        wait();
+        emit fadeLevel(m_targetLevel);
+    }
+    else if (!isRunning()) {
+        m_level = opaqueness;
+        start();
+    }
 }
 
 
-void Fader::fadeIn(bool quick)
-{
-        int time = g_settings->value("GenOps/fadein", 0).toInt();
+void Fader::run() {
+    m_keepRunning = true;
+    while (m_keepRunning) {
+        m_mutex.lock();
+        m_level += m_delta;
+        m_keepRunning &= (m_delta > 0 && m_level < m_targetLevel) || (m_delta < 0 && m_level > m_targetLevel);
+        m_mutex.unlock();
 
-	mutex.lock();
-	targetLevel = g_settings->value("GenOps/opaqueness", 100).toInt() / 100.0;
-	delta = 0.05;
-	delay = quick ? 0 : (int)(time * delta / targetLevel);
-	if (delay > 10)
-	{
-		delta /= 10;
-		delay /= 10;
-	}
-	mutex.unlock();
+        // qDebug() << delta << level << targetLevel << keepRunning;
 
-	if (quick || delay == 0)
-	{
-		// stop any current slow fades
-		stop();
-		wait();
-		emit fadeLevel(targetLevel);
-	}
-	else if (!isRunning())
-	{
-		level = 0;
-		start();
-	}
-}
+        if (m_keepRunning) {
+            emit fadeLevel(m_level);
+            msleep(m_delay);
+        }
+    }
 
+    // qDebug() << delta << targetLevel << targetLevel;
+    // qDebug() << "";
 
-void Fader::fadeOut(bool quick)
-{
-	int time = g_settings->value("GenOps/fadeout", 0).toInt();
-	double opaqueness = g_settings->value("GenOps/opaqueness", 100).toInt() / 100.0;
-
-	mutex.lock();
-	targetLevel = 0;
-	delta = -0.05;
-	delay = quick ? 0 : (int)(time * -delta / opaqueness);
-	if (delay > 10)
-	{
-		delta /= 10;
-		delay /= 10;
-	}
-	mutex.unlock();
-
-	// qDebug() << level << " to " << targetLevel << " delay " << delay;
-
-	if (quick || delay == 0)
-	{
-		// stop any current slow fades
-		stop();
-		wait();
-		emit fadeLevel(targetLevel);
-	}
-	else if (!isRunning())
-	{
-		level = opaqueness;
-		start();
-	}
-}
-
-
-void Fader::run()
-{
-	keepRunning = true;
-
-	while (keepRunning)
-	{
-		mutex.lock();
-		level += delta;
-		keepRunning &= (delta > 0 && level < targetLevel) || (delta < 0 && level > targetLevel);
-		mutex.unlock();
-
-		// qDebug() << delta << level << targetLevel << keepRunning;
-
-		if (keepRunning)
-		{
-			emit fadeLevel(level);
-			msleep(delay);
-		}
-	}
-
-	// qDebug() << delta << targetLevel << targetLevel;
-	// qDebug() << "";
-
-	emit fadeLevel(targetLevel);
+    emit fadeLevel(m_targetLevel);
 }

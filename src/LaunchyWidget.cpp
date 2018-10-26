@@ -27,15 +27,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef Q_OS_MAC
 #include <QMacStyle>
 #endif
+#include "QHotkey/QHotkey.h"
 
 #include "IconDelegate.h"
 #include "globals.h"
 #include "OptionDialog.h"
 #include "plugin_interface.h"
 #include "FileSearch.h"
-#include "QHotkey/QHotkey.h"
 #include "SettingsManager.h"
 #include "AppBase.h"
+#include "Fader.h"
+#include "IconDelegate.h"
+#include "AnimationLabel.h"
+#include "CharListWidget.h"
+#include "CharLineEdit.h"
+#include "catalog_builder.h"
 
 #ifdef Q_OS_WIN
 void SetForegroundWindowEx(HWND hWnd) {
@@ -101,15 +107,13 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
             this, SLOT(iconExtracted(int, QString, QIcon)));
 
     fader = new Fader(this);
-    connect(fader, SIGNAL(fadeLevel(double)), 
-            this, SLOT(setFadeLevel(double)));
+    connect(fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
     optionsButton = new QPushButton(this);
     optionsButton->setObjectName("opsButton");
     optionsButton->setToolTip(tr("Launchy Options"));
     optionsButton->setGeometry(QRect());
-    connect(optionsButton, SIGNAL(clicked()),
-            this, SLOT(showOptionDialog()));
+    connect(optionsButton, SIGNAL(clicked()), this, SLOT(showOptionDialog()));
 
     closeButton = new QPushButton(this);
     closeButton->setObjectName("closeButton");
@@ -127,7 +131,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 #endif
     input->setObjectName("input");
     connect(input, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(inputKeyPressed(QKeyEvent*)));
-   // connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
+    //connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
     connect(input, SIGNAL(focusOut()), this, SLOT(onInputFocusOut()));
     //connect(input, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(inputMethodEvent(QInputMethodEvent*)));
 
@@ -316,7 +320,9 @@ void LaunchyWidget::showTrayIcon() {
     }
 
     QKeySequence hotkey = m_pHotKey->keySeq();
-    trayIcon->setToolTip(tr("Launchy\npress %1 to activate").arg(hotkey.toString()));
+    trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
+                         .arg(LAUNCHY_VERSION_STRING)
+                         .arg(hotkey.toString()));
     trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
     trayIcon->show();
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
@@ -408,8 +414,7 @@ void LaunchyWidget::updateAlternatives(bool resetSelection)
 }
 
 
-void LaunchyWidget::showAlternatives()
-{
+void LaunchyWidget::showAlternatives() {
     // Ensure that any pending shows of the alternatives list are cancelled
     // so that we only update the list once.
     dropTimer->stop();
@@ -419,8 +424,7 @@ void LaunchyWidget::showAlternatives()
 }
 
 
-void LaunchyWidget::hideAlternatives()
-{
+void LaunchyWidget::hideAlternatives() {
     // Ensure that any pending shows of the alternatives list are cancelled
     // so that the list isn't erroneously shown shortly after being dismissed.
     dropTimer->stop();
@@ -433,50 +437,35 @@ void LaunchyWidget::hideAlternatives()
 }
 
 
-void LaunchyWidget::launchItem(CatItem& item)
-{
+void LaunchyWidget::launchItem(CatItem& item) {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
-    if (item.id != HASH_LAUNCHY && item.id != HASH_LAUNCHYFILE)
-    {
+    if (item.id != HASH_LAUNCHY && item.id != HASH_LAUNCHYFILE) {
         ops = plugins.execute(&inputData, &item);
-        if (ops > 1)
-        {
-            switch (ops)
-            {
-            case MSG_CONTROL_EXIT:
-                close();
-                break;
-            case MSG_CONTROL_OPTIONS:
-                showOptionDialog();
-                break;
-            case MSG_CONTROL_REBUILD:
-                buildCatalog();
-                break;
-            case MSG_CONTROL_RELOADSKIN:
-                reloadSkin();
-                break;
-            default:
-                break;
-            }
+        switch (ops) {
+        case MSG_CONTROL_EXIT:
+            close();
+            break;
+        case MSG_CONTROL_OPTIONS:
+            showOptionDialog();
+            break;
+        case MSG_CONTROL_REBUILD:
+            buildCatalog();
+            break;
+        case MSG_CONTROL_RELOADSKIN:
+            reloadSkin();
+            break;
+        default:
+            break;
         }
     }
 
-    if (ops == MSG_CONTROL_LAUNCHITEM)
-    {
+    if (ops == MSG_CONTROL_LAUNCHITEM) {
         QString args = "";
         if (inputData.count() > 1)
             for (int i = 1; i < inputData.count(); ++i)
                 args += inputData[i].getText() + " ";
-
-        /* UPDATE
-           #ifdef Q_OS_X11
-           if (!platform->Execute(item.fullPath, args))
-                    runProgram(item.fullPath, args);
-        #else
-        */
         runProgram(item.fullPath, args);
-        //#endif
     }
 
     catalog->incrementUsage(item);
@@ -555,36 +544,28 @@ void LaunchyWidget::alternativesRowChanged(int index)
 }
 
 
-void LaunchyWidget::inputKeyPressed(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_Tab)
-    {
+void LaunchyWidget::inputKeyPressed(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Tab) {
         keyPressEvent(event);
     }
-    else
-    {
+    else {
         event->ignore();
     }
 }
 
 
-void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_Escape)
-    {
+void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Escape) {
         hideAlternatives();
         input->setFocus();
         event->ignore();
     }
     else if (event->key() == Qt::Key_Return
              || event->key() == Qt::Key_Enter
-             || event->key() == Qt::Key_Tab)
-    {
-        if (searchResults.count() > 0)
-        {
+             || event->key() == Qt::Key_Tab) {
+        if (searchResults.count() > 0) {
             int row = alternatives->currentRow();
-            if (row > -1)
-            {
+            if (row > -1) {
                 QString location = "History/" + input->text();
                 QStringList hist;
                 hist << searchResults[row].lowName << searchResults[row].fullPath;
@@ -593,13 +574,11 @@ void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
                 if (row > 0)
                     searchResults.move(row, 0);
 
-                if (event->key() == Qt::Key_Tab)
-                {
+                if (event->key() == Qt::Key_Tab) {
                     doTab();
                     processKey();
                 }
-                else
-                {
+                else {
                     // Load up the inputData properly before running the command
                     /* commented out until I find a fix for it breaking the history selection
                     inputData.last().setTopResult(searchResults[0]);
@@ -614,13 +593,10 @@ void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
         }
     }
     else if (event->key() == Qt::Key_Delete
-             && (event->modifiers() & Qt::ShiftModifier) != 0)
-    {
+             && (event->modifiers() & Qt::ShiftModifier) != 0) {
         int row = alternatives->currentRow();
-        if (row > -1)
-        {
-            if (searchResults[row].id == HASH_HISTORY)
-            {
+        if (row > -1) {
+            if (searchResults[row].id == HASH_HISTORY) {
                 // Delete selected history entry from the alternatives list
                 history.removeAt(row);
                 input->clear();
@@ -628,8 +604,7 @@ void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
                 updateAlternatives(false);
                 alternativesRowChanged(alternatives->currentRow());
             }
-            else
-            {
+            else {
                 // Demote the selected item down the alternatives list
                 catalog->demoteItem(searchResults[row]);
                 searchOnInput();
@@ -639,8 +614,7 @@ void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
     }
     else if (event->key() == Qt::Key_Left
              || event->key() == Qt::Key_Right
-             || event->text().length() > 0)
-    {
+             || event->text().length() > 0) {
         // Send text entry to the input control
         activateWindow();
         input->setFocus();
@@ -652,10 +626,8 @@ void LaunchyWidget::alternativesKeyPressed(QKeyEvent* event)
 }
 
 
-void LaunchyWidget::keyPressEvent(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_Escape)
-    {
+void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Escape) {
         if (alternatives->isVisible())
             hideAlternatives();
         else
@@ -663,40 +635,32 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
     }
 
     else if (event->key() == Qt::Key_Return
-             || event->key() == Qt::Key_Enter)
-    {
+             || event->key() == Qt::Key_Enter) {
         doEnter();
     }
 
     else if (event->key() == Qt::Key_Down
              || event->key() == Qt::Key_PageDown
              || event->key() == Qt::Key_Up
-             || event->key() == Qt::Key_PageUp)
-    {
-        if (alternatives->isVisible())
-        {
-            if (!alternatives->isActiveWindow())
-            {
+             || event->key() == Qt::Key_PageUp) {
+        if (alternatives->isVisible()) {
+            if (!alternatives->isActiveWindow()) {
                 // Don't refactor the activateWindow outside the if, it won't work properly any other way!
-                if (alternatives->currentRow() < 0 && alternatives->count() > 0)
-                {
+                if (alternatives->currentRow() < 0 && alternatives->count() > 0) {
                     alternatives->activateWindow();
                     alternatives->setCurrentRow(0);
                 }
-                else
-                {
+                else {
                     alternatives->activateWindow();
                     qApp->sendEvent(alternatives, event);
                 }
             }
         }
         else if (event->key() == Qt::Key_Down
-                 || event->key() == Qt::Key_PageDown)
-        {
+                 || event->key() == Qt::Key_PageDown) {
             // do a search and show the results, selecting the first one
             searchOnInput();
-            if (searchResults.count() > 0)
-            {
+            if (searchResults.count() > 0) {
                 updateAlternatives();
                 showAlternatives();
             }
@@ -704,33 +668,28 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event)
     }
     else if ((event->key() == Qt::Key_Tab
               || event->key() == Qt::Key_Backspace)
-             && event->modifiers() == Qt::ShiftModifier)
-    {
+             && event->modifiers() == Qt::ShiftModifier) {
         doBackTab();
         processKey();
     }
-    else if (event->key() == Qt::Key_Tab)
-    {
+    else if (event->key() == Qt::Key_Tab) {
         doTab();
         processKey();
     }
     else if (event->key() == Qt::Key_Slash
-             || event->key() == Qt::Key_Backslash)
-    {
+             || event->key() == Qt::Key_Backslash) {
         if (inputData.count() > 0 && inputData.last().hasLabel(LABEL_FILE) &&
             searchResults.count() > 0 && searchResults[0].id == HASH_LAUNCHYFILE)
             doTab();
         processKey();
     }
     else if (event->key()== Qt::Key_Insert
-             && event->modifiers() == Qt::ShiftModifier)
-    {
+             && event->modifiers() == Qt::ShiftModifier) {
         // ensure pasting text with Shift+Insert also parses input
         // longer term parsing should be done using the TextChanged event
         processKey();
     }
-    else if (event->text().length() > 0)
-    {
+    else if (event->text().length() > 0) {
         // process any other key with character output
         event->ignore();
         processKey();
@@ -826,16 +785,12 @@ void LaunchyWidget::doEnter()
     }
 }
 
-
-void LaunchyWidget::inputMethodEvent(QInputMethodEvent* event)
-{
-    event = event; // Warning removal
+void LaunchyWidget::inputMethodEvent(QInputMethodEvent* event) {
+    Q_UNUSED(event)
     processKey();
 }
 
-
-void LaunchyWidget::processKey()
-{
+void LaunchyWidget::processKey() {
     inputData.parse(input->text());
     searchOnInput();
     updateOutputWidgets();
@@ -1104,6 +1059,9 @@ void LaunchyWidget::loadPosition(QPoint pt) {
     move(pt);
 }
 
+void LaunchyWidget::savePosition() {
+    g_settings->setValue("Display/pos", pos());
+}
 
 void LaunchyWidget::saveSettings()
 {
@@ -1400,25 +1358,19 @@ void LaunchyWidget::shouldDonate() {
 }
 
 
-void LaunchyWidget::setFadeLevel(double level)
-{
+void LaunchyWidget::setFadeLevel(double level) {
     level = qMin(level, 1.0);
     level = qMax(level, 0.0);
     setWindowOpacity(level);
     alternatives->setWindowOpacity(level);
-    if (level <= 0.001)
-    {
+    if (level <= 0.001) {
         hide();
     }
-    else
-    {
-        if (!isVisible()) {
-            show();
-            activateWindow();
-            raise();
-        }
+    else if (!isVisible()) {
+        show();
+        activateWindow();
+        raise();
     }
-
 }
 
 

@@ -110,12 +110,10 @@ void CharLineEdit::focusOutEvent(QFocusEvent* event) {
 }
 
 
-void CharLineEdit::inputMethodEvent(QInputMethodEvent* event)
-{
+void CharLineEdit::inputMethodEvent(QInputMethodEvent* event) {
 	QLineEdit::inputMethodEvent(event);
 
-	if (event->commitString() != "")
-	{
+	if (event->commitString() != "") {
 		emit inputMethod(event);
 	}
 }

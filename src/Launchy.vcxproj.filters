@@ -75,9 +75,6 @@
     <ClCompile Include="CommandHistory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FileSearch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -219,17 +216,17 @@
     <ClCompile Include="build\moc_IconDelegate.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Fader.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
     <ClCompile Include="IconDelegate.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="Fader.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="FileSearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -328,8 +325,11 @@
     <CustomBuild Include="IconExtractor.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Fader.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
     <CustomBuild Include="IconDelegate.h">
-      <Filter>Header Files</Filter>
+      <Filter>Widgets</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

@@ -24,21 +24,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QPushButton>
 
 #include "plugin_handler.h"
-#include "platform_util.h"
 #include "catalog.h"
-#include "catalog_builder.h"
-#include "IconDelegate.h"
 #include "IconExtractor.h"
-#include "globals.h"
 #include "InputDataList.h"
 #include "CommandHistory.h"
-#include "CharLineEdit.h"
-#include "LineEditMenu.h"
-#include "CharListWidget.h"
-#include "AnimationLabel.h"
-#include "Fader.h"
 
 class QHotkey;
+class Fader;
+class AnimationLabel;
+class IconDelegate;
+class CharListWidget;
+class CharLineEdit;
 
 enum CommandFlag {
     Default = 0,
@@ -75,7 +71,7 @@ public slots:
     void showLaunchy(bool noFade = false);
     void buildCatalog();
     void setOpaqueness(int level);
-
+    
 protected:
     virtual void showEvent(QShowEvent *event);
     virtual void paintEvent(QPaintEvent* event);
@@ -123,7 +119,7 @@ private:
     void updateOutputWidgets(bool resetAlternativesSelection = true);
     void searchOnInput();
     void loadPosition(QPoint pt);
-    void savePosition() { g_settings->setValue("Display/pos", pos()); }
+    void savePosition();
     void doTab();
     void doBackTab();
     void doEnter();

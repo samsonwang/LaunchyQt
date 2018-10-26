@@ -17,39 +17,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FADER_H
-#define FADER_H
+#pragma once
 
 #include "precompiled.h"
 
-class Fader : public QThread
-{
+class Fader : public QThread {
 	Q_OBJECT
-
 public:
 	Fader(QObject* parent = NULL);
-	~Fader();
+	virtual ~Fader();
 
 	void fadeIn(bool quick);
 	void fadeOut(bool quick);
 	void run();
 
-	inline void stop() { keepRunning = false; }
-	inline bool isFading() const { return delta < 0 && isRunning(); }
+	inline void stop() { m_keepRunning = false; }
+	inline bool isFading() const { return m_delta < 0 && isRunning(); }
 
 signals:
 	void fadeLevel(double level);
 
 private:
-	QMutex mutex;
-	bool keepRunning;
+	QMutex m_mutex;
+	bool m_keepRunning;
 
-	double delta;
-	int delay;
+	double m_delta;
+	int m_delay;
 
-	double level;
-	double targetLevel;
+	double m_level;
+	double m_targetLevel;
 };
-
-
-#endif
