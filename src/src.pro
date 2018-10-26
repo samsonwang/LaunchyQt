@@ -3,11 +3,14 @@ unix:!macx:TARGET = launchy
 win32:TARGET = Launchy
 macx:TARGET = Launchy
 CONFIG += debug_and_release
-PRECOMPILED_HEADER = precompiled.h
-
 # CONFIG += qt release
-INCLUDEPATH += ../deps
+
 QT += network widgets
+
+PRECOMPILED_HEADER = precompiled.h
+CONFIG += precompile_header
+
+INCLUDEPATH += ../deps
 SOURCES = main.cpp \
     AppBase.cpp \
     LaunchyWidget.cpp \
@@ -57,9 +60,11 @@ HEADERS = AppBase.h \
     SettingsManager.h \
     QLogger.h
 FORMS = OptionDialog.ui
+
 include(../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../deps/QHotkey/QHotkey.pri)
+
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
@@ -67,7 +72,7 @@ unix:!macx {
                linux/platform_unix_util.cpp
     HEADERS += linux/platform_unix.h \
                linux/platform_unix_util.h
-    PREFIX = /usr
+    PREFIX   = /usr
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
         PLUGINS_PATH=\\\"$$PREFIX/lib/launchy/plugins/\\\" \
         PLATFORMS_PATH=\\\"$$PREFIX/lib/launchy/\\\"
@@ -75,32 +80,32 @@ unix:!macx {
         CONFIG(debug, debug|release):DESTDIR = ../debug/
         CONFIG(release, debug|release):DESTDIR = ../release/
     }
-    target.path = $$PREFIX/bin/
-    skins.path = $$PREFIX/share/launchy/skins/
-    skins.files = ../skins/*
-    icon.path = $$PREFIX/share/pixmaps
-    icon.files = ../misc/Launchy_Icon/launchy_icon.png
-    desktop.path = $$PREFIX/share/applications/
+    target.path   = $$PREFIX/bin/
+    skins.path    = $$PREFIX/share/launchy/skins/
+    skins.files   = ../skins/*
+    icon.path     = $$PREFIX/share/pixmaps
+    icon.files    = ../misc/Launchy_Icon/launchy_icon.png
+    desktop.path  = $$PREFIX/share/applications/
     desktop.files = ../linux/launchy.desktop
     INSTALLS += target \
-        skins \
-        icon \
-        desktop
+                skins \
+                icon \
+                desktop
 }
 win32 {
     QT += winextras
     ICON = Launchy.ico
     if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
-    SOURCES += win/platform_win.cpp \
-               win/platform_win_util.cpp \
-               win/WinIconProvider.cpp \
-               win/minidump.cpp
-    HEADERS += win/WinIconProvider.h \
-               win/platform_win.h \
-               win/platform_win_util.h \
-               win/minidump.h
+    SOURCES += win/AppWin.cpp \
+               win/UtilWin.cpp \
+               win/IconProviderWin.cpp \
+               win/CrashDumper.cpp
+    HEADERS += win/AppWin.h \
+               win/IconProviderWin.h \
+               win/UtilWin.h \
+               win/CrashDumper.h
     CONFIG  += embed_manifest_exe
-    RC_FILE  = win/launchy.rc
+    RC_FILE += win/launchy.rc
        LIBS += shell32.lib \
                user32.lib \
                gdi32.lib \
@@ -109,7 +114,7 @@ win32 {
                advapi32.lib \
                userenv.lib \
                netapi32.lib
-    DEFINES  = VC_EXTRALEAN \
+    DEFINES += VC_EXTRALEAN \
                WIN32 \
                _UNICODE \
                UNICODE

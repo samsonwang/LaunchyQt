@@ -19,12 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <SingleApplication/singleapplication.h>
 #include <QList>
 #include <QHash>
 #include <QString>
 #include <QFileInfo>
 #include <QFileIconProvider>
+#include <SingleApplication/singleapplication.h>
 #include "Directory.h"
 class QFileIconProvider;
 class CatItem;
@@ -55,4 +55,3 @@ protected:
 };
 
 QApplication* createApplication(int& argc, char** argv);
-
