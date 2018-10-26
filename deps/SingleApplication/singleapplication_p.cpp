@@ -205,23 +205,30 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType conne
     // Initialisation message according to the SingleApplication protocol
     if( socket->state() == QLocalSocket::ConnectedState ) {
         // Notify the parent that a new instance had been started;
-        QByteArray initMsg;
-        QDataStream writeStream(&initMsg, QIODevice::WriteOnly);
-        writeStream.setVersion(QDataStream::Qt_5_6);
-        writeStream << blockServerName.toLatin1();
-        writeStream << static_cast<quint8>(connectionType);
-        writeStream << instanceNumber;
-        quint16 checksum = qChecksum(initMsg.constData(), static_cast<quint32>(initMsg.length()));
-        writeStream << checksum;
+        qint64 msglen = 0;
+        msglen += sizeof(qint16);
+        msglen += blockServerName.toLatin1().size();
+        msglen += sizeof(quint8);
+        msglen += sizeof(instanceNumber);
+        msglen += sizeof(quint16);
 
-        // The header indicates the message length that follows
-        QByteArray header;
-        QDataStream headerStream(&header, QIODevice::WriteOnly);
-        headerStream.setVersion(QDataStream::Qt_5_6);
-        headerStream << static_cast <quint64>( initMsg.length() );
+        QByteArray msg;
+        QDataStream msgStream(&msg, QIODevice::WriteOnly);
+        msgStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+        msgStream << msglen;
 
-        socket->write( header );
-        socket->write( initMsg );
+        msgStream << static_cast<qint16>(blockServerName.toLatin1().size());
+        msgStream.writeRawData(blockServerName.toLatin1().constData(),
+                               blockServerName.toLatin1().size());
+
+        msgStream << static_cast<quint8>(connectionType);
+        msgStream << instanceNumber;
+
+        quint16 checksum = qChecksum(msg.constData() + sizeof(qint64),
+                                     static_cast<uint>(msg.length() - sizeof(qint64)));
+        msgStream << checksum;
+
+        socket->write( msg );
         socket->flush();
         socket->waitForBytesWritten( msecs );
     }
@@ -300,10 +307,10 @@ void SingleApplicationPrivate::readInitMessageHeader( QLocalSocket *sock )
     }
 
     QDataStream headerStream( sock );
-    headerStream.setVersion( QDataStream::Qt_5_6 );
+    headerStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
     // Read the header to know the message length
-    quint64 msgLen = 0;
+    qint64 msgLen = 0;
     headerStream >> msgLen;
     ConnectionInfo &info = connectionMap[sock];
     info.stage = StageBody;
@@ -323,18 +330,21 @@ void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
     }
 
     ConnectionInfo &info = connectionMap[sock];
-    if( sock->bytesAvailable() < ( qint64 )info.msgLen ) {
+    if( sock->bytesAvailable() < info.msgLen ) {
         return;
     }
 
     // Read the message body
     QByteArray msgBytes = sock->read(info.msgLen);
     QDataStream readStream(msgBytes);
-    readStream.setVersion( QDataStream::Qt_5_6 );
+    readStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
     // server name
+    qint16 nameLen = 0;
+    readStream >> nameLen;
     QByteArray latin1Name;
-    readStream >> latin1Name;
+    latin1Name.resize(nameLen);
+    readStream.readRawData(latin1Name.data(), static_cast<int>(nameLen));
 
     // connection type
     ConnectionType connectionType = InvalidConnection;
