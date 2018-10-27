@@ -190,7 +190,7 @@ exit 0</Command>
     <ClCompile Include="catalog.cpp" />
     <ClCompile Include="catalog_builder.cpp" />
     <ClCompile Include="catalog_types.cpp" />
-    <ClCompile Include="globals.cpp" />
+    <ClCompile Include="GlobalVar.cpp" />
     <ClCompile Include="IconDelegate.cpp" />
     <ClCompile Include="IconExtractor.cpp" />
     <ClCompile Include="LaunchyWidget.cpp" />
@@ -340,7 +340,7 @@ exit 0</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="catalog_types.h" />
-    <ClInclude Include="globals.h" />
+    <ClInclude Include="GlobalVar.h" />
     <CustomBuild Include="IconDelegate.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp" "-fprecompiled.h" "-f../IconDelegate.h"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -DNDEBUG -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB -DQAPPLICATION_CLASS=QApplication "-I." "-I.\GeneratedFiles" "-I.\..\deps" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtWinExtras" "-I$(QTDIR)\mkspecs\win32-msvc2015"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing IconDelegate.h...</Message>

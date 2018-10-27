@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "globals.h"
+#include "GlobalVar.h"
 #include "AppBase.h"
 #include "LaunchyWidget.h"
 #include "SettingsManager.h"

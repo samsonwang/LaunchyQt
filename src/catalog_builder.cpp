@@ -20,7 +20,7 @@
 #include "precompiled.h"
 #include "catalog_types.h"
 #include "catalog_builder.h"
-#include "globals.h"
+#include "GlobalVar.h"
 #include "AppBase.h"
 #include "Directory.h"
 #include "SettingsManager.h"
@@ -34,7 +34,6 @@ CatalogBuilder::CatalogBuilder(PluginHandler* plugin)
       m_progress(CATALOG_PROGRESS_MAX) {
 
 }
-
 
 void CatalogBuilder::buildCatalog() {
     m_progress = CATALOG_PROGRESS_MIN;

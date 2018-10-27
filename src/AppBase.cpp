@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QFileIconProvider>
 #include "Directory.h"
 #include "catalog.h"
-#include "globals.h"
+#include "GlobalVar.h"
 
 AppBase::AppBase(int& argc, char** argv)
     : SingleApplication(argc, argv, false, Mode::User),

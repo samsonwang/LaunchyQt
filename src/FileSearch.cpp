@@ -21,11 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "precompiled.h"
 #include "FileSearch.h"
 #include "AppBase.h"
-#include "globals.h"
+#include "GlobalVar.h"
 #include "catalog_types.h"
 
-void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults, InputDataList& inputData)
-{
+void FileSearch::search(const QString& searchText,
+                        QList<CatItem>& searchResults,
+                        InputDataList& inputData) {
     qDebug() << "Searching file system for" << searchText;
 
     QString searchPath = QDir::fromNativeSeparators(searchText);
@@ -35,20 +36,21 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
         searchPath.replace("~", QDir::homePath());
 
 #ifdef Q_OS_WIN
-    if (searchPath == "/")
-    {
+    if (searchPath == "/") {
         // Special case for Windows: list available drives
         QFileInfoList driveList = QDir::drives();
-        for (int i = driveList.length()-1; i >= 0; --i)
-        {
+        for (int i = driveList.length()-1; i >= 0; --i) {
             QFileInfo info = driveList[i];
             // Retrieve volume name
             QString volumeName;
             WCHAR volName[MAX_PATH];
-            if (GetVolumeInformation((WCHAR*)info.filePath().utf16(), volName, MAX_PATH, NULL, NULL, NULL, NULL, 0))
+            if (GetVolumeInformation((WCHAR*)info.filePath().utf16(), volName,
+                                     MAX_PATH, NULL, NULL, NULL, NULL, 0)) {
                 volumeName = QString::fromUtf16((const ushort*)volName);
-            else
+            }
+            else {
                 volumeName = QDir::toNativeSeparators(info.filePath());
+            }
             CatItem item(QDir::toNativeSeparators(info.filePath()), volumeName);
             item.id = HASH_LAUNCHYFILE;
             searchResults.push_front(item);
@@ -72,16 +74,14 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 
 #ifdef Q_OS_WIN
     // This is a windows network search
-    if (searchPath.startsWith("//"))
-    {
+    if (searchPath.startsWith("//")) {
         // Exit if the user doesn't want to browse networks
         if (!g_settings->value("GenOps/showNetwork", true).toBool())
             return;
 
         // Check for a search against just the network name
         QRegExp re("//([a-z0-9\\-]+)?$", Qt::CaseInsensitive);
-        if (re.exactMatch(searchPath))
-        {
+        if (re.exactMatch(searchPath)) {
             // Get a list of devices on the network. This will be filtered and sorted later.
             g_app->getComputers(itemList);
             isDirectory = false;
@@ -90,8 +90,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
         }
     }
 #endif
-    if (!listPopulated)
-    {
+    if (!listPopulated) {
         // Exit if the path doesn't exist
         if (!dir.exists())
             return;
@@ -110,13 +109,11 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
         itemList = dir.entryList(filters, QDir::DirsLast | QDir::IgnoreCase | QDir::LocaleAware);
     }
 
-    for (int i = itemList.length()-1; i >= 0; --i)
-    {
+    for (int i = itemList.length()-1; i >= 0; --i) {
         QString fileName = itemList[i];
         QString filePath = QDir::cleanPath(dir.absolutePath() + "/" + fileName);
         CatItem item(QDir::toNativeSeparators(filePath), fileName);
-        if (filePart.length() == 0 || Catalog::matches(&item, filePart.toLower()))
-        {
+        if (filePart.length() == 0 || Catalog::matches(&item, filePart.toLower())) {
             item.id = HASH_LAUNCHYFILE;
             searchResults.push_front(item);
         }
@@ -125,8 +122,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
     // Set the sort and underline global to just the filename
     g_searchText = filePart;
 
-    if (isDirectory)
-    {
+    if (isDirectory) {
         // We're showing a directory, add it as the top result
         if (!directoryPart.endsWith("/"))
             directoryPart += "/";
@@ -136,8 +132,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
         item.id = HASH_LAUNCHYFILE;
         searchResults.push_front(item);
     }
-    else if (sort)
-    {
+    else if (sort) {
         // If we're not matching exactly and there's a filename then do a priority sort
         qSort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
     }

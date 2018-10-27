@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "QHotkey/QHotkey.h"
 
 #include "IconDelegate.h"
-#include "globals.h"
+#include "GlobalVar.h"
 #include "OptionDialog.h"
 #include "plugin_interface.h"
 #include "FileSearch.h"

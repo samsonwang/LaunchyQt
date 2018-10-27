@@ -93,9 +93,6 @@
     <ClCompile Include="catalog_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="build\moc_Fader.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -222,6 +219,9 @@
     <ClCompile Include="IconDelegate.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="GlobalVar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -243,9 +243,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <ClInclude Include="catalog_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <CustomBuild Include="precompiled.h">
@@ -280,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="plugin_interface.h">
       <Filter>Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVar.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

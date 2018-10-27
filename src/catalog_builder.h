@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <QThread>
+#include <QObject>
 #include "catalog_types.h"
 #include "plugin_handler.h"
 

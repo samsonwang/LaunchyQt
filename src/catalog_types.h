@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "catalog.h"
 #include <QVector>
-#include <QMutex> // os x
+#include <QMutex>
 
 // These classes do not pertain to plugins
 

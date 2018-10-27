@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "precompiled.h"
 #include "IconDelegate.h"
-#include "globals.h"
+#include "GlobalVar.h"
 #include "catalog_types.h"
 
 IconDelegate::IconDelegate(QObject *parent)
