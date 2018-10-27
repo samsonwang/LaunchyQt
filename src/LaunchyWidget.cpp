@@ -136,8 +136,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     m_alternativeList = new CharListWidget(this);
     m_alternativeList->setObjectName("alternatives");
     setAlternativeListMode(g_settings->value("GenOps/condensedView", 2).toInt());
-    m_alternativeScroll = m_alternativeList->verticalScrollBar();
-    m_alternativeScroll->setObjectName("altScroll");
     connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
     connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
     //connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));

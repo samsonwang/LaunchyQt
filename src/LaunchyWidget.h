@@ -136,7 +136,6 @@ private:
     QLabel* m_outputBox;
     QLabel* m_outputIcon;
     CharListWidget* m_alternativeList;
-    QScrollBar* m_alternativeScroll;
     QPushButton* m_optionButton;
     QPushButton* m_closeButton;
     AnimationLabel* m_workingAnimation;

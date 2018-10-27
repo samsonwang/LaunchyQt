@@ -32,7 +32,7 @@ public:
     void setListMode(int mode);
 
 protected:
-    virtual void keyPressEvent(QKeyEvent* key);
+    virtual void keyPressEvent(QKeyEvent* event);
     virtual void mouseDoubleClickEvent(QMouseEvent* event);
     virtual void focusInEvent(QFocusEvent* event);
     virtual void focusOutEvent(QFocusEvent* event);

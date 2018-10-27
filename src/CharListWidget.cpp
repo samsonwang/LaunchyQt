@@ -38,6 +38,7 @@ CharListWidget::CharListWidget(QWidget* parent)
     setTextElideMode(Qt::ElideLeft);
     setUniformItemSizes(true);
 
+    verticalScrollBar()->setObjectName("altScroll");
     m_alternativePath->setObjectName("alternativesPath");
     m_alternativePath->hide();
     m_iconListDelegate->setAlternativesPathWidget(m_alternativePath);
@@ -91,10 +92,10 @@ void CharListWidget::setListMode(int mode) {
     }
 }
 
-void CharListWidget::keyPressEvent(QKeyEvent* key) {
-    emit keyPressed(key);
-    QListWidget::keyPressEvent(key);
-    key->ignore();
+void CharListWidget::keyPressEvent(QKeyEvent* event) {
+    emit keyPressed(event);
+    QListWidget::keyPressEvent(event);
+    event->ignore();
 }
 
 void CharListWidget::mouseDoubleClickEvent(QMouseEvent* /*event*/) {
