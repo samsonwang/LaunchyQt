@@ -91,32 +91,30 @@ protected slots:
     void showOptionDialog();
     void onHotkey();
     void dropTimeout();
-    void inputKeyPressed(QKeyEvent* event);
-    void httpGetFinished(bool result);
     void catalogProgressUpdated(int);
     void catalogBuilt();
-    void alternativesRowChanged(int index);
-    void alternativesKeyPressed(QKeyEvent* event);
     void setFadeLevel(double level);
     void iconExtracted(int index, QString path, QIcon icon);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void reloadSkin();
     void exit();
-    void onInputFocusOut();
+    void onAlternativeListRowChanged(int index);
+    void onAlternativeListKeyPressed(QKeyEvent* event);
+    void onInputBoxKeyPressed(QKeyEvent* event);
+    void onInputBoxFocusOut();
+    void onInputBoxInputMethod();
+    void onInputBoxTextEdited(const QString& str);
     void onSecondInstance();
 
 private:
     void createActions();
     void applySkin(const QString& name);
-    void hideLaunchy(bool noFade = false);
     void updateVersion(int oldVersion);
-    void checkForUpdate();
-    void shouldDonate();
-    void updateAlternatives(bool resetSelection = true);
-    void showAlternatives();
-    void hideAlternatives();
-    // void parseInput(const QString& text);
-    void updateOutputWidgets(bool resetAlternativesSelection = true);
+    void hideLaunchy(bool noFade = false);
+    void showAlternativeList();
+    void hideAlternativeList();
+    void updateAlternativeList(bool resetSelection = true);
+    void updateOutputBox(bool resetAlternativesSelection = true);
     void searchOnInput();
     void loadPosition(QPoint pt);
     void savePosition();
@@ -125,9 +123,8 @@ private:
     void doEnter();
     void processKey();
     void launchItem(CatItem& item);
-    // void addToHistory(QList<InputData>& item);
     void startDropTimer();
-
+    
 public:
     PluginHandler plugins;
 
@@ -135,22 +132,24 @@ private:
     QString currentSkin;
     bool m_skinChanged;
 
-    Catalog* catalog;
-
+    CharLineEdit* m_inputBox;
+    QLabel* m_outputBox;
+    QLabel* m_outputIcon;
+    CharListWidget* m_alternativeList;
+    QRect alternativesRect;
+    QScrollBar* m_alternativeScroll;
+    QLabel* m_alternativePath;
+    IconDelegate* listDelegate;
+    QAbstractItemDelegate* defaultListDelegate;
+    QPushButton* m_optionButton;
+    QPushButton* m_closeButton;
+    AnimationLabel* m_workingAnimation;
+    QSystemTrayIcon* m_trayIcon;
     Fader* fader;
     QPixmap* frameGraphic;
-    QSystemTrayIcon* trayIcon;
-    CharLineEdit* input;
-    QLabel* output;
-    QLabel* outputIcon;
-    CharListWidget* alternatives;
-    QRect alternativesRect;
-    QPushButton* optionsButton;
-    QPushButton* closeButton;
-    QScrollBar* altScroll;
-    QLabel* alternativesPath;
-    AnimationLabel* workingAnimation;
-
+    
+    QHotkey* m_pHotKey;
+    
     QAction* actShow;
     QAction* actRebuild;
     QAction* actReloadSkin;
@@ -172,14 +171,8 @@ private:
     bool menuOpen;
     bool optionsOpen;
 
-    IconDelegate* listDelegate;
-    QAbstractItemDelegate* defaultListDelegate;
+    Catalog* catalog;
 
-    //QHttp* http;
-    QBuffer* verBuffer;
-    QBuffer* counterBuffer;
-
-    QHotkey* m_pHotKey;
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);

@@ -17,26 +17,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CHARLISTWIDGET_H
-#define CHARLISTWIDGET_H
+#pragma once
 
 #include <QListWidget>
 
-class CharListWidget : public QListWidget
-{
+class CharListWidget : public QListWidget {
     Q_OBJECT
 public:
     CharListWidget(QWidget* parent = 0);
+    
+    bool isPositionTranslated() const;
+
+protected:
     void keyPressEvent(QKeyEvent* key);
     void mouseDoubleClickEvent(QMouseEvent* event);
     void focusInEvent(QFocusEvent* event);
     void focusOutEvent(QFocusEvent* event);
 
 signals:
-    void keyPressed(QKeyEvent*);
+    void keyPressed(QKeyEvent* event);
     void focusIn(QFocusEvent* event);
     void focusOut(QFocusEvent* event);
+
+private:
+    bool m_positionTranslated;
 };
-
-
-#endif

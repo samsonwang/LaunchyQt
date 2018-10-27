@@ -28,20 +28,22 @@ class CharLineEdit : public QLineEdit {
 public:
 	CharLineEdit(QWidget* parent = 0);
 
-	void keyPressEvent(QKeyEvent* event);
+    void processKey(QKeyEvent* event);
 	bool focusNextPrevChild(bool next);
-	void inputMethodEvent(QInputMethodEvent *event);
+	
 	QString separatorText() const;
 
 protected:
+    virtual void keyPressEvent(QKeyEvent* event);
     virtual void focusInEvent(QFocusEvent* event);
     virtual void focusOutEvent(QFocusEvent* event);
+    virtual void inputMethodEvent(QInputMethodEvent *event);
 
 signals:
-	void keyPressed(QKeyEvent*);
+	void keyPressed(QKeyEvent* event);
 	void focusIn();
 	void focusOut();
-	void inputMethod(QInputMethodEvent *e);
+	void inputMethod();
 
 private:
 	bool isAtStartOfSeparator() const;
