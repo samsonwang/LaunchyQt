@@ -957,7 +957,7 @@
             <item>
              <widget class="QLabel" name="label_14">
               <property name="text">
-               <string>Logging Level</string>
+               <string>Logging level</string>
               </property>
              </widget>
             </item>

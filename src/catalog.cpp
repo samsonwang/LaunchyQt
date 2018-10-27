@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "catalog.h"
 #include "globals.h"
 
-
 bool CatLessNoPtr(CatItem & a, CatItem & b)
 {
 	bool less = CatLess(&a, &b);
@@ -36,8 +35,7 @@ bool CatLessNoPtr(CatItem & a, CatItem & b)
 }
 
 
-bool CatLess(CatItem* a, CatItem* b)
-{
+bool CatLess(CatItem* a, CatItem* b) {
 	// Items with negative usage are lowest priority
 	if (a->usage < 0 && b->usage >= 0)
 		return false;
@@ -112,4 +110,123 @@ bool CatLess(CatItem* a, CatItem* b)
 
 	// Absolute tiebreaker to prevent loops
 	return a->fullPath < b->fullPath;
+}
+
+CatItem::CatItem()
+    : usage(0),
+      data(NULL),
+      id(0) {
+
+}
+
+CatItem::CatItem(const QString& full, bool isDir /*= false*/)
+    : fullPath(full) {
+    int last = fullPath.lastIndexOf("/");
+    if (last == -1) {
+        shortName = fullPath;
+
+    }
+    else {
+        shortName = fullPath.mid(last+1);
+        if (!isDir)
+            shortName = shortName.mid(0, shortName.lastIndexOf("."));
+    }
+
+    lowName = shortName.toLower();
+    data = NULL;
+    usage = 0;
+    id = 0;
+}
+
+CatItem::CatItem(const QString& full, const QString& shortN)
+    : fullPath(full),
+      shortName(shortN) {
+    lowName = shortName.toLower();
+    data = NULL;
+    usage = 0;
+    id = 0;
+}
+
+CatItem::CatItem(const QString& full, const QString& shortN, uint i_d)
+    : fullPath(full),
+      shortName(shortN),
+      id(i_d) {
+    lowName = shortName.toLower();
+    data = NULL;
+    usage = 0;
+}
+
+CatItem::CatItem(const QString& full, const QString& shortN, uint i_d, const QString& iconPath)
+    : fullPath(full),
+      shortName(shortN),
+      icon(iconPath),
+      id(i_d) {
+    lowName = shortName.toLower();
+    data = NULL;
+    usage = 0;
+}
+
+bool CatItem::operator!=(const CatItem& other) const {
+    return !(*this == other);
+}
+
+bool CatItem::operator==(const CatItem& other) const {
+    return fullPath == other.fullPath && shortName == other.shortName;
+}
+
+QSet<uint> InputData::getLabels() {
+    return labels;
+}
+
+void InputData::setLabel(uint l) {
+    labels.insert(l);
+}
+
+void InputData::removeLabel(uint l) {
+    labels.remove(l);
+}
+
+bool InputData::hasLabel(uint l) {
+    return labels.contains(l);
+}
+
+void InputData::setID(uint i) {
+    id = i;
+}
+
+uint InputData::getID() const {
+    return id;
+}
+
+const QString& InputData::getText() const {
+    return text;
+}
+
+void InputData::setText(const QString& t) {
+    text = t;
+}
+
+bool InputData::hasText() const {
+    return !text.isEmpty();
+}
+
+CatItem& InputData::getTopResult() {
+    return const_cast<CatItem&>(static_cast<const InputData*>(this)->getTopResult());
+}
+
+const CatItem& InputData::getTopResult() const {
+    return topResult;
+}
+
+void InputData::setTopResult(const CatItem& sr) {
+    topResult = sr;
+}
+
+InputData::InputData() {
+    id = 0;
+}
+
+InputData::InputData(const QString& str)
+    : text(str) {
+    id = 0;
 }

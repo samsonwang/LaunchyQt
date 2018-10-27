@@ -32,7 +32,8 @@ CatalogBuilder::CatalogBuilder(PluginHandler* plugin)
     : m_plugin(plugin),
       m_catalog(new SlowCatalog),
       m_progress(CATALOG_PROGRESS_MAX) {
-      }
+
+}
 
 
 void CatalogBuilder::buildCatalog() {
@@ -147,7 +148,6 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         }
     }
 }
-
 
 CatalogBuilder::~CatalogBuilder() {
     if (m_catalog) {
