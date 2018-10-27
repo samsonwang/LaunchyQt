@@ -309,7 +309,7 @@ void OptionDialog::accept() {
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
     g_mainWidget->startUpdateTimer();
-    g_mainWidget->setSuggestionListMode(m_pUi->genCondensed->currentIndex());
+    g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
     g_mainWidget->loadOptions();
 
     // Apply Directory Options

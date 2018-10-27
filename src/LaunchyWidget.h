@@ -58,7 +58,7 @@ public:
 public:
     void executeStartupCommand(int command);
     void showTrayIcon();
-    void setSuggestionListMode(int mode);
+    void setAlternativeListMode(int mode);
     bool setHotkey(const QKeySequence& hotkey);
     bool setAlwaysShow(bool);
     bool setAlwaysTop(bool);
@@ -136,7 +136,6 @@ private:
     QLabel* m_outputBox;
     QLabel* m_outputIcon;
     CharListWidget* m_alternativeList;
-    QRect alternativesRect;
     QScrollBar* m_alternativeScroll;
     QLabel* m_alternativePath;
     IconDelegate* listDelegate;

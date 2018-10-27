@@ -26,13 +26,14 @@ class CharListWidget : public QListWidget {
 public:
     CharListWidget(QWidget* parent = 0);
     
-    bool isPositionTranslated() const;
+    void updateGeometry(const QPoint& basePos, const QPoint& offset);
+    void resetGeometry();
 
 protected:
-    void keyPressEvent(QKeyEvent* key);
-    void mouseDoubleClickEvent(QMouseEvent* event);
-    void focusInEvent(QFocusEvent* event);
-    void focusOutEvent(QFocusEvent* event);
+    virtual void keyPressEvent(QKeyEvent* key);
+    virtual void mouseDoubleClickEvent(QMouseEvent* event);
+    virtual void focusInEvent(QFocusEvent* event);
+    virtual void focusOutEvent(QFocusEvent* event);
 
 signals:
     void keyPressed(QKeyEvent* event);
@@ -41,4 +42,5 @@ signals:
 
 private:
     bool m_positionTranslated;
+    QRect m_baseGeometry;
 };

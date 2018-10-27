@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "precompiled.h"
 #include "CharListWidget.h"
+#include "globals.h"
 
 
 CharListWidget::CharListWidget(QWidget* parent)
@@ -35,6 +36,44 @@ CharListWidget::CharListWidget(QWidget* parent)
     setUniformItemSizes(true);
 }
 
+
+void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset) {
+    // Now resize and reposition the list
+    int numViewable = g_settings->value("GenOps/numviewable", "4").toInt();
+    int min = count() < numViewable ? count() : numViewable;
+
+    // The stylesheet doesn't load immediately, so we cache the placement rectangle here
+    if (m_baseGeometry.isNull()) {
+        m_baseGeometry = geometry();
+    }
+        
+    QRect rect = m_baseGeometry;
+
+    //QRect rect = m_alternativeList->geometry();
+    rect.setHeight(min * sizeHintForRow(0));
+    rect.translate(basePos);
+
+    // Is there room for the dropdown box?
+    if (rect.y() + rect.height() > qApp->desktop()->height()) {
+        // Only move it if there's more space above
+        // In both cases, ensure it doesn't spill off the screen
+        if (basePos.y() + offset.y() > qApp->desktop()->height() / 2) {
+            rect.moveTop(basePos.y() + offset.y() - rect.height());
+            if (rect.top() < 0)
+                rect.setTop(0);
+        }
+        else {
+            rect.setBottom(qApp->desktop()->height());
+        }
+    }
+
+    setGeometry(rect);
+}
+
+
+void CharListWidget::resetGeometry() {
+    m_baseGeometry = QRect();
+}
 
 void CharListWidget::keyPressEvent(QKeyEvent* key) {
     emit keyPressed(key);

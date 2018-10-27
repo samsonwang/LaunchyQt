@@ -138,7 +138,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     m_alternativeList->setObjectName("alternatives");
     listDelegate = new IconDelegate(this);
     defaultListDelegate = m_alternativeList->itemDelegate();
-    setSuggestionListMode(g_settings->value("GenOps/condensedView", 2).toInt());
+    setAlternativeListMode(g_settings->value("GenOps/condensedView", 2).toInt());
     m_alternativeScroll = m_alternativeList->verticalScrollBar();
     m_alternativeScroll->setObjectName("altScroll");
     connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
@@ -275,7 +275,7 @@ void LaunchyWidget::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
 }
 
-void LaunchyWidget::setSuggestionListMode(int mode) {
+void LaunchyWidget::setAlternativeListMode(int mode) {
     if (mode) {
         // The condensed mode needs an icon placeholder or it repositions text when the icon becomes available
         if (!condensedTempIcon) {
@@ -326,24 +326,20 @@ void LaunchyWidget::showTrayIcon() {
 void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     int mode = g_settings->value("GenOps/condensedView", 2).toInt();
     int i = 0;
-    for (; i < searchResults.size(); ++i)
-    {
+    for (; i < searchResults.size(); ++i) {
         qDebug() << "Alternative" << i << ":" << searchResults[i].fullPath;
         QString fullPath = QDir::toNativeSeparators(searchResults[i].fullPath);
 #ifdef _DEBUG
         fullPath += QString(" (%1 launches)").arg(searchResults[i].usage);
 #endif
         QListWidgetItem* item;
-        if (i < m_alternativeList->count())
-        {
+        if (i < m_alternativeList->count()) {
             item = m_alternativeList->item(i);
         }
-        else
-        {
+        else {
             item = new QListWidgetItem(fullPath, m_alternativeList);
         }
-        if (item->data(mode == 1 ? ROLE_SHORT : ROLE_FULL) != fullPath)
-        {
+        if (item->data(mode == 1 ? ROLE_SHORT : ROLE_FULL) != fullPath) {
             // condensedTempIcon is a blank icon or null
             item->setData(ROLE_ICON, *condensedTempIcon);
         }
@@ -353,46 +349,16 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
             m_alternativeList->addItem(item);
     }
 
-    while (m_alternativeList->count() > i)
-    {
+    while (m_alternativeList->count() > i) {
         delete m_alternativeList->takeItem(i);
     }
 
-    if (resetSelection)
-    {
+    if (resetSelection) {
         m_alternativeList->setCurrentRow(0);
     }
     iconExtractor.processIcons(searchResults);
 
-    // Now resize and reposition the list
-    int numViewable = g_settings->value("GenOps/numviewable", "4").toInt();
-    int min = m_alternativeList->count() < numViewable ? m_alternativeList->count() : numViewable;
-
-    // The stylesheet doesn't load immediately, so we cache the placement rectangle here
-    if (alternativesRect.isNull())
-        alternativesRect = m_alternativeList->geometry();
-    QRect rect = alternativesRect;
-    
-    //QRect rect = m_alternativeList->geometry();
-    rect.setHeight(min * m_alternativeList->sizeHintForRow(0));
-    rect.translate(pos());
-
-    // Is there room for the dropdown box?
-    if (rect.y() + rect.height() > qApp->desktop()->height()) {
-        // Only move it if there's more space above
-        // In both cases, ensure it doesn't spill off the screen
-        if (pos().y() + m_inputBox->pos().y() > qApp->desktop()->height() / 2) {
-            rect.moveTop(pos().y() + m_inputBox->pos().y() - rect.height());
-            if (rect.top() < 0)
-                rect.setTop(0);
-        }
-        else {
-            rect.setBottom(qApp->desktop()->height());
-        }
-    }
-
-    m_alternativeList->setGeometry(rect);
-    
+    m_alternativeList->updateGeometry(pos(), m_inputBox->pos());
 }
 
 
@@ -1126,7 +1092,7 @@ void LaunchyWidget::applySkin(const QString& name) {
     m_optionButton->setGeometry(QRect());
     m_inputBox->setAlignment(Qt::AlignLeft);
     m_outputBox->setAlignment(Qt::AlignCenter);
-    alternativesRect = QRect();
+    m_alternativeList->resetGeometry();
 
     QFile fileStyle(skinPath + "style.qss");
     fileStyle.open(QFile::ReadOnly);
