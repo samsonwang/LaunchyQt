@@ -173,8 +173,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
     connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
 
-    catalog = g_builder->getCatalog();
-    if (!catalog->load(SettingsManager::instance().catalogFilename())) {
+    if (!g_catalog->load(SettingsManager::instance().catalogFilename())) {
         command |= Rescan;
     }
 
@@ -387,7 +386,7 @@ void LaunchyWidget::launchItem(CatItem& item) {
         runProgram(item.fullPath, args);
     }
 
-    catalog->incrementUsage(item);
+    g_catalog->incrementUsage(item);
     history.addItem(inputData);
 }
 
@@ -527,7 +526,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
             }
             else {
                 // Demote the selected item down the alternatives list
-                catalog->demoteItem(searchResults[row]);
+                g_catalog->demoteItem(searchResults[row]);
                 searchOnInput();
                 updateOutputBox(false);
             }
@@ -720,7 +719,7 @@ void LaunchyWidget::processKey() {
 }
 
 void LaunchyWidget::searchOnInput() {
-    if (catalog == NULL)
+    if (g_catalog.isNull())
         return;
 
     QString searchText = inputData.count() > 0 ? inputData.last().getText() : "";
@@ -738,7 +737,7 @@ void LaunchyWidget::searchOnInput() {
         // Search the catalog for matching items
         if (inputData.count() == 1) {
             qDebug() << "Searching catalog for" << searchText;
-            catalog->searchCatalogs(searchTextLower, searchResults);
+            g_catalog->searchCatalogs(searchTextLower, searchResults);
         }
 
         if (searchResults.count() != 0)
@@ -751,7 +750,7 @@ void LaunchyWidget::searchOnInput() {
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
         qSort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
-        catalog->promoteRecentlyUsedItems(searchTextLower, searchResults);
+        g_catalog->promoteRecentlyUsedItems(searchTextLower, searchResults);
 
         // Finally, if the search text looks like a file or directory name,
         // add any file or directory matches
@@ -912,7 +911,7 @@ void LaunchyWidget::saveSettings() {
     qDebug() << "Save settings";
     savePosition();
     g_settings->sync();
-    catalog->save(SettingsManager::instance().catalogFilename());
+    g_catalog->save(SettingsManager::instance().catalogFilename());
     history.save(SettingsManager::instance().historyFilename());
 }
 

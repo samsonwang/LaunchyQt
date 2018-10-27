@@ -20,9 +20,10 @@
 #pragma once
 
 #include <QObject>
-#include <QThread>
 #include "catalog_types.h"
 #include "plugin_handler.h"
+
+class QThread;
 
 class CatalogBuilder : public QObject, public INotifyProgressStep {
 	Q_OBJECT
@@ -30,10 +31,9 @@ public:
 	CatalogBuilder(PluginHandler* plugin);
     virtual ~CatalogBuilder();
 
-	Catalog* getCatalog() const;
 	int getProgress() const;
 	int isRunning() const;
-	bool progressStep(int newStep);
+	virtual bool progressStep(int newStep);
 
 public slots:
 	void buildCatalog();
@@ -45,10 +45,9 @@ signals:
 private:
 	void indexDirectory(const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
-    QThread m_thread;
+    QThread* m_thread;
 
 	PluginHandler* m_plugin;
-	Catalog* m_catalog;
 	QSet<QString> m_indexed;
 	int m_progress;
 	int m_currentItem;

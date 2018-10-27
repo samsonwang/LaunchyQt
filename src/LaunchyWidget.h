@@ -165,10 +165,7 @@ private:
     bool dragging;
     QPoint dragStartPoint;
     bool menuOpen;
-    
     bool optionsOpen;
-
-    Catalog* catalog;
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);

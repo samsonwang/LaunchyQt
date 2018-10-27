@@ -208,9 +208,7 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     m_pUi->genOpaqueness->setRange(15, 100);
 
-    if (g_builder->getCatalog() != NULL) {
-        m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_builder->getCatalog()->count()));
-    }
+    m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
     connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
@@ -544,10 +542,10 @@ void OptionDialog::catalogBuilt()
 {
     m_pUi->catProgress->setVisible(false);
     m_pUi->catRescan->setEnabled(true);
-    if (g_builder->getCatalog() != NULL) {
-        m_pUi->catSize->setText(tr("Index has %n items", "", g_builder->getCatalog()->count()));
-        m_pUi->catSize->setVisible(true);
-    }
+
+    m_pUi->catSize->setText(tr("Index has %n items", "", g_catalog->count()));
+    m_pUi->catSize->setVisible(true);
+
 }
 
 

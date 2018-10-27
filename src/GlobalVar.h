@@ -35,11 +35,13 @@ extern const uint LABEL_HISTORY;
 class AppBase;
 class LaunchyWidget;
 class QSettings;
+class Catalog;
 class CatalogBuilder;
 
 extern QScopedPointer<AppBase> g_app;
 extern QScopedPointer<LaunchyWidget> g_mainWidget;
 extern QScopedPointer<QSettings> g_settings;
+extern QScopedPointer<Catalog> g_catalog;
 extern QScopedPointer<CatalogBuilder> g_builder;
 extern QString g_searchText;
 
