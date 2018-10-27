@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileBrowserDelegate.h"
 #include "SettingsManager.h"
 #include "QLogger.h"
-#include "catalog_builder.h"
+#include "CatalogBuilder.h"
 
 QByteArray OptionDialog::s_windowGeometry;
 int OptionDialog::s_currentTab;

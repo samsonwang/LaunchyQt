@@ -159,7 +159,7 @@ exit 0</Command>
     <ClCompile Include="..\deps\SingleApplication\singleapplication_p.cpp" />
     <ClCompile Include="AnimationLabel.cpp" />
     <ClCompile Include="AppBase.cpp" />
-    <ClCompile Include="build\moc_catalog_builder.cpp" />
+    <ClCompile Include="build\moc_CatalogBuilder.cpp" />
     <ClCompile Include="build\moc_CharLineEdit.cpp" />
     <ClCompile Include="build\moc_CharListWidget.cpp" />
     <ClCompile Include="build\moc_DropListWidget.cpp" />
@@ -188,7 +188,7 @@ exit 0</Command>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SettingsManager.cpp" />
     <ClCompile Include="catalog.cpp" />
-    <ClCompile Include="catalog_builder.cpp" />
+    <ClCompile Include="CatalogBuilder.cpp" />
     <ClCompile Include="catalog_types.cpp" />
     <ClCompile Include="GlobalVar.cpp" />
     <ClCompile Include="IconDelegate.cpp" />
@@ -329,15 +329,15 @@ exit 0</Command>
     <ClInclude Include="QLogger.h" />
     <ClInclude Include="SettingsManager.h" />
     <ClInclude Include="catalog.h" />
-    <CustomBuild Include="catalog_builder.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -DNDEBUG -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB -DQAPPLICATION_CLASS=QApplication  "-I." "-I.\GeneratedFiles" "-I.\..\deps" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtWinExtras" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-fprecompiled.h" "-f../catalog_builder.h"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing catalog_builder.h...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB -DQAPPLICATION_CLASS=QApplication  "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing catalog_builder.h...</Message>
+    <CustomBuild Include="CatalogBuilder.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp" "-fprecompiled.h" "-f../CatalogBuilder.h"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -DNDEBUG -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB -DQAPPLICATION_CLASS=QApplication "-I." "-I.\GeneratedFiles" "-I.\..\deps" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtWinExtras" "-I$(QTDIR)\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing CatalogBuilder.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\build\moc_%(Filename).cpp"  -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB -DQAPPLICATION_CLASS=QApplication "-I." "-I.\..\common" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I.\build" "-I$(QTDIR)\mkspecs\win32-msvc2015" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtWinExtras"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing CatalogBuilder.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\build\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\build\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="catalog_types.h" />
     <ClInclude Include="GlobalVar.h" />

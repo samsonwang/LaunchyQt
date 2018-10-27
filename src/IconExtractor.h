@@ -34,7 +34,9 @@ public:
     void processIcon(const CatItem& item, bool highPriority = false);
     void processIcons(const QList<CatItem>& newItems, bool reset = true);
     void stop();
-    void run();
+
+protected:
+    virtual void run();
 
 signals:
     void iconExtracted(int itemIndex, QString path, QIcon icon);

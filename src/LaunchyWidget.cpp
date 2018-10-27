@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationLabel.h"
 #include "CharListWidget.h"
 #include "CharLineEdit.h"
-#include "catalog_builder.h"
+#include "CatalogBuilder.h"
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)

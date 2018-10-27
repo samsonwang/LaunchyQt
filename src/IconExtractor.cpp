@@ -83,11 +83,6 @@ void IconExtractor::stop() {
 
 
 void IconExtractor::run() {
-/*
-#ifdef Q_OS_WIN
-    CoInitialize(NULL);
-#endif
-*/
     CatItem item;
     bool itemsRemaining = true;
 
@@ -102,13 +97,7 @@ void IconExtractor::run() {
             emit iconExtracted(item.id, item.fullPath, icon);
         }
     } while (itemsRemaining);
-/*
-#ifdef Q_OS_WIN
-    CoUninitialize();
-#endif
-*/
 }
-
 
 QIcon IconExtractor::getIcon(const CatItem& item) {
     qDebug() << "Fetching icon for" << item.fullPath;

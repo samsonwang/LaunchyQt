@@ -87,9 +87,6 @@
     <ClCompile Include="catalog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="catalog_builder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="catalog_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,9 +94,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_CharListWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\moc_catalog_builder.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_CharLineEdit.cpp">
@@ -222,6 +216,12 @@
     <ClCompile Include="GlobalVar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CatalogBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="build\moc_CatalogBuilder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -239,9 +239,6 @@
     <ClInclude Include="catalog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="catalog_builder.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="catalog_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -330,6 +327,9 @@
     </CustomBuild>
     <CustomBuild Include="IconDelegate.h">
       <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CatalogBuilder.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

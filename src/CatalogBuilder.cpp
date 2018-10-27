@@ -19,7 +19,7 @@
 
 #include "precompiled.h"
 #include "catalog_types.h"
-#include "catalog_builder.h"
+#include "CatalogBuilder.h"
 #include "GlobalVar.h"
 #include "AppBase.h"
 #include "Directory.h"

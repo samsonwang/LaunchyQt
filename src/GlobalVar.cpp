@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QSettings>
 #include "AppBase.h"
 #include "LaunchyWidget.h"
-#include "catalog_builder.h"
+#include "CatalogBuilder.h"
 
 const int LAUNCHY_VERSION = 300;
 const char* LAUNCHY_VERSION_STRING = "3.0.0 alpha";
