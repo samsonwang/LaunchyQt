@@ -154,7 +154,6 @@ private:
     QTimer* updateTimer;
     QTimer* dropTimer;
 
-    QThread builderThread;
     IconExtractor iconExtractor;
     
     CatItem outputItem;

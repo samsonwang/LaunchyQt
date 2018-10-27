@@ -170,11 +170,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // Load the catalog
     g_builder.reset(new CatalogBuilder(&plugins));
-    g_builder->moveToThread(&builderThread);
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
     connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
-    builderThread.start(QThread::IdlePriority);
-    builderThread.setObjectName("CatalogBuilder");
 
     catalog = g_builder->getCatalog();
     if (!catalog->load(SettingsManager::instance().catalogFilename())) {
@@ -979,7 +976,6 @@ void LaunchyWidget::reloadSkin() {
 }
 
 void LaunchyWidget::exit() {
-    builderThread.exit();
     fader->stop();
     saveSettings();
     qApp->quit();

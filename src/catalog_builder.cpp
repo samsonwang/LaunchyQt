@@ -32,7 +32,8 @@ CatalogBuilder::CatalogBuilder(PluginHandler* plugin)
     : m_plugin(plugin),
       m_catalog(new SlowCatalog),
       m_progress(CATALOG_PROGRESS_MAX) {
-
+    moveToThread(&m_thread);
+    m_thread.start(QThread::IdlePriority);
 }
 
 void CatalogBuilder::buildCatalog() {
@@ -153,6 +154,7 @@ CatalogBuilder::~CatalogBuilder() {
         delete m_catalog;
         m_catalog = nullptr;
     }
+    m_thread.exit();
 }
 
 Catalog* CatalogBuilder::getCatalog() const {

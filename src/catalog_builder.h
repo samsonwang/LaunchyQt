@@ -20,6 +20,7 @@
 #pragma once
 
 #include <QObject>
+#include <QThread>
 #include "catalog_types.h"
 #include "plugin_handler.h"
 
@@ -44,6 +45,7 @@ signals:
 private:
 	void indexDirectory(const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
+    QThread m_thread;
 
 	PluginHandler* m_plugin;
 	Catalog* m_catalog;
