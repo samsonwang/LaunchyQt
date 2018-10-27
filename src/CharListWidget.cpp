@@ -20,10 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "precompiled.h"
 #include "CharListWidget.h"
 #include "globals.h"
-
+#include "IconDelegate.h"
 
 CharListWidget::CharListWidget(QWidget* parent)
-    : QListWidget(parent) {
+    : QListWidget(parent),
+      m_defaultListDelegate(itemDelegate()),
+      m_iconListDelegate(new IconDelegate(this)),
+      m_alternativePath(new QLabel(this)) {
 #ifdef Q_OS_LINUX
     setWindowFlags(windowFlags() | Qt::Tool | Qt::SplashScreen);
 #else
@@ -34,8 +37,11 @@ CharListWidget::CharListWidget(QWidget* parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setTextElideMode(Qt::ElideLeft);
     setUniformItemSizes(true);
-}
 
+    m_alternativePath->setObjectName("alternativesPath");
+    m_alternativePath->hide();
+    m_iconListDelegate->setAlternativesPathWidget(m_alternativePath);
+}
 
 void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset) {
     // Now resize and reposition the list
@@ -73,6 +79,16 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
 
 void CharListWidget::resetGeometry() {
     m_baseGeometry = QRect();
+}
+
+
+void CharListWidget::setListMode(int mode) {
+    if (mode) {
+        setItemDelegate(m_defaultListDelegate);
+    }
+    else {
+        setItemDelegate(m_iconListDelegate);
+    }
 }
 
 void CharListWidget::keyPressEvent(QKeyEvent* key) {

@@ -55,7 +55,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_alternativeList(NULL),
       updateTimer(NULL),
       dropTimer(NULL),
-      condensedTempIcon(NULL),
       m_pHotKey(new QHotkey(this)) {
 
     g_mainWidget.reset(this);
@@ -136,19 +135,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     m_alternativeList = new CharListWidget(this);
     m_alternativeList->setObjectName("alternatives");
-    listDelegate = new IconDelegate(this);
-    defaultListDelegate = m_alternativeList->itemDelegate();
     setAlternativeListMode(g_settings->value("GenOps/condensedView", 2).toInt());
     m_alternativeScroll = m_alternativeList->verticalScrollBar();
     m_alternativeScroll->setObjectName("altScroll");
     connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
     connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
     //connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
-
-    m_alternativePath = new QLabel(m_alternativeList);
-    m_alternativePath->setObjectName("alternativesPath");
-    m_alternativePath->hide();
-    listDelegate->setAlternativesPathWidget(m_alternativePath);
 
     // Load the plugins
     plugins.loadPlugins();
@@ -212,11 +204,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 }
 
 LaunchyWidget::~LaunchyWidget() {
-    // delete updateTimer;
-    // delete dropTimer;
-    // delete alternatives;
-}
 
+}
 
 void LaunchyWidget::executeStartupCommand(int command) {
     if (command & ResetPosition) {
@@ -276,20 +265,7 @@ void LaunchyWidget::paintEvent(QPaintEvent* event) {
 }
 
 void LaunchyWidget::setAlternativeListMode(int mode) {
-    if (mode) {
-        // The condensed mode needs an icon placeholder or it repositions text when the icon becomes available
-        if (!condensedTempIcon) {
-            QPixmap pixmap(16, 16);
-            pixmap.fill(Qt::transparent);
-            condensedTempIcon = new QIcon(pixmap);
-        }
-        m_alternativeList->setItemDelegate(defaultListDelegate);
-    }
-    else {
-        delete condensedTempIcon;
-        condensedTempIcon = NULL;
-        m_alternativeList->setItemDelegate(listDelegate);
-    }
+    m_alternativeList->setListMode(mode);
 }
 
 bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
@@ -341,7 +317,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
         }
         if (item->data(mode == 1 ? ROLE_SHORT : ROLE_FULL) != fullPath) {
             // condensedTempIcon is a blank icon or null
-            item->setData(ROLE_ICON, *condensedTempIcon);
+            item->setData(ROLE_ICON, QIcon());
         }
         item->setData(mode == 1 ? ROLE_FULL : ROLE_SHORT, searchResults[i].shortName);
         item->setData(mode == 1 ? ROLE_SHORT : ROLE_FULL, fullPath);
@@ -702,8 +678,7 @@ void LaunchyWidget::doTab()
             m_inputBox->selectAll();
             m_inputBox->insert(inputData.toString(true) + QDir::toNativeSeparators(path));
         }
-        else
-        {
+        else {
             inputData.last().setTopResult(searchResults[0]);
             inputData.last().setText(searchResults[0].shortName);
             m_inputBox->selectAll();
@@ -713,12 +688,11 @@ void LaunchyWidget::doTab()
 }
 
 
-void LaunchyWidget::doEnter()
-{
+void LaunchyWidget::doEnter() {
     hideAlternativeList();
 
-    if ((inputData.count() > 0 && searchResults.count() > 0) || inputData.count() > 1)
-    {
+    if ((inputData.count() > 0 && searchResults.count() > 0)
+        || inputData.count() > 1) {
         CatItem& item = inputData[0].getTopResult();
         qDebug() << "Launching" << item.shortName << ":" << item.fullPath;
         launchItem(item);
@@ -834,9 +808,7 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
     }
 }
 
-
-void LaunchyWidget::startDropTimer()
-{
+void LaunchyWidget::startDropTimer() {
     int delay = g_settings->value("GenOps/autoSuggestDelay", 1000).toInt();
     if (delay > 0)
         dropTimer->start(delay);
@@ -844,20 +816,15 @@ void LaunchyWidget::startDropTimer()
         dropTimeout();
 }
 
-
-void LaunchyWidget::dropTimeout()
-{
+void LaunchyWidget::dropTimeout() {
     // Don't do anything if Launchy has been hidden since the timer was started
-    if (isVisible() && searchResults.count() > 0)
-    {
+    if (isVisible() && searchResults.count() > 0) {
         updateAlternativeList();
         showAlternativeList();
     }
 }
 
-
-void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon)
-{
+void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon) {
     if (itemIndex == -1) {
         // An index of -1 means update the output icon, check that it is also
         // the same item as was originally requested
@@ -865,11 +832,10 @@ void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon)
             m_outputIcon->setPixmap(icon.pixmap(m_outputIcon->size()));
         }
     }
-    else if (itemIndex < m_alternativeList->count())
-    {
+    else if (itemIndex < m_alternativeList->count()) {
         // >=0 is an item in the alternatives list
-        if (itemIndex < searchResults.count() && path == searchResults[itemIndex].fullPath)
-        {
+        if (itemIndex < searchResults.count()
+            && path == searchResults[itemIndex].fullPath) {
             QListWidgetItem* listItem = m_alternativeList->item(itemIndex);
             listItem->setIcon(icon);
             listItem->setData(ROLE_ICON, icon);
@@ -880,18 +846,13 @@ void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon)
     }
 }
 
-
-void LaunchyWidget::catalogProgressUpdated(int value)
-{
-    if (value == 0)
-    {
+void LaunchyWidget::catalogProgressUpdated(int value) {
+    if (value == 0) {
         m_workingAnimation->Start();
     }
 }
 
-
-void LaunchyWidget::catalogBuilt()
-{
+void LaunchyWidget::catalogBuilt() {
     // Save settings and updated catalog, stop the "working" animation
     saveSettings();
     m_workingAnimation->Stop();
@@ -906,7 +867,6 @@ void LaunchyWidget::setSkin(const QString& name) {
     applySkin(name);
     showLaunchy(false);
 }
-
 
 void LaunchyWidget::updateVersion(int oldVersion) {
     if (oldVersion < 199) {
@@ -923,7 +883,6 @@ void LaunchyWidget::updateVersion(int oldVersion) {
         g_settings->setValue("version", LAUNCHY_VERSION);
     }
 }
-
 
 void LaunchyWidget::loadPosition(QPoint pt) {
     // Get the dimensions of the screen containing the new center point
@@ -962,7 +921,6 @@ void LaunchyWidget::saveSettings() {
     history.save(SettingsManager::instance().historyFilename());
 }
 
-
 void LaunchyWidget::startUpdateTimer() {
     int time = g_settings->value("GenOps/updatetimer", 10).toInt();
     if (time != 0)
@@ -970,7 +928,6 @@ void LaunchyWidget::startUpdateTimer() {
     else
         updateTimer->stop();
 }
-
 
 void LaunchyWidget::onHotkey() {
     if (menuOpen || optionsOpen) {
@@ -993,23 +950,18 @@ void LaunchyWidget::closeEvent(QCloseEvent* event) {
     hideLaunchy();
 }
 
-bool LaunchyWidget::setAlwaysShow(bool alwaysShow)
-{
+bool LaunchyWidget::setAlwaysShow(bool alwaysShow) {
     alwaysShowLaunchy = alwaysShow;
     return !isVisible() && alwaysShow;
 }
 
-
-bool LaunchyWidget::setAlwaysTop(bool alwaysTop)
-{
-    if (alwaysTop && (windowFlags() & Qt::WindowStaysOnTopHint) == 0)
-    {
+bool LaunchyWidget::setAlwaysTop(bool alwaysTop) {
+    if (alwaysTop && (windowFlags() & Qt::WindowStaysOnTopHint) == 0) {
         setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
         m_alternativeList->setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
         return true;
     }
-    else if (!alwaysTop && (windowFlags() & Qt::WindowStaysOnTopHint) != 0)
-    {
+    else if (!alwaysTop && (windowFlags() & Qt::WindowStaysOnTopHint) != 0) {
         setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
         m_alternativeList->setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
         return true;
@@ -1017,7 +969,6 @@ bool LaunchyWidget::setAlwaysTop(bool alwaysTop)
 
     return false;
 }
-
 
 void LaunchyWidget::setOpaqueness(int level) {
     double value = level / 100.0;
@@ -1068,9 +1019,6 @@ void LaunchyWidget::applySkin(const QString& name) {
     m_skinChanged = true;
 
     qDebug() << "apply skin:" << name;
-
-    if (listDelegate == NULL)
-        return;
 
     QString skinPath = SettingsManager::instance().skinPath(name);
     // Use default skin if this one doesn't exist or isn't valid

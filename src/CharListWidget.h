@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QListWidget>
+class IconDelegate;
 
 class CharListWidget : public QListWidget {
     Q_OBJECT
@@ -28,6 +29,7 @@ public:
     
     void updateGeometry(const QPoint& basePos, const QPoint& offset);
     void resetGeometry();
+    void setListMode(int mode);
 
 protected:
     virtual void keyPressEvent(QKeyEvent* key);
@@ -43,4 +45,7 @@ signals:
 private:
     bool m_positionTranslated;
     QRect m_baseGeometry;
+    IconDelegate* m_iconListDelegate;
+    QAbstractItemDelegate* m_defaultListDelegate;
+    QLabel* m_alternativePath;
 };

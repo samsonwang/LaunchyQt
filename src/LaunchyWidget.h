@@ -137,18 +137,15 @@ private:
     QLabel* m_outputIcon;
     CharListWidget* m_alternativeList;
     QScrollBar* m_alternativeScroll;
-    QLabel* m_alternativePath;
-    IconDelegate* listDelegate;
-    QAbstractItemDelegate* defaultListDelegate;
     QPushButton* m_optionButton;
     QPushButton* m_closeButton;
     AnimationLabel* m_workingAnimation;
     QSystemTrayIcon* m_trayIcon;
     Fader* fader;
     QPixmap* frameGraphic;
-    
+
     QHotkey* m_pHotKey;
-    
+
     QAction* actShow;
     QAction* actRebuild;
     QAction* actReloadSkin;
@@ -157,21 +154,23 @@ private:
 
     QTimer* updateTimer;
     QTimer* dropTimer;
+
     QThread builderThread;
     IconExtractor iconExtractor;
-    QIcon* condensedTempIcon;
+    
     CatItem outputItem;
     QList<CatItem> searchResults;
     InputDataList inputData;
     CommandHistory history;
     bool alwaysShowLaunchy;
+
     bool dragging;
     QPoint dragStartPoint;
     bool menuOpen;
+    
     bool optionsOpen;
 
     Catalog* catalog;
-
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);
