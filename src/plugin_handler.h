@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QPluginLoader>
 #include <QHash>
 #include "plugin_interface.h"
-#include "catalog.h"
+#include "Catalog.h"
 #include "InputData.h"
 
 class Catalog;

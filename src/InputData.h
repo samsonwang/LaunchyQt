@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QList>
-#include "catalog.h"
+#include "Catalog.h"
 
 /** InputData shows one segment (between tabs) of a user's query
 A user's query is typically represented by List<InputData>

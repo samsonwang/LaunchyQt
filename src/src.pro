@@ -14,14 +14,14 @@ INCLUDEPATH += ../deps
 SOURCES = main.cpp \
     AppBase.cpp \
     LaunchyWidget.cpp \
-    globals.cpp \
+    GlobalVar.cpp \
     OptionDialog.cpp \
-    catalog.cpp \
-    catalog_builder.cpp \
+    Catalog.cpp \
+    CatalogBuilder.cpp \
     plugin_handler.cpp \
     IconDelegate.cpp \
     plugin_interface.cpp \
-    catalog_types.cpp \
+    CatalogItem.cpp \
     IconExtractor.cpp \
     FileBrowserDelegate.cpp \
     FileBrowser.cpp \
@@ -30,20 +30,20 @@ SOURCES = main.cpp \
     CharListWidget.cpp \
     CharLineEdit.cpp \
     CommandHistory.cpp \
-    InputDataList.cpp \
+    InputData.cpp \
     FileSearch.cpp \
     AnimationLabel.cpp \
     SettingsManager.cpp \
     QLogger.cpp
 HEADERS = AppBase.h \
-    globals.h \
+    GlobalVar.h \
     LaunchyWidget.h \
-    catalog.h \
-    catalog_builder.h \
+    Catalog.h \
+    CatalogBuilder.h \
     plugin_interface.h \
     plugin_handler.h \
     OptionDialog.h \
-    catalog_types.h \
+    CatalogItem.h \
     IconDelegate.h \
     IconExtractor.h \
     FileBrowserDelegate.h \
@@ -54,7 +54,7 @@ HEADERS = AppBase.h \
     Fader.h \
     precompiled.h \
     CommandHistory.h \
-    InputDataList.h \
+    InputData.h \
     FileSearch.h \
     AnimationLabel.h \
     SettingsManager.h \

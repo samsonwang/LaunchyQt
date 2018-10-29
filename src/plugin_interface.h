@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QObject>
 #include <QSettings>
-#include "catalog.h"
+#include "Catalog.h"
 
 #define DESKTOP_WINDOWS 0
 #define DESKTOP_GNOME 1

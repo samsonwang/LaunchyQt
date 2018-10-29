@@ -50,12 +50,18 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     : QWidget(NULL, Qt::FramelessWindowHint),
 #endif
       m_skinChanged(false),
+      m_inputBox(new CharLineEdit(this)),
+      m_outputBox(new QLabel(this)),
+      m_outputIcon(new QLabel(this)),
+      m_alternativeList(new CharListWidget(this)),
+      m_optionButton(new QPushButton(this)),
+      m_closeButton(new QPushButton(this)),
+      m_workingAnimation(new AnimationLabel(this)),
+      m_trayIcon(new QSystemTrayIcon(this)),
       frameGraphic(NULL),
-      m_trayIcon(NULL),
-      m_alternativeList(NULL),
-      updateTimer(NULL),
-      dropTimer(NULL),
-      m_pHotKey(new QHotkey(this)) {
+      m_pHotKey(new QHotkey(this)),
+      updateTimer(new QTimer(this)),
+      dropTimer(new QTimer(this)) {
 
     g_mainWidget.reset(this);
 
@@ -85,32 +91,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     alwaysShowLaunchy = false;
 
-    connect(&iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)), 
+    connect(&iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)),
             this, SLOT(iconExtracted(int, QString, QIcon)));
 
-    fader = new Fader(this);
-    connect(fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
-    m_optionButton = new QPushButton(this);
-    m_optionButton->setObjectName("opsButton");
-    m_optionButton->setToolTip(tr("Launchy Options"));
-    m_optionButton->setGeometry(QRect());
-    connect(m_optionButton, SIGNAL(clicked()), this, SLOT(showOptionDialog()));
 
-    m_closeButton = new QPushButton(this);
-    m_closeButton->setObjectName("closeButton");
-    m_closeButton->setToolTip(tr("Close Launchy"));
-    m_closeButton->setGeometry(QRect());
-    connect(m_closeButton, SIGNAL(clicked()), qApp, SLOT(quit()));
-
-    m_outputBox = new QLabel(this);
-    m_outputBox->setObjectName("output");
-    m_outputBox->setAlignment(Qt::AlignHCenter);
-
-    m_inputBox = new CharLineEdit(this);
-#ifdef Q_OS_MAC
-    QMacStyle::setFocusRectPolicy(m_inputBox, QMacStyle::FocusDisabled);
-#endif
     m_inputBox->setObjectName("input");
     connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
     //connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
@@ -119,29 +104,41 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_inputBox, SIGNAL(textEdited(const QString&)),
             this, SLOT(onInputBoxTextEdited(const QString&)));
 
-    m_outputIcon = new QLabel(this);
+    m_outputBox->setObjectName("output");
+    m_outputBox->setAlignment(Qt::AlignHCenter);
+
     m_outputIcon->setObjectName("outputIcon");
     m_outputIcon->setGeometry(QRect());
 
-    m_workingAnimation = new AnimationLabel(this);
-    m_workingAnimation->setObjectName("workingAnimation");
-    m_workingAnimation->setGeometry(QRect());
-
-    // If this is the first time running or a new version, call updateVersion
-    if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION) {
-        updateVersion(g_settings->value("version", 0).toInt());
-        command |= ShowLaunchy;
-    }
-
-    m_alternativeList = new CharListWidget(this);
     m_alternativeList->setObjectName("alternatives");
     setAlternativeListMode(g_settings->value("GenOps/condensedView", 2).toInt());
     connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
     connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
     //connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
 
-    // Load the plugins
-    plugins.loadPlugins();
+    m_optionButton->setObjectName("opsButton");
+    m_optionButton->setToolTip(tr("Launchy Options"));
+    m_optionButton->setGeometry(QRect());
+    connect(m_optionButton, SIGNAL(clicked()), this, SLOT(showOptionDialog()));
+
+    m_closeButton->setObjectName("closeButton");
+    m_closeButton->setToolTip(tr("Close Launchy"));
+    m_closeButton->setGeometry(QRect());
+    connect(m_closeButton, SIGNAL(clicked()), qApp, SLOT(quit()));
+
+    m_workingAnimation->setObjectName("workingAnimation");
+    m_workingAnimation->setGeometry(QRect());
+
+    showTrayIcon();
+
+    fader = new Fader(this);
+    connect(fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
+
+    // If this is the first time running or a new version, call updateVersion
+    if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION) {
+        updateVersion(g_settings->value("version", 0).toInt());
+        command |= ShowLaunchy;
+    }
 
     // Set the general options
     if (setAlwaysShow(g_settings->value("GenOps/alwaysshow", false).toBool()))
@@ -159,11 +156,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Set the timers
-    dropTimer = new QTimer(this);
     dropTimer->setSingleShot(true);
     connect(dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
 
-    updateTimer = new QTimer(this);
     updateTimer->setSingleShot(true);
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
     startUpdateTimer();
@@ -177,6 +172,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         command |= Rescan;
     }
 
+    // Load the plugins
+    plugins.loadPlugins();
+
     // Load the history
     history.load(SettingsManager::instance().historyFilename());
 
@@ -186,11 +184,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // Move to saved position
     loadPosition(g_settings->value("Display/pos", QPoint(0, 0)).toPoint());
-    
+
     loadOptions();
 
-    showTrayIcon();
-    
     executeStartupCommand(command);
 
     connect(g_app.data(), &SingleApplication::instanceStarted,
@@ -268,10 +264,6 @@ bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
 }
 
 void LaunchyWidget::showTrayIcon() {
-    if (!m_trayIcon) {
-        m_trayIcon = new QSystemTrayIcon(this);
-    }
-
     QKeySequence hotkey = m_pHotKey->keySeq();
     m_trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
                          .arg(LAUNCHY_VERSION_STRING)
@@ -765,7 +757,7 @@ void LaunchyWidget::searchOnInput() {
 
 // If there are current results, update the output text and icon
 void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
-    if (searchResults.count() > 0 
+    if (searchResults.count() > 0
         && (inputData.count() > 1
             || m_inputBox->text().length() > 0)) {
         qDebug() << "Setting output text to" << searchResults[0].shortName;
@@ -1299,4 +1291,3 @@ void LaunchyWidget::createActions()
     actExit = new QAction(tr("Exit"), this);
     connect(actExit, SIGNAL(triggered()), this, SLOT(exit()));
 }
-

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define COMMANDHISTORY_H
 
 
-#include "catalog.h"
+#include "Catalog.h"
 #include "InputData.h"
 
 

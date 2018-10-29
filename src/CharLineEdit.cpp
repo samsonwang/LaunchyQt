@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 CharLineEdit::CharLineEdit(QWidget* parent)\
     : QLineEdit(parent) {
     setAttribute(Qt::WA_InputMethodEnabled);
+#ifdef Q_OS_MAC
+    QMacStyle::setFocusRectPolicy(m_inputBox, QMacStyle::FocusDisabled);
+#endif
 }
 
 void CharLineEdit::processKey(QKeyEvent* event) {

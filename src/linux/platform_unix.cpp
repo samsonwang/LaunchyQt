@@ -26,7 +26,7 @@
 #include <X11/Xlib.h>
 #include <QFileIconProvider>
 #include "AppBase.h"
-#include "catalog.h"
+#include "Catalog.h"
 #include "LaunchyWidget.h"
 
 PlatformUnix::PlatformUnix(int& argc, char** argv)

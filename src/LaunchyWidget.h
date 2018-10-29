@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QPushButton>
 
 #include "plugin_handler.h"
-#include "catalog.h"
+#include "Catalog.h"
 #include "IconExtractor.h"
 #include "InputData.h"
 #include "CommandHistory.h"
@@ -71,7 +71,7 @@ public slots:
     void showLaunchy(bool noFade = false);
     void buildCatalog();
     void setOpaqueness(int level);
-    
+
 protected:
     virtual void showEvent(QShowEvent *event);
     virtual void paintEvent(QPaintEvent* event);
@@ -124,7 +124,7 @@ private:
     void processKey();
     void launchItem(CatItem& item);
     void startDropTimer();
-    
+
 public:
     PluginHandler plugins;
 
@@ -155,7 +155,7 @@ private:
     QTimer* dropTimer;
 
     IconExtractor iconExtractor;
-    
+
     CatItem outputItem;
     QList<CatItem> searchResults;
     InputDataList inputData;
