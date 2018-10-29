@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "precompiled.h"
 #include "IconDelegate.h"
 #include "GlobalVar.h"
-#include "catalog_types.h"
+#include "Catalog.h"
 
 IconDelegate::IconDelegate(QObject *parent)
     : QStyledItemDelegate(parent) {

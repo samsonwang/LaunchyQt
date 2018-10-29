@@ -19,7 +19,7 @@
 
 #include "CatalogBuilder.h"
 #include <QThread>
-#include "catalog_types.h"
+#include "Catalog.h"
 #include "GlobalVar.h"
 #include "AppBase.h"
 #include "Directory.h"

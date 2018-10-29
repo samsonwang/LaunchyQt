@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSearch.h"
 #include "AppBase.h"
 #include "GlobalVar.h"
-#include "catalog_types.h"
+#include "Catalog.h"
 
 void FileSearch::search(const QString& searchText,
                         QList<CatItem>& searchResults,

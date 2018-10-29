@@ -78,16 +78,7 @@
     <ClCompile Include="FileSearch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputDataList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SettingsManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="catalog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="catalog_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="build\moc_Fader.cpp">
@@ -222,6 +213,15 @@
     <ClCompile Include="build\moc_CatalogBuilder.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="InputData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CatalogItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Catalog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -230,16 +230,7 @@
     <ClInclude Include="FileSearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputDataList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SettingsManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="catalog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="catalog_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <CustomBuild Include="precompiled.h">
@@ -276,6 +267,15 @@
       <Filter>Plugin</Filter>
     </ClInclude>
     <ClInclude Include="GlobalVar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CatalogItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

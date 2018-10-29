@@ -20,12 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef CALCY_H
 #define CALCY_H
 
+#include <QRegExp>
 #include "plugin_interface.h"
 #include "gui.h"
-#include <QRegExp>
-
-// #include <boost/shared_ptr.hpp>
-//using namespace boost;
+#include "InputData.h"
 
 class calcyPlugin : public QObject, public PluginInterface
 {

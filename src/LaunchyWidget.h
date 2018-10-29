@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "plugin_handler.h"
 #include "catalog.h"
 #include "IconExtractor.h"
-#include "InputDataList.h"
+#include "InputData.h"
 #include "CommandHistory.h"
 
 class QHotkey;

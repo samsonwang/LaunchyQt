@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FILESEARCH_H
 
 
-#include "catalog.h"
-#include "InputDataList.h"
+#include "CatalogItem.h"
+#include "InputData.h"
 
 
 class FileSearch {
