@@ -17,20 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-#include "precompiled.h"
 #include "GlobalVar.h"
 #include <QSettings>
 #include "AppBase.h"
 #include "LaunchyWidget.h"
 #include "CatalogBuilder.h"
 
-const int LAUNCHY_VERSION = 300;
-const char* LAUNCHY_VERSION_STRING = "3.0.0 alpha";
+const int LAUNCHY_VERSION = 301;
+const char* LAUNCHY_VERSION_STRING = "3.0.1";
 
 extern const int HASH_LAUNCHY = 0;
 extern const int HASH_HISTORY = 1;
-extern const int HASH_LAUNCHYFILE = 2;
+extern const int HASH_LAUNCHYFILE = 2;s
 extern const uint LABEL_FILE = 0;
 extern const uint LABEL_AUTOSUGGEST = 1;
 extern const uint LABEL_HISTORY = 2;
