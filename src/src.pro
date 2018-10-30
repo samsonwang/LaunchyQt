@@ -10,7 +10,7 @@ QT += network widgets
 PRECOMPILED_HEADER = precompiled.h
 CONFIG += precompile_header
 
-INCLUDEPATH += ../deps
+INCLUDEPATH += ../deps ./lib
 SOURCES = main.cpp \
     AppBase.cpp \
     LaunchyWidget.cpp \
@@ -18,10 +18,8 @@ SOURCES = main.cpp \
     OptionDialog.cpp \
     Catalog.cpp \
     CatalogBuilder.cpp \
-    plugin_handler.cpp \
+    PluginHandler.cpp \
     IconDelegate.cpp \
-    plugin_interface.cpp \
-    CatalogItem.cpp \
     IconExtractor.cpp \
     FileBrowserDelegate.cpp \
     FileBrowser.cpp \
@@ -30,7 +28,7 @@ SOURCES = main.cpp \
     CharListWidget.cpp \
     CharLineEdit.cpp \
     CommandHistory.cpp \
-    InputData.cpp \
+    InputDataList.cpp \
     FileSearch.cpp \
     AnimationLabel.cpp \
     SettingsManager.cpp \
@@ -40,10 +38,8 @@ HEADERS = AppBase.h \
     LaunchyWidget.h \
     Catalog.h \
     CatalogBuilder.h \
-    plugin_interface.h \
-    plugin_handler.h \
+    PluginHandler.h \
     OptionDialog.h \
-    CatalogItem.h \
     IconDelegate.h \
     IconExtractor.h \
     FileBrowserDelegate.h \
@@ -54,7 +50,7 @@ HEADERS = AppBase.h \
     Fader.h \
     precompiled.h \
     CommandHistory.h \
-    InputData.h \
+    InputDataList.h \
     FileSearch.h \
     AnimationLabel.h \
     SettingsManager.h \
@@ -65,6 +61,14 @@ include(../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../deps/QHotkey/QHotkey.pri)
 
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/src/lib/release/ -llaunchy
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/src/lib/debug/ -llaunchy
+else:unix: LIBS += -L$$OUT_PWD/src/lib/ lib/liblaunchy.so
+
+INCLUDEPATH += $$PWD/src/lib
+DEPENDPATH += $$PWD/src/lib
+
+
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
@@ -72,6 +76,7 @@ unix:!macx {
                linux/platform_unix_util.cpp
     HEADERS += linux/platform_unix.h \
                linux/platform_unix_util.h
+    #LIBS    += -Llib -lLaunchy
     PREFIX   = /usr
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
         PLUGINS_PATH=\\\"$$PREFIX/lib/launchy/plugins/\\\" \
@@ -176,5 +181,5 @@ TRANSLATIONS = \
     ../translations/launchy_ja.ts \
     ../translations/launchy_rus.ts
 OBJECTS_DIR = build
-MOC_DIR = build
+MOC_DIR = GeneratedFiles
 RESOURCES += launchy.qrc

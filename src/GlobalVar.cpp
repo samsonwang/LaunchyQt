@@ -28,7 +28,7 @@ const char* LAUNCHY_VERSION_STRING = "3.0.1";
 
 extern const int HASH_LAUNCHY = 0;
 extern const int HASH_HISTORY = 1;
-extern const int HASH_LAUNCHYFILE = 2;s
+extern const int HASH_LAUNCHYFILE = 2;
 extern const uint LABEL_FILE = 0;
 extern const uint LABEL_AUTOSUGGEST = 1;
 extern const uint LABEL_HISTORY = 2;

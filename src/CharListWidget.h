@@ -43,7 +43,6 @@ signals:
     void focusOut(QFocusEvent* event);
 
 private:
-    bool m_positionTranslated;
     QRect m_baseGeometry;
     IconDelegate* m_iconListDelegate;
     QAbstractItemDelegate* m_defaultListDelegate;

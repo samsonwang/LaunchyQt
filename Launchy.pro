@@ -10,3 +10,4 @@ SUBDIRS = plugins/calcy \
 win32 {
 	SUBDIRS += plugins/controly
 }
+
