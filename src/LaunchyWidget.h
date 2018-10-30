@@ -57,7 +57,6 @@ public:
 
 public:
     void executeStartupCommand(int command);
-    void showTrayIcon();
     void setAlternativeListMode(int mode);
     bool setHotkey(const QKeySequence& hotkey);
     bool setAlwaysShow(bool);
@@ -86,6 +85,7 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* event);
 
     void saveSettings();
+    void showTrayIcon();
 
 protected slots:
     void showOptionDialog();
@@ -129,7 +129,7 @@ public:
     PluginHandler plugins;
 
 private:
-    QString currentSkin;
+    QString m_currentSkin;
     bool m_skinChanged;
 
     CharLineEdit* m_inputBox;
@@ -140,8 +140,8 @@ private:
     QPushButton* m_closeButton;
     AnimationLabel* m_workingAnimation;
     QSystemTrayIcon* m_trayIcon;
-    Fader* fader;
-    QPixmap* frameGraphic;
+    Fader* m_fader;
+    QPixmap m_frameGraphic;
 
     QHotkey* m_pHotKey;
 

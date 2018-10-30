@@ -58,7 +58,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_closeButton(new QPushButton(this)),
       m_workingAnimation(new AnimationLabel(this)),
       m_trayIcon(new QSystemTrayIcon(this)),
-      frameGraphic(NULL),
+      m_fader(new Fader(this)),
       m_pHotKey(new QHotkey(this)),
       updateTimer(new QTimer(this)),
       dropTimer(new QTimer(this)) {
@@ -93,8 +93,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     connect(&iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)),
             this, SLOT(iconExtracted(int, QString, QIcon)));
-
-
 
     m_inputBox->setObjectName("input");
     connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
@@ -131,8 +129,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     showTrayIcon();
 
-    fader = new Fader(this);
-    connect(fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
+    connect(m_fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
     // If this is the first time running or a new version, call updateVersion
     if (g_settings->value("version", 0).toInt() != LAUNCHY_VERSION) {
@@ -247,8 +244,8 @@ void LaunchyWidget::paintEvent(QPaintEvent* event) {
     style()->drawPrimitive(QStyle::PE_Widget, &styleOption, &painter, this);
 
     // Now draw the standard frame.png graphic if there is one
-    if (frameGraphic) {
-        painter.drawPixmap(0, 0, *frameGraphic);
+    if (!m_frameGraphic.isNull()) {
+        painter.drawPixmap(0, 0, m_frameGraphic);
     }
 
     QWidget::paintEvent(event);
@@ -260,14 +257,13 @@ void LaunchyWidget::setAlternativeListMode(int mode) {
 
 bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
     m_pHotKey->setKeySeq(hotkey);
+    m_trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
+                           .arg(LAUNCHY_VERSION_STRING)
+                           .arg(hotkey.toString()));
     return m_pHotKey->registered();
 }
 
 void LaunchyWidget::showTrayIcon() {
-    QKeySequence hotkey = m_pHotKey->keySeq();
-    m_trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
-                         .arg(LAUNCHY_VERSION_STRING)
-                         .arg(hotkey.toString()));
     m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
     m_trayIcon->show();
     connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
@@ -922,7 +918,7 @@ void LaunchyWidget::onHotkey() {
     }
     if (!alwaysShowLaunchy
         && isVisible()
-        && !fader->isFading()
+        && !m_fader->isFading()
         && QApplication::activeWindow() !=0) {
         hideLaunchy();
     }
@@ -963,11 +959,11 @@ void LaunchyWidget::setOpaqueness(int level) {
 }
 
 void LaunchyWidget::reloadSkin() {
-    setSkin(currentSkin);
+    setSkin(m_currentSkin);
 }
 
 void LaunchyWidget::exit() {
-    fader->stop();
+    m_fader->stop();
     saveSettings();
     qApp->quit();
 }
@@ -977,7 +973,7 @@ void LaunchyWidget::onInputBoxFocusOut() {
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
         && !optionsOpen
-        && !fader->isFading()) {
+        && !m_fader->isFading()) {
         hideLaunchy();
     }
 }
@@ -1000,7 +996,7 @@ void LaunchyWidget::onSecondInstance() {
 }
 
 void LaunchyWidget::applySkin(const QString& name) {
-    currentSkin = name;
+    m_currentSkin = name;
     m_skinChanged = true;
 
     qDebug() << "apply skin:" << name;
@@ -1018,8 +1014,8 @@ void LaunchyWidget::applySkin(const QString& name) {
     }
 
     // Set a few defaults
-    delete frameGraphic;
-    frameGraphic = NULL;
+    //delete frameGraphic;
+    //frameGraphic = NULL;
 
     m_closeButton->setGeometry(QRect());
     m_optionButton->setGeometry(QRect());
@@ -1074,10 +1070,8 @@ void LaunchyWidget::applySkin(const QString& name) {
     }
 
     if (validFrame) {
-        frameGraphic = new QPixmap(frame);
-        if (frameGraphic) {
-            resize(frameGraphic->size());
-        }
+        m_frameGraphic.swap(frame);
+        resize(m_frameGraphic.size());
     }
 }
 
@@ -1095,10 +1089,8 @@ void LaunchyWidget::mousePressEvent(QMouseEvent *e) {
 }
 
 
-void LaunchyWidget::mouseMoveEvent(QMouseEvent *e)
-{
-    if (e->buttons() == Qt::LeftButton && dragging)
-    {
+void LaunchyWidget::mouseMoveEvent(QMouseEvent *e) {
+    if (e->buttons() == Qt::LeftButton && dragging) {
         QPoint p = e->globalPos() - dragStartPoint;
         move(p);
         hideAlternativeList();
@@ -1107,9 +1099,8 @@ void LaunchyWidget::mouseMoveEvent(QMouseEvent *e)
 }
 
 
-void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-    event = event; // Warning removal
+void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
+    Q_UNUSED(event)
     dragging = false;
     hideAlternativeList();
     m_inputBox->setFocus();
@@ -1196,7 +1187,7 @@ void LaunchyWidget::showLaunchy(bool noFade) {
 
     loadPosition(pos());
 
-    fader->fadeIn(noFade || alwaysShowLaunchy);
+    m_fader->fadeIn(noFade || alwaysShowLaunchy);
 
 #ifdef Q_OS_WIN
     // need to use this method in Windows to ensure that keyboard focus is set when
@@ -1230,7 +1221,7 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
         return;
 
     if (isVisible()) {
-        fader->fadeOut(noFade);
+        m_fader->fadeOut(noFade);
     }
 
     // let the plugins know
@@ -1268,8 +1259,7 @@ int LaunchyWidget::getHotkey() const {
 }
 
 
-void LaunchyWidget::createActions()
-{
+void LaunchyWidget::createActions() {
     actShow = new QAction(tr("Show Launchy"), this);
     connect(actShow, SIGNAL(triggered()), this, SLOT(showLaunchy()));
 
