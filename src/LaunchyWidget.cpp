@@ -17,9 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
 #include "LaunchyWidget.h"
-
 #include <QScrollBar>
 #include <QMessageBox>
 #include <QDesktopWidget>
@@ -32,7 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IconDelegate.h"
 #include "GlobalVar.h"
 #include "OptionDialog.h"
-#include "plugin_interface.h"
 #include "FileSearch.h"
 #include "SettingsManager.h"
 #include "AppBase.h"
@@ -42,6 +39,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CharListWidget.h"
 #include "CharLineEdit.h"
 #include "CatalogBuilder.h"
+#include "PluginInterface.h"
+#include "PluginMsg.h"
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)

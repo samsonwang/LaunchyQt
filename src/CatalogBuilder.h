@@ -20,8 +20,7 @@
 #pragma once
 
 #include <QObject>
-#include "plugin_handler.h"
-
+#include "PluginHandler.h"
 class QThread;
 
 class CatalogBuilder : public QObject, public INotifyProgressStep {

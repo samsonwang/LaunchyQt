@@ -21,12 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QString>
 #include <QDataStream>
-#include <QSet>
+#include "LaunchyLib.h"
 
 /**
 \brief CatItem (Catalog Item) stores a single item in the index
 */
-class CatItem {
+class LAUNCHY_DECL CatItem {
 public:
     /** The full path of the indexed item */
     QString fullPath;
@@ -49,7 +49,8 @@ public:
 
     CatItem(const QString& full, const QString& shortN);
 
-    CatItem(const QString& full, const QString& shortN, uint i_d);
+    CatItem(const QString& full, const QString& shortN, uint i);
+
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
     \param shortN The abbreviated name for the entry
@@ -58,33 +59,11 @@ public:
     \warning It is usually a good idea to append ".your_plugin_name" to the end of the full parameter
     so that there are not multiple items in the index with the same full path.
     */
-    CatItem(const QString& full, const QString& shortN, uint i_d, const QString& iconPath);
+    CatItem(const QString& full, const QString& shortN, uint i, const QString& iconPath);
 
     bool operator==(const CatItem& other) const;
     bool operator!=(const CatItem& other) const;
+
+    friend LAUNCHY_DECL QDataStream& operator<<(QDataStream& out, const CatItem& item);
+    friend LAUNCHY_DECL QDataStream& operator>>(QDataStream& in, CatItem& item);
 };
-
-bool CatLess(CatItem* left, CatItem* right);
-bool CatLessNoPtr(CatItem& a, CatItem& b);
-
-inline QDataStream &operator<<(QDataStream &out, const CatItem &item) {
-    out << item.fullPath;
-    out << item.shortName;
-    out << item.lowName;
-    out << item.icon;
-    out << item.usage;
-    out << item.id;
-    return out;
-}
-
-inline QDataStream &operator>>(QDataStream &in, CatItem &item) {
-    in >> item.fullPath;
-    in >> item.shortName;
-    in >> item.lowName;
-    in >> item.icon;
-    in >> item.usage;
-    in >> item.id;
-    return in;
-}
-
-

@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QFileIconProvider>
 #include <SingleApplication/singleapplication.h>
 #include "Directory.h"
-class QFileIconProvider;
 class CatItem;
 
 class AppBase : public SingleApplication {
@@ -43,7 +42,7 @@ public:
     virtual void sendInstanceCommand(int command);
 
     // Need to alter an indexed item?  e.g. .desktop files
-    virtual void alterItem(CatItem*);
+    virtual void alterItem(CatItem* item);
     virtual QHash<QString, QList<QString>> getDirectories() = 0;
     virtual QString expandEnvironmentVars(QString txt) = 0;
 

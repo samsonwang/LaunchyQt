@@ -17,9 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
 #include "InputData.h"
-#include "GlobalVar.h"
 
 QSet<uint> InputData::getLabels() {
     return labels;
@@ -78,7 +76,7 @@ InputData::InputData(const QString& str)
     id = 0;
 }
 
-QDataStream &operator<<(QDataStream &out, const InputData &inputData) {
+QDataStream& operator<<(QDataStream& out, const InputData& inputData) {
     out << inputData.text;
     out << inputData.labels;
     out << inputData.topResult;
@@ -86,51 +84,10 @@ QDataStream &operator<<(QDataStream &out, const InputData &inputData) {
     return out;
 }
 
-QDataStream &operator>>(QDataStream &in, InputData &inputData) {
+QDataStream& operator>>(QDataStream& in, InputData& inputData) {
     in >> inputData.text;
     in >> inputData.labels;
     in >> inputData.topResult;
     in >> inputData.id;
     return in;
-}
-
-void InputDataList::parse(const QString& text) {
-	if (text.isEmpty()) {
-		clear();
-	}
-	else {
-		QStringList split = text.split(QString(" ") + QChar(0x25ba) + " ");
-
-		// Truncate inputData to the same length as the new input text
-		if (split.count() < count()) {
-			erase(begin() + split.count(), end());
-		}
-
-		// Truncate to the first different entry
-		for (int i = 0; i < count(); ++i) {
-			(*this)[i].removeLabel(LABEL_HISTORY);
-			if (at(i).getText() != split[i]) {
-				erase(begin() + i, end());
-				break;
-			}
-		}
-
-		// And add anything new
-		for (int i = count(); i < split.count(); i++) {
-			InputData data(split[i]);
-			push_back(data);
-		}
-	}
-}
-
-
-QString InputDataList::toString(bool omitLast) const {
-	QString result = "";
-	for (int i = 0; i < count(); ++i) {
-		if (i > 0)
-			result += QString(" ") + QChar(0x25ba) + " ";
-		if (!omitLast || i < count()-1)
-			result += at(i).getText();
-	}
-	return result;
 }

@@ -20,7 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QList>
-#include "Catalog.h"
+#include <QSet>
+#include "LaunchyLib.h"
+#include "CatalogItem.h"
 
 /** InputData shows one segment (between tabs) of a user's query
 A user's query is typically represented by List<InputData>
@@ -29,7 +31,7 @@ and each element of the list represents a segment of the query.
 E.g.  query = "google <tab> this is my search" will have 2 InputData segments
 in the list.  One for "google" and one for "this is my search"
 */
-class InputData {
+class LAUNCHY_DECL InputData {
 public:
     InputData();
     InputData(const QString& str);
@@ -72,8 +74,8 @@ public:
     /** Change the best catalog match for this segment */
     void setTopResult(const CatItem& sr);
 
-    friend QDataStream &operator<<(QDataStream &out, const InputData &inputData);
-    friend QDataStream &operator>>(QDataStream &in, InputData &inputData);
+    friend LAUNCHY_DECL QDataStream&  operator<<(QDataStream& out, const InputData& inputData);
+    friend LAUNCHY_DECL QDataStream& operator>>(QDataStream& in, InputData& inputData);
 
 private:
     /** The user's entry */
@@ -85,12 +87,3 @@ private:
     /** The plugin id of this query's owner */
     uint id;
 };
-
-
-
-class InputDataList : public QList<InputData> {
-public:
-	void parse(const QString& text);
-	QString toString(bool omitLast = false) const;
-};
-

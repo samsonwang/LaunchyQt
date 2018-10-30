@@ -16,19 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "plugin_interface.h"
+#include "PluginInterface.h"
 #include <QProcess>
 #include <QDir>
 #include <QFileInfo>
 #include <QDebug>
 #include <QLocale>
+#include "PluginMsg.h"
 
 /*! \file
     \brief A Documented file.
 
     Details.
 */
-
 
 #ifdef Q_OS_WIN
 // This doesn't exist until qt 4.6 (currently 4.5 in ubuntu 10.04)
@@ -208,3 +208,11 @@ void runProgram(QString path, QString args, bool translateSeparators) {
 
 #endif
 
+
+PluginInterface::PluginInterface() {
+
+}
+
+PluginInterface::~PluginInterface() {
+
+}

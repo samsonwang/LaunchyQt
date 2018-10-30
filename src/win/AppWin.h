@@ -38,7 +38,6 @@ public:
 private:
     HANDLE localMutex;
     HANDLE globalMutex;
-    // LimitSingleInstance* instance;
     CrashDumper* m_crashDumper;
 };
 

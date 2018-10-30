@@ -78,7 +78,6 @@ LaunchyWidget* createLaunchyWidget(CommandFlags command) {
 AppWin::AppWin(int& argc, char** argv)
     : AppBase(argc, argv),
       m_crashDumper(new CrashDumper(_T("Launchy"))) {
-    // instance = new LimitSingleInstance(_T("Local\\{ASDSAD0-DCC6-49b5-9C61-ASDSADIIIJJL}"));
 
     // Create local and global application mutexes so that installer knows when
     // Launchy is running
@@ -97,8 +96,6 @@ AppWin::~AppWin() {
         delete m_crashDumper;
         m_crashDumper = nullptr;
     }
-    //delete instance;
-    //instance = NULL;
 }
 
 void AppWin::setPreferredIconSize(int size) {

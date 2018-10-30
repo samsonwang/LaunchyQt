@@ -23,12 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QPluginLoader>
 #include <QHash>
-#include "plugin_interface.h"
-#include "Catalog.h"
+#include "CatalogItem.h"
 #include "InputData.h"
 
 class Catalog;
-
+class PluginInterface;
 
 // This structure is used by plugins such as PyLaunchy, so it must not be extended
 // with virtual methods or additional data members

@@ -18,9 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "AppBase.h"
-#include <QFileIconProvider>
 #include "Directory.h"
-#include "Catalog.h"
+#include "CatalogItem.h"
 #include "GlobalVar.h"
 
 AppBase::AppBase(int& argc, char** argv)
@@ -52,10 +51,11 @@ bool AppBase::isAlreadyRunning() const {
 }
 
 void AppBase::sendInstanceCommand(int command) {
-    Q_UNUSED(command);
+    Q_UNUSED(command)
 }
 
-void AppBase::alterItem(CatItem*) {
+void AppBase::alterItem(CatItem* item) {
+    Q_UNUSED(item)
 }
 
 bool AppBase::supportsAlphaBorder() const {

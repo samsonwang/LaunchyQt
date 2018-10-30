@@ -22,8 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "Catalog.h"
-#include "InputData.h"
-
+#include "InputDataList.h"
 
 class CommandHistory
 {

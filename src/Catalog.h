@@ -93,3 +93,6 @@ protected:
 private:
     QVector<CatalogItem> catalogItems;
 };
+
+bool CatLess(CatItem* left, CatItem* right);
+bool CatLessNoPtr(CatItem& a, CatItem& b);
