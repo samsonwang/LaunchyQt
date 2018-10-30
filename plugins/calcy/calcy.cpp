@@ -20,6 +20,7 @@
 #include "precompiled.h"
 #include "calcy.h"
 #include "PluginMsg.h"
+#include "exprtk.hpp"
 
 // using namespace boost::spirit;
 // using namespace phoenix;
@@ -90,22 +91,32 @@ struct calculator //: public grammar<calculator, calc_closure::context_t>
 };
 */
 
-static bool DoCalculation(QString str, double& result) {
+static bool DoCalculation(const std::string& expressionStr, double& result) {
     // Our parser
     //calculator calc;
-    double n = 0;
+    
+    typedef exprtk::symbol_table<double> symbol_table_t;
+    typedef exprtk::expression<double>     expression_t;
+    typedef exprtk::parser<double>             parser_t;
 
+    expression_t expression;
+    //expression.register_symbol_table(symbol_table);
 
-    wchar_t* wstr = new wchar_t[str.length()+1];
-    str.toWCharArray(wstr);
-    wstr[str.length()] = 0;
-    //	parse_info<const wchar_t*> info = parse(wstr, calc[var(n) = arg1], space_p);
-    delete wstr;
+    parser_t parser;
+    parser.compile(expressionStr, expression);
+    result = expression.value();
+    
+    qDebug() << "DoCalculation, result:" << result;
+
+//     wchar_t* wstr = new wchar_t[str.length()+1];
+//     str.toWCharArray(wstr);
+//     wstr[str.length()] = 0;
+//     //	parse_info<const wchar_t*> info = parse(wstr, calc[var(n) = arg1], space_p);
+//     delete wstr;
 
     //FOR SOME REASON IN LINUX info.full is false
     //if (!info.full)
     //	return false;
-    result = n;
     return true;
 }
 
@@ -166,8 +177,11 @@ void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
         //qDebug() << text << dbl;
         //text = QString::number(dbl);
         qDebug() << "Calcy::getResults, input text:" << text;
+        
+        std::string str = text.toStdString();
+        qDebug() << "Calcy::getResults, input text(std::string):" << str.c_str();
 
-        if (!DoCalculation(text, res))
+        if (!DoCalculation(str, res))
             return;
 
         qDebug() << "Calcy::getResults, result:" << res;

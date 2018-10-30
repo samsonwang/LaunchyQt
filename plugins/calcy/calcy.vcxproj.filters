@@ -97,5 +97,8 @@
     <ClInclude Include="GeneratedFiles\ui_dlg.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="exprtk.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

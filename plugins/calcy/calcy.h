@@ -35,8 +35,8 @@ public:
 
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
-	void setPath(QString * path);
-	void getLabels(QList<InputData>*);
+	void setPath(QString* path);
+	void getLabels(QList<InputData>* inputData);
 	void getID(uint*);
 	void getName(QString*);
 	void getResults(QList<InputData>* id, QList<CatItem>* results);
