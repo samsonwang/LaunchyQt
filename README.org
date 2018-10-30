@@ -8,7 +8,7 @@ I have been using Launchy for years, and found that this project has not been up
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
 
 ** Latest release
-Checkout detailed info and download latest relase at [[https://github.com/samsonwang/LaunchyQt/releases][release page]].
+Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][release page]].
 
 *3.0.1* Changes:
 - tray icon show message while starting second instance
