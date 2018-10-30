@@ -21,17 +21,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GUI_H
 
 #include "ui_dlg.h"
-#include "globals.h"
+#include "GlobalVar.h"
 
-
-class Gui : public QWidget, private Ui::Dlg
-{
-	Q_OBJECT
-
+class Gui : public QWidget, private Ui::Dlg {
+    Q_OBJECT
 public:
-	Gui(QWidget* parent);
-        ~Gui();
-	void writeOptions();
+    Gui(QWidget* parent);
+    virtual ~Gui();
+    void writeOptions();
 
 public slots:
 };

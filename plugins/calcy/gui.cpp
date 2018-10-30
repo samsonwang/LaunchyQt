@@ -23,29 +23,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 Gui::Gui(QWidget* parent)
-: QWidget(parent)
-{
-	setupUi(this);
-	QSettings* settings = *gPlugin->settings;
-	if (settings == NULL)
-		return;
+    : QWidget(parent) {
+    setupUi(this);
+    QSettings* settings = g_plugin->settings->data();
+    if (settings == NULL)
+        return;
 
-	txtRounding->setValue(settings->value("calcy/outputRounding", 10).toInt());
-	chkDigitGrouping->setChecked(settings->value("calcy/outputGroupSeparator", true).toBool());
-	chkCopyToClipboard->setChecked(settings->value("calcy/copyToClipboard", true).toBool());
-	chkComma->setChecked(settings->value("calcy/useCommaForDecimal", false).toBool());
+    txtRounding->setValue(settings->value("calcy/outputRounding", 10).toInt());
+    chkDigitGrouping->setChecked(settings->value("calcy/outputGroupSeparator", true).toBool());
+    chkCopyToClipboard->setChecked(settings->value("calcy/copyToClipboard", true).toBool());
+    chkComma->setChecked(settings->value("calcy/useCommaForDecimal", false).toBool());
 }
 
 
-Gui::~Gui()
-{
+Gui::~Gui() {
 	this->hide();
 }
 
-
-void Gui::writeOptions()
-{
-	QSettings* settings = *gPlugin->settings;
+void Gui::writeOptions() {
+	QSettings* settings = g_plugin->settings->data();
 	if (settings == NULL)
 		return;
 

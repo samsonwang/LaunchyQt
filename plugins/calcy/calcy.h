@@ -17,23 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CALCY_H
-#define CALCY_H
+#pragma once
 
 #include <QRegExp>
-#include "plugin_interface.h"
+#include "PluginInterface.h"
 #include "gui.h"
 #include "InputData.h"
 
-class calcyPlugin : public QObject, public PluginInterface
-{
+class Calcy : public QObject, public PluginInterface {
 	Q_OBJECT
     Q_PLUGIN_METADATA(IID "net.launchy.PluginInterface/1.0")
 	Q_INTERFACES(PluginInterface)
 
 public:
-	calcyPlugin();
-	virtual ~calcyPlugin();
+	Calcy();
+	virtual ~Calcy();
 
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
@@ -50,11 +48,10 @@ public:
 
 private:
 	uint HASH_CALCY;
-	QString libPath;
-	QRegExp reg;
-	QScopedPointer<Gui> gui;
+	QString m_libPath;
+	QRegExp m_reg;
+	QScopedPointer<Gui> m_gui;
 };
 
-extern calcyPlugin* gPlugin;
+extern Calcy* g_plugin;
 
-#endif
