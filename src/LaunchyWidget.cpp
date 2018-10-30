@@ -22,11 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QMenu>
-#ifdef Q_OS_MAC
-#include <QMacStyle>
-#endif
 #include "QHotkey/QHotkey.h"
-
 #include "IconDelegate.h"
 #include "GlobalVar.h"
 #include "OptionDialog.h"

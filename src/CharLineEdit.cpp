@@ -17,14 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
 #include "CharLineEdit.h"
+#ifdef Q_OS_MAC
+#include <QMacStyle>
+#endif
 
 CharLineEdit::CharLineEdit(QWidget* parent)\
     : QLineEdit(parent) {
     setAttribute(Qt::WA_InputMethodEnabled);
 #ifdef Q_OS_MAC
-    QMacStyle::setFocusRectPolicy(m_inputBox, QMacStyle::FocusDisabled);
+    QMacStyle::setFocusRectPolicy(this, QMacStyle::FocusDisabled);
 #endif
 }
 
