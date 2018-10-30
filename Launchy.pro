@@ -4,6 +4,7 @@ SUBDIRS = plugins/calcy \
           plugins/runner \
           plugins/weby \
           plugins/verby \
+          src/lib \
           src
 
 win32 {
