@@ -111,10 +111,9 @@ void CharLineEdit::inputMethodEvent(QInputMethodEvent* event) {
     QLineEdit::inputMethodEvent(event);
 
     if (!event->commitString().isEmpty()) {
-        emit inputMethod();
+        emit inputMethod(event);
     }
 }
-
 
 QChar CharLineEdit::separatorChar() const {
     QFontMetrics met = fontMetrics();
