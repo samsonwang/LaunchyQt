@@ -77,7 +77,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event);
     //virtual void focusInEvent(QFocusEvent* event);
     //virtual void focusOutEvent(QFocusEvent* event);
-    virtual void inputMethodEvent(QInputMethodEvent* event);
+    //virtual void inputMethodEvent(QInputMethodEvent* event);
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseMoveEvent(QMouseEvent* event);
@@ -102,7 +102,7 @@ protected slots:
     void onAlternativeListKeyPressed(QKeyEvent* event);
     void onInputBoxKeyPressed(QKeyEvent* event);
     void onInputBoxFocusOut();
-    void onInputBoxInputMethod();
+    void onInputBoxInputMethod(QInputMethodEvent* event);
     void onInputBoxTextEdited(const QString& str);
     void onSecondInstance();
 

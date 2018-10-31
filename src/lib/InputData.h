@@ -37,7 +37,7 @@ public:
     InputData(const QString& str);
 
     /** Get the labels applied to this query segment */
-    QSet<uint> getLabels();
+    const QSet<uint>& getLabels() const;
     /** Apply a label to this query segment */
     void setLabel(uint l);
     /** Remove a label from this query segment */
@@ -74,16 +74,16 @@ public:
     /** Change the best catalog match for this segment */
     void setTopResult(const CatItem& sr);
 
-    friend LAUNCHY_DECL QDataStream&  operator<<(QDataStream& out, const InputData& inputData);
+    friend LAUNCHY_DECL QDataStream& operator<<(QDataStream& out, const InputData& inputData);
     friend LAUNCHY_DECL QDataStream& operator>>(QDataStream& in, InputData& inputData);
 
 private:
     /** The user's entry */
-    QString text;
+    QString m_text;
     /** Any assigned labels to this query segment */
-    QSet<uint> labels;
+    QSet<uint> m_labels;
     /** A pointer to the best catalog match for this segment of the query */
-    CatItem topResult;
+    CatItem m_topResult;
     /** The plugin id of this query's owner */
-    uint id;
+    uint m_id;
 };

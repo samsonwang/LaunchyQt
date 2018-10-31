@@ -43,7 +43,7 @@ signals:
 	void keyPressed(QKeyEvent* event);
 	void focusIn();
 	void focusOut();
-	void inputMethod();
+	void inputMethod(QInputMethodEvent *event);
 
 private:
 	bool isAtStartOfSeparator() const;

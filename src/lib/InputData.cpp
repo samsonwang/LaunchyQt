@@ -19,40 +19,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "InputData.h"
 
-QSet<uint> InputData::getLabels() {
-    return labels;
+const QSet<uint>& InputData::getLabels() const {
+    return m_labels;
 }
 
 void InputData::setLabel(uint l) {
-    labels.insert(l);
+    m_labels.insert(l);
 }
 
 void InputData::removeLabel(uint l) {
-    labels.remove(l);
+    m_labels.remove(l);
 }
 
 bool InputData::hasLabel(uint l) {
-    return labels.contains(l);
+    return m_labels.contains(l);
 }
 
 void InputData::setID(uint i) {
-    id = i;
+    m_id = i;
 }
 
 uint InputData::getID() const {
-    return id;
+    return m_id;
 }
 
 const QString& InputData::getText() const {
-    return text;
+    return m_text;
 }
 
 void InputData::setText(const QString& t) {
-    text = t;
+    m_text = t;
 }
 
 bool InputData::hasText() const {
-    return !text.isEmpty();
+    return !m_text.isEmpty();
 }
 
 CatItem& InputData::getTopResult() {
@@ -60,34 +60,34 @@ CatItem& InputData::getTopResult() {
 }
 
 const CatItem& InputData::getTopResult() const {
-    return topResult;
+    return m_topResult;
 }
 
 void InputData::setTopResult(const CatItem& sr) {
-    topResult = sr;
+    m_topResult = sr;
 }
 
-InputData::InputData() {
-    id = 0;
+InputData::InputData()
+    : m_id(0) {
 }
 
 InputData::InputData(const QString& str)
-    : text(str) {
-    id = 0;
+    : m_text(str),
+      m_id(0) {
 }
 
 QDataStream& operator<<(QDataStream& out, const InputData& inputData) {
-    out << inputData.text;
-    out << inputData.labels;
-    out << inputData.topResult;
-    out << inputData.id;
+    out << inputData.m_text;
+    out << inputData.m_labels;
+    out << inputData.m_topResult;
+    out << inputData.m_id;
     return out;
 }
 
 QDataStream& operator>>(QDataStream& in, InputData& inputData) {
-    in >> inputData.text;
-    in >> inputData.labels;
-    in >> inputData.topResult;
-    in >> inputData.id;
+    in >> inputData.m_text;
+    in >> inputData.m_labels;
+    in >> inputData.m_topResult;
+    in >> inputData.m_id;
     return in;
 }

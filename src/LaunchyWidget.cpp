@@ -93,7 +93,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
     //connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
     connect(m_inputBox, SIGNAL(focusOut()), this, SLOT(onInputBoxFocusOut()));
-    //connect(m_inputBox, SIGNAL(inputMethod()), this, SLOT(onInputBoxInputMethod()));
+    //connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
     connect(m_inputBox, SIGNAL(textEdited(const QString&)),
             this, SLOT(onInputBoxTextEdited(const QString&)));
 
@@ -680,10 +680,10 @@ void LaunchyWidget::doEnter() {
     }
 }
 
-void LaunchyWidget::inputMethodEvent(QInputMethodEvent* event) {
-    Q_UNUSED(event)
-    processKey();
-}
+// void LaunchyWidget::inputMethodEvent(QInputMethodEvent* event) {
+//     processKey();
+//     QWidget::inputMethodEvent(event);
+// }
 
 void LaunchyWidget::processKey() {
     qDebug() << "LaunchyWidget::processKey";
@@ -711,7 +711,7 @@ void LaunchyWidget::searchOnInput() {
     searchResults.clear();
 
     if ((inputData.count() > 0 && inputData.first().hasLabel(LABEL_HISTORY))
-        || m_inputBox->text().length() == 0) {
+        /*|| m_inputBox->text().length() == 0*/) {
         // Add history items exclusively and unsorted so they remain in most recently used order
         qDebug() << "Searching history for" << searchText;
         history.search(searchTextLower, searchResults);
@@ -973,9 +973,17 @@ void LaunchyWidget::onInputBoxFocusOut() {
     }
 }
 
-void LaunchyWidget::onInputBoxInputMethod() {
+void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
+    Q_UNUSED(event)
     qDebug() << "LaunchyWidget::onInputBoxInputMethod";
-    processKey();
+//     if (!event->preeditString().isEmpty()) {
+//         qDebug() << "LaunchyWidget::onInputBoxInputMethod, preeditString:"
+//             << event->preeditString();
+//         inputData.parse(event->preeditString());
+//         searchOnInput();
+//         updateOutputBox();
+//     }
+    //processKey();
 }
 
 void LaunchyWidget::onInputBoxTextEdited(const QString& str) {
@@ -1009,9 +1017,6 @@ void LaunchyWidget::applySkin(const QString& name) {
     }
 
     // Set a few defaults
-    //delete frameGraphic;
-    //frameGraphic = NULL;
-
     m_closeButton->setGeometry(QRect());
     m_optionButton->setGeometry(QRect());
     m_inputBox->setAlignment(Qt::AlignLeft);

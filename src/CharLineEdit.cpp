@@ -106,6 +106,8 @@ void CharLineEdit::focusOutEvent(QFocusEvent* event) {
 }
 
 void CharLineEdit::inputMethodEvent(QInputMethodEvent* event) {
+    qDebug() << "CharLineEdit::inputMethodEvent, commitString:" << event->commitString()
+        << "preeditString:" <<  event->preeditString();
     QLineEdit::inputMethodEvent(event);
 
     if (!event->commitString().isEmpty()) {
