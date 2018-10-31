@@ -103,6 +103,11 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;QT_NO_DEBUG;QT_PLUGIN;QT_GUI_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>taskkill /im "Launchy.exe" /f 2&gt;nul 1&gt;nul
+echo try to kill running Launchy process
+exit 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -150,6 +155,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Calculate.cpp" />
     <ClCompile Include="calcy.cpp" />
     <ClCompile Include="Debug\moc_calcy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -166,6 +172,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Calculate.h" />
     <ClInclude Include="exprtk.hpp" />
     <ClInclude Include="GeneratedFiles\ui_dlg.h" />
     <CustomBuild Include="calcy.h">

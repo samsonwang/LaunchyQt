@@ -65,6 +65,9 @@
     <ClCompile Include="Release\moc_calcy.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Calculate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="calcy.h">
@@ -98,6 +101,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="exprtk.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

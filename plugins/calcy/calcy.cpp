@@ -20,106 +20,7 @@
 #include "precompiled.h"
 #include "calcy.h"
 #include "PluginMsg.h"
-#include "exprtk.hpp"
-
-// using namespace boost::spirit;
-// using namespace phoenix;
-
-/*
-struct calc_closure : boost::spirit::closure<calc_closure, double>
-{
-    member1 val;
-};
-
-
-struct pow_
-{
-    template <typename X, typename Y>
-    struct result { typedef X type; };
-
-    template <typename X, typename Y>
-    X operator()(X x, Y y) const
-    {
-        using namespace std;
-        return pow(x, y);
-    }
-};
-*/
-
-//  Notice how power(x, y) is lazily implemented using Phoenix function.
-// function<pow_> power;
-
-/*
-struct calculator //: public grammar<calculator, calc_closure::context_t>
-{
-    template <typename ScannerT>
-    struct definition
-    {
-        definition(calculator const& self)
-        {
-            top = expression[self.val = arg1];
-
-            expression
-                =   term[expression.val = arg1]
-        >> *(   ('+' >> term[expression.val += arg1])
-                        |   ('-' >> term[expression.val -= arg1])
-                        )
-                ;
-
-            term
-                =   factor[term.val = arg1]
-        >> *(   ('*' >> factor[term.val *= arg1])
-                        |   ('/' >> factor[term.val /= arg1])
-                        )
-                ;
-
-            factor
-                =   ureal_p[factor.val = arg1]
-                |   '(' >> expression[factor.val = arg1] >> ')'
-                |   ('-' >> factor[factor.val = -arg1])
-                |   ('+' >> factor[factor.val = arg1])
-                ;
-        }
-    //		const uint_parser<bigint, 10, 1, -1> bigint_parser;
-        typedef rule<ScannerT, calc_closure::context_t> rule_t;
-        rule_t expression, term, factor;
-        rule<ScannerT> top;
-
-        rule<ScannerT> const&
-        start() const { return top; }
-    };
-};
-*/
-
-static bool DoCalculation(const std::string& expressionStr, double& result) {
-    // Our parser
-    //calculator calc;
-    
-    typedef exprtk::symbol_table<double> symbol_table_t;
-    typedef exprtk::expression<double>     expression_t;
-    typedef exprtk::parser<double>             parser_t;
-
-    expression_t expression;
-    //expression.register_symbol_table(symbol_table);
-
-    parser_t parser;
-    parser.compile(expressionStr, expression);
-    result = expression.value();
-    
-    qDebug() << "DoCalculation, result:" << result;
-
-//     wchar_t* wstr = new wchar_t[str.length()+1];
-//     str.toWCharArray(wstr);
-//     wstr[str.length()] = 0;
-//     //	parse_info<const wchar_t*> info = parse(wstr, calc[var(n) = arg1], space_p);
-//     delete wstr;
-
-    //FOR SOME REASON IN LINUX info.full is false
-    //if (!info.full)
-    //	return false;
-    return true;
-}
-
+#include "Calculate.h"
 
 Calcy* g_plugin;
 
@@ -133,10 +34,15 @@ Calcy::~Calcy() {
 }
 
 void Calcy::init() {
-    QString decimal = (*settings)->value("calcy/useCommaForDecimal", false).toBool() ? "," : ".";
-    QString group = (*settings)->value("calcy/useCommaForDecimal", false).toBool() ? "." : ",";
+    QSettings* settingPtr = (*settings).data();
+    bool useCommaForDecimal = settingPtr->value("calcy/useCommaForDecimal", false).toBool();
 
-    QString pattern = QString("^[\\(\\+\\-]*([\\d\\%1]?(\\%2\\d+)?)").arg(group).arg(decimal);
+    QString decimal = useCommaForDecimal ? "," : ".";
+    QString group = useCommaForDecimal ? "." : ",";
+
+    QString pattern = QString("^[\\(\\+\\-]*([\\d\\%1]+(\\%2\\d+)?)").arg(group).arg(decimal);
+    qDebug() << "Calcy::init, pattern:" << pattern;
+
     m_reg.setPattern(pattern);
 }
 
@@ -155,48 +61,51 @@ void Calcy::getLabels(QList<InputData>* inputList) {
     QString text = inputList->last().getText();
     text.replace(" ", "");
     if (m_reg.indexIn(text) == 0) {
+        qDebug() << "Calcy::getLabels, set last label to HASH_CALCY, matched text:" << text;
         inputList->last().setLabel(HASH_CALCY);
-        qDebug() << "Calcy::getLabels, set last label to HASH_CALCY";
     }
 }
 
 void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
-    if (inputList->last().hasLabel(HASH_CALCY)) {
-        QString text = inputList->last().getText();
-        double res = 0.0;
-
-        QString decimal = (*settings)->value("calcy/useCommaForDecimal", false).toBool() ? "," : ".";
-        QString group = (*settings)->value("calcy/useCommaForDecimal", false).toBool() ? "." : ",";
-
-        QLocale c = (*settings)->value("calcy/useCommaForDecimal", false).toBool() ? QLocale(QLocale::German) : QLocale(QLocale::C);
-
-        text = text.replace(group, "");
-        text = text.replace(decimal, ".");
-
-        //double dbl = c.toDouble(text);
-        //qDebug() << text << dbl;
-        //text = QString::number(dbl);
-        qDebug() << "Calcy::getResults, input text:" << text;
-        
-        std::string str = text.toStdString();
-        qDebug() << "Calcy::getResults, input text(std::string):" << str.c_str();
-
-        if (!DoCalculation(str, res))
-            return;
-
-        qDebug() << "Calcy::getResults, result:" << res;
-
-        QString resStr = c.toString(res, 'f', (*settings)->value("calcy/outputRounding", 10).toInt());
-
-        // Remove any trailing fractional zeros
-        if (resStr.contains(decimal)) {
-            while (resStr.endsWith("0"))
-                resStr.chop(1);
-            if (resStr.endsWith(decimal))
-                resStr.chop(1);
-        }
-        results->push_front(CatItem(resStr + ".calcy", resStr, HASH_CALCY, getIcon()));
+    if (inputList->isEmpty()
+        || !inputList->last().hasLabel(HASH_CALCY)) {
+        return;
     }
+
+    QSettings* settingPtr = (*settings).data();
+    bool useCommaForDecimal = settingPtr->value("calcy/useCommaForDecimal", false).toBool();
+    int outputRounding = settingPtr->value("calcy/outputRounding", 10).toInt();
+
+    QString decimal = useCommaForDecimal ? "," : ".";
+    QString group = useCommaForDecimal ? "." : ",";
+
+    QLocale locale = useCommaForDecimal ? QLocale(QLocale::German) : QLocale(QLocale::C);
+
+    QString text = inputList->last().getText();
+    double res = 0.0;
+    text = text.replace(group, "");
+    text = text.replace(decimal, ".");
+
+    qDebug() << "Calcy::getResults, input text:" << text;
+
+    std::string str = text.toStdString();
+    qDebug() << "Calcy::getResults, input text(std::string):" << str.c_str();
+
+    if (!Calculate(str, res))
+        return;
+
+    qDebug() << "Calcy::getResults, result:" << res;
+
+    QString resStr = locale.toString(res, 'f', outputRounding);
+
+    // Remove any trailing fractional zeros
+    if (resStr.contains(decimal)) {
+        while (resStr.endsWith("0"))
+            resStr.chop(1);
+        if (resStr.endsWith(decimal))
+            resStr.chop(1);
+    }
+    results->push_front(CatItem(resStr + ".calcy", resStr, HASH_CALCY, getIcon()));
 }
 
 
@@ -234,7 +143,6 @@ void Calcy::endDialog(bool accept) {
     }
     m_gui.reset();
 }
-
 
 int Calcy::msg(int msgId, void* wParam, void* lParam)
 {
@@ -282,5 +190,3 @@ int Calcy::msg(int msgId, void* wParam, void* lParam)
 
     return handled;
 }
-
-// Q_EXPORT_PLUGIN2(calcy, calcyPlugin)

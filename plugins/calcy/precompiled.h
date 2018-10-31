@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PRECOMPILED_H
-#define PRECOMPILED_H
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning(push,1)
@@ -34,17 +33,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma warning(pop)
 #endif
 
-#include "exprtk.hpp"
 
-/*
-#include <boost/shared_ptr.hpp>
-
-using namespace boost;
-
-#define BOOST_SPIRIT_USE_OLD_NAMESPACE
-#include <boost/spirit/include/classic_core.hpp>
-#include <boost/spirit/include/classic_attribute.hpp>
-#include <boost/spirit/include/phoenix1_functions.hpp>
-*/
-
-#endif // PRECOMPILED_H
