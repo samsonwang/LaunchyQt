@@ -6,19 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>464</width>
-    <height>271</height>
+    <width>530</width>
+    <height>350</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>530</width>
+    <height>350</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Calcy - Simple Calculator</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>350</width>
+     <width>488</width>
      <height>91</height>
     </rect>
    </property>
@@ -49,6 +55,18 @@
     </item>
     <item row="2" column="0">
      <widget class="QCheckBox" name="chkCopyToClipboard">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
        <string>Copy result to clipboard when pressing Enter</string>
       </property>

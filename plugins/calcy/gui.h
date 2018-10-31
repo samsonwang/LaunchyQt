@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef GUI_H
 #define GUI_H
 
+#include <QWidget>
 #include "ui_dlg.h"
-#include "GlobalVar.h"
 
 class Gui : public QWidget, private Ui::Dlg {
     Q_OBJECT
