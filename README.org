@@ -1,6 +1,6 @@
 * LaunchyQt
 - original code forked from https://sourceforge.net/projects/launchy
-- svn path https://svn.code.sf.net/p/launchy/code/trunk/Launchy_QT [R671]
+- original svn path https://svn.code.sf.net/p/launchy/code/trunk/Launchy_QT [R671]
 
 ** Reason for this repo
 I have been using Launchy for years, and found that this project has not been updated since 2010. I love this tool and want to maintain this project.
@@ -17,8 +17,3 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - calcy plugin works now
 - fix minor bugs
 - refine code structure for future development
-
-*3.0.0 alpha* Changes:
-- Qt5.11.1, It's 2018 now, migrated to Qt higher version.
-- non- =boost= dependency, C++11 supports =shared_ptr= , and I'm trying to get Launchy out of =boost= library.
-- whole new hotkey implemetation, the hotkey did not work, I tried hard to fix it, but it still failed, so I write a new one.
