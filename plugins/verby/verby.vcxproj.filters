@@ -53,9 +53,6 @@
     <ClCompile Include="gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\plugin_interface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_Verby.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -76,9 +73,6 @@
     <CustomBuild Include="gui.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="..\..\src\plugin_interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="precompiled.h">
       <Filter>Header Files</Filter>
     </CustomBuild>

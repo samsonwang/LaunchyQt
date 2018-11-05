@@ -17,27 +17,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PRECOMPILED_H
-#define PRECOMPILED_H
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning(push,3)
 #endif
-
-#include <QtGui>
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
 #include <stdlib.h>
 
-
-#ifdef Q_WS_WIN
+#include <QtGlobal>
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <shlobj.h>
 #include <tchar.h>
 #endif
 
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
-#endif // PRECOMPILED_H
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+

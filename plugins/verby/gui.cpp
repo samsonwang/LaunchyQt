@@ -28,6 +28,11 @@ Gui::Gui(QWidget* parent) :
 }
 
 
+Gui::~Gui()
+{
+    this->hide();
+}
+
 void Gui::writeOptions()
 {
 }

@@ -17,20 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GUI_H
-#define GUI_H
+#pragma once
 
 #include "ui_dlg.h"
 
-
-class Gui : public QWidget, private Ui::Dlg
-{
-        Q_OBJECT
-
+class Gui : public QWidget, private Ui::Dlg {
+    Q_OBJECT
 public:
-	Gui(QWidget* parent);
-	~Gui() { this->hide(); }
-	void writeOptions();
+    Gui(QWidget* parent);
+    virtual ~Gui();
+    void writeOptions();
 };
 
-#endif 
