@@ -21,39 +21,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gui.h"
 #include "PluginMsg.h"
 
-
-void VerbyPlugin::init()
-{
+void VerbyPlugin::init() {
 }
 
-void VerbyPlugin::setPath(QString * path)
-{
-    libPath = *path;
+void VerbyPlugin::setPath(QString * path) {
+    m_libPath = *path;
 }
 
-
-void VerbyPlugin::getID(uint* id)
-{
+void VerbyPlugin::getID(uint* id) {
     *id = HASH_VERBY;
 }
 
-
-void VerbyPlugin::getName(QString* str)
-{
+void VerbyPlugin::getName(QString* str) {
     *str = "Verby";
 }
 
-
-QString VerbyPlugin::getIcon()
-{
+QString VerbyPlugin::getIcon() {
     return getIconPath() + "verby.png";
 }
 
 
-void VerbyPlugin::getLabels(QList<InputData>* inputData)
-{
-    if (inputData->count() == 1)
-    {
+void VerbyPlugin::getLabels(QList<InputData>* inputData) {
+    if (inputData->count() == 1) {
         // If it's not an item from Launchy's built in catalog, i.e. a file or directory or something added 
         // by a plugin, don't add verbs.
         if (inputData->first().getTopResult().id != 0)
@@ -61,17 +50,13 @@ void VerbyPlugin::getLabels(QList<InputData>* inputData)
 
         QString path = inputData->first().getTopResult().fullPath;
         QFileInfo info(path);
-
-        if (info.isSymLink())
-        {
+        if (info.isSymLink()) {
             inputData->first().setLabel(HASH_LINK);
         }
-        else if (info.isDir())
-        {
+        else if (info.isDir()) {
             inputData->first().setLabel(HASH_DIR);
         }
-        else if (info.isFile())
-        {
+        else if (info.isFile()) {
             inputData->first().setLabel(HASH_FILE);
         }
     }
@@ -80,7 +65,7 @@ void VerbyPlugin::getLabels(QList<InputData>* inputData)
 
 QString VerbyPlugin::getIconPath() const
 {
-    return libPath + "/icons/verby_";
+    return m_libPath + "/icons/";
 }
 
 
@@ -116,37 +101,32 @@ void VerbyPlugin::addCatItem(QString text, QList<CatItem>* results, QString full
 }
 
 
-void VerbyPlugin::updateUsage(CatItem& item)
-{
+void VerbyPlugin::updateUsage(CatItem& item) {
     (*settings)->setValue("verby/" + item.shortName.replace(" ", ""), item.usage + 1);
 }
 
 
-void VerbyPlugin::getResults(QList<InputData>* inputData, QList<CatItem>* results)
-{
-    if (inputData->count() == 2)
-    {
+void VerbyPlugin::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
+    if (inputData->count() == 2) {
         QString text = inputData->at(1).getText();
 
-        if (inputData->first().hasLabel(HASH_DIR))
-        {
-            addCatItem(text, results, "Properties", "Directory properties", "properties.png");
+        if (inputData->first().hasLabel(HASH_DIR)) {
+            addCatItem(text, results, "Properties", "Directory properties", "verby_properties.png");
         }
-        else if (inputData->first().hasLabel(HASH_FILE))
-        {
-            addCatItem(text, results, "Open containing folder", "Open containing folder", "opencontainer.png");
-            addCatItem(text, results, "Properties", "File properties", "properties.png");
+        else if (inputData->first().hasLabel(HASH_FILE)) {
+            addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
+            addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
+            addCatItem(text, results, "Properties", "File properties", "verby_properties.png");
         }
-        else if (inputData->first().hasLabel(HASH_LINK))
-        {
-            addCatItem(text, results, "Run as", "Run as a different user", "run.png");
-            addCatItem(text, results, "Open containing folder", "Open containing folder", "opencontainer.png");
-            addCatItem(text, results, "Open shortcut folder", "Open shortcut folder", "opencontainer.png");
-            addCatItem(text, results, "Copy path", "Copy path to clipboard", "copy.png");
-            addCatItem(text, results, "Properties", "File properties", "properties.png");
+        else if (inputData->first().hasLabel(HASH_LINK)) {
+            // do not know what is the point for run as a different user, so this feature is disabled for now
+            // addCatItem(text, results, "Run as", "Run as a different user", "verby_run.png");
+            addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
+            addCatItem(text, results, "Open shortcut folder", "Open shortcut folder", "verby_opencontainer.png");
+            addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
+            addCatItem(text, results, "Properties", "File properties", "verby_properties.png");
         }
-        else
-        {
+        else {
             return;
         }
 
@@ -156,17 +136,14 @@ void VerbyPlugin::getResults(QList<InputData>* inputData, QList<CatItem>* result
 
         // ensure there's always an item at the top of the list for launching with parameters.
         results->push_front(CatItem("Run", inputData->last().getText(), INT_MAX,
-                                    getIconPath() + "run.png"));
+                                    getIconPath() + "verby_run.png"));
     }
 }
 
+int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item) {
+    Q_UNUSED(item)
 
-int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
-{
-    item = item; // Compiler Warning
-
-    if (inputData->count() != 2)
-    {
+    if (inputData->count() != 2) {
         // Tell Launchy to handle the command
         return MSG_CONTROL_LAUNCHITEM;
     }
@@ -176,15 +153,12 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
     QString verb = verbItem.shortName;
 
     qDebug() << "Verby launchItem" << verb;
-    if (verb == "Run")
-    {
+    if (verb == "Run") {
         runProgram(noun, "");
     }
-    else if (verb == "Open containing folder")
-    {
+    else if (verb == "Open containing folder") {
         QFileInfo info(noun);
-        if (info.isSymLink())
-        {
+        if (info.isSymLink()) {
             info.setFile(info.symLinkTarget());
         }
 
@@ -192,16 +166,14 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
         runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
 #endif
     }
-    else if (verb == "Open shortcut folder")
-    {
+    else if (verb == "Open shortcut folder") {
         QFileInfo info(noun);
 
 #ifdef Q_OS_WIN
         runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
 #endif
     }
-    else if (verb == "Run as")
-    {
+    else if (verb == "Run as") {
 #ifdef Q_OS_WIN
         SHELLEXECUTEINFO shellExecInfo;
 
@@ -223,8 +195,7 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
         ShellExecuteEx(&shellExecInfo);
 #endif
     }
-    else if (verb == "File properties")
-    {
+    else if (verb == "File properties") {
 #ifdef Q_OS_WIN
         SHELLEXECUTEINFO shellExecInfo;
 
@@ -243,18 +214,15 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
         ShellExecuteEx(&shellExecInfo);
 #endif
     }
-    else if (verb == "Copy path to clipboard")
-    {
+    else if (verb == "Copy path to clipboard") {
         QFileInfo info(noun);
-        if (info.isSymLink())
-        {
+        if (info.isSymLink()) {
             info.setFile(info.symLinkTarget());
         }
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(QDir::toNativeSeparators(info.canonicalFilePath()));
     }
-    else
-    {
+    else {
         // Tell Launchy to handle the command
         return MSG_CONTROL_LAUNCHITEM;
     }
@@ -264,42 +232,34 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
 }
 
 
-void VerbyPlugin::doDialog(QWidget* parent, QWidget** newDlg)
-{
-    if (gui == NULL)
-    {
-        gui = new Gui(parent);
-        *newDlg = gui;
+void VerbyPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
+    if (m_gui == NULL) {
+        m_gui = new Gui(parent);
+        *newDlg = m_gui;
     }
 }
 
 
-void VerbyPlugin::endDialog(bool accept)
-{
-    if (accept)
-    {
-        gui->writeOptions();
+void VerbyPlugin::endDialog(bool accept) {
+    if (accept) {
+        m_gui->writeOptions();
         init();
     }
-    if (gui != NULL)
-        delete gui;
+    if (m_gui != NULL)
+        delete m_gui;
 
-    gui = NULL;
+    m_gui = NULL;
 }
 
-
-VerbyPlugin::VerbyPlugin() {
-    gui = NULL;
-    HASH_VERBY = qHash(QString("verby"));
-    HASH_DIR = qHash(QString("verbydirectory"));
-    HASH_FILE = qHash(QString("verbyfile"));
-    HASH_LINK = qHash(QString("verbylink"));
+VerbyPlugin::VerbyPlugin()
+    : m_gui(NULL),
+      HASH_VERBY(qHash(QString("verby"))),
+      HASH_DIR(qHash(QString("verbydirectory"))),
+      HASH_FILE(qHash(QString("verbyfile"))),
+      HASH_LINK(qHash(QString("verbylink"))) {
 }
 
-
-VerbyPlugin::~VerbyPlugin()
-{
-
+VerbyPlugin::~VerbyPlugin() {
 }
 
 int VerbyPlugin::msg(int msgId, void* wParam, void* lParam)
@@ -340,7 +300,7 @@ int VerbyPlugin::msg(int msgId, void* wParam, void* lParam)
         endDialog(wParam != 0);
         break;
     case MSG_PATH:
-        setPath((QString *)wParam);
+        setPath((QString*)wParam);
         break;
 
     default:

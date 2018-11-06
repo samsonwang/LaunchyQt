@@ -53,11 +53,11 @@ private:
     QString getIconPath() const;
 
 private:
-    QString libPath;
-    Gui* gui;
-    uint HASH_VERBY;
-    uint HASH_FILE;
-    uint HASH_DIR;
-    uint HASH_LINK;
+    QString m_libPath;
+    Gui* m_gui;
+    const uint HASH_VERBY;
+    const uint HASH_FILE;
+    const uint HASH_DIR;
+    const uint HASH_LINK;
 };
 

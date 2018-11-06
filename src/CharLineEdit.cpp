@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMacStyle>
 #endif
 
-CharLineEdit::CharLineEdit(QWidget* parent)\
+CharLineEdit::CharLineEdit(QWidget* parent)
     : QLineEdit(parent) {
     setAttribute(Qt::WA_InputMethodEnabled);
 #ifdef Q_OS_MAC
@@ -31,7 +31,7 @@ CharLineEdit::CharLineEdit(QWidget* parent)\
 }
 
 void CharLineEdit::processKey(QKeyEvent* event) {
-    qDebug() << "CharLineEdit processKey" << event->key();
+    qDebug() << "CharLineEdit::processKey" << event->key();
 
     bool handled = false;
 

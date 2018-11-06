@@ -93,9 +93,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
     //connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
     connect(m_inputBox, SIGNAL(focusOut()), this, SLOT(onInputBoxFocusOut()));
-    //connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
-    connect(m_inputBox, SIGNAL(textEdited(const QString&)),
-            this, SLOT(onInputBoxTextEdited(const QString&)));
+    connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
+    //connect(m_inputBox, SIGNAL(textEdited(const QString&)),
+    //        this, SLOT(onInputBoxTextEdited(const QString&)));
 
     m_outputBox->setObjectName("output");
     m_outputBox->setAlignment(Qt::AlignHCenter);
@@ -444,18 +444,20 @@ void LaunchyWidget::onAlternativeListRowChanged(int index)
     }
 }
 
-
 void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
+    // Launchy widget would not receive Key_Tab from inputbox£¬
+    // we have to pass it manually
     if (event->key() == Qt::Key_Tab) {
         qDebug() << "LaunchyWidget::onInputBoxKeyPressed,"
             << "pass event to LaunchyWidget::keyPressEvent";
         keyPressEvent(event);
     }
     else {
+        qDebug() << "LaunchyWidget::onInputBoxKeyPressed,"
+            << "event ignored";
         event->ignore();
     }
 }
-
 
 void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
@@ -530,6 +532,11 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
 
 
 void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
+    qDebug() << "LaunchyWidget::keyPressEvent,"
+        << "key:" << event->key()
+        << "modifier:" << event->modifiers()
+        << "text:" << event->text();
+
     if (event->key() == Qt::Key_Escape) {
         if (m_alternativeList->isVisible())
             hideAlternativeList();
@@ -569,16 +576,19 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
             }
         }
     }
+
     else if ((event->key() == Qt::Key_Tab
               || event->key() == Qt::Key_Backspace)
              && event->modifiers() == Qt::ShiftModifier) {
         doBackTab();
         processKey();
     }
+
     else if (event->key() == Qt::Key_Tab) {
         doTab();
         processKey();
     }
+
     else if (event->key() == Qt::Key_Slash
              || event->key() == Qt::Key_Backslash) {
         if (inputData.count() > 0 && inputData.last().hasLabel(LABEL_FILE) &&
@@ -586,12 +596,18 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
             doTab();
         processKey();
     }
+
     else if (event->key()== Qt::Key_Insert
              && event->modifiers() == Qt::ShiftModifier) {
         // ensure pasting text with Shift+Insert also parses input
         // longer term parsing should be done using the TextChanged event
         processKey();
     }
+
+    else if (!event->text().isEmpty()){
+        processKey();
+    }
+
 }
 
 // remove input text back to the previous input section
@@ -686,7 +702,7 @@ void LaunchyWidget::doEnter() {
 // }
 
 void LaunchyWidget::processKey() {
-    qDebug() << "LaunchyWidget::processKey";
+    qDebug() << "LaunchyWidget::processKey, inputbox text:" << m_inputBox->text();
     inputData.parse(m_inputBox->text());
     searchOnInput();
     updateOutputBox();
@@ -710,8 +726,8 @@ void LaunchyWidget::searchOnInput() {
     g_searchText = searchTextLower;
     searchResults.clear();
 
-    if ((inputData.count() > 0 && inputData.first().hasLabel(LABEL_HISTORY))
-        /*|| m_inputBox->text().length() == 0*/) {
+    if ((!inputData.isEmpty() && inputData.first().hasLabel(LABEL_HISTORY))
+        || m_inputBox->text().isEmpty()) {
         // Add history items exclusively and unsorted so they remain in most recently used order
         qDebug() << "Searching history for" << searchText;
         history.search(searchTextLower, searchResults);
@@ -748,16 +764,18 @@ void LaunchyWidget::searchOnInput() {
 
 // If there are current results, update the output text and icon
 void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
-    if (searchResults.count() > 0
-        && (inputData.count() > 1
-            || m_inputBox->text().length() > 0)) {
-        qDebug() << "Setting output text to" << searchResults[0].shortName;
-
+    if (!searchResults.isEmpty()
+        && (inputData.count() > 1 || !m_inputBox->text().isEmpty())) {
+        // qDebug() << "Setting output text to" << searchResults[0].shortName;
         QString outputText = Catalog::decorateText(searchResults[0].shortName, g_searchText, true);
+        
 #ifdef _DEBUG
         outputText += QString(" (%1 launches)").arg(searchResults[0].usage);
 #endif
+
+        qDebug() << "Setting output box text:" << outputText;
         m_outputBox->setText(outputText);
+
         if (outputItem != searchResults[0]) {
             outputItem = searchResults[0];
             m_outputIcon->clear();
@@ -974,16 +992,14 @@ void LaunchyWidget::onInputBoxFocusOut() {
 }
 
 void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
-    Q_UNUSED(event)
     qDebug() << "LaunchyWidget::onInputBoxInputMethod";
-//     if (!event->preeditString().isEmpty()) {
-//         qDebug() << "LaunchyWidget::onInputBoxInputMethod, preeditString:"
-//             << event->preeditString();
-//         inputData.parse(event->preeditString());
-//         searchOnInput();
-//         updateOutputBox();
-//     }
-    //processKey();
+    QString commitStr = event->commitString();
+    if (!commitStr.isEmpty()) {
+        qDebug() << "LaunchyWidget::onInputBoxInputMethod, commitString:" << commitStr;
+        inputData.parse(commitStr);
+        searchOnInput();
+        updateOutputBox();
+    }
 }
 
 void LaunchyWidget::onInputBoxTextEdited(const QString& str) {
