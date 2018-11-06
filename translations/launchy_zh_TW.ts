@@ -4,68 +4,60 @@
 <context>
     <name>LaunchyWidget</name>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="108"/>
+        <location filename="../src/LaunchyWidget.cpp" line="113"/>
         <source>Launchy Options</source>
         <translation>Launchy 選項</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="115"/>
+        <location filename="../src/LaunchyWidget.cpp" line="118"/>
         <source>Close Launchy</source>
         <translation>關閉 Launchy</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="187"/>
+        <location filename="../src/LaunchyWidget.cpp" line="145"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>快速鍵 %1 已經被使用，請選擇另一個。</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="311"/>
-        <source>Launchy
-press %1 to activate</source>
+        <location filename="../src/LaunchyWidget.cpp" line="255"/>
+        <source>Launchy %1
+press %2 to activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1039"/>
-        <source>A new version of Launchy is available.
-
-You can download it at 						   &lt;qt&gt;&lt;a href=&quot;http://www.launchy.net/&quot;&gt;http://www.launchy.net&lt;/a&gt;&lt;/qt&gt;</source>
-        <translation>Launchy 有新版本。
-
-你可以到這裡下載 						   &lt;qt&gt;&lt;a href=&quot;http://www.launchy.net/&quot;&gt;http://www.launchy.net&lt;/a&gt;&lt;/qt&gt;</translation>
+        <location filename="../src/LaunchyWidget.cpp" line="1012"/>
+        <source>Launchy is already running!</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1536"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1279"/>
         <source>Show Launchy</source>
         <translation>顯示 Launchy</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1539"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1282"/>
         <source>Rebuild catalog</source>
         <translation>重新建立索引</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1544"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1287"/>
         <source>Reload skin</source>
         <translation>重新載入面板</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="74"/>
-        <location filename="../src/LaunchyWidget.cpp" line="186"/>
+        <location filename="../src/LaunchyWidget.cpp" line="64"/>
+        <location filename="../src/LaunchyWidget.cpp" line="144"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1012"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1038"/>
-        <source>A new version of Launchy is available</source>
-        <translation>Launchy 有新版本</translation>
-    </message>
-    <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1549"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1292"/>
         <source>Options</source>
         <translation>選項</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1554"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1297"/>
         <source>Exit</source>
         <translation>離開</translation>
     </message>
@@ -78,285 +70,300 @@ You can download it at 						   &lt;qt&gt;&lt;a href=&quot;http://www.launchy.ne
         <translation type="unfinished">Launchy 選項</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="63"/>
+        <location filename="../src/OptionDialog.ui" line="58"/>
         <source>General</source>
         <translation type="unfinished">一般</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="84"/>
+        <location filename="../src/OptionDialog.ui" line="79"/>
         <source>User Interface</source>
         <translation type="unfinished">使用者介面</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="105"/>
+        <location filename="../src/OptionDialog.ui" line="100"/>
         <source>Always display Launchy window</source>
         <translation type="unfinished">總是顯示 Launchy 視窗</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="112"/>
+        <location filename="../src/OptionDialog.ui" line="107"/>
         <source>Hide when lose focus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="122"/>
+        <location filename="../src/OptionDialog.ui" line="117"/>
         <source>Always on top</source>
         <translation type="unfinished">最上層顯示</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="134"/>
+        <location filename="../src/OptionDialog.ui" line="135"/>
         <source>Always center</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="157"/>
+        <location filename="../src/OptionDialog.ui" line="145"/>
         <source>horizontally</source>
         <translation type="unfinished">水平</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="164"/>
+        <location filename="../src/OptionDialog.ui" line="152"/>
         <source>vertically</source>
         <translation type="unfinished">垂直</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="173"/>
+        <location filename="../src/OptionDialog.ui" line="174"/>
         <source>Only allow dragging whilst Shift is pressed</source>
         <translation type="unfinished">只有按住 Shift 時可以拖動</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="220"/>
+        <location filename="../src/OptionDialog.ui" line="221"/>
         <source> + </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="282"/>
+        <location filename="../src/OptionDialog.ui" line="283"/>
         <source>Suggestion List</source>
         <translation type="unfinished">建議清單</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="315"/>
+        <location filename="../src/OptionDialog.ui" line="316"/>
         <source>Underline matched text</source>
         <translation type="unfinished">在符合的文字加底線</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="348"/>
+        <location filename="../src/OptionDialog.ui" line="349"/>
         <source>Suggestions display</source>
         <translation type="unfinished">建議清單顯示</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="383"/>
+        <location filename="../src/OptionDialog.ui" line="384"/>
         <source>Name and path</source>
         <translation type="unfinished">名稱及路徑</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="388"/>
+        <location filename="../src/OptionDialog.ui" line="389"/>
         <source>Path only</source>
         <translation type="unfinished">只有路徑</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="393"/>
+        <location filename="../src/OptionDialog.ui" line="394"/>
         <source>Name only</source>
         <translation type="unfinished">只有名稱</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="432"/>
+        <location filename="../src/OptionDialog.ui" line="433"/>
         <source>Auto open delay</source>
         <translation type="unfinished">自動開啟延遲</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="459"/>
+        <location filename="../src/OptionDialog.ui" line="460"/>
         <source> ms</source>
         <translation type="unfinished"> ms</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="481"/>
+        <location filename="../src/OptionDialog.ui" line="482"/>
         <source>Simultaneously visible suggestions</source>
         <translation type="unfinished">建議清單顯示個數</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="516"/>
+        <location filename="../src/OptionDialog.ui" line="517"/>
         <source>Max number of suggestions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="551"/>
+        <location filename="../src/OptionDialog.ui" line="552"/>
         <source>Max number of history items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="593"/>
+        <location filename="../src/OptionDialog.ui" line="594"/>
         <source>Visual Effects</source>
         <translation type="unfinished">視覺效果</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="628"/>
+        <location filename="../src/OptionDialog.ui" line="629"/>
         <source>Opaqueness</source>
         <translation type="unfinished">透明度</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="666"/>
+        <location filename="../src/OptionDialog.ui" line="667"/>
         <source>Fade in time</source>
         <translation type="unfinished">淡入時間</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="701"/>
+        <location filename="../src/OptionDialog.ui" line="702"/>
         <source>Fade out time</source>
         <translation type="unfinished">淡出時間</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="744"/>
+        <location filename="../src/OptionDialog.ui" line="745"/>
         <source>Internet Proxy</source>
         <translation type="unfinished">網路代理伺服器</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="185"/>
+        <location filename="../src/OptionDialog.ui" line="186"/>
         <source>Hotkey:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="764"/>
+        <location filename="../src/OptionDialog.ui" line="765"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="790"/>
+        <location filename="../src/OptionDialog.ui" line="791"/>
         <source>:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="854"/>
+        <location filename="../src/OptionDialog.ui" line="855"/>
         <source>System Options</source>
         <translation type="unfinished">系統選項</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="871"/>
+        <location filename="../src/OptionDialog.ui" line="872"/>
         <source>Auto rescan catalog every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="915"/>
+        <location filename="../src/OptionDialog.ui" line="916"/>
         <source> minutes</source>
         <translation type="unfinished">分鐘</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="933"/>
+        <location filename="../src/OptionDialog.ui" line="934"/>
         <source>Show hidden files in browse mode</source>
         <translation type="unfinished">在瀏覽模式下顯示隱藏的文件</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="940"/>
+        <location filename="../src/OptionDialog.ui" line="941"/>
         <source>Show network in browse mode</source>
         <translation type="unfinished">在瀏覽模式下顯示網路</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="947"/>
-        <source>Check for new versions on startup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.ui" line="954"/>
+        <location filename="../src/OptionDialog.ui" line="948"/>
         <source>Portable mode (USB stick)</source>
         <translation type="unfinished">可攜模式 (可以放到 USB 隨身碟)</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="965"/>
+        <location filename="../src/OptionDialog.ui" line="960"/>
+        <source>Logging level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="981"/>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="986"/>
+        <source>Debug</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="991"/>
+        <source>Normal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="1005"/>
         <source>Skins</source>
         <translation type="unfinished">面板</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="983"/>
+        <location filename="../src/OptionDialog.ui" line="1023"/>
         <source>Select a skin</source>
         <translation type="unfinished">選擇面板</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1028"/>
+        <location filename="../src/OptionDialog.ui" line="1068"/>
         <source>Author information</source>
         <translation type="unfinished">作者資訊</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1077"/>
+        <location filename="../src/OptionDialog.ui" line="1117"/>
         <source>Skin preview</source>
         <translation type="unfinished">預覽面板</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1120"/>
+        <location filename="../src/OptionDialog.ui" line="1160"/>
         <source>Catalog</source>
         <translation type="unfinished">目錄</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1128"/>
+        <location filename="../src/OptionDialog.ui" line="1168"/>
         <source>Directories</source>
         <translation type="unfinished">目錄</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1152"/>
-        <location filename="../src/OptionDialog.ui" line="1274"/>
+        <location filename="../src/OptionDialog.ui" line="1192"/>
+        <location filename="../src/OptionDialog.ui" line="1314"/>
         <source>+</source>
         <translation type="unfinished">+</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1159"/>
-        <location filename="../src/OptionDialog.ui" line="1287"/>
+        <location filename="../src/OptionDialog.ui" line="1199"/>
+        <location filename="../src/OptionDialog.ui" line="1327"/>
         <source>-</source>
         <translation type="unfinished">-</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1186"/>
+        <location filename="../src/OptionDialog.ui" line="1226"/>
         <source>Rescan Catalog</source>
         <translation type="unfinished">重新建立索引</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1218"/>
+        <location filename="../src/OptionDialog.ui" line="1258"/>
         <source>Indexing 0 items</source>
         <translation type="unfinished">找到 0 個項目</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1244"/>
+        <location filename="../src/OptionDialog.ui" line="1284"/>
         <source>File Types</source>
         <translation type="unfinished">檔案類型</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1296"/>
+        <location filename="../src/OptionDialog.ui" line="1336"/>
         <source>Include executables</source>
         <translation type="unfinished">包含可執行檔</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1303"/>
+        <location filename="../src/OptionDialog.ui" line="1343"/>
         <source>Include directories</source>
         <translation type="unfinished">包含目錄</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1312"/>
+        <location filename="../src/OptionDialog.ui" line="1352"/>
         <source>Depth:</source>
         <translation type="unfinished">深度:</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1338"/>
+        <location filename="../src/OptionDialog.ui" line="1378"/>
         <source>Plugins</source>
         <translation type="unfinished">外掛程式</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1350"/>
+        <location filename="../src/OptionDialog.ui" line="1390"/>
         <source>Available plugins</source>
         <translation type="unfinished">可用的外掛程式</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1372"/>
-        <location filename="../src/OptionDialog.cpp" line="451"/>
+        <location filename="../src/OptionDialog.ui" line="1412"/>
+        <location filename="../src/OptionDialog.cpp" line="456"/>
         <source>Plugin options</source>
         <translation type="unfinished">外掛程式選項</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1400"/>
+        <location filename="../src/OptionDialog.ui" line="1424"/>
         <source>About Launchy</source>
         <translation type="unfinished">關於 Launchy</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1432"/>
+        <location filename="../src/OptionDialog.ui" line="1456"/>
         <source>Ver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1457"/>
+        <location filename="../src/OptionDialog.ui" line="1481"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -366,12 +373,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1481"/>
+        <location filename="../src/OptionDialog.ui" line="1505"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Launchy Qt&apos;s &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github page&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1512"/>
+        <location filename="../src/OptionDialog.ui" line="1536"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -383,262 +390,50 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="82"/>
-        <location filename="../src/OptionDialog.cpp" line="85"/>
-        <source>Alt</source>
-        <translation type="unfinished">Alt</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="82"/>
-        <source>Command</source>
-        <translation type="unfinished">Command</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="82"/>
-        <location filename="../src/OptionDialog.cpp" line="85"/>
-        <source>Shift</source>
-        <translation type="unfinished">Shift</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="82"/>
-        <location filename="../src/OptionDialog.cpp" line="85"/>
-        <source>Control</source>
-        <translation type="unfinished">Control</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="83"/>
-        <source>Command+Alt</source>
-        <translation type="unfinished">Command+Alt</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="83"/>
-        <source>Command+Shift</source>
-        <translation type="unfinished">Command+Shift</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="83"/>
-        <source>Command+Control</source>
-        <translation type="unfinished">Command+Control</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="85"/>
-        <source>Win</source>
-        <translation type="unfinished">Win</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="86"/>
-        <source>Ctrl+Alt</source>
-        <translation type="unfinished">Ctrl+Alt</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="86"/>
-        <source>Ctrl+Shift</source>
-        <translation type="unfinished">Ctrl+Shift</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="86"/>
-        <source>Ctrl+Win</source>
-        <translation type="unfinished">Ctrl+Win</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="91"/>
-        <source>Space</source>
-        <translation type="unfinished">Space</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="91"/>
-        <source>Tab</source>
-        <translation type="unfinished">Tab</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="91"/>
-        <source>Caps Lock</source>
-        <translation type="unfinished">Caps Lock</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="91"/>
-        <source>Backspace</source>
-        <translation type="unfinished">Backspace</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="91"/>
-        <source>Enter</source>
-        <translation type="unfinished">Enter</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="91"/>
-        <source>Esc</source>
-        <translation type="unfinished">Esc</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="92"/>
-        <source>Insert</source>
-        <translation type="unfinished">Insert</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="92"/>
-        <source>Delete</source>
-        <translation type="unfinished">Delete</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="92"/>
-        <source>Home</source>
-        <translation type="unfinished">Home</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="92"/>
-        <source>End</source>
-        <translation type="unfinished">End</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="92"/>
-        <source>Page Up</source>
-        <translation type="unfinished">Page Up</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="92"/>
-        <source>Page Down</source>
-        <translation type="unfinished">Page Down</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="93"/>
-        <source>Print</source>
-        <translation type="unfinished">Print</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="93"/>
-        <source>Scroll Lock</source>
-        <translation type="unfinished">Scroll Lock</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="93"/>
-        <source>Pause</source>
-        <translation type="unfinished">Pause</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="93"/>
-        <source>Num Lock</source>
-        <translation type="unfinished">Num Lock</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="94"/>
+        <location filename="../src/OptionDialog.cpp" line="102"/>
         <source>Up</source>
         <translation type="unfinished">上</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="94"/>
+        <location filename="../src/OptionDialog.cpp" line="102"/>
         <source>Down</source>
         <translation type="unfinished">下</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="94"/>
+        <location filename="../src/OptionDialog.cpp" line="102"/>
         <source>Left</source>
         <translation type="unfinished">左</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="94"/>
+        <location filename="../src/OptionDialog.cpp" line="102"/>
         <source>Right</source>
         <translation type="unfinished">右</translation>
     </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F1</source>
-        <translation type="unfinished">F1</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F2</source>
-        <translation type="unfinished">F2</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F3</source>
-        <translation type="unfinished">F3</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F4</source>
-        <translation type="unfinished">F4</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F5</source>
-        <translation type="unfinished">F5</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F6</source>
-        <translation type="unfinished">F6</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F7</source>
-        <translation type="unfinished">F7</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="95"/>
-        <source>F8</source>
-        <translation type="unfinished">F8</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F9</source>
-        <translation type="unfinished">F9</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F10</source>
-        <translation type="unfinished">F10</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F11</source>
-        <translation type="unfinished">F11</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F12</source>
-        <translation type="unfinished">F12</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F13</source>
-        <translation type="unfinished">F13</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F14</source>
-        <translation type="unfinished">F14</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.cpp" line="96"/>
-        <source>F15</source>
-        <translation type="unfinished">F15</translation>
-    </message>
     <message numerus="yes">
-        <location filename="../src/OptionDialog.cpp" line="203"/>
+        <location filename="../src/OptionDialog.cpp" line="211"/>
         <source>Index has %n item(s)</source>
+        <comment>N/A</comment>
         <translation type="unfinished">
             <numerusform>索引了 %n 個項目</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="230"/>
+        <location filename="../src/OptionDialog.cpp" line="237"/>
         <source>This is Launchy %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="272"/>
+        <location filename="../src/OptionDialog.cpp" line="276"/>
         <source>Launchy</source>
         <translation type="unfinished">Launchy</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="272"/>
+        <location filename="../src/OptionDialog.cpp" line="276"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation type="unfinished">快速鍵 %1 已經被使用，請選擇另一個。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/OptionDialog.cpp" line="539"/>
+        <location filename="../src/OptionDialog.cpp" line="546"/>
         <source>Index has %n items</source>
         <translation type="unfinished">
             <numerusform>索引了 %n 個項目</numerusform>
@@ -646,16 +441,16 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>SettingsManager</name>
+    <name>QObject</name>
     <message>
-        <location filename="../src/SettingsManager.cpp" line="128"/>
+        <location filename="../src/SettingsManager.cpp" line="124"/>
         <source>Launchy</source>
-        <translation>Launchy</translation>
+        <translation type="unfinished">Launchy</translation>
     </message>
     <message>
-        <location filename="../src/SettingsManager.cpp" line="129"/>
+        <location filename="../src/SettingsManager.cpp" line="125"/>
         <source>Could not convert to portable mode. Please check you have write access to the %1 directory.</source>
-        <translation>無法轉換到可攜模式。請確定你有寫入 %1 目錄的權限。</translation>
+        <translation type="unfinished">無法轉換到可攜模式。請確定你有寫入 %1 目錄的權限。</translation>
     </message>
 </context>
 </TS>
