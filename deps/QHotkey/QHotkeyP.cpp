@@ -36,6 +36,8 @@ void QHotkeyPrivate::unsetKey() {
 }
 
 bool QHotkeyPrivate::activateHotKey(int keyId) {
+    qDebug() << "QHotkeyPrivate::activateHotKey,"
+        << "keyId:" << keyId;
     if (s_hotKeys.contains(keyId)) {
         foreach(QHotkey* s, s_hotKeys.values(keyId)) {
             s->activated();

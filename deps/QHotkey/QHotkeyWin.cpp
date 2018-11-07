@@ -74,6 +74,7 @@ QHotkeyPrivate::NativeKeyMap QHotkeyPrivate::s_keyMap[] = {
     {Qt::Key_Help,        0},
     {Qt::Key_Direction_L, 0},
     {Qt::Key_Direction_R, 0},
+    {Qt::Key_Space,       VK_SPACE},
 
     {Qt::Key_0,           0x30},
     {Qt::Key_1,           0x31},
@@ -161,6 +162,8 @@ bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
 }
 
 bool QHotkeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
+    qDebug() << "QHotkeyPrivate::registerKey,"
+        << "keyid:" << keyId << "mod:" << mod << "key:" << key;
     return RegisterHotKey(NULL, keyId, mod, key) == TRUE;
 }
 
