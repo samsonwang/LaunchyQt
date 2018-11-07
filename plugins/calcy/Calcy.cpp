@@ -91,7 +91,7 @@ void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
     std::string str = text.toStdString();
     qDebug() << "Calcy::getResults, input text(std::string):" << str.c_str();
 
-    if (!Calculate(str, res))
+    if (!Calculator::calculate(str, res))
         return;
 
     qDebug() << "Calcy::getResults, result:" << res;

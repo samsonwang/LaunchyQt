@@ -16,10 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// © for utf-8
-
 #pragma once
 
 #include <string>
 
-bool Calculate(const std::string& expr, double& result);
+class Calculator {
+public:
+    static bool calculate(const std::string& expr, double& result);
+    static bool octStr(int num, std::string& reslut);
+    static bool decStr(int num, std::string& reslut);
+    static bool hexStr(int num, std::string& reslut);
+    static bool binStr(int num, std::string& reslut);
+};
+
+
+

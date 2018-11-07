@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Calculate.h"
 #include "exprtk.hpp"
 
-bool Calculate(const std::string& expr, double& result) {
+bool Calculator::calculate(const std::string& expr, double& result) {
     typedef exprtk::symbol_table<double> symbol_table_t;
     typedef exprtk::expression<double>     expression_t;
     typedef exprtk::parser<double>             parser_t;
@@ -32,4 +32,20 @@ bool Calculate(const std::string& expr, double& result) {
     result = expression.value();
 
     return ret;
+}
+
+bool Calculator::octStr(int num, std::string& reslut) {
+    return true;
+}
+
+bool Calculator::decStr(int num, std::string& reslut) {
+    return true;
+}
+
+bool Calculator::hexStr(int num, std::string& reslut) {
+    return true;
+}
+
+bool Calculator::binStr(int num, std::string& reslut) {
+    return true;
 }

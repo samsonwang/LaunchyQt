@@ -47,9 +47,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="calcy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,24 +56,27 @@
     <ClCompile Include="Release\moc_gui.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_calcy.cpp">
+    <ClCompile Include="Calculate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_Calcy.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_calcy.cpp">
+    <ClCompile Include="Release\moc_Calcy.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Calculate.cpp">
+    <ClCompile Include="Calcy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="calcy.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="gui.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="precompiled.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Calcy.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
