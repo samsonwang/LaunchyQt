@@ -1174,8 +1174,9 @@ void LaunchyWidget::showOptionDialog() {
 #endif
         options.exec();
 
-        m_inputBox->activateWindow();
+        activateWindow();
         m_inputBox->setFocus();
+        m_inputBox->selectAll();
         optionsOpen = false;
     }
 }
@@ -1191,8 +1192,10 @@ void LaunchyWidget::setFadeLevel(double level) {
     }
     else if (!isVisible()) {
         show();
-        activateWindow();
         raise();
+        activateWindow();
+        m_inputBox->setFocus();
+        m_inputBox->selectAll();
     }
 }
 
@@ -1218,8 +1221,8 @@ void LaunchyWidget::showLaunchy(bool noFade) {
     grabKeyboard();
     releaseKeyboard();
 #endif
-    m_inputBox->raise();
-    m_inputBox->activateWindow();
+    raise();
+    activateWindow();
     m_inputBox->selectAll();
     m_inputBox->setFocus();
 
