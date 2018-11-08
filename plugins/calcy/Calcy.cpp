@@ -20,7 +20,8 @@
 #include "precompiled.h"
 #include "calcy.h"
 #include "PluginMsg.h"
-#include "Calculate.h"
+#include "Calculator.h"
+#include "Converter.h"
 
 Calcy* g_plugin;
 
@@ -67,45 +68,73 @@ void Calcy::getLabels(QList<InputData>* inputList) {
 }
 
 void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
-    if (inputList->isEmpty()
+    if (!inputList
+        || inputList->isEmpty()
         || !inputList->last().hasLabel(HASH_CALCY)) {
         return;
     }
 
-    QSettings* settingPtr = (*settings).data();
-    bool useCommaForDecimal = settingPtr->value("calcy/useCommaForDecimal", false).toBool();
-    int outputRounding = settingPtr->value("calcy/outputRounding", 10).toInt();
-
-    QString decimal = useCommaForDecimal ? "," : ".";
-    QString group = useCommaForDecimal ? "." : ",";
-
-    QLocale locale = useCommaForDecimal ? QLocale(QLocale::German) : QLocale(QLocale::C);
-
     QString text = inputList->last().getText();
-    double res = 0.0;
-    text = text.replace(group, "");
-    text = text.replace(decimal, ".");
-
     qDebug() << "Calcy::getResults, input text:" << text;
 
-    std::string str = text.toStdString();
-    qDebug() << "Calcy::getResults, input text(std::string):" << str.c_str();
-
-    if (!Calculator::calculate(str, res))
-        return;
-
-    qDebug() << "Calcy::getResults, result:" << res;
-
-    QString resStr = locale.toString(res, 'f', outputRounding);
-
-    // Remove any trailing fractional zeros
-    if (resStr.contains(decimal)) {
-        while (resStr.endsWith("0"))
-            resStr.chop(1);
-        if (resStr.endsWith(decimal))
-            resStr.chop(1);
+    // convert
+    if (text.endsWith("=")) {
+        qDebug() << "Calcy::getResults, convert";
+        text.chop(1);
+        bool toNumOk;
+        qlonglong num = text.toLongLong(&toNumOk, 0);
+        if (!toNumOk) {
+            qDebug() << "Calcy::getResults, text to num failed";
+            return;
+        }
+        qDebug() << "Calcy::getResults, num:" << num;
+        QString result;
+        if (Converter::decStr(num, result)) {
+            results->push_back(CatItem(result + ".dec.calcy", result, HASH_CALCY, getIcon()));
+        }
+        if (Converter::hexStr(num, result)) {
+            results->push_back(CatItem(result + ".hex.calcy", result, HASH_CALCY, getIcon()));
+        }
+        if (Converter::octStr(num, result)) {
+            results->push_back(CatItem(result + ".oct.calcy", result, HASH_CALCY, getIcon()));
+        }
+        if (Converter::binStr(num, result)) {
+            results->push_back(CatItem(result + ".bin.calcy", result, HASH_CALCY, getIcon()));
+        }
     }
-    results->push_front(CatItem(resStr + ".calcy", resStr, HASH_CALCY, getIcon()));
+    // calculate
+    else {
+        qDebug() << "Calcy::getResults, calculate";
+        QSettings* settingPtr = (*settings).data();
+        bool useCommaForDecimal = settingPtr->value("calcy/useCommaForDecimal", false).toBool();
+        int outputRounding = settingPtr->value("calcy/outputRounding", 10).toInt();
+
+        QString decimal = useCommaForDecimal ? "," : ".";
+        QString group = useCommaForDecimal ? "." : ",";
+        text.replace(group, "");
+        text.replace(decimal, ".");
+
+        std::string str = text.toStdString();
+        qDebug() << "Calcy::getResults, input text(std::string):" << str.c_str();
+
+        double res = 0.0;
+        if (!Calculator::calculate(str, res))
+            return;
+
+        qDebug() << "Calcy::getResults, result:" << res;
+
+        QLocale locale = useCommaForDecimal ? QLocale(QLocale::German) : QLocale(QLocale::C);
+        QString resStr = locale.toString(res, 'f', outputRounding);
+
+        // Remove any trailing fractional zeros
+        if (resStr.contains(decimal)) {
+            while (resStr.endsWith("0"))
+                resStr.chop(1);
+            if (resStr.endsWith(decimal))
+                resStr.chop(1);
+        }
+        results->push_front(CatItem(resStr + ".calcy", resStr, HASH_CALCY, getIcon()));
+    }
 }
 
 

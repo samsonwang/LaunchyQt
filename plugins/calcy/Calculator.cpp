@@ -1,6 +1,6 @@
 /*
 Calcy - plugin for Launchy
-Copyright (C) 2017 Samson Wang
+Copyright (C) 2018 Samson Wang
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Calculate.h"
+#include "Calculator.h"
 #include "exprtk.hpp"
 
 bool Calculator::calculate(const std::string& expr, double& result) {
@@ -34,18 +34,3 @@ bool Calculator::calculate(const std::string& expr, double& result) {
     return ret;
 }
 
-bool Calculator::octStr(int num, std::string& reslut) {
-    return true;
-}
-
-bool Calculator::decStr(int num, std::string& reslut) {
-    return true;
-}
-
-bool Calculator::hexStr(int num, std::string& reslut) {
-    return true;
-}
-
-bool Calculator::binStr(int num, std::string& reslut) {
-    return true;
-}

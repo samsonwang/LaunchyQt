@@ -155,8 +155,9 @@ exit 0</Command>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Calculate.cpp" />
+    <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="Calcy.cpp" />
+    <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Debug\moc_Calcy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -172,7 +173,8 @@ exit 0</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Calculate.h" />
+    <ClInclude Include="Calculator.h" />
+    <ClInclude Include="Converter.h" />
     <ClInclude Include="exprtk.hpp" />
     <ClInclude Include="GeneratedFiles\ui_dlg.h" />
     <CustomBuild Include="Calcy.h">

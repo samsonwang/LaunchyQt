@@ -16,18 +16,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "Converter.h"
 
-#include <string>
+bool Converter::octStr(qlonglong num, QString& reslut) {
+    reslut = "0" + QString::number(num, 8);
+    return true;
+}
 
-class Calculator {
-public:
-    static bool calculate(const std::string& expr, double& result);
-    static bool octStr(int num, std::string& reslut);
-    static bool decStr(int num, std::string& reslut);
-    static bool hexStr(int num, std::string& reslut);
-    static bool binStr(int num, std::string& reslut);
-};
+bool Converter::decStr(qlonglong num, QString& reslut) {
+    reslut = QString::number(num, 10);
+    return true;
+}
 
+bool Converter::hexStr(qlonglong num, QString& reslut) {
+    reslut = "0x" + QString::number(num, 16);
+    return true;
+}
 
-
+bool Converter::binStr(qlonglong num, QString& reslut) {
+    reslut = QString::number(num, 2);
+    return true;
+}
