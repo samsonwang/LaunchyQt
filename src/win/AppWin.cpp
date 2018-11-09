@@ -133,7 +133,7 @@ QList<Directory> AppWin::getDefaultCatalogDirectories() {
     tmp.name = GetShellDirectory(CSIDL_STARTMENU);
     list.append(tmp);
 
-    tmp.name = "Utilities\\";
+    tmp.name = "utilities\\";
     tmp.indexDirs = false;
     list.append(tmp);
 

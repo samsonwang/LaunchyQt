@@ -73,8 +73,7 @@ void UpdateEnvironment() {
 }
 
 
-QString GetShellDirectory(int type)
-{
+QString GetShellDirectory(int type) {
     wchar_t buffer[_MAX_PATH];
     SHGetFolderPath(NULL, type, NULL, 0, buffer);
     return QString::fromWCharArray(buffer);

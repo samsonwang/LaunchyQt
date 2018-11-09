@@ -162,6 +162,7 @@ exit 0</Command>
     <ClCompile Include="CharLineEdit.cpp" />
     <ClCompile Include="CharListWidget.cpp" />
     <ClCompile Include="CommandHistory.cpp" />
+    <ClCompile Include="Directory.cpp" />
     <ClCompile Include="DropListWidget.cpp" />
     <ClCompile Include="Fader.cpp" />
     <ClCompile Include="FileBrowser.cpp" />

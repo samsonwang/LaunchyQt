@@ -362,10 +362,12 @@ void LaunchyWidget::launchItem(CatItem& item) {
     }
 
     if (ops == MSG_CONTROL_LAUNCHITEM) {
-        QString args = "";
-        if (m_inputData.count() > 1)
-            for (int i = 1; i < m_inputData.count(); ++i)
+        QString args;
+        if (m_inputData.count() > 1) {
+            for (int i = 1; i < m_inputData.count(); ++i) {
                 args += m_inputData[i].getText() + " ";
+            }
+        }
         runProgram(item.fullPath, args);
     }
 

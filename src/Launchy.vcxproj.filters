@@ -216,6 +216,9 @@
     <ClCompile Include="PluginHandler.cpp">
       <Filter>Plugin</Filter>
     </ClCompile>
+    <ClCompile Include="Directory.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">

@@ -17,45 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DIRECTORY_H
-#define DIRECTORY_H
-
+#pragma once
 
 #include <QString>
 #include <QStringList>
 
-struct Directory
-{
-	Directory() :
-		indexDirs(false),
-		indexExe(false),
-		depth(100)
-	{
-	}
+struct Directory {
+    Directory();
+    Directory(const QString& n);
+    Directory(const QString& n, const QStringList& t, bool d, bool e, int dep);
 
-	Directory(const QString& n) :
-		indexDirs(false),
-		indexExe(false),
-		name(n),
-		depth(100)
-	{
-	}
-
-	Directory(const QString& n, const QStringList& t, bool d, bool e, int dep) :
-		indexDirs(d),
-		indexExe(e),
-		name(n),
-		types(t),
-		depth(dep)
-	{
-	}
-
-	bool indexDirs;
-	bool indexExe;
-	QString name;
-	QStringList types;
-	int depth;
+    bool indexDirs;
+    bool indexExe;
+    QString name;
+    QStringList types;
+    int depth;
 };
-
-
-#endif
