@@ -84,9 +84,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     dragging = false;
     g_searchText = "";
 
-    alwaysShowLaunchy = false;
+    m_alwaysShowLaunchy = false;
 
-    connect(&iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)),
+    connect(&m_iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)),
             this, SLOT(iconExtracted(int, QString, QIcon)));
 
     m_inputBox->setObjectName("input");
@@ -168,7 +168,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     plugins.loadPlugins();
 
     // Load the history
-    history.load(SettingsManager::instance().historyFilename());
+    m_history.load(SettingsManager::instance().historyFilename());
 
     // Load the skin
     //setStyleSheet(":/resources/basicskin.qss");
@@ -279,11 +279,11 @@ void LaunchyWidget::showTrayIcon() {
 void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     int mode = g_settings->value("GenOps/condensedView", 2).toInt();
     int i = 0;
-    for (; i < searchResults.size(); ++i) {
-        qDebug() << "Alternative" << i << ":" << searchResults[i].fullPath;
-        QString fullPath = QDir::toNativeSeparators(searchResults[i].fullPath);
+    for (; i < m_searchResult.size(); ++i) {
+        qDebug() << "Alternative" << i << ":" << m_searchResult[i].fullPath;
+        QString fullPath = QDir::toNativeSeparators(m_searchResult[i].fullPath);
 #ifdef _DEBUG
-        fullPath += QString(" (%1 launches)").arg(searchResults[i].usage);
+        fullPath += QString(" (%1 launches)").arg(m_searchResult[i].usage);
 #endif
         QListWidgetItem* item;
         if (i < m_alternativeList->count()) {
@@ -296,7 +296,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
             // condensedTempIcon is a blank icon or null
             item->setData(ROLE_ICON, QIcon());
         }
-        item->setData(mode == 1 ? ROLE_FULL : ROLE_SHORT, searchResults[i].shortName);
+        item->setData(mode == 1 ? ROLE_FULL : ROLE_SHORT, m_searchResult[i].shortName);
         item->setData(mode == 1 ? ROLE_SHORT : ROLE_FULL, fullPath);
         if (i >= m_alternativeList->count())
             m_alternativeList->addItem(item);
@@ -309,7 +309,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     if (resetSelection) {
         m_alternativeList->setCurrentRow(0);
     }
-    iconExtractor.processIcons(searchResults);
+    m_iconExtractor.processIcons(m_searchResult);
 
     m_alternativeList->updateGeometry(pos(), m_inputBox->pos());
 }
@@ -334,7 +334,7 @@ void LaunchyWidget::hideAlternativeList() {
     m_alternativeList->setCurrentRow(-1);
     m_alternativeList->repaint();
     m_alternativeList->hide();
-    iconExtractor.stop();
+    m_iconExtractor.stop();
 }
 
 
@@ -342,7 +342,7 @@ void LaunchyWidget::launchItem(CatItem& item) {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
     if (item.id != HASH_LAUNCHY && item.id != HASH_LAUNCHYFILE) {
-        ops = plugins.execute(&inputData, &item);
+        ops = plugins.launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
             close();
@@ -363,14 +363,14 @@ void LaunchyWidget::launchItem(CatItem& item) {
 
     if (ops == MSG_CONTROL_LAUNCHITEM) {
         QString args = "";
-        if (inputData.count() > 1)
-            for (int i = 1; i < inputData.count(); ++i)
-                args += inputData[i].getText() + " ";
+        if (m_inputData.count() > 1)
+            for (int i = 1; i < m_inputData.count(); ++i)
+                args += m_inputData[i].getText() + " ";
         runProgram(item.fullPath, args);
     }
 
     g_catalog->incrementUsage(item);
-    history.addItem(inputData);
+    m_history.addItem(m_inputData);
 }
 
 /*
@@ -395,52 +395,51 @@ void LaunchyWidget::focusOutEvent(QFocusEvent* event) {
 }
 */
 
-void LaunchyWidget::onAlternativeListRowChanged(int index)
-{
+void LaunchyWidget::onAlternativeListRowChanged(int index) {
     // Check that index is a valid history item index
     // If the current entry is a history item or there is no text entered
-    if (index >= 0 && index < searchResults.count())
-    {
-        CatItem item = searchResults[index];
-        if ((inputData.count() > 0 && inputData.first().hasLabel(LABEL_HISTORY)) || m_inputBox->text().length() == 0)
-        {
-            // Used a void* to hold an int.. ick!
-            // BUT! Doing so avoids breaking existing catalogs
-            long long hi = reinterpret_cast<long long>(item.data);
-            int historyIndex = static_cast<int>(hi);
+    if (index < 0 || index >= m_searchResult.count()) {
+        return;
+    }
 
-            if (item.id == HASH_HISTORY && historyIndex < searchResults.count())
-            {
-                inputData = history.getItem(historyIndex);
-                m_inputBox->selectAll();
-                m_inputBox->insert(inputData.toString());
-                m_inputBox->selectAll();
-                m_outputBox->setText(inputData[0].getTopResult().shortName);
-                // No need to fetch the icon again, just grab it from the alternatives row
-                m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
-                outputItem = item;
-                g_searchText = inputData.toString();
-            }
-        }
-        else if (inputData.count() > 0 &&
-            (inputData.last().hasLabel(LABEL_AUTOSUGGEST) || inputData.last().hasText() == 0))
-        {
-            qDebug() << "Autosuggest" << item.shortName;
+    const CatItem& item = m_searchResult[index];
+    if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
+        || m_inputBox->text().isEmpty()) {
+        // Used a void* to hold an int.. ick!
+        // BUT! Doing so avoids breaking existing catalogs
+        int64_t hi = reinterpret_cast<int64_t>(item.data);
+        int historyIndex = static_cast<int>(hi);
 
-            inputData.last().setText(item.shortName);
-            inputData.last().setLabel(LABEL_AUTOSUGGEST);
-
-            QString root = inputData.toString(true);
+        if (item.id == HASH_HISTORY && historyIndex < m_searchResult.count()) {
+            m_inputData = m_history.getItem(historyIndex);
             m_inputBox->selectAll();
-            m_inputBox->insert(root + item.shortName);
-            m_inputBox->setSelection(root.length(), item.shortName.length());
-
-            m_outputBox->setText(item.shortName);
+            m_inputBox->insert(m_inputData.toString());
+            m_inputBox->selectAll();
+            m_outputBox->setText(m_inputData[0].getTopResult().shortName);
             // No need to fetch the icon again, just grab it from the alternatives row
             m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
-            outputItem = item;
-            g_searchText = "";
+            m_outputItem = item;
+            g_searchText = m_inputData.toString();
         }
+    }
+    else if (!m_inputData.isEmpty()
+             && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST)
+                 || !m_inputData.last().hasText())) {
+        qDebug() << "Autosuggest" << item.shortName;
+
+        m_inputData.last().setText(item.shortName);
+        m_inputData.last().setLabel(LABEL_AUTOSUGGEST);
+
+        QString inputRoot = m_inputData.toString(true);
+        m_inputBox->selectAll();
+        m_inputBox->insert(inputRoot + item.shortName);
+        m_inputBox->setSelection(inputRoot.length(), item.shortName.length());
+
+        m_outputBox->setText(item.shortName);
+        // No need to fetch the icon again, just grab it from the alternatives row
+        m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
+        m_outputItem = item;
+        g_searchText = "";
     }
 }
 
@@ -468,16 +467,16 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
     else if (event->key() == Qt::Key_Return
              || event->key() == Qt::Key_Enter
              || event->key() == Qt::Key_Tab) {
-        if (searchResults.count() > 0) {
+        if (m_searchResult.count() > 0) {
             int row = m_alternativeList->currentRow();
             if (row > -1) {
                 QString location = "History/" + m_inputBox->text();
                 QStringList hist;
-                hist << searchResults[row].lowName << searchResults[row].fullPath;
+                hist << m_searchResult[row].lowName << m_searchResult[row].fullPath;
                 g_settings->setValue(location, hist);
 
                 if (row > 0)
-                    searchResults.move(row, 0);
+                    m_searchResult.move(row, 0);
 
                 if (event->key() == Qt::Key_Tab) {
                     doTab();
@@ -501,9 +500,12 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
              && (event->modifiers() & Qt::ShiftModifier) != 0) {
         int row = m_alternativeList->currentRow();
         if (row > -1) {
-            if (searchResults[row].id == HASH_HISTORY) {
+            const CatItem& item = m_searchResult[row];
+            if (item.id == HASH_HISTORY) {
                 // Delete selected history entry from the alternatives list
-                history.removeAt(row);
+                qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
+                    << "delete history:" << item.shortName;
+                m_history.removeAt(row);
                 m_inputBox->clear();
                 searchOnInput();
                 updateAlternativeList(false);
@@ -511,7 +513,9 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
             }
             else {
                 // Demote the selected item down the alternatives list
-                g_catalog->demoteItem(searchResults[row]);
+                qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
+                    << "demote item:" << item.shortName;
+                g_catalog->demoteItem(item);
                 searchOnInput();
                 updateOutputBox(false);
             }
@@ -570,7 +574,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
                  || event->key() == Qt::Key_PageDown) {
             // do a search and show the results, selecting the first one
             searchOnInput();
-            if (searchResults.count() > 0) {
+            if (m_searchResult.count() > 0) {
                 updateAlternativeList();
                 showAlternativeList();
             }
@@ -591,8 +595,8 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
 
     else if (event->key() == Qt::Key_Slash
              || event->key() == Qt::Key_Backslash) {
-        if (inputData.count() > 0 && inputData.last().hasLabel(LABEL_FILE) &&
-            searchResults.count() > 0 && searchResults[0].id == HASH_LAUNCHYFILE)
+        if (m_inputData.count() > 0 && m_inputData.last().hasLabel(LABEL_FILE) &&
+            m_searchResult.count() > 0 && m_searchResult[0].id == HASH_LAUNCHYFILE)
             doTab();
         processKey();
     }
@@ -652,30 +656,30 @@ void LaunchyWidget::doBackTab()
 
 void LaunchyWidget::doTab()
 {
-    if (inputData.count() > 0 && searchResults.count() > 0)
+    if (m_inputData.count() > 0 && m_searchResult.count() > 0)
     {
         // If it's an incomplete file or directory, complete it
-        QFileInfo info(searchResults[0].fullPath);
+        QFileInfo info(m_searchResult[0].fullPath);
 
-        if (inputData.last().hasLabel(LABEL_FILE) || info.isDir())
+        if (m_inputData.last().hasLabel(LABEL_FILE) || info.isDir())
         {
             QString path;
             if (info.isSymLink())
                 path = info.symLinkTarget();
             else
-                path = searchResults[0].fullPath;
+                path = m_searchResult[0].fullPath;
 
             if (info.isDir() && !path.endsWith(QDir::separator()))
                 path += QDir::separator();
 
             m_inputBox->selectAll();
-            m_inputBox->insert(inputData.toString(true) + QDir::toNativeSeparators(path));
+            m_inputBox->insert(m_inputData.toString(true) + QDir::toNativeSeparators(path));
         }
         else {
-            inputData.last().setTopResult(searchResults[0]);
-            inputData.last().setText(searchResults[0].shortName);
+            m_inputData.last().setTopResult(m_searchResult[0]);
+            m_inputData.last().setText(m_searchResult[0].shortName);
             m_inputBox->selectAll();
-            m_inputBox->insert(inputData.toString() + m_inputBox->separatorText());
+            m_inputBox->insert(m_inputData.toString() + m_inputBox->separatorText());
         }
     }
 }
@@ -684,9 +688,9 @@ void LaunchyWidget::doTab()
 void LaunchyWidget::doEnter() {
     hideAlternativeList();
 
-    if ((inputData.count() > 0 && searchResults.count() > 0)
-        || inputData.count() > 1) {
-        CatItem& item = inputData[0].getTopResult();
+    if ((m_inputData.count() > 0 && m_searchResult.count() > 0)
+        || m_inputData.count() > 1) {
+        CatItem& item = m_inputData[0].getTopResult();
         qDebug() << "Launching" << item.shortName << ":" << item.fullPath;
         launchItem(item);
         hideLaunchy();
@@ -703,7 +707,7 @@ void LaunchyWidget::doEnter() {
 
 void LaunchyWidget::processKey() {
     qDebug() << "LaunchyWidget::processKey, inputbox text:" << m_inputBox->text();
-    inputData.parse(m_inputBox->text());
+    m_inputData.parse(m_inputBox->text());
     searchOnInput();
     updateOutputBox();
 
@@ -721,42 +725,44 @@ void LaunchyWidget::searchOnInput() {
     if (g_catalog.isNull())
         return;
 
-    QString searchText = inputData.count() > 0 ? inputData.last().getText() : "";
+    QString searchText = m_inputData.count() > 0 ? m_inputData.last().getText() : "";
     QString searchTextLower = searchText.toLower();
     g_searchText = searchTextLower;
-    searchResults.clear();
+    m_searchResult.clear();
 
-    if ((!inputData.isEmpty() && inputData.first().hasLabel(LABEL_HISTORY))
+    if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
         || m_inputBox->text().isEmpty()) {
         // Add history items exclusively and unsorted so they remain in most recently used order
         qDebug() << "Searching history for" << searchText;
-        history.search(searchTextLower, searchResults);
+        m_history.search(searchTextLower, m_searchResult);
     }
     else {
         // Search the catalog for matching items
-        if (inputData.count() == 1) {
+        if (m_inputData.count() == 1) {
             qDebug() << "Searching catalog for" << searchText;
-            g_catalog->searchCatalogs(searchTextLower, searchResults);
+            g_catalog->searchCatalogs(searchTextLower, m_searchResult);
         }
 
-        if (searchResults.count() != 0)
-            inputData.last().setTopResult(searchResults[0]);
+        if (!m_searchResult.isEmpty()) {
+            m_inputData.last().setTopResult(m_searchResult[0]);
+        }
 
         // Give plugins a chance to add their own dynamic matches
-        plugins.getLabels(&inputData);
-        plugins.getResults(&inputData, &searchResults);
+        // why getLabels first then getResults, why not getResult straightforward
+        plugins.getLabels(&m_inputData);
+        plugins.getResults(&m_inputData, &m_searchResult);
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
-        qSort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
-        g_catalog->promoteRecentlyUsedItems(searchTextLower, searchResults);
+        qSort(m_searchResult.begin(), m_searchResult.end(), CatLessNoPtr);
+        g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
         // Finally, if the search text looks like a file or directory name,
         // add any file or directory matches
         if (searchText.contains(QDir::separator())
             || searchText.startsWith("~")
             || (searchText.size() == 2 && searchText[0].isLetter() && searchText[1] == ':')) {
-            FileSearch::search(searchText, searchResults, inputData);
+            FileSearch::search(searchText, m_searchResult, m_inputData);
         }
     }
 }
@@ -764,29 +770,29 @@ void LaunchyWidget::searchOnInput() {
 
 // If there are current results, update the output text and icon
 void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
-    if (!searchResults.isEmpty()
-        && (inputData.count() > 1 || !m_inputBox->text().isEmpty())) {
+    if (!m_searchResult.isEmpty()
+        && (m_inputData.count() > 1 || !m_inputBox->text().isEmpty())) {
         // qDebug() << "Setting output text to" << searchResults[0].shortName;
-        QString outputText = Catalog::decorateText(searchResults[0].shortName, g_searchText, true);
+        QString outputText = Catalog::decorateText(m_searchResult[0].shortName, g_searchText, true);
         
 #ifdef _DEBUG
-        outputText += QString(" (%1 launches)").arg(searchResults[0].usage);
+        outputText += QString(" (%1 launches)").arg(m_searchResult[0].usage);
 #endif
 
         qDebug() << "Setting output box text:" << outputText;
         m_outputBox->setText(outputText);
 
-        if (outputItem != searchResults[0]) {
-            outputItem = searchResults[0];
+        if (m_outputItem != m_searchResult[0]) {
+            m_outputItem = m_searchResult[0];
             m_outputIcon->clear();
-            iconExtractor.processIcon(searchResults[0], true);
+            m_iconExtractor.processIcon(m_searchResult[0], true);
         }
 
-        if (outputItem.id != HASH_HISTORY) {
+        if (m_outputItem.id != HASH_HISTORY) {
             // Did the plugin take control of the input?
-            if (inputData.last().getID() != 0)
-                outputItem.id = inputData.last().getID();
-            inputData.last().setTopResult(searchResults[0]);
+            if (m_inputData.last().getID() != 0)
+                m_outputItem.id = m_inputData.last().getID();
+            m_inputData.last().setTopResult(m_searchResult[0]);
         }
 
         // Only update the alternatives list if it is visible
@@ -798,7 +804,7 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
         // No results to show, clear the output UI and hide the alternatives list
         m_outputBox->clear();
         m_outputIcon->clear();
-        outputItem = CatItem();
+        m_outputItem = CatItem();
         hideAlternativeList();
     }
 }
@@ -813,7 +819,7 @@ void LaunchyWidget::startDropTimer() {
 
 void LaunchyWidget::dropTimeout() {
     // Don't do anything if Launchy has been hidden since the timer was started
-    if (isVisible() && searchResults.count() > 0) {
+    if (isVisible() && m_searchResult.count() > 0) {
         updateAlternativeList();
         showAlternativeList();
     }
@@ -823,14 +829,14 @@ void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon) {
     if (itemIndex == -1) {
         // An index of -1 means update the output icon, check that it is also
         // the same item as was originally requested
-        if (path == outputItem.fullPath) {
+        if (path == m_outputItem.fullPath) {
             m_outputIcon->setPixmap(icon.pixmap(m_outputIcon->size()));
         }
     }
     else if (itemIndex < m_alternativeList->count()) {
         // >=0 is an item in the alternatives list
-        if (itemIndex < searchResults.count()
-            && path == searchResults[itemIndex].fullPath) {
+        if (itemIndex < m_searchResult.count()
+            && path == m_searchResult[itemIndex].fullPath) {
             QListWidgetItem* listItem = m_alternativeList->item(itemIndex);
             listItem->setIcon(icon);
             listItem->setData(ROLE_ICON, icon);
@@ -909,11 +915,11 @@ void LaunchyWidget::savePosition() {
 }
 
 void LaunchyWidget::saveSettings() {
-    qDebug() << "Save settings";
+    qDebug() << "LaunchyWidget::saveSettings";
     savePosition();
     g_settings->sync();
     g_catalog->save(SettingsManager::instance().catalogFilename());
-    history.save(SettingsManager::instance().historyFilename());
+    m_history.save(SettingsManager::instance().historyFilename());
 }
 
 void LaunchyWidget::startUpdateTimer() {
@@ -929,7 +935,7 @@ void LaunchyWidget::onHotkey() {
         showLaunchy(true);
         return;
     }
-    if (!alwaysShowLaunchy
+    if (!m_alwaysShowLaunchy
         && isVisible()
         && !m_fader->isFading()
         && QApplication::activeWindow() !=0) {
@@ -946,7 +952,7 @@ void LaunchyWidget::closeEvent(QCloseEvent* event) {
 }
 
 bool LaunchyWidget::setAlwaysShow(bool alwaysShow) {
-    alwaysShowLaunchy = alwaysShow;
+    m_alwaysShowLaunchy = alwaysShow;
     return !isVisible() && alwaysShow;
 }
 
@@ -996,7 +1002,7 @@ void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
     QString commitStr = event->commitString();
     if (!commitStr.isEmpty()) {
         qDebug() << "LaunchyWidget::onInputBoxInputMethod, commitString:" << commitStr;
-        inputData.parse(commitStr);
+        m_inputData.parse(commitStr);
         searchOnInput();
         updateOutputBox();
     }
@@ -1206,7 +1212,7 @@ void LaunchyWidget::showLaunchy(bool noFade) {
 
     loadPosition(pos());
 
-    m_fader->fadeIn(noFade || alwaysShowLaunchy);
+    m_fader->fadeIn(noFade || m_alwaysShowLaunchy);
 
 #ifdef Q_OS_WIN
     // need to use this method in Windows to ensure that keyboard focus is set when
@@ -1236,7 +1242,7 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
 
     savePosition();
     hideAlternativeList();
-    if (alwaysShowLaunchy)
+    if (m_alwaysShowLaunchy)
         return;
 
     if (isVisible()) {

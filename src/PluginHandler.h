@@ -75,7 +75,7 @@ public:
     void getLabels(QList<InputData>* inputData);
     void getResults(QList<InputData>* inputData, QList<CatItem>* results);
     void getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep);
-    int execute(QList<InputData>*, CatItem*);
+    int launchItem(QList<InputData>*, CatItem*);
     QWidget* doDialog(QWidget* parent, uint pluginId);
     void endDialog(uint pluginId, bool accept);
     QHash<uint, PluginInfo> & getPlugins() { return plugins; }

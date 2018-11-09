@@ -31,7 +31,7 @@ bool Catalog::load(const QString& filename) {
     }
 
     // Remove any existing catalog contents
-    timestamp = 0;
+    m_timestamp = 0;
     clear();
 
     QByteArray ba = inFile.readAll();
@@ -52,7 +52,7 @@ bool Catalog::load(const QString& filename) {
 // Save the catalog to the specified filename
 bool Catalog::save(const QString& filename) {
     // Prevent other threads accessing the catalog
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&m_mutex);
 
     QByteArray ba;
     QDataStream out(&ba, QIODevice::ReadWrite);
@@ -96,7 +96,7 @@ bool Catalog::matches(CatItem* item, const QString& match) {
 // populate the out parameter
 void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     // Prevent other threads accessing the catalog
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&m_mutex);
 
     QList<CatItem*> catMatches = search(text);
 
@@ -191,20 +191,29 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
 }
 
 
+int SlowCatalog::count() {
+    return m_catalogItems.count();
+}
+
+
+void SlowCatalog::clear() {
+    m_catalogItems.clear();
+}
+
 void SlowCatalog::addItem(const CatItem& item) {
     // Prevent other threads accessing the catalog
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&m_mutex);
 
     bool replaced = false;
 
-    if (timestamp > 0) {
+    if (m_timestamp > 0) {
         // If we're not loading the catalog, search for an existing matching catalog item
         // and replace it if it exists
-        for (int i = 0; i < catalogItems.size(); ++i) {
-            if (item == catalogItems[i]) {
-                int usage = catalogItems[i].usage;
-                catalogItems[i] = CatalogItem(item, timestamp);
-                catalogItems[i].usage = usage;
+        for (int i = 0; i < m_catalogItems.size(); ++i) {
+            if (item == m_catalogItems[i]) {
+                int usage = m_catalogItems[i].usage;
+                m_catalogItems[i] = CatalogItem(item, m_timestamp);
+                m_catalogItems[i].usage = usage;
                 replaced = true;
                 break;
             }
@@ -214,7 +223,7 @@ void SlowCatalog::addItem(const CatItem& item) {
     if (!replaced) {
         // If no match found, append the item to the catalog
         qDebug() << "Adding" << item.fullPath;
-        catalogItems.push_back(CatalogItem(item, timestamp));
+        m_catalogItems.push_back(CatalogItem(item, m_timestamp));
     }
 }
 
@@ -222,14 +231,14 @@ void SlowCatalog::addItem(const CatItem& item) {
 void SlowCatalog::purgeOldItems()
 {
     // Prevent other threads accessing the catalog
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&m_mutex);
 
-    for (int i = catalogItems.size() - 1; i >= 0; --i)
+    for (int i = m_catalogItems.size() - 1; i >= 0; --i)
     {
-        if (catalogItems.at(i).timestamp < timestamp)
+        if (m_catalogItems.at(i).m_timestamp < m_timestamp)
         {
-            qDebug() << "Removing" << catalogItems.at(i).fullPath;
-            catalogItems.remove(i);
+            qDebug() << "Removing" << m_catalogItems.at(i).fullPath;
+            m_catalogItems.remove(i);
         }
     }
 }
@@ -237,15 +246,17 @@ void SlowCatalog::purgeOldItems()
 
 void SlowCatalog::incrementUsage(const CatItem& item) {
     // Prevent other threads accessing the catalog
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&m_mutex);
 
-    for (int i = 0; i < catalogItems.size(); ++i) {
-        if (item == catalogItems[i]) {
+    for (int i = 0; i < m_catalogItems.size(); ++i) {
+        if (item == m_catalogItems[i]) {
             // If an item is currently demoted, return it to a usage count of 1
-            if (catalogItems[i].usage < 0)
-                catalogItems[i].usage = 1;
-            else
-                ++catalogItems[i].usage;
+            if (m_catalogItems[i].usage < 0) {
+                m_catalogItems[i].usage = 1;
+            }
+            else {
+                ++m_catalogItems[i].usage;
+            }
             break;
         }
     }
@@ -254,20 +265,26 @@ void SlowCatalog::incrementUsage(const CatItem& item) {
 
 void SlowCatalog::demoteItem(const CatItem& item) {
     // Prevent catalog refreshes whilst searching
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&m_mutex);
 
-    for (int i = 0; i < catalogItems.size(); ++i) {
-        if (item == catalogItems[i]) {
+    for (int i = 0; i < m_catalogItems.size(); ++i) {
+        if (item == m_catalogItems[i]) {
             // If an item is not demoted, demote it
-            if (catalogItems[i].usage > 0)
-                catalogItems[i].usage = -1;
-            else // otherwise demote it further
-                --catalogItems[i].usage;
+            if (m_catalogItems[i].usage > 0) {
+                m_catalogItems[i].usage = -1;
+            }
+            else { // otherwise demote it further
+                --m_catalogItems[i].usage;
+            }
             break;
         }
     }
 }
 
+
+const CatItem& SlowCatalog::getItem(int i) {
+    return m_catalogItems[i];
+}
 
 // Return a list of catalog items that match searchText
 // this method should only be called from within a QMutexLocker protected section
@@ -275,9 +292,9 @@ QList<CatItem*> SlowCatalog::search(const QString& searchText) {
     QList<CatItem*> result;
     if (searchText.count() > 0) {
         QString lowSearch = searchText.toLower();
-        for (int i = 0; i < catalogItems.count(); ++i) {
-            if (matches(&catalogItems[i], lowSearch)) {
-                result.push_back(&catalogItems[i]);
+        for (int i = 0; i < m_catalogItems.count(); ++i) {
+            if (matches(&m_catalogItems[i], lowSearch)) {
+                result.push_back(&m_catalogItems[i]);
             }
         }
     }

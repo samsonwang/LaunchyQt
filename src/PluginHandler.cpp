@@ -92,7 +92,7 @@ void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressS
 }
 
 
-int PluginHandler::execute(QList<InputData>* inputData, CatItem* result) {
+int PluginHandler::launchItem(QList<InputData>* inputData, CatItem* result) {
     if (!plugins.contains(result->id) || !plugins[result->id].loaded)
         return 0;
     return plugins[result->id].sendMessage(MSG_LAUNCH_ITEM, (void*)inputData, (void*)result);
@@ -172,7 +172,7 @@ void PluginHandler::loadPlugins() {
                         pluginInfo.loaded = true;
                     }
                     else {
-                        pluginInfo.sendMessage(MSG_UNLOAD_PLUGIN, (void*)pluginInfo.id);
+                        pluginInfo.sendMessage(MSG_UNLOAD_PLUGIN, (void*)(int64_t)pluginInfo.id);
                         pluginInfo.loaded = false;
                     }
                     plugins[pluginInfo.id] = pluginInfo;

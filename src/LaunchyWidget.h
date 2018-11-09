@@ -59,8 +59,8 @@ public:
     void executeStartupCommand(int command);
     void setAlternativeListMode(int mode);
     bool setHotkey(const QKeySequence& hotkey);
-    bool setAlwaysShow(bool);
-    bool setAlwaysTop(bool);
+    bool setAlwaysShow(bool alwaysShow);
+    bool setAlwaysTop(bool alwaysTop);
     void setSkin(const QString& name);
     void loadOptions();
     int getHotkey() const;
@@ -84,8 +84,26 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent* event);
     virtual void contextMenuEvent(QContextMenuEvent* event);
 
+protected:
     void saveSettings();
     void showTrayIcon();
+    void createActions();
+    void applySkin(const QString& name);
+    void updateVersion(int oldVersion);
+    void hideLaunchy(bool noFade = false);
+    void showAlternativeList();
+    void hideAlternativeList();
+    void updateAlternativeList(bool resetSelection = true);
+    void updateOutputBox(bool resetAlternativesSelection = true);
+    void searchOnInput();
+    void loadPosition(QPoint pt);
+    void savePosition();
+    void doTab();
+    void doBackTab();
+    void doEnter();
+    void processKey();
+    void launchItem(CatItem& item);
+    void startDropTimer();
 
 protected slots:
     void showOptionDialog();
@@ -106,29 +124,10 @@ protected slots:
     void onInputBoxTextEdited(const QString& str);
     void onSecondInstance();
 
-private:
-    void createActions();
-    void applySkin(const QString& name);
-    void updateVersion(int oldVersion);
-    void hideLaunchy(bool noFade = false);
-    void showAlternativeList();
-    void hideAlternativeList();
-    void updateAlternativeList(bool resetSelection = true);
-    void updateOutputBox(bool resetAlternativesSelection = true);
-    void searchOnInput();
-    void loadPosition(QPoint pt);
-    void savePosition();
-    void doTab();
-    void doBackTab();
-    void doEnter();
-    void processKey();
-    void launchItem(CatItem& item);
-    void startDropTimer();
-
 public:
     PluginHandler plugins;
 
-private:
+protected:
     QString m_currentSkin;
     bool m_skinChanged;
 
@@ -154,13 +153,13 @@ private:
     QTimer* updateTimer;
     QTimer* dropTimer;
 
-    IconExtractor iconExtractor;
+    IconExtractor m_iconExtractor;
 
-    CatItem outputItem;
-    QList<CatItem> searchResults;
-    InputDataList inputData;
-    CommandHistory history;
-    bool alwaysShowLaunchy;
+    InputDataList m_inputData;
+    CommandHistory m_history;
+    QList<CatItem> m_searchResult;
+    CatItem m_outputItem;
+    bool m_alwaysShowLaunchy;
 
     bool dragging;
     QPoint dragStartPoint;

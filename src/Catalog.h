@@ -27,11 +27,11 @@
 // Catalog provides methods to search and manage the indexed items
 class Catalog {
 public:
-    Catalog() : timestamp(0) {}
+    Catalog() : m_timestamp(0) {}
     virtual ~Catalog() {}
     bool load(const QString& filename);
     bool save(const QString& filename);
-    void incrementTimestamp() { ++timestamp; }
+    void incrementTimestamp() { ++m_timestamp; }
     void searchCatalogs(const QString&, QList<CatItem>&);
     void promoteRecentlyUsedItems(const QString& text, QList<CatItem> & list);
 
@@ -50,8 +50,8 @@ protected:
     virtual const CatItem& getItem(int) = 0;
     virtual QList<CatItem*> search(const QString&) = 0;
 
-    int timestamp;
-    QMutex mutex;
+    int m_timestamp;
+    QMutex m_mutex;
 };
 
 
@@ -59,15 +59,15 @@ protected:
 class CatalogItem : public CatItem {
 public:
     CatalogItem()
-        : timestamp(0) {
+        : m_timestamp(0) {
     }
 
     CatalogItem(const CatItem& item, int time)
         : CatItem(item),
-          timestamp(time) {
+          m_timestamp(time) {
     }
 
-    int timestamp;
+    int m_timestamp;
 };
 
 
@@ -78,8 +78,8 @@ public:
 class SlowCatalog : public Catalog {
 public:
     SlowCatalog() : Catalog() {}
-    virtual int count() { return catalogItems.count(); }
-    virtual void clear() { catalogItems.clear(); }
+    virtual int count();
+    virtual void clear();
     virtual void addItem(const CatItem& item);
     virtual void purgeOldItems();
 
@@ -87,11 +87,11 @@ public:
     virtual void demoteItem(const CatItem& item);
 
 protected:
-    virtual const CatItem& getItem(int i) { return catalogItems[i]; }
-    virtual QList<CatItem*> search(const QString&);
+    virtual const CatItem& getItem(int i);
+    virtual QList<CatItem*> search(const QString& searchText);
 
 private:
-    QVector<CatalogItem> catalogItems;
+    QVector<CatalogItem> m_catalogItems;
 };
 
 bool CatLess(CatItem* left, CatItem* right);

@@ -17,29 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef COMMANDHISTORY_H
-#define COMMANDHISTORY_H
+#pragma once
 
-
-#include "Catalog.h"
+#include "CatalogItem.h"
 #include "InputDataList.h"
 
-class CommandHistory
-{
+class CommandHistory {
 public:
-	CommandHistory();
+    CommandHistory();
 
-	bool load(const QString& filename);
-	void save(const QString& filename) const;
+    bool load(const QString& filename);
+    void save(const QString& filename) const;
 
-	void addItem(const InputDataList& item);
-	void removeAt(int index);
-	InputDataList& getItem(int index);
-	void search(const QString& searchText, QList<CatItem>& searchResults) const;
+    void addItem(const InputDataList& item);
+    void removeAt(int index);
+    const InputDataList& getItem(int index);
+    void search(const QString& searchText, QList<CatItem>& searchResults) const;
 
 private:
-	QList<InputDataList> history;
+    QLinkedList<InputDataList> m_history;
 };
-
-
-#endif

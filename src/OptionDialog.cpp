@@ -313,8 +313,7 @@ void OptionDialog::accept() {
     // Apply Directory Options
     SettingsManager::instance().writeCatalogDirectories(memDirs);
 
-    if (curPlugin >= 0)
-    {
+    if (curPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(curPlugin);
         g_mainWidget->plugins.endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
