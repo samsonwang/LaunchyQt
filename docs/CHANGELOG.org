@@ -1,0 +1,14 @@
+
+
+* 3.0.1
+- tray icon show message while starting second instance
+- write log file in sytem temp folder, log could be turn off in option dialog
+- use launchy.dll for plugin shared class types
+- calcy plugin works now
+- fix minor bugs
+- refine code structure for future development
+
+* 3.0.0
+- Qt5.11.1, It's 2018 now, migrated to Qt higher version.
+- non-boost dependency, C++11 supports shared_ptr , and I'm trying to get Launchy out of boost library.
+- whole new hotkey implemetation, the hotkey did not work, I tried hard to fix it, but it still failed, so I write a new one.
