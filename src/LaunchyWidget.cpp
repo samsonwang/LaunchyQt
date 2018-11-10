@@ -280,7 +280,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     int mode = g_settings->value("GenOps/condensedView", 2).toInt();
     int i = 0;
     for (; i < m_searchResult.size(); ++i) {
-        qDebug() << "Alternative" << i << ":" << m_searchResult[i].fullPath;
+        qDebug() << "LaunchyWidget::updateAlternativeList," << i << ":" << m_searchResult[i].fullPath;
         QString fullPath = QDir::toNativeSeparators(m_searchResult[i].fullPath);
 #ifdef _DEBUG
         fullPath += QString(" (%1 launches)").arg(m_searchResult[i].usage);
@@ -735,13 +735,13 @@ void LaunchyWidget::searchOnInput() {
     if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
         || m_inputBox->text().isEmpty()) {
         // Add history items exclusively and unsorted so they remain in most recently used order
-        qDebug() << "Searching history for" << searchText;
+        qDebug() << "LaunchyWidget::searchOnInput, searching history for" << searchText;
         m_history.search(searchTextLower, m_searchResult);
     }
     else {
         // Search the catalog for matching items
         if (m_inputData.count() == 1) {
-            qDebug() << "Searching catalog for" << searchText;
+            qDebug() << "LaunchyWidget::searchOnInput, searching catalog for" << searchText;
             g_catalog->searchCatalogs(searchTextLower, m_searchResult);
         }
 
@@ -781,7 +781,9 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
         outputText += QString(" (%1 launches)").arg(m_searchResult[0].usage);
 #endif
 
-        qDebug() << "Setting output box text:" << outputText;
+        qDebug() << "LaunchyWidget::updateOutputBox,"
+            << "setting output box text:" << outputText
+            << "usage: " << m_searchResult[0].usage;
         m_outputBox->setText(outputText);
 
         if (m_outputItem != m_searchResult[0]) {

@@ -99,14 +99,14 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     QMutexLocker locker(&m_mutex);
 
     QList<CatItem*> catMatches = search(text);
-
+    qDebug() << "Catalog::searchCatalogs, search matched count:" << catMatches.count();
     // Now prioritize the catalog items
     qSort(catMatches.begin(), catMatches.end(), CatLess);
 
     // Check for history matches
     QString location = "History/" + text;
     QStringList hist;
-    hist = g_settings->value(location, hist).toStringList();
+    hist = g_settings->value(location).toStringList();
     if (hist.count() == 2) {
         for (int i = 0; i < catMatches.count(); i++) {
             if (catMatches[i]->lowName == hist[0]
@@ -290,7 +290,7 @@ const CatItem& SlowCatalog::getItem(int i) {
 // this method should only be called from within a QMutexLocker protected section
 QList<CatItem*> SlowCatalog::search(const QString& searchText) {
     QList<CatItem*> result;
-    if (searchText.count() > 0) {
+    if (!searchText.isEmpty()) {
         QString lowSearch = searchText.toLower();
         for (int i = 0; i < m_catalogItems.count(); ++i) {
             if (matches(&m_catalogItems[i], lowSearch)) {

@@ -24,12 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QLocale>
 #include "PluginMsg.h"
 
-/*! \file
-    \brief A Documented file.
-
-    Details.
-*/
-
 #ifdef Q_OS_WIN
 // This doesn't exist until qt 4.6 (currently 4.5 in ubuntu 10.04)
 #include <QProcessEnvironment>
@@ -43,7 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <windows.h>
-// #include <shlobj.h>
 
 // This is also defined in WinIconProvider, remove from both locations if 64 bit build is produced
 static QString aliasTo64(QString path) {
