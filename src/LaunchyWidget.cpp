@@ -218,13 +218,14 @@ void LaunchyWidget::executeStartupCommand(int command) {
         close();
 }
 
-void LaunchyWidget::showEvent(QShowEvent *event) {
+void LaunchyWidget::showEvent(QShowEvent* event) {
     if (m_skinChanged) {
         // output icon may changed with skin
         int maxIconSize = m_outputIcon->width();
         maxIconSize = qMax(maxIconSize, m_outputIcon->height());
-        qDebug() << "output icon size:" << maxIconSize;
+        qDebug() << "LaunchyWidget::showEvent, output icon size:" << maxIconSize;
         g_app->setPreferredIconSize(maxIconSize);
+        m_alternativeList->setIconSize(maxIconSize);
         m_skinChanged = false;
     }
     QWidget::showEvent(event);

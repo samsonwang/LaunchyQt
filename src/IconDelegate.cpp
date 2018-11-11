@@ -23,85 +23,83 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GlobalVar.h"
 #include "Catalog.h"
 
-IconDelegate::IconDelegate(QObject *parent)
-    : QStyledItemDelegate(parent) {
+IconDelegate::IconDelegate(QObject* parent)
+    : QStyledItemDelegate(parent),
+      m_size(32) {
 }
 
-void IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-						 const QModelIndex &index) const {
-	painter->save();
-	if (option.state & QStyle::State_Selected) {
-		painter->fillRect(option.rect, option.palette.highlight());
-		painter->setPen(option.palette.color(QPalette::HighlightedText));
-	}
+void IconDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+                         const QModelIndex &index) const {
+    painter->save();
+    if (option.state & QStyle::State_Selected) {
+        painter->fillRect(option.rect, option.palette.highlight());
+        painter->setPen(option.palette.color(QPalette::HighlightedText));
+    }
 
-	QRect iconRect = option.rect;
-	iconRect.setWidth(32);
-	iconRect.setHeight(32);
+    qDebug() << "IconDelegate::paint" << option.rect;
+    QRect iconRect(option.rect.x(), option.rect.y(), m_size, m_size);
+    QIcon icon = index.data(ROLE_ICON).value<QIcon>();
+    icon.paint(painter, iconRect);
 
-	int fontHeight = painter->fontMetrics().height();
-	QRect shortRect = option.rect;
-	shortRect.setLeft(shortRect.left() + 38);
-	shortRect.setBottom(shortRect.top() + fontHeight);
+    int fontHeight = painter->fontMetrics().height();
+    QRect shortRect = option.rect;
+    shortRect.setLeft(shortRect.left() + m_size + 6);
+    shortRect.setBottom(shortRect.top() + fontHeight);
 
-	QRect longRect = option.rect;
-	longRect.setLeft(longRect.left() + 50);
-	longRect.setTop(longRect.top() + fontHeight);
+    QRect longRect = option.rect;
+    longRect.setLeft(longRect.left() + m_size + 18);
+    longRect.setTop(longRect.top() + fontHeight);
 
-	QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), g_searchText);
-	painter->drawText(shortRect, Qt::AlignTop | Qt::TextShowMnemonic, text);
+    QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), g_searchText);
+    painter->drawText(shortRect, Qt::AlignTop | Qt::TextShowMnemonic, text);
 
-	if (option.state & QStyle::State_Selected)
-		painter->setPen(alternativesPath->palette().color(QPalette::HighlightedText));
-	else
-		painter->setPen(alternativesPath->palette().color(QPalette::WindowText));
+    if (option.state & QStyle::State_Selected)
+        painter->setPen(m_alternativesPath->palette().color(QPalette::HighlightedText));
+    else
+        painter->setPen(m_alternativesPath->palette().color(QPalette::WindowText));
 
-	painter->setFont(alternativesPath->font());
+    painter->setFont(m_alternativesPath->font());
 
-	QString full = index.data(ROLE_FULL).toString();
-	full = painter->fontMetrics().elidedText(full, option.textElideMode, longRect.width());
-	painter->drawText(longRect, Qt::AlignTop, full);
+    QString full = index.data(ROLE_FULL).toString();
+    full = painter->fontMetrics().elidedText(full, option.textElideMode, longRect.width());
+    painter->drawText(longRect, Qt::AlignTop, full);
 
-	QIcon p = index.data(ROLE_ICON).value<QIcon>();
-	p.paint(painter, iconRect);
-	painter->restore();
+    painter->restore();
 }
-
 
 QSize IconDelegate::sizeHint(const QStyleOptionViewItem & /* option */,
-							 const QModelIndex & /* index */) const {
-	return QSize(10, 32);
+                             const QModelIndex & /* index */) const {
+    return QSize(10, m_size);
 }
-
 
 void IconDelegate::setColor(QString line, bool hi) {
     if (!line.contains(","))
-        color = QColor(line);
+        m_color = QColor(line);
 
     QStringList spl = line.split(",");
     if (spl.count() != 3) return;
     if (!hi)
-        color = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
+        m_color = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
     else
-        hicolor = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
+        m_hiColor = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
 }
 
 void IconDelegate::setFamily(QString fam) {
-    family = fam;
+    m_family = fam;
 }
 
 void IconDelegate::setSize(int s) {
-    size = s;
+    m_size = s;
 }
 
 void IconDelegate::setWeight(int w) {
-    weight = w;
+    m_weight = w;
 }
 
 void IconDelegate::setItalics(int i) {
     italics = i;
 }
 
-void IconDelegate::setAlternativesPathWidget(QLabel* label) {
-    alternativesPath = label;
+void IconDelegate::setAlternativePathWidget(QLabel* label) {
+    m_alternativesPath = label;
 }

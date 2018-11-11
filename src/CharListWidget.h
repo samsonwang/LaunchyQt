@@ -30,6 +30,7 @@ public:
     void updateGeometry(const QPoint& basePos, const QPoint& offset);
     void resetGeometry();
     void setListMode(int mode);
+    void setIconSize(int size);
 
 protected:
     virtual void keyPressEvent(QKeyEvent* event);

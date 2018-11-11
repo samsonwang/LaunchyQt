@@ -41,7 +41,7 @@ CharListWidget::CharListWidget(QWidget* parent)
     verticalScrollBar()->setObjectName("altScroll");
     m_alternativePath->setObjectName("alternativesPath");
     m_alternativePath->hide();
-    m_iconListDelegate->setAlternativesPathWidget(m_alternativePath);
+    m_iconListDelegate->setAlternativePathWidget(m_alternativePath);
 }
 
 void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset) {
@@ -77,11 +77,9 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
     setGeometry(rect);
 }
 
-
 void CharListWidget::resetGeometry() {
     m_baseGeometry = QRect();
 }
-
 
 void CharListWidget::setListMode(int mode) {
     if (mode) {
@@ -90,6 +88,10 @@ void CharListWidget::setListMode(int mode) {
     else {
         setItemDelegate(m_iconListDelegate);
     }
+}
+
+void CharListWidget::setIconSize(int size) {
+    m_iconListDelegate->setSize(size);
 }
 
 void CharListWidget::keyPressEvent(QKeyEvent* event) {
