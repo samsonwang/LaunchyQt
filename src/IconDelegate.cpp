@@ -36,7 +36,7 @@ void IconDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
         painter->setPen(option.palette.color(QPalette::HighlightedText));
     }
 
-    qDebug() << "IconDelegate::paint" << option.rect;
+    // qDebug() << "IconDelegate::paint" << option.rect;
     QRect iconRect(option.rect.x(), option.rect.y(), m_size, m_size);
     QIcon icon = index.data(ROLE_ICON).value<QIcon>();
     icon.paint(painter, iconRect);

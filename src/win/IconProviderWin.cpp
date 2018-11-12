@@ -53,15 +53,15 @@ public:
 #endif
 
 
-HRESULT(WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
+//HRESULT(WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
 
 IconProviderWin::IconProviderWin()
     : m_preferredSize(32) {
-    // Load Vista/7 specific API pointers
-    HMODULE hLib = GetModuleHandleW(L"shell32");
-    if (hLib) {
-        (FARPROC&)fnSHCreateItemFromParsingName = GetProcAddress(hLib, "SHCreateItemFromParsingName");
-    }
+//     // Load Vista/7 specific API pointers
+//     HMODULE hLib = GetModuleHandleW(L"shell32");
+//     if (hLib) {
+//         (FARPROC&)fnSHCreateItemFromParsingName = GetProcAddress(hLib, "SHCreateItemFromParsingName");
+//     }
 }
 
 IconProviderWin::~IconProviderWin() {
@@ -144,20 +144,27 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             // To get the 48x48 icons, use SHIL_EXTRALARGE
             // To get the 256x256 icons (Vista only), use SHIL_JUMBO
             int imageListIndex;
-            if (m_preferredSize <= 16)
+            if (m_preferredSize <= 16) {
                 imageListIndex = SHIL_SMALL;
-            else if (m_preferredSize <= 32)
+            }
+            else if (m_preferredSize <= 32) {
                 imageListIndex = SHIL_LARGE;
-            else if (m_preferredSize <= 48)
+            }
+            else if (m_preferredSize <= 48) {
                 imageListIndex = SHIL_EXTRALARGE;
-            else
+            }
+            else {
+                //imageListIndex = SHIL_EXTRALARGE;
                 imageListIndex = SHIL_JUMBO;
-
+            }
+                
             // If the OS supports SHCreateItemFromParsingName, get a 256x256 icon
             if (!addIconFromShellFactory(filePath, retIcon)) {
                 // otherwise get the largest appropriate size
-                if (!addIconFromImageList(imageListIndex, sfi.iIcon, retIcon) && imageListIndex == SHIL_JUMBO)
+                if (!addIconFromImageList(imageListIndex, sfi.iIcon, retIcon)
+                    && imageListIndex == SHIL_JUMBO) {
                     addIconFromImageList(SHIL_EXTRALARGE, sfi.iIcon, retIcon);
+                }
             }
 
             // Ensure there's also a 32x32 icon - extralarge and above often only contain
@@ -183,7 +190,7 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
     IImageList* imageList;
     HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
     if (hResult == S_OK) {
-        hResult = ((IImageList*)imageList)->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
+        hResult = imageList->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
         imageList->Release();
     }
     if (hResult == S_OK && hIcon) {
@@ -198,28 +205,22 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
 // On Vista or 7 we could use SHIL_JUMBO to get a 256x256 icon,
 // but we'll use SHCreateItemFromParsingName as it'll give an identical
 // icon to the one shown in explorer and it scales automatically.
-bool IconProviderWin::addIconFromShellFactory(QString filePath, QIcon& icon) const {
-    HRESULT hr = S_FALSE;
-    if (fnSHCreateItemFromParsingName) {
-        IShellItem* psi = NULL;
-        hr = fnSHCreateItemFromParsingName((LPCTSTR)filePath.utf16(), 0, IID_IShellItem, (void**)&psi);
-        if (hr == S_OK) {
-            IShellItemImageFactory* psiif = NULL;
-            hr = psi->QueryInterface(IID_IShellItemImageFactory, (void**)&psiif);
-            if (hr == S_OK) {
-                HBITMAP iconBitmap = NULL;
-                SIZE iconSize = {m_preferredSize, m_preferredSize};
-                hr = psiif->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY, &iconBitmap);
-                if (hr == S_OK) {
-                    QPixmap iconPixmap = QtWin::fromHBITMAP(iconBitmap, QtWin::HBitmapPremultipliedAlpha);
-                    icon.addPixmap(iconPixmap);
-                    DeleteObject(iconBitmap);
-                }
-                psiif->Release();
-            }
-            psi->Release();
+bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& icon) const {
+    HRESULT hResult = S_FALSE;
+    IShellItemImageFactory* pSIIF = NULL;
+    CoInitialize(NULL);
+    hResult = SHCreateItemFromParsingName((LPCTSTR)filePath.utf16(), NULL, IID_PPV_ARGS(&pSIIF));
+    if (hResult == S_OK) {
+        HBITMAP hBitmap = NULL;
+        SIZE iconSize = {m_preferredSize, m_preferredSize};
+        hResult = pSIIF->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY , &hBitmap);
+        if (hResult == S_OK) {
+            QPixmap iconPixmap = QtWin::fromHBITMAP(hBitmap, QtWin::HBitmapPremultipliedAlpha);
+            icon.addPixmap(iconPixmap);
+            DeleteObject(hBitmap);
         }
+        pSIIF->Release();
     }
-
-    return hr == S_OK;
+    CoUninitialize();
+    return hResult == S_OK;
 }
