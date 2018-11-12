@@ -5,7 +5,7 @@ I have been using Launchy for years, and found that this project has not been up
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
 
 ** Latest release
-Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][release page]].
+Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/latest/download][sourceforge release page]] .
 
 *3.0.2* Changes:
 - Verby plugin works now
