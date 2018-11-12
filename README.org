@@ -1,8 +1,5 @@
 * LaunchyQt
-- original code forked from https://sourceforge.net/projects/launchy
-- original svn path https://svn.code.sf.net/p/launchy/code/trunk/Launchy_QT [R671]
 
-** Reason for this repo
 I have been using Launchy for years, and found that this project has not been updated since 2010. I love this tool and want to maintain this project.
 
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
@@ -10,10 +7,13 @@ I have been using Launchy for years, and found that this project has not been up
 ** Latest release
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][release page]].
 
-*3.0.1* Changes:
-- tray icon show message while starting second instance
-- write log file in sytem temp folder, log could be turn off in option dialog
-- use =launchy.dll= for plugin shared class types
-- calcy plugin works now
-- fix minor bugs
-- refine code structure for future development
+*3.0.2* Changes:
+- Verby plugin works now
+- Calcy plugin can convert among octal decimal hexadecimal, this works when input has a trailing equal symbol, try following input: =035== , =35== , =0x35==
+- add skins for high DPI, this may help in 2k or 4k display (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
+- pack additional qt dll (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
+- fix bug in key bindings
+
+** Original Code
+- original code forked from https://sourceforge.net/projects/launchy
+- original svn path https://svn.code.sf.net/p/launchy/code/trunk/Launchy_QT [R671]
