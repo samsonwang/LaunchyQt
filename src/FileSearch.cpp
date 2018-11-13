@@ -17,12 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #include "precompiled.h"
 #include "FileSearch.h"
 #include "AppBase.h"
 #include "GlobalVar.h"
 #include "Catalog.h"
+
+namespace launchy {
 
 void FileSearch::search(const QString& searchText,
                         QList<CatItem>& searchResults,
@@ -138,4 +139,5 @@ void FileSearch::search(const QString& searchText,
     }
 
     inputData.last().setLabel(LABEL_FILE);
+}
 }

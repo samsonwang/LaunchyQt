@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 int main(int argc, char* argv[]) {
 
-    createApplication(argc, argv);
+    launchy::createApplication(argc, argv);
     
     // Load settings
-    SettingsManager::instance().load();
+    launchy::SettingsManager::instance().load();
 
     QTranslator translator;
     if (translator.load(QLocale(),
@@ -40,47 +40,47 @@ int main(int argc, char* argv[]) {
 
     // improve code below with QCommandlinePareser
     QStringList args = qApp->arguments();
-    CommandFlags command = Default;
+    launchy::CommandFlags command = launchy::Default;
     bool allowMultipleInstances = false;
     for (int i = 1; i < args.size(); ++i) {
         QString arg = args[i];
         if (arg.startsWith("-") || arg.startsWith("/")) {
             arg = arg.mid(1);
             if (arg.compare("rescue", Qt::CaseInsensitive) == 0) {
-                command = ResetSkin | ResetPosition | ShowLaunchy;
+                command = launchy::ResetSkin | launchy::ResetPosition | launchy::ShowLaunchy;
             }
             else if (arg.compare("show", Qt::CaseInsensitive) == 0) {
-                command |= ShowLaunchy;
+                command |= launchy::ShowLaunchy;
             }
             else if (arg.compare("options", Qt::CaseInsensitive) == 0) {
-                command |= ShowOptions;
+                command |= launchy::ShowOptions;
             }
             else if (arg.compare("multiple", Qt::CaseInsensitive) == 0) {
                 allowMultipleInstances = true;
             }
             else if (arg.compare("rescan", Qt::CaseInsensitive) == 0) {
-                command |= Rescan;
+                command |= launchy::Rescan;
             }
             else if (arg.compare("exit", Qt::CaseInsensitive) == 0) {
-                command |= Exit;
+                command |= launchy::Exit;
             }
             else if (arg.compare("log", Qt::CaseInsensitive) == 0) {
-                QLogger::setLogLevel(QtDebugMsg);
+                launchy::QLogger::setLogLevel(QtDebugMsg);
             }
             else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
                 if (++i < args.length()) {
-                    SettingsManager::instance().setProfileName(args[i]);
+                    launchy::SettingsManager::instance().setProfileName(args[i]);
                 }
             }
         }
     }
 
-    if (!allowMultipleInstances && g_app->isAlreadyRunning()) {
-        g_app->sendInstanceCommand(command);
+    if (!allowMultipleInstances && launchy::g_app->isAlreadyRunning()) {
+        launchy::g_app->sendInstanceCommand(command);
         exit(1);
     }
 
-    createLaunchyWidget(command);
+    launchy::createLaunchyWidget(command);
 
     qApp->exec();
 }

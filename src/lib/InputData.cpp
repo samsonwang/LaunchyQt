@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "InputData.h"
-
+namespace launchy {
 const QSet<uint>& InputData::getLabels() const {
     return m_labels;
 }
@@ -73,7 +73,7 @@ InputData::InputData()
 
 InputData::InputData(const QString& str)
     : m_text(str),
-      m_id(0) {
+    m_id(0) {
 }
 
 QDataStream& operator<<(QDataStream& out, const InputData& inputData) {
@@ -90,4 +90,5 @@ QDataStream& operator>>(QDataStream& in, InputData& inputData) {
     in >> inputData.m_topResult;
     in >> inputData.m_id;
     return in;
+}
 }

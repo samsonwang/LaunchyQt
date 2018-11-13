@@ -20,32 +20,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "precompiled.h"
 #include "DropListWidget.h"
 
+namespace launchy {
+DropListWidget::DropListWidget(QWidget* pParent)
+    : QListWidget(pParent) {
+    setAcceptDrops(true);
+}
 
-DropListWidget::DropListWidget(QWidget* pParent) :
-	QListWidget(pParent)
-{
-	setAcceptDrops(true);
+DropListWidget::~DropListWidget() {
+}
+
+void DropListWidget::dragEnterEvent(QDragEnterEvent *event) {
+    emit dragEnter(event);
 }
 
 
-DropListWidget::~DropListWidget()
-{
+void DropListWidget::dragMoveEvent(QDragMoveEvent *event) {
+    emit dragMove(event);
 }
 
 
-void DropListWidget::dragEnterEvent(QDragEnterEvent *event)
-{
-	emit dragEnter(event);
+void DropListWidget::dropEvent(QDropEvent *event) {
+    emit drop(event);
 }
-
-
-void DropListWidget::dragMoveEvent(QDragMoveEvent *event)
-{
-	emit dragMove(event);
-}
-
-
-void DropListWidget::dropEvent(QDropEvent *event)
-{
-	emit drop(event);
 }

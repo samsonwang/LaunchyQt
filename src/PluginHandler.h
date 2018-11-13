@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "InputData.h"
 #include "PluginInfo.h"
 
+namespace launchy {
 class Catalog;
 
 // This interface is used to notify clients when a step in a long running process occurs
@@ -54,3 +55,4 @@ public:
     virtual bool progressStep(int newStep) = 0;
 };
 
+}

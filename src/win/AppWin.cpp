@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IconProviderWin.h"
 #include "CrashDumper.h"
 
+namespace launchy {
+
 // Override the main widget to handle incoming system messages. We could have done this in the QApplication
 // event handler, but then we'd have to filter out the duplicates for messages like WM_SETTINGCHANGE.
 class LaunchyWidgetWin : public LaunchyWidget {
@@ -191,4 +193,5 @@ bool AppWin::getComputers(QStringList& computers) const {
 // Create the application object
 QApplication* createApplication(int& argc, char** argv) {
     return new AppWin(argc, argv);
+}
 }

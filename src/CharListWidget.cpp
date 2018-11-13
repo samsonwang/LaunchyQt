@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CharListWidget.h"
 #include "GlobalVar.h"
 #include "IconDelegate.h"
-
+namespace launchy {
 CharListWidget::CharListWidget(QWidget* parent)
     : QListWidget(parent),
       m_iconListDelegate(new IconDelegate(this)),
@@ -53,7 +53,7 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
     if (m_baseGeometry.isNull()) {
         m_baseGeometry = geometry();
     }
-        
+
     QRect rect = m_baseGeometry;
 
     //QRect rect = m_alternativeList->geometry();
@@ -113,4 +113,5 @@ void CharListWidget::focusInEvent(QFocusEvent* event) {
 void CharListWidget::focusOutEvent(QFocusEvent* event) {
     emit focusOut(event);
     QListWidget::focusOutEvent(event);
+}
 }

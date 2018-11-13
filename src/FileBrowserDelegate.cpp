@@ -20,10 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "FileBrowserDelegate.h"
 
+namespace launchy {
 FileBrowserDelegate::FileBrowserDelegate(QObject *parent, FileBrowser::BrowseType browseType)
 	: QItemDelegate(parent),
-	browseType(browseType)
-{
+      browseType(browseType) {
 }
 
 QWidget *FileBrowserDelegate::createEditor(QWidget *parent,
@@ -55,4 +55,6 @@ void FileBrowserDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
 void FileBrowserDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex & /*index*/) const
 {
 	editor->setGeometry(option.rect);
+}
+
 }

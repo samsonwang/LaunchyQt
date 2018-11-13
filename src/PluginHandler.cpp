@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Catalog.h"
 #include "SettingsManager.h"
 
+namespace launchy {
+
 PluginHandler::PluginHandler() {
 }
 
@@ -54,7 +56,6 @@ void PluginHandler::getLabels(QList<InputData>* inputData) {
     }
 }
 
-
 void PluginHandler::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     if (inputData->count() > 0) {
         foreach(PluginInfo info, plugins) {
@@ -63,7 +64,6 @@ void PluginHandler::getResults(QList<InputData>* inputData, QList<CatItem>* resu
         }
     }
 }
-
 
 void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep) {
     int index = 0;
@@ -177,4 +177,5 @@ void PluginHandler::loadPlugins() {
             plugins[info.id] = info;
         }
     }
+}
 }

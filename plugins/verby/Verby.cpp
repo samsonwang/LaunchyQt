@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gui.h"
 #include "PluginMsg.h"
 
+using namespace launchy;
+
 void Verby::init() {
 }
 
@@ -41,7 +43,7 @@ QString Verby::getIcon() {
 }
 
 
-void Verby::getLabels(QList<InputData>* inputData) {
+void Verby::getLabels(QList<launchy::InputData>* inputData) {
     if (inputData->count() == 1) {
         // If it's not an item from Launchy's built in catalog, i.e. a file or directory or something added 
         // by a plugin, don't add verbs.
@@ -299,4 +301,3 @@ int Verby::msg(int msgId, void* wParam, void* lParam) {
 
     return handled;
 }
-

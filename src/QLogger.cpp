@@ -4,6 +4,7 @@
 #include <QString>
 #include <QDateTime>
 
+namespace launchy {
 FILE* QLogger::s_logFile = nullptr;
 QtMsgType QLogger::s_logLevel;
 
@@ -73,4 +74,5 @@ void QLogger::messageHandler(QtMsgType type,
         break;
     }
     fflush(s_logFile);
+}
 }

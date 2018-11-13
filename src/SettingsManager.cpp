@@ -29,7 +29,7 @@ const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";
 const char* historyName = "/history.db";
 
-
+namespace launchy {
 SettingsManager::SettingsManager()
     : m_portable(false) {
 }
@@ -58,7 +58,7 @@ void SettingsManager::load() {
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
         << "(build" << __DATE__ << __TIME__ << ")";
-    qInfo("Loading settings in %s mode from %s", 
+    qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 }
 
@@ -190,4 +190,5 @@ void SettingsManager::writeCatalogDirectories(QList<Directory>& directories) {
 		}
 	}
 	g_settings->endArray();
+}
 }

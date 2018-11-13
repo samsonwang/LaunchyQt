@@ -38,6 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginInterface.h"
 #include "PluginMsg.h"
 
+namespace launchy {
+
 LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     : QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
@@ -1309,4 +1311,5 @@ void LaunchyWidget::createActions() {
 
     actExit = new QAction(tr("Exit"), this);
     connect(actExit, SIGNAL(triggered()), this, SLOT(exit()));
+}
 }

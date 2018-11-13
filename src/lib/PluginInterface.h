@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QSettings>
 #include "LaunchyLib.h"
 
+namespace launchy {
 /**
     \brief This is the class that a plugin must implement.
 
@@ -132,9 +133,11 @@ public:
 */
 LAUNCHY_DECL void runProgram(QString file, QString args, bool translateSeparators = true);
 LAUNCHY_DECL int getDesktop();
+}
 
 #define PLUGININTERFACE_IID "com.launchyqt.PluginInterface/1.0"
-Q_DECLARE_INTERFACE(PluginInterface, PLUGININTERFACE_IID)
+Q_DECLARE_INTERFACE(launchy::PluginInterface, PLUGININTERFACE_IID)
+
 
 
 

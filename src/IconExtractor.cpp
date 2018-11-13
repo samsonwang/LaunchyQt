@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IconExtractor.h"
 #include "AppBase.h"
 #include "GlobalVar.h"
-//#include "main.h"
 
+namespace launchy {
 IconExtractor::IconExtractor() {
 }
 
@@ -125,4 +125,5 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
 #endif
         return g_app->icon(QDir::toNativeSeparators(item.icon));
     }
+}
 }

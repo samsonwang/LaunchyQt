@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CatalogItem.h"
 #include "InputDataList.h"
-
+namespace launchy {
 class CommandHistory {
 public:
     CommandHistory();
@@ -37,3 +37,4 @@ public:
 private:
     QLinkedList<InputDataList> m_history;
 };
+}

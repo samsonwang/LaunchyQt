@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CatalogItem.h"
 #include "GlobalVar.h"
 
+namespace launchy {
+
 AppBase::AppBase(int& argc, char** argv)
     : SingleApplication(argc, argv, false, Mode::User),
       m_iconProvider(nullptr) {
@@ -65,4 +67,5 @@ bool AppBase::supportsAlphaBorder() const {
 bool AppBase::getComputers(QStringList& computers) const {
     Q_UNUSED(computers);
     return false;
+}
 }

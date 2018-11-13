@@ -16,6 +16,8 @@
 #include <QHBoxLayout>
 #include "FileBrowser.h"
 
+namespace launchy {
+
 // Browse button
 static const char* const FileOpenIcon[] =
 {
@@ -254,4 +256,5 @@ void FileBrowser::browse()
 
 	// Reinstall the event filter
 	mpBrowseButton->installEventFilter(this);
+}
 }

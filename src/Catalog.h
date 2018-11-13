@@ -22,8 +22,10 @@
 #include <QVector>
 #include <QMutex>
 #include "CatalogItem.h"
+
 // These classes do not pertain to plugins
 
+namespace launchy {
 // Catalog provides methods to search and manage the indexed items
 class Catalog {
 public:
@@ -96,3 +98,5 @@ private:
 
 bool CatLess(CatItem* left, CatItem* right);
 bool CatLessNoPtr(CatItem& a, CatItem& b);
+
+}

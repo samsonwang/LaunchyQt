@@ -1,11 +1,11 @@
 
 #include "Directory.h"
 
+namespace launchy {
 Directory::Directory()
     : indexDirs(false),
       indexExe(false),
       depth(10) {
-
 }
 
 Directory::Directory(const QString& n)
@@ -13,7 +13,6 @@ Directory::Directory(const QString& n)
       indexExe(false),
       name(n),
       depth(10) {
-
 }
 
 Directory::Directory(const QString& n, const QStringList& t, bool d, bool e, int dep)
@@ -22,5 +21,5 @@ Directory::Directory(const QString& n, const QStringList& t, bool d, bool e, int
       name(n),
       types(t),
       depth(dep) {
-
+}
 }

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CommandHistory.h"
 #include "GlobalVar.h"
 
-
+namespace launchy {
 CommandHistory::CommandHistory() {
 }
 
@@ -104,4 +104,5 @@ void CommandHistory::search(const QString& searchText, QList<CatItem>& searchRes
         item.data = (void*)index++;
         searchResults.push_back(item);
     }
+}
 }

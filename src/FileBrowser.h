@@ -14,6 +14,7 @@
 #include <QPushButton>
 #include <QWidget>
 
+namespace launchy {
 class Filename;
 
 /**
@@ -210,6 +211,6 @@ private:
    bool mExistingFile;
    BrowseType mBrowseType;
 };
-
+}
 
 #endif

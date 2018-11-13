@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "CatalogItem.h"
-
+namespace launchy {
 CatItem::CatItem()
     : usage(0),
       data(NULL),
@@ -99,4 +99,5 @@ QDataStream& operator>>(QDataStream& in, CatItem &item) {
     in >> item.usage;
     in >> item.id;
     return in;
+}
 }

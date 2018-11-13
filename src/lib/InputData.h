@@ -31,6 +31,7 @@ and each element of the list represents a segment of the query.
 E.g.  query = "google <tab> this is my search" will have 2 InputData segments
 in the list.  One for "google" and one for "this is my search"
 */
+namespace launchy {
 class LAUNCHY_DECL InputData {
 public:
     InputData();
@@ -87,3 +88,4 @@ private:
     /** The plugin id of this query's owner */
     uint m_id;
 };
+}

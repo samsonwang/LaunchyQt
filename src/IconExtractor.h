@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMutex>
 #include "Catalog.h"
 
+namespace launchy {
 class IconExtractor : public QThread {
     Q_OBJECT
 public:
@@ -47,3 +48,4 @@ private:
     QMutex m_mutex;
     QQueue<CatItem> m_items;
 };
+}

@@ -21,7 +21,7 @@
 #include "Catalog.h"
 #include "GlobalVar.h"
 
-
+namespace launchy {
 // Load the catalog from the specified filename
 bool Catalog::load(const QString& filename) {
     QFile inFile(filename);
@@ -384,4 +384,5 @@ bool CatLess(CatItem* a, CatItem* b) {
 
     // Absolute tiebreaker to prevent loops
     return a->fullPath < b->fullPath;
+}
 }

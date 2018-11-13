@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class QListWidgetItem;
 class QVBoxLayout;
 namespace Ui { class OptionDialog; }
-
+namespace launchy {
 class OptionDialog : public QDialog {
     Q_OBJECT
 public:
@@ -84,4 +84,4 @@ private:
     static int s_currentTab;
     static int s_currentPlugin;
 };
-
+}

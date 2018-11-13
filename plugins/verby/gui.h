@@ -28,4 +28,3 @@ public:
     virtual ~Gui();
     void writeOptions();
 };
-

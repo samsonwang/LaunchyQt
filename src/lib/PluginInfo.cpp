@@ -20,10 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QPluginLoader>
 #include "PluginInterface.h"
 
+namespace launchy {
 PluginInfo::PluginInfo()
     : id(0),
-      obj(nullptr),
-      loaded(false) {
+    obj(nullptr),
+    loaded(false) {
 }
 
 PluginInfo::~PluginInfo() {
@@ -41,4 +42,5 @@ int PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
     // This would consist of a try/catch block to handle C++ exceptions
     // and on Windows would also include a structured exception handler
     return obj->msg(msgId, wParam, lParam);
+}
 }

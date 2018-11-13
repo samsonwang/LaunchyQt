@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QList>
 #include "Directory.h"
 
+namespace launchy {
 class SettingsManager {
 public:
     static SettingsManager& instance();
@@ -54,4 +55,4 @@ private:
 	QString m_profileName;
 	QHash<QString, QList<QString>> m_dirs;
 };
-
+}

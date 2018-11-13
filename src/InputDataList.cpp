@@ -1,7 +1,7 @@
 
 #include "InputDataList.h"
 #include "GlobalVar.h"
-
+namespace launchy {
 void InputDataList::parse(const QString& text) {
 	if (text.isEmpty()) {
 		clear();
@@ -31,7 +31,6 @@ void InputDataList::parse(const QString& text) {
 	}
 }
 
-
 QString InputDataList::toString(bool omitLast) const {
 	QString result = "";
 	for (int i = 0; i < count(); ++i) {
@@ -41,4 +40,5 @@ QString InputDataList::toString(bool omitLast) const {
 			result += at(i).getText();
 	}
 	return result;
+}
 }

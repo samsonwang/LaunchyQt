@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Fader.h"
 #include "GlobalVar.h"
 
+namespace launchy {
 Fader::Fader(QObject* parent)
     : QThread(parent),
       m_keepRunning(true) {
@@ -106,4 +107,5 @@ void Fader::run() {
     // qDebug() << "";
 
     emit fadeLevel(m_targetLevel);
+}
 }

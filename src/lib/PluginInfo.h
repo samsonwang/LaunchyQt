@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QString>
 #include "LaunchyLib.h"
+namespace launchy {
 class PluginInterface;
 
 // This structure is used by plugins such as PyLaunchy, so it must not be extended
@@ -36,3 +37,4 @@ struct LAUNCHY_DECL PluginInfo {
 
     int sendMsg(int msgId, void* wParam = NULL, void* lParam = NULL);
 };
+}

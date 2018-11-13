@@ -22,7 +22,7 @@
 #include <QObject>
 #include "PluginHandler.h"
 class QThread;
-
+namespace launchy {
 class CatalogBuilder : public QObject, public INotifyProgressStep {
     Q_OBJECT
 public:
@@ -45,9 +45,9 @@ private:
                         bool fdirs, bool fbin, int depth);
     QThread* m_thread;
 
-
     QSet<QString> m_indexed;
     int m_progress;
     int m_currentItem;
     int m_totalItems;
 };
+}

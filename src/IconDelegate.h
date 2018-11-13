@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ROLE_FULL Qt::ToolTipRole
 #define ROLE_ICON Qt::DecorationRole
 
+namespace launchy {
 class IconDelegate : public QStyledItemDelegate {
     Q_OBJECT
 public:
@@ -54,3 +55,4 @@ private:
     int italics;
     QLabel* m_alternativesPath;
 };
+}

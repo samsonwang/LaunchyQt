@@ -51,7 +51,7 @@
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="General">
       <attribute name="title">
@@ -1169,7 +1169,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <widget class="DropListWidget" name="catDirectories"/>
+             <widget class="launchy::DropListWidget" name="catDirectories"/>
             </item>
             <item>
              <layout class="QHBoxLayout" name="hboxlayout_2">
@@ -1571,9 +1571,9 @@ p, li { white-space: pre-wrap; }
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DropListWidget</class>
+   <class>launchy::DropListWidget</class>
    <extends>QListWidget</extends>
-   <header>DropListWidget.h</header>
+   <header>Droplistwidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

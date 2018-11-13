@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef CHARLINEEDIT_H
 #define CHARLINEEDIT_H
 
-
 #include <QLineEdit>
 
+namespace launchy {
 class CharLineEdit : public QLineEdit {
 	Q_OBJECT
 public:
@@ -30,7 +30,7 @@ public:
 
     void processKey(QKeyEvent* event);
 	bool focusNextPrevChild(bool next);
-	
+
 	QString separatorText() const;
 
 protected:
@@ -50,6 +50,6 @@ private:
 	bool isAtEndOfSeparator() const;
 	QChar separatorChar() const;
 };
-
+}
 
 #endif

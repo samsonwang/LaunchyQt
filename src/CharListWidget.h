@@ -20,13 +20,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QListWidget>
+
+namespace launchy {
 class IconDelegate;
 
 class CharListWidget : public QListWidget {
     Q_OBJECT
 public:
     CharListWidget(QWidget* parent = 0);
-    
+
     void updateGeometry(const QPoint& basePos, const QPoint& offset);
     void resetGeometry();
     void setListMode(int mode);
@@ -49,3 +51,4 @@ private:
     QAbstractItemDelegate* m_defaultListDelegate;
     QLabel* m_alternativePath;
 };
+}

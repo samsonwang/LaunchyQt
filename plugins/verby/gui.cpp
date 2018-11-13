@@ -20,19 +20,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gui.h"
 #include "Verby.h"
 
-
-Gui::Gui(QWidget* parent) :
-	QWidget(parent)
-{
-	setupUi(this);
+Gui::Gui(QWidget* parent)
+    : QWidget(parent) {
+      setupUi(this);
 }
 
-
-Gui::~Gui()
-{
+Gui::~Gui() {
     this->hide();
 }
 
-void Gui::writeOptions()
-{
+void Gui::writeOptions() {
 }

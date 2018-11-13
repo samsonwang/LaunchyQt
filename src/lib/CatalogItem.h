@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
 \brief CatItem (Catalog Item) stores a single item in the index
 */
+namespace launchy {
+
 class LAUNCHY_DECL CatItem {
 public:
     /** The full path of the indexed item */
@@ -67,3 +69,5 @@ public:
     friend LAUNCHY_DECL QDataStream& operator<<(QDataStream& out, const CatItem& item);
     friend LAUNCHY_DECL QDataStream& operator>>(QDataStream& in, CatItem& item);
 };
+
+}

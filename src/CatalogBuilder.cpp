@@ -28,6 +28,7 @@
 #define CATALOG_PROGRESS_MIN 0
 #define CATALOG_PROGRESS_MAX 100
 
+namespace launchy {
 CatalogBuilder::CatalogBuilder()
     : m_thread(new QThread),
       m_progress(CATALOG_PROGRESS_MAX) {
@@ -174,4 +175,5 @@ bool CatalogBuilder::progressStep(int newStep) {
     }
 
     return true;
+}
 }

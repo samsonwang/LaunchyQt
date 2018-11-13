@@ -56,7 +56,7 @@ void Calcy::getName(QString* str) {
     *str = "Calcy";
 }
 
-void Calcy::getLabels(QList<InputData>* inputList) {
+void Calcy::getLabels(QList<launchy::InputData>* inputList) {
     if (inputList->count() > 1)
         return;
 
@@ -68,7 +68,7 @@ void Calcy::getLabels(QList<InputData>* inputList) {
     }
 }
 
-void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
+void Calcy::getResults(QList<launchy::InputData>* inputList, QList<launchy::CatItem>* results) {
     if (!inputList
         || inputList->isEmpty()
         || !inputList->last().hasLabel(HASH_CALCY)) {
@@ -91,16 +91,16 @@ void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
         qDebug() << "Calcy::getResults, num:" << num;
         QString result;
         if (Converter::decStr(num, result)) {
-            results->push_back(CatItem(result + ".dec.calcy", result, HASH_CALCY, getIcon()));
+            results->push_back(launchy::CatItem(result + ".dec.calcy", result, HASH_CALCY, getIcon()));
         }
         if (Converter::hexStr(num, result)) {
-            results->push_back(CatItem(result + ".hex.calcy", result, HASH_CALCY, getIcon()));
+            results->push_back(launchy::CatItem(result + ".hex.calcy", result, HASH_CALCY, getIcon()));
         }
         if (Converter::octStr(num, result)) {
-            results->push_back(CatItem(result + ".oct.calcy", result, HASH_CALCY, getIcon()));
+            results->push_back(launchy::CatItem(result + ".oct.calcy", result, HASH_CALCY, getIcon()));
         }
         if (Converter::binStr(num, result)) {
-            results->push_back(CatItem(result + ".bin.calcy", result, HASH_CALCY, getIcon()));
+            results->push_back(launchy::CatItem(result + ".bin.calcy", result, HASH_CALCY, getIcon()));
         }
     }
     // calculate
@@ -134,12 +134,12 @@ void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
             if (resStr.endsWith(decimal))
                 resStr.chop(1);
         }
-        results->push_front(CatItem(resStr + ".calcy", resStr, HASH_CALCY, getIcon()));
+        results->push_front(launchy::CatItem(resStr + ".calcy", resStr, HASH_CALCY, getIcon()));
     }
 }
 
 
-int Calcy::launchItem(QList<InputData>* inputData, CatItem* item) {
+int Calcy::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item) {
     Q_UNUSED(inputData)
     if ((*settings)->value("calcy/copyToClipboard", true).toBool()) {
         QClipboard* clipboard = QApplication::clipboard();
@@ -183,7 +183,7 @@ int Calcy::msg(int msgId, void* wParam, void* lParam) {
         handled = true;
         break;
     case MSG_GET_LABELS:
-        getLabels((QList<InputData>*)wParam);
+        getLabels((QList<launchy::InputData>*)wParam);
         handled = true;
         break;
     case MSG_GET_ID:
@@ -195,11 +195,11 @@ int Calcy::msg(int msgId, void* wParam, void* lParam) {
         handled = true;
         break;
     case MSG_GET_RESULTS:
-        getResults((QList<InputData>*) wParam, (QList<CatItem>*)lParam);
+        getResults((QList<launchy::InputData>*) wParam, (QList<launchy::CatItem>*)lParam);
         handled = true;
         break;
     case MSG_LAUNCH_ITEM:
-        handled = launchItem((QList<InputData>*) wParam, (CatItem*)lParam);
+        handled = launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         break;
     case MSG_HAS_DIALOG:
         handled = true;

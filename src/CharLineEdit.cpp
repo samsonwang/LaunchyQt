@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMacStyle>
 #endif
 
+namespace launchy {
 CharLineEdit::CharLineEdit(QWidget* parent)
     : QLineEdit(parent) {
     setAttribute(Qt::WA_InputMethodEnabled);
@@ -132,7 +133,7 @@ bool CharLineEdit::isAtStartOfSeparator() const {
     return text().mid(cursorPosition(), 3) == separatorText();
 }
 
-bool CharLineEdit::isAtEndOfSeparator() const
-{
+bool CharLineEdit::isAtEndOfSeparator() const {
     return text().mid(cursorPosition() - 3, 3) == separatorText();
+}
 }

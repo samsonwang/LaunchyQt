@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QScopedPointer>
 #include <QString>
+class QSettings;
+
+namespace launchy {
 
 extern const int LAUNCHY_VERSION;
 extern const char* LAUNCHY_VERSION_STRING;
@@ -34,7 +37,6 @@ extern const uint LABEL_HISTORY;
 
 class AppBase;
 class LaunchyWidget;
-class QSettings;
 class Catalog;
 class CatalogBuilder;
 class PluginHandler;
@@ -47,3 +49,4 @@ extern QScopedPointer<CatalogBuilder> g_builder;
 extern QScopedPointer<PluginHandler> g_pluginHandler;
 extern QString g_searchText;
 
+}

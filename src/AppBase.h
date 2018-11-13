@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QFileIconProvider>
 #include <SingleApplication/singleapplication.h>
 #include "Directory.h"
+
+namespace launchy {
+
 class CatItem;
 
 class AppBase : public SingleApplication {
@@ -54,3 +57,5 @@ protected:
 };
 
 QApplication* createApplication(int& argc, char** argv);
+
+}

@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GlobalVar.h"
 #include "Catalog.h"
 
+namespace launchy {
 IconDelegate::IconDelegate(QObject* parent)
     : QStyledItemDelegate(parent),
       m_size(32) {
@@ -102,4 +103,5 @@ void IconDelegate::setItalics(int i) {
 
 void IconDelegate::setAlternativePathWidget(QLabel* label) {
     m_alternativesPath = label;
+}
 }
