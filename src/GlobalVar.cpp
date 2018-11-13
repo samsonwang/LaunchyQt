@@ -26,12 +26,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const int LAUNCHY_VERSION = 302;
 const char* LAUNCHY_VERSION_STRING = "3.0.2";
 
-extern const int HASH_LAUNCHY = 0;
-extern const int HASH_HISTORY = 1;
-extern const int HASH_LAUNCHYFILE = 2;
-extern const uint LABEL_FILE = 0;
-extern const uint LABEL_AUTOSUGGEST = 1;
-extern const uint LABEL_HISTORY = 2;
+const int HASH_LAUNCHY = 0;
+const int HASH_HISTORY = 1;
+const int HASH_LAUNCHYFILE = 2;
+const uint LABEL_FILE = 0;
+const uint LABEL_AUTOSUGGEST = 1;
+const uint LABEL_HISTORY = 2;
 
 QScopedPointer<AppBase> g_app;
 QScopedPointer<LaunchyWidget> g_mainWidget;
