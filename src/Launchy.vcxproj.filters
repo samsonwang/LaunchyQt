@@ -84,12 +84,6 @@
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileBrowser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileBrowserDelegate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AnimationLabel.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
@@ -219,6 +213,12 @@
     <ClCompile Include="Directory.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileBrowser.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBrowserDelegate.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -271,12 +271,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="FileBrowser.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="FileBrowserDelegate.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="CharListWidget.h">
       <Filter>Widgets</Filter>
     </CustomBuild>
@@ -318,6 +312,12 @@
     </CustomBuild>
     <CustomBuild Include="CatalogBuilder.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FileBrowserDelegate.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FileBrowser.h">
+      <Filter>Widgets</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
