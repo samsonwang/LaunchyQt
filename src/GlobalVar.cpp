@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyWidget.h"
 #include "CatalogBuilder.h"
 
-const int LAUNCHY_VERSION = 301;
-const char* LAUNCHY_VERSION_STRING = "3.0.1";
+const int LAUNCHY_VERSION = 302;
+const char* LAUNCHY_VERSION_STRING = "3.0.2";
 
 extern const int HASH_LAUNCHY = 0;
 extern const int HASH_HISTORY = 1;
