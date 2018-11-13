@@ -24,30 +24,30 @@
 class QThread;
 
 class CatalogBuilder : public QObject, public INotifyProgressStep {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	CatalogBuilder(PluginHandler* plugin);
+    CatalogBuilder();
     virtual ~CatalogBuilder();
 
-	int getProgress() const;
-	int isRunning() const;
-	virtual bool progressStep(int newStep);
+    int getProgress() const;
+    int isRunning() const;
+    virtual bool progressStep(int newStep);
 
 public slots:
-	void buildCatalog();
+    void buildCatalog();
 
 signals:
-	void catalogIncrement(int);
-	void catalogFinished();
+    void catalogIncrement(int);
+    void catalogFinished();
 
 private:
-	void indexDirectory(const QString& dir, const QStringList& filters,
+    void indexDirectory(const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
     QThread* m_thread;
 
-	PluginHandler* m_plugin;
-	QSet<QString> m_indexed;
-	int m_progress;
-	int m_currentItem;
-	int m_totalItems;
+
+    QSet<QString> m_indexed;
+    int m_progress;
+    int m_currentItem;
+    int m_totalItems;
 };

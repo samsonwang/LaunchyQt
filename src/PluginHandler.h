@@ -17,52 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PLUGIN_HANDLER
-#define PLUGIN_HANDLER
+#pragma once
 
-
-#include <QPluginLoader>
 #include <QHash>
 #include "CatalogItem.h"
 #include "InputData.h"
+#include "PluginInfo.h"
 
 class Catalog;
-class PluginInterface;
-
-// This structure is used by plugins such as PyLaunchy, so it must not be extended
-// with virtual methods or additional data members
-struct PluginInfo {
-    uint id;
-    QString name;
-    QString path;
-    PluginInterface* obj;
-    bool loaded;
-
-    PluginInfo()
-        : id(0),
-          obj(nullptr),
-          loaded(false) {
-    }
-
-    ~PluginInfo() {
-        QPluginLoader loader(path);
-        loader.unload();
-    }
-
-    bool isValid() const {
-        return obj && !name.isNull() && id > 0;
-    }
-
-    int sendMessage(int msgId, void* wParam = NULL, void* lParam = NULL);
-};
-
 
 // This interface is used to notify clients when a step in a long running process occurs
-class INotifyProgressStep {
-public:
-    virtual bool progressStep(int newStep) = 0;
-};
-
+class INotifyProgressStep;
 
 class PluginHandler {
 public:
@@ -84,5 +49,8 @@ private:
     QHash<uint, PluginInfo> plugins;
 };
 
+class INotifyProgressStep {
+public:
+    virtual bool progressStep(int newStep) = 0;
+};
 
-#endif

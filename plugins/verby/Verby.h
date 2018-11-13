@@ -25,33 +25,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "InputData.h"
 class Gui;
 
-class VerbyPlugin : public QObject, public PluginInterface {
+class Verby : public QObject, public PluginInterface {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "net.launchy.PluginInterface/1.0")
+    Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(PluginInterface)
 public:
-    VerbyPlugin();
-    virtual ~VerbyPlugin();
+    Verby();
+    virtual ~Verby();
 
     virtual int msg(int msgId, void* wParam, void* lParam);
 
 private:
     void getID(uint* id);
-    void setPath(QString * path);
+    void setPath(QString* path);
     void getName(QString* name);
-    void getCatalog(QList<CatItem>* items);
     void getResults(QList<InputData>* inputData, QList<CatItem>* results);
     int launchItem(QList<InputData>* inputData, CatItem* item);
-    void doDialog(QWidget* parent, QWidget**);
+    void doDialog(QWidget* parent, QWidget** dialog);
     void endDialog(bool accept);
     void getLabels(QList<InputData>* inputData);
     void init();
-    bool isMatch(QString text1, QString text2);
+    bool isMatch(const QString& text1, const QString& text2);
     void addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName);
     void updateUsage(CatItem& item);
     QString getIcon();
     QString getIconPath() const;
 
+    //void getCatalog(QList<CatItem>* items);
 private:
     QString m_libPath;
     Gui* m_gui;

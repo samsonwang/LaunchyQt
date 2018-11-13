@@ -21,27 +21,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gui.h"
 #include "PluginMsg.h"
 
-void VerbyPlugin::init() {
+void Verby::init() {
 }
 
-void VerbyPlugin::setPath(QString * path) {
+void Verby::setPath(QString * path) {
     m_libPath = *path;
 }
 
-void VerbyPlugin::getID(uint* id) {
+void Verby::getID(uint* id) {
     *id = HASH_VERBY;
 }
 
-void VerbyPlugin::getName(QString* str) {
+void Verby::getName(QString* str) {
     *str = "Verby";
 }
 
-QString VerbyPlugin::getIcon() {
+QString Verby::getIcon() {
     return getIconPath() + "verby.png";
 }
 
 
-void VerbyPlugin::getLabels(QList<InputData>* inputData) {
+void Verby::getLabels(QList<InputData>* inputData) {
     if (inputData->count() == 1) {
         // If it's not an item from Launchy's built in catalog, i.e. a file or directory or something added 
         // by a plugin, don't add verbs.
@@ -63,37 +63,27 @@ void VerbyPlugin::getLabels(QList<InputData>* inputData) {
 }
 
 
-QString VerbyPlugin::getIconPath() const
+QString Verby::getIconPath() const
 {
     return m_libPath + "/icons/";
 }
 
-
-bool VerbyPlugin::isMatch(QString text1, QString text2)
-{
+bool Verby::isMatch(const QString& text1, const QString& text2) {
     int text2Length = text2.count();
     int curChar = 0;
-
-    foreach(QChar c, text1)
-    {
-        if (c.toLower() == text2[curChar].toLower())
-        {
+    foreach(QChar c, text1) {
+        if (c.toLower() == text2[curChar].toLower()) {
             ++curChar;
-            if (curChar >= text2Length)
-            {
+            if (curChar >= text2Length) {
                 return true;
             }
         }
     }
-
     return false;
 }
 
-
-void VerbyPlugin::addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName)
-{
-    if (text.length() == 0 || isMatch(shortName, text))
-    {
+void Verby::addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName) {
+    if (text.isEmpty() || isMatch(shortName, text)) {
         CatItem item = CatItem(fullName, shortName, HASH_VERBY, getIconPath() + iconName);
         item.usage = (*settings)->value("verby/" + shortName.replace(" ", ""), 0).toInt();
         results->push_back(item);
@@ -101,12 +91,12 @@ void VerbyPlugin::addCatItem(QString text, QList<CatItem>* results, QString full
 }
 
 
-void VerbyPlugin::updateUsage(CatItem& item) {
+void Verby::updateUsage(CatItem& item) {
     (*settings)->setValue("verby/" + item.shortName.replace(" ", ""), item.usage + 1);
 }
 
 
-void VerbyPlugin::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
+void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     if (inputData->count() == 2) {
         QString text = inputData->at(1).getText();
 
@@ -140,7 +130,7 @@ void VerbyPlugin::getResults(QList<InputData>* inputData, QList<CatItem>* result
     }
 }
 
-int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item) {
+int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     Q_UNUSED(item)
 
     if (inputData->count() != 2) {
@@ -232,7 +222,7 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item) {
 }
 
 
-void VerbyPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
+void Verby::doDialog(QWidget* parent, QWidget** newDlg) {
     if (m_gui == NULL) {
         m_gui = new Gui(parent);
         *newDlg = m_gui;
@@ -240,18 +230,20 @@ void VerbyPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
 }
 
 
-void VerbyPlugin::endDialog(bool accept) {
-    if (accept) {
+void Verby::endDialog(bool accept) {
+    if (accept && m_gui) {
         m_gui->writeOptions();
         init();
     }
-    if (m_gui != NULL)
+    if (m_gui != NULL) {
+        m_gui->close();
         delete m_gui;
+    }
 
     m_gui = NULL;
 }
 
-VerbyPlugin::VerbyPlugin()
+Verby::Verby()
     : m_gui(NULL),
       HASH_VERBY(qHash(QString("verby"))),
       HASH_DIR(qHash(QString("verbydirectory"))),
@@ -259,14 +251,12 @@ VerbyPlugin::VerbyPlugin()
       HASH_LINK(qHash(QString("verbylink"))) {
 }
 
-VerbyPlugin::~VerbyPlugin() {
+Verby::~Verby() {
 }
 
-int VerbyPlugin::msg(int msgId, void* wParam, void* lParam)
-{
+int Verby::msg(int msgId, void* wParam, void* lParam) {
     int handled = 0;
-    switch (msgId)
-    {
+    switch (msgId) {
     case MSG_INIT:
         init();
         handled = true;

@@ -18,20 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "PluginHandler.h"
+#include <QPluginLoader>
 #include "PluginInterface.h"
 #include "PluginMsg.h"
 #include "GlobalVar.h"
 #include "Catalog.h"
 #include "SettingsManager.h"
-
-
-int PluginInfo::sendMessage(int msgId, void* wParam, void* lParam) {
-    // This should have some kind of exception guard to prevent
-    // Launchy from crashing when a plugin is misbehaving.
-    // This would consist of a try/catch block to handle C++ exceptions
-    // and on Windows would also include a structured exception handler
-    return obj->msg(msgId, wParam, lParam);
-}
 
 PluginHandler::PluginHandler() {
 }
@@ -42,14 +34,14 @@ PluginHandler::~PluginHandler() {
 void PluginHandler::showLaunchy() {
     foreach(PluginInfo info, plugins) {
         if (info.loaded)
-            info.sendMessage(MSG_LAUNCHY_SHOW);
+            info.sendMsg(MSG_LAUNCHY_SHOW);
     }
 }
 
 void PluginHandler::hideLaunchy() {
     foreach(PluginInfo info, plugins) {
         if (info.loaded)
-            info.sendMessage(MSG_LAUNCHY_HIDE);
+            info.sendMsg(MSG_LAUNCHY_HIDE);
     }
 }
 
@@ -57,7 +49,7 @@ void PluginHandler::getLabels(QList<InputData>* inputData) {
     if (inputData->count() > 0) {
         foreach(PluginInfo info, plugins) {
             if (info.loaded)
-                info.sendMessage(MSG_GET_LABELS, (void*)inputData);
+                info.sendMsg(MSG_GET_LABELS, (void*)inputData);
         }
     }
 }
@@ -67,7 +59,7 @@ void PluginHandler::getResults(QList<InputData>* inputData, QList<CatItem>* resu
     if (inputData->count() > 0) {
         foreach(PluginInfo info, plugins) {
             if (info.loaded)
-                info.sendMessage(MSG_GET_RESULTS, (void*)inputData, (void*)results);
+                info.sendMsg(MSG_GET_RESULTS, (void*)inputData, (void*)results);
         }
     }
 }
@@ -79,7 +71,7 @@ void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressS
     foreach(PluginInfo info, plugins) {
         if (info.loaded) {
             QList<CatItem> items;
-            info.sendMessage(MSG_GET_CATALOG, (void*)&items);
+            info.sendMsg(MSG_GET_CATALOG, (void*)&items);
             foreach(CatItem item, items) {
                 catalog->addItem(item);
             }
@@ -95,14 +87,14 @@ void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressS
 int PluginHandler::launchItem(QList<InputData>* inputData, CatItem* result) {
     if (!plugins.contains(result->id) || !plugins[result->id].loaded)
         return 0;
-    return plugins[result->id].sendMessage(MSG_LAUNCH_ITEM, (void*)inputData, (void*)result);
+    return plugins[result->id].sendMsg(MSG_LAUNCH_ITEM, (void*)inputData, (void*)result);
 }
 
 QWidget* PluginHandler::doDialog(QWidget* parent, uint id) {
     if (!plugins.contains(id) || !plugins[id].loaded)
         return NULL;
     QWidget* newBox = NULL;
-    plugins[id].sendMessage(MSG_DO_DIALOG, (void*)parent, (void*)&newBox);
+    plugins[id].sendMsg(MSG_DO_DIALOG, (void*)parent, (void*)&newBox);
     return newBox;
 }
 
@@ -110,7 +102,7 @@ QWidget* PluginHandler::doDialog(QWidget* parent, uint id) {
 void PluginHandler::endDialog(uint id, bool accept) {
     if (!plugins.contains(id) || !plugins[id].loaded)
         return;
-    plugins[id].sendMessage(MSG_END_DIALOG, (void*)accept);
+    plugins[id].sendMsg(MSG_END_DIALOG, (void*)accept);
 }
 
 
@@ -147,17 +139,17 @@ void PluginHandler::loadPlugins() {
             PluginInfo info;
             info.obj = plugin;
             info.path = pluginsDir.absoluteFilePath(fileName);
-            bool handled = info.sendMessage(MSG_GET_ID, (void*)&info.id) != 0;
-            info.sendMessage(MSG_GET_NAME, (void*)&info.name);
+            bool handled = info.sendMsg(MSG_GET_ID, (void*)&info.id) != 0;
+            info.sendMsg(MSG_GET_NAME, (void*)&info.name);
 
             if (handled && (!loadable.contains(info.id) || loadable[info.id])) {
                 info.loaded = true;
-                info.sendMessage(MSG_INIT);
-                info.sendMessage(MSG_PATH, &directory);
+                info.sendMsg(MSG_INIT);
+                info.sendMsg(MSG_PATH, &directory);
 
                 // Load any of the plugin's plugins of its own
                 QList<PluginInfo> additionalPlugins;
-                info.sendMessage(MSG_LOAD_PLUGINS, &additionalPlugins);
+                info.sendMsg(MSG_LOAD_PLUGINS, &additionalPlugins);
 
                 foreach(PluginInfo pluginInfo, additionalPlugins) {
                     if (!pluginInfo.isValid()) {
@@ -168,11 +160,11 @@ void PluginHandler::loadPlugins() {
                         !loadable.contains(pluginInfo.id) || loadable[pluginInfo.id];
 
                     if (isPluginLoadable) {
-                        pluginInfo.sendMessage(MSG_INIT);
+                        pluginInfo.sendMsg(MSG_INIT);
                         pluginInfo.loaded = true;
                     }
                     else {
-                        pluginInfo.sendMessage(MSG_UNLOAD_PLUGIN, (void*)(int64_t)pluginInfo.id);
+                        pluginInfo.sendMsg(MSG_UNLOAD_PLUGIN, (void*)(int64_t)pluginInfo.id);
                         pluginInfo.loaded = false;
                     }
                     plugins[pluginInfo.id] = pluginInfo;

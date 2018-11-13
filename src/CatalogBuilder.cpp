@@ -28,9 +28,8 @@
 #define CATALOG_PROGRESS_MIN 0
 #define CATALOG_PROGRESS_MAX 100
 
-CatalogBuilder::CatalogBuilder(PluginHandler* plugin)
+CatalogBuilder::CatalogBuilder()
     : m_thread(new QThread),
-      m_plugin(plugin),
       m_progress(CATALOG_PROGRESS_MAX) {
     g_catalog.reset(new SlowCatalog);
     moveToThread(m_thread);
@@ -44,7 +43,7 @@ void CatalogBuilder::buildCatalog() {
     m_indexed.clear();
 
     QList<Directory> memDirs = SettingsManager::instance().readCatalogDirectories();
-    QHash<uint, PluginInfo> pluginsInfo = m_plugin->getPlugins();
+    QHash<uint, PluginInfo> pluginsInfo = g_pluginHandler->getPlugins();
     m_totalItems = memDirs.count() + pluginsInfo.count();
     m_currentItem = 0;
 
@@ -56,7 +55,7 @@ void CatalogBuilder::buildCatalog() {
     }
 
     // Don't call the pluginhandler to request catalog because we need to track progress
-    m_plugin->getCatalogs(g_catalog.data(), this);
+    g_pluginHandler->getCatalogs(g_catalog.data(), this);
 
     g_catalog->purgeOldItems();
     m_indexed.clear();

@@ -125,7 +125,7 @@ protected slots:
     void onSecondInstance();
 
 public:
-    PluginHandler plugins;
+    //PluginHandler m_plugins;
 
 protected:
     QString m_currentSkin;

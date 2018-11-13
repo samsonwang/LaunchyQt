@@ -103,7 +103,8 @@ public:
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL) = 0;
 
 
-    /** The setting manager in which you store your persistent data.  More data can be found in QT's documentation for QSettings
+    /** The setting manager in which you store your persistent data.
+    More data can be found in QT's documentation for QSettings
 
     Following is an example of using the settings variable:
 
@@ -132,9 +133,8 @@ public:
 LAUNCHY_DECL void runProgram(QString file, QString args, bool translateSeparators = true);
 LAUNCHY_DECL int getDesktop();
 
-
-Q_DECLARE_INTERFACE(PluginInterface,
-                    "net.launchy.PluginInterface/1.0")
+#define PLUGININTERFACE_IID "com.launchyqt.PluginInterface/1.0"
+Q_DECLARE_INTERFACE(PluginInterface, PLUGININTERFACE_IID)
 
 
 

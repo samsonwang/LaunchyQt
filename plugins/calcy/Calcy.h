@@ -21,12 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QRegExp>
 #include "PluginInterface.h"
-#include "gui.h"
 #include "InputData.h"
+class Gui;
 
 class Calcy : public QObject, public PluginInterface {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "net.launchy.PluginInterface/1.0")
+    Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(PluginInterface)
 public:
     Calcy();
@@ -34,13 +34,14 @@ public:
 
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
+private:
     void setPath(QString* path);
     void getLabels(QList<InputData>* inputData);
-    void getID(uint*);
-    void getName(QString*);
-    void getResults(QList<InputData>* id, QList<CatItem>* results);
-    void launchItem(QList<InputData>* inputData, CatItem* item);
-    void doDialog(QWidget* parent, QWidget**);
+    void getID(uint* id);
+    void getName(QString* name);
+    void getResults(QList<InputData>* inputData, QList<CatItem>* result);
+    int launchItem(QList<InputData>* inputData, CatItem* item);
+    void doDialog(QWidget* parent, QWidget** dialog);
     void endDialog(bool accept);
     void init();
     QString getIcon();

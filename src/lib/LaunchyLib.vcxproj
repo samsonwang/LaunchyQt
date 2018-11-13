@@ -143,12 +143,14 @@ exit 0</Command>
   <ItemGroup>
     <ClCompile Include="CatalogItem.cpp" />
     <ClCompile Include="InputData.cpp" />
+    <ClCompile Include="PluginInfo.cpp" />
     <ClCompile Include="PluginInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CatalogItem.h" />
     <ClInclude Include="InputData.h" />
     <ClInclude Include="LaunchyLib.h" />
+    <ClInclude Include="PluginInfo.h" />
     <ClInclude Include="PluginInterface.h" />
     <ClInclude Include="PluginMsg.h" />
   </ItemGroup>

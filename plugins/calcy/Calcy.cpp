@@ -19,6 +19,7 @@
 
 #include "precompiled.h"
 #include "calcy.h"
+#include "gui.h"
 #include "PluginMsg.h"
 #include "Calculator.h"
 #include "Converter.h"
@@ -138,12 +139,13 @@ void Calcy::getResults(QList<InputData>* inputList, QList<CatItem>* results) {
 }
 
 
-void Calcy::launchItem(QList<InputData>* inputData, CatItem* item) {
+int Calcy::launchItem(QList<InputData>* inputData, CatItem* item) {
     Q_UNUSED(inputData)
     if ((*settings)->value("calcy/copyToClipboard", true).toBool()) {
-        QClipboard*clipboard = QApplication::clipboard();
+        QClipboard* clipboard = QApplication::clipboard();
         clipboard->setText(item->shortName);
     }
+    return 0;
 }
 
 QString Calcy::getIcon() {
@@ -157,7 +159,7 @@ void Calcy::setPath(QString* path) {
 
 void Calcy::doDialog(QWidget* parent, QWidget** newDlg) {
     if (!m_gui.isNull()) {
-        return;
+        m_gui->close();
     }
 
     m_gui.reset(new Gui(parent));
@@ -166,18 +168,16 @@ void Calcy::doDialog(QWidget* parent, QWidget** newDlg) {
 }
 
 void Calcy::endDialog(bool accept) {
-    if (accept) {
+    if (accept && !m_gui.isNull()) {
         m_gui->writeOptions();
         init();
     }
     m_gui.reset();
 }
 
-int Calcy::msg(int msgId, void* wParam, void* lParam)
-{
-    bool handled = false;
-    switch (msgId)
-    {
+int Calcy::msg(int msgId, void* wParam, void* lParam) {
+    int handled = false;
+    switch (msgId) {
     case MSG_INIT:
         init();
         handled = true;
@@ -199,8 +199,7 @@ int Calcy::msg(int msgId, void* wParam, void* lParam)
         handled = true;
         break;
     case MSG_LAUNCH_ITEM:
-        launchItem((QList<InputData>*) wParam, (CatItem*)lParam);
-        handled = true;
+        handled = launchItem((QList<InputData>*) wParam, (CatItem*)lParam);
         break;
     case MSG_HAS_DIALOG:
         handled = true;

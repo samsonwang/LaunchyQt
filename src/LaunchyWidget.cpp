@@ -59,6 +59,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       dropTimer(new QTimer(this)) {
 
     g_mainWidget.reset(this);
+    g_searchText = "";
+    menuOpen = false;
+    optionsOpen = false;
+    dragging = false;
+    m_alwaysShowLaunchy = false;
 
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
@@ -78,13 +83,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     setFocusPolicy(Qt::ClickFocus);
 
     createActions();
-
-    menuOpen = false;
-    optionsOpen = false;
-    dragging = false;
-    g_searchText = "";
-
-    m_alwaysShowLaunchy = false;
 
     connect(&m_iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)),
             this, SLOT(iconExtracted(int, QString, QIcon)));
@@ -147,16 +145,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         command = ShowLaunchy | ShowOptions;
     }
 
-    // Set the timers
-    dropTimer->setSingleShot(true);
-    connect(dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
-
-    updateTimer->setSingleShot(true);
-    connect(updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
-    startUpdateTimer();
-
     // Load the catalog
-    g_builder.reset(new CatalogBuilder(&plugins));
+    g_builder.reset(new CatalogBuilder);
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
     connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
 
@@ -165,7 +155,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Load the plugins
-    plugins.loadPlugins();
+    g_pluginHandler.reset(new PluginHandler);
+    g_pluginHandler->loadPlugins();
 
     // Load the history
     m_history.load(SettingsManager::instance().historyFilename());
@@ -183,6 +174,14 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     connect(g_app.data(), &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
+
+    // Set the timers
+    dropTimer->setSingleShot(true);
+    connect(dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
+
+    updateTimer->setSingleShot(true);
+    connect(updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
+    startUpdateTimer();
 }
 
 LaunchyWidget::~LaunchyWidget() {
@@ -343,10 +342,10 @@ void LaunchyWidget::launchItem(CatItem& item) {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
     if (item.id != HASH_LAUNCHY && item.id != HASH_LAUNCHYFILE) {
-        ops = plugins.launchItem(&m_inputData, &item);
+        ops = g_pluginHandler->launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
-            close();
+            exit();
             break;
         case MSG_CONTROL_OPTIONS:
             showOptionDialog();
@@ -752,8 +751,8 @@ void LaunchyWidget::searchOnInput() {
 
         // Give plugins a chance to add their own dynamic matches
         // why getLabels first then getResults, why not getResult straightforward
-        plugins.getLabels(&m_inputData);
-        plugins.getResults(&m_inputData, &m_searchResult);
+        g_pluginHandler->getLabels(&m_inputData);
+        g_pluginHandler->getResults(&m_inputData, &m_searchResult);
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
@@ -777,7 +776,7 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
         && (m_inputData.count() > 1 || !m_inputBox->text().isEmpty())) {
         // qDebug() << "Setting output text to" << searchResults[0].shortName;
         QString outputText = Catalog::decorateText(m_searchResult[0].shortName, g_searchText, true);
-        
+
 #ifdef _DEBUG
         outputText += QString(" (%1 launches)").arg(m_searchResult[0].usage);
 #endif
@@ -1238,7 +1237,7 @@ void LaunchyWidget::showLaunchy(bool noFade) {
     m_inputBox->setFocus();
 
     // Let the plugins know
-    plugins.showLaunchy();
+    g_pluginHandler->showLaunchy();
 }
 
 void LaunchyWidget::hideLaunchy(bool noFade) {
@@ -1255,7 +1254,7 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
     }
 
     // let the plugins know
-    plugins.hideLaunchy();
+    g_pluginHandler->hideLaunchy();
 }
 
 
