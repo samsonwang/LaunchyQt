@@ -32,7 +32,7 @@ namespace launchy {
     any settings in Launchy's permanent configuration file, please
     refer to the settings member variable.
 */
-class LAUNCHY_DECL PluginInterface {
+class LAUNCHY_EXPORT PluginInterface {
 public:
     PluginInterface();
     virtual ~PluginInterface();;
@@ -131,8 +131,8 @@ public:
     \param args The arguments to the command
     \param translateSeparators Whether to translate / into native separators
 */
-LAUNCHY_DECL void runProgram(QString file, QString args, bool translateSeparators = true);
-LAUNCHY_DECL int getDesktop();
+LAUNCHY_EXPORT void runProgram(QString file, QString args, bool translateSeparators = true);
+LAUNCHY_EXPORT int getDesktop();
 }
 
 #define PLUGININTERFACE_IID "com.launchyqt.PluginInterface/1.0"

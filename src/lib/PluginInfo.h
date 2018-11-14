@@ -23,7 +23,7 @@ class PluginInterface;
 
 // This structure is used by plugins such as PyLaunchy, so it must not be extended
 // with virtual methods or additional data members
-struct LAUNCHY_DECL PluginInfo {
+struct LAUNCHY_EXPORT PluginInfo {
     uint id;
     QString name;
     QString path;

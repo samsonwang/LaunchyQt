@@ -6,7 +6,7 @@
 #endif
 
 #if defined LAUNCHY_LIB
-#define LAUNCHY_DECL Q_DECL_EXPORT
+#define LAUNCHY_EXPORT Q_DECL_EXPORT
 #else
-#define LAUNCHY_DECL Q_DECL_IMPORT
+#define LAUNCHY_EXPORT Q_DECL_IMPORT
 #endif

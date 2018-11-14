@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 namespace launchy {
 
-class LAUNCHY_DECL CatItem {
+class LAUNCHY_EXPORT CatItem {
 public:
     /** The full path of the indexed item */
     QString fullPath;
@@ -66,8 +66,8 @@ public:
     bool operator==(const CatItem& other) const;
     bool operator!=(const CatItem& other) const;
 
-    friend LAUNCHY_DECL QDataStream& operator<<(QDataStream& out, const CatItem& item);
-    friend LAUNCHY_DECL QDataStream& operator>>(QDataStream& in, CatItem& item);
+    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
+    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
 };
 
 }

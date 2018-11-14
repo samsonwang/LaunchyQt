@@ -32,7 +32,7 @@ E.g.  query = "google <tab> this is my search" will have 2 InputData segments
 in the list.  One for "google" and one for "this is my search"
 */
 namespace launchy {
-class LAUNCHY_DECL InputData {
+class LAUNCHY_EXPORT InputData {
 public:
     InputData();
     InputData(const QString& str);
@@ -75,8 +75,8 @@ public:
     /** Change the best catalog match for this segment */
     void setTopResult(const CatItem& sr);
 
-    friend LAUNCHY_DECL QDataStream& operator<<(QDataStream& out, const InputData& inputData);
-    friend LAUNCHY_DECL QDataStream& operator>>(QDataStream& in, InputData& inputData);
+    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const InputData& inputData);
+    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, InputData& inputData);
 
 private:
     /** The user's entry */
