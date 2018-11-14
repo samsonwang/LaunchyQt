@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QMenu>
+#include <QSystemTrayIcon>
+#include <QPushButton>
 #include "QHotkey/QHotkey.h"
 #include "IconDelegate.h"
 #include "GlobalVar.h"
@@ -39,6 +41,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginMsg.h"
 
 namespace launchy {
+
+// for qt flags
+// check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
+using ::operator|;
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)

@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "precompiled.h"
 
 #include "OptionDialog.h"
 #include <QMessageBox>
@@ -30,7 +29,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "QLogger.h"
 #include "CatalogBuilder.h"
 
+
 namespace launchy {
+
+// for qt flags
+// check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
+using ::operator|;
 
 QByteArray OptionDialog::s_windowGeometry;
 int OptionDialog::s_currentTab;

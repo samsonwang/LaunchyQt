@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyWidget.h"
 #include "CatalogBuilder.h"
 
-using namespace launchy;
+namespace launchy {
 
 const int LAUNCHY_VERSION = 302;
 const char* LAUNCHY_VERSION_STRING = "3.0.2";
@@ -42,3 +42,5 @@ QScopedPointer<Catalog> g_catalog;
 QScopedPointer<CatalogBuilder> g_builder;
 QScopedPointer<PluginHandler> g_pluginHandler;
 QString g_searchText;
+
+}

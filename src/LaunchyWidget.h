@@ -20,15 +20,17 @@
 #pragma once
 
 #include <QWidget>
-#include <QSystemTrayIcon>
-#include <QPushButton>
 
 #include "PluginHandler.h"
 #include "Catalog.h"
 #include "IconExtractor.h"
 #include "InputData.h"
 #include "CommandHistory.h"
+
+class QSystemTrayIcon;
+class QPushButton;
 class QHotkey;
+
 
 namespace launchy {
 class Fader;
