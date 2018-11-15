@@ -3,7 +3,7 @@
 #include <QtGlobal>
 #include <cstdio>
 namespace launchy {
-class QLogger {
+class Logger {
 public:
     static void stopLogging();
     static void setLogLevel(int index);
@@ -12,8 +12,8 @@ public:
                                const QMessageLogContext& context,
                                const QString& msg);
 private:
-    QLogger();
-    Q_DISABLE_COPY(QLogger)
+    Logger();
+    Q_DISABLE_COPY(Logger)
 
 private:
     static FILE* s_logFile;

@@ -18,12 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "SettingsManager.h"
-#include "precompiled.h"
 #include <QMessageBox>
 #include "LaunchyWidget.h"
 #include "GlobalVar.h"
 #include "AppBase.h"
 #include "Logger.h"
+#include "OptionItem.h"
 
 const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";
@@ -53,8 +53,8 @@ void SettingsManager::load() {
 		writeCatalogDirectories(directories);
 	}
 
-    int logLevel = g_settings->value("GenOps/logLevel", 2).toInt();
-    QLogger::setLogLevel(logLevel);
+    int logLevel = g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt();
+    Logger::setLogLevel(logLevel);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
         << "(build" << __DATE__ << __TIME__ << ")";

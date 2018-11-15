@@ -5,10 +5,10 @@
 #include <QDateTime>
 
 namespace launchy {
-FILE* QLogger::s_logFile = nullptr;
-QtMsgType QLogger::s_logLevel;
+FILE* Logger::s_logFile = nullptr;
+QtMsgType Logger::s_logLevel;
 
-void QLogger::stopLogging() {
+void Logger::stopLogging() {
     qInstallMessageHandler(0);
     if (s_logFile) {
         fflush(s_logFile);
@@ -17,7 +17,7 @@ void QLogger::stopLogging() {
     }
 }
 
-void QLogger::setLogLevel(int index) {
+void Logger::setLogLevel(int index) {
     switch (index) {
     case 0:
         stopLogging();
@@ -31,7 +31,7 @@ void QLogger::setLogLevel(int index) {
     }
 }
 
-void QLogger::setLogLevel(QtMsgType type) {
+void Logger::setLogLevel(QtMsgType type) {
     s_logLevel = type;
     if (s_logFile == nullptr) {
         QString tempPath = QDir::tempPath() + QString("/Launchy");
@@ -42,12 +42,12 @@ void QLogger::setLogLevel(QtMsgType type) {
         QString logFileName = tempPath + QString("/launchy.log");
         s_logFile = fopen(logFileName.toUtf8(), "a");
         if (s_logFile) {
-            qInstallMessageHandler(QLogger::messageHandler);
+            qInstallMessageHandler(Logger::messageHandler);
         }
     }
 }
 
-void QLogger::messageHandler(QtMsgType type,
+void Logger::messageHandler(QtMsgType type,
                             const QMessageLogContext& context,
                             const QString& msg) {
     if (type < s_logLevel || s_logFile == nullptr) {

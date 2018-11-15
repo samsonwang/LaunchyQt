@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CommandHistory.h"
 #include "GlobalVar.h"
+#include "OptionItem.h"
 
 namespace launchy {
 CommandHistory::CommandHistory() {
@@ -78,7 +79,7 @@ void CommandHistory::addItem(const InputDataList& item) {
     m_history.push_front(item);
     m_history.front().front().setLabel(LABEL_HISTORY);
 
-    if (m_history.size() > g_settings->value("GenOps/maxitemsinhistory", 20).toInt()) {
+    if (m_history.size() > g_settings->value(OPSTION_MAXITEMSINHISTORY, OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt()) {
         m_history.pop_back();
     }
 }

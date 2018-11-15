@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "precompiled.h"
 #include "Fader.h"
 #include "GlobalVar.h"
+#include "OptionItem.h"
 
 namespace launchy {
 Fader::Fader(QObject* parent)
@@ -33,10 +34,10 @@ Fader::~Fader() {
 }
 
 void Fader::fadeIn(bool quick) {
-    int time = g_settings->value("GenOps/fadein", 0).toInt();
+    int time = g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt();
 
     m_mutex.lock();
-    m_targetLevel = g_settings->value("GenOps/opaqueness", 100).toInt() / 100.0;
+    m_targetLevel = g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
     m_delta = 0.05;
     m_delay = quick ? 0 : (int)(time * m_delta / m_targetLevel);
     if (m_delay > 10) {
@@ -59,8 +60,8 @@ void Fader::fadeIn(bool quick) {
 
 
 void Fader::fadeOut(bool quick) {
-    int time = g_settings->value("GenOps/fadeout", 0).toInt();
-    double opaqueness = g_settings->value("GenOps/opaqueness", 100).toInt() / 100.0;
+    int time = g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt();
+    double opaqueness = g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
 
     m_mutex.lock();
     m_targetLevel = 0;

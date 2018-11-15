@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
 #include "CharListWidget.h"
 #include "GlobalVar.h"
 #include "IconDelegate.h"
+#include "OptionItem.h"
+
 namespace launchy {
 CharListWidget::CharListWidget(QWidget* parent)
     : QListWidget(parent),
@@ -46,7 +47,7 @@ CharListWidget::CharListWidget(QWidget* parent)
 
 void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset) {
     // Now resize and reposition the list
-    int numViewable = g_settings->value("GenOps/numviewable", "4").toInt();
+    int numViewable = g_settings->value(OPSTION_NUMVIEWABLE, OPSTION_NUMVIEWABLE_DEFAULT).toInt();
     int min = count() < numViewable ? count() : numViewable;
 
     // The stylesheet doesn't load immediately, so we cache the placement rectangle here

@@ -20,6 +20,7 @@
 #include "precompiled.h"
 #include "Catalog.h"
 #include "GlobalVar.h"
+#include "OptionItem.h"
 
 namespace launchy {
 // Load the catalog from the specified filename
@@ -119,7 +120,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     }
 
     // Load up the results
-    int max = g_settings->value("GenOps/numresults", 10).toInt();
+    int max = g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt();
     for (int i = 0; i < max && i < catMatches.count(); i++) {
         out.push_back(*catMatches[i]);
     }
@@ -144,7 +145,7 @@ void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem> & lis
 }
 
 QString Catalog::decorateText(const QString& text, const QString& match, bool outputRichText) {
-    if (!g_settings->value("GenOps/decoratetext", false).toBool())
+    if (!g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool())
         return text;
     QString decoratedText;
     int matchLength = match.count();

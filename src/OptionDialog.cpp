@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SettingsManager.h"
 #include "Logger.h"
 #include "CatalogBuilder.h"
+#include "OptionItem.h"
 
 
 namespace launchy {
@@ -58,36 +59,36 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->tabWidget->setCurrentIndex(s_currentTab);
 
     // Load General Options		
-    m_pUi->genAlwaysShow->setChecked(g_settings->value("GenOps/alwaysshow", false).toBool());
-    m_pUi->genAlwaysTop->setChecked(g_settings->value("GenOps/alwaystop", false).toBool());
+    m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
+    m_pUi->genAlwaysTop->setChecked(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
     m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
-    m_pUi->genHideFocus->setChecked(g_settings->value("GenOps/hideiflostfocus", false).toBool());
-    m_pUi->genDecorateText->setChecked(g_settings->value("GenOps/decoratetext", false).toBool());
+    m_pUi->genHideFocus->setChecked(g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
+    m_pUi->genDecorateText->setChecked(g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool());
 
-    int center = g_settings->value("GenOps/alwayscenter", 3).toInt();
+    int center = g_settings->value(OPSTION_ALWAYSCENTER, OPSTION_ALWAYSCENTER_DEFAULT).toInt();
     m_pUi->genHCenter->setChecked((center & 1) != 0);
     m_pUi->genVCenter->setChecked((center & 2) != 0);
 
-    m_pUi->genShiftDrag->setChecked(g_settings->value("GenOps/dragmode", 0) == 1);
+    m_pUi->genShiftDrag->setChecked(g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool());
 //    m_pUi->genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
-    m_pUi->genLog->setCurrentIndex(g_settings->value("GenOps/logLevel", 2).toInt());
+    m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
     connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
 
-    m_pUi->genShowHidden->setChecked(g_settings->value("GenOps/showHiddenFiles", false).toBool());
-    m_pUi->genShowNetwork->setChecked(g_settings->value("GenOps/showNetwork", true).toBool());
-    m_pUi->genCondensed->setCurrentIndex(g_settings->value("GenOps/condensedView", 2).toInt());
-    m_pUi->genAutoSuggestDelay->setValue(g_settings->value("GenOps/autoSuggestDelay", 1000).toInt());
+    m_pUi->genShowHidden->setChecked(g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool());
+    m_pUi->genShowNetwork->setChecked(g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool());
+    m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
+    m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
 
-    int updateInterval = g_settings->value("GenOps/updatetimer", 10).toInt();
+    int updateInterval = g_settings->value(OPSTION_UPDATETIMER, OPSTION_UPDATETIMER_DEFAULT).toInt();
     connect(m_pUi->genUpdateCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoUpdateCheckChanged(int)));
     m_pUi->genUpdateMinutes->setValue(updateInterval);
     m_pUi->genUpdateCatalog->setChecked(updateInterval > 0);
-    m_pUi->genMaxViewable->setValue(g_settings->value("GenOps/numviewable", 4).toInt());
-    m_pUi->genNumResults->setValue(g_settings->value("GenOps/numresults", 10).toInt());
-    m_pUi->genNumHistory->setValue(g_settings->value("GenOps/maxitemsinhistory", 20).toInt());
-    m_pUi->genOpaqueness->setValue(g_settings->value("GenOps/opaqueness", 100).toInt());
-    m_pUi->genFadeIn->setValue(g_settings->value("GenOps/fadein", 0).toInt());
-    m_pUi->genFadeOut->setValue(g_settings->value("GenOps/fadeout", 20).toInt());
+    m_pUi->genMaxViewable->setValue(g_settings->value(OPSTION_NUMVIEWABLE, OPSTION_NUMVIEWABLE_DEFAULT).toInt());
+    m_pUi->genNumResults->setValue(g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt());
+    m_pUi->genNumHistory->setValue(g_settings->value(OPSTION_MAXITEMSINHISTORY, OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt());
+    m_pUi->genOpaqueness->setValue(g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt());
+    m_pUi->genFadeIn->setValue(g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt());
+    m_pUi->genFadeOut->setValue(g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt());
     connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
 
 #ifdef Q_OS_MAC
@@ -151,11 +152,11 @@ OptionDialog::OptionDialog(QWidget * parent)
     }
 
     // Load up web proxy settings
-    m_pUi->genProxyHostname->setText(g_settings->value("WebProxy/hostAddress").toString());
-    m_pUi->genProxyPort->setText(g_settings->value("WebProxy/port").toString());
+    m_pUi->genProxyHostname->setText(g_settings->value(OPSTION_HOSTADDRESS).toString());
+    m_pUi->genProxyPort->setText(g_settings->value(OPSTION_HOSTPORT).toString());
 
     // Load up the skins list
-    QString skinName = g_settings->value("GenOps/skin", "Default").toString();
+    QString skinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
 
     int skinRow = 0;
     QHash<QString, bool> knownSkins;
@@ -273,7 +274,7 @@ void OptionDialog::setVisible(bool visible) {
 
 
 void OptionDialog::accept() {
-    if (g_settings == NULL)
+    if (g_settings.isNull())
         return;
 
     // See if the new hotkey works, if not we're not leaving the dialog.
@@ -283,32 +284,32 @@ void OptionDialog::accept() {
         return;
     }
 
-    g_settings->setValue("GenOps/hotkey", hotkey.count() > 0 ? hotkey[0] : 0);
+    g_settings->setValue(OPSTION_HOTKEY, hotkey.count() > 0 ? hotkey[0] : OPSTION_HOTKEY_DEFAULT);
 
     // Save General Options
 //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
-    g_settings->setValue("GenOps/alwaysshow", m_pUi->genAlwaysShow->isChecked());
-    g_settings->setValue("GenOps/alwaystop", m_pUi->genAlwaysTop->isChecked());
+    g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
+    g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
 //    g_settings->setValue("GenOps/updatecheck", m_pUi->genUpdateCheck->isChecked());
-    g_settings->setValue("GenOps/logLevel", m_pUi->genLog->currentIndex());
-    g_settings->setValue("GenOps/decoratetext", m_pUi->genDecorateText->isChecked());
-    g_settings->setValue("GenOps/hideiflostfocus", m_pUi->genHideFocus->isChecked());
-    g_settings->setValue("GenOps/alwayscenter", (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
-    g_settings->setValue("GenOps/dragmode", m_pUi->genShiftDrag->isChecked() ? 1 : 0);
-    g_settings->setValue("GenOps/showHiddenFiles", m_pUi->genShowHidden->isChecked());
-    g_settings->setValue("GenOps/showNetwork", m_pUi->genShowNetwork->isChecked());
-    g_settings->setValue("GenOps/condensedView", m_pUi->genCondensed->currentIndex());
-    g_settings->setValue("GenOps/autoSuggestDelay", m_pUi->genAutoSuggestDelay->value());
-    g_settings->setValue("GenOps/updatetimer", m_pUi->genUpdateCatalog->isChecked() ? m_pUi->genUpdateMinutes->value() : 0);
-    g_settings->setValue("GenOps/numviewable", m_pUi->genMaxViewable->value());
-    g_settings->setValue("GenOps/numresults", m_pUi->genNumResults->value());
-    g_settings->setValue("GenOps/maxitemsinhistory", m_pUi->genNumHistory->value());
-    g_settings->setValue("GenOps/opaqueness", m_pUi->genOpaqueness->value());
-    g_settings->setValue("GenOps/fadein", m_pUi->genFadeIn->value());
-    g_settings->setValue("GenOps/fadeout", m_pUi->genFadeOut->value());
+    g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
+    g_settings->setValue(OPSTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
+    g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
+    g_settings->setValue(OPSTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
+    g_settings->setValue(OPSTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
+    g_settings->setValue(OPSTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
+    g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
+    g_settings->setValue(OPSTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
+    g_settings->setValue(OPSTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
+    g_settings->setValue(OPSTION_UPDATETIMER, m_pUi->genUpdateCatalog->isChecked() ? m_pUi->genUpdateMinutes->value() : 0);
+    g_settings->setValue(OPSTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
+    g_settings->setValue(OPSTION_NUMRESULT, m_pUi->genNumResults->value());
+    g_settings->setValue(OPSTION_MAXITEMSINHISTORY, m_pUi->genNumHistory->value());
+    g_settings->setValue(OPSTION_OPAQUENESS, m_pUi->genOpaqueness->value());
+    g_settings->setValue(OPSTION_FADEIN, m_pUi->genFadeIn->value());
+    g_settings->setValue(OPSTION_FADEOUT, m_pUi->genFadeOut->value());
 
-    g_settings->setValue("WebProxy/hostAddress", m_pUi->genProxyHostname->text());
-    g_settings->setValue("WebProxy/port", m_pUi->genProxyPort->text());
+    g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
+    g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
 
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
@@ -335,13 +336,12 @@ void OptionDialog::accept() {
     g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
 
     // Apply Skin Options
-    QString prevSkinName = g_settings->value("GenOps/skin", "Default").toString();
-    QString skinName = m_pUi->skinList->currentItem()->text();
-    if (m_pUi->skinList->currentRow() >= 0 && skinName != prevSkinName)
-    {
-        g_settings->setValue("GenOps/skin", skinName);
-        g_mainWidget->setSkin(skinName);
-        show = false;
+    QString prevSkinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
+    QString currentSkinName = m_pUi->skinList->currentItem()->text();
+    if (m_pUi->skinList->currentRow() >= 0 && currentSkinName != prevSkinName) {
+        g_settings->setValue(OPSTION_SKIN, currentSkinName);
+        g_mainWidget->setSkin(currentSkinName);
+        show |= true;
     }
 
     if (needRescan)
@@ -456,17 +456,17 @@ void OptionDialog::skinChanged(const QString& newSkin)
 }
 
 
-void OptionDialog::pluginChanged(int row)
-{
+void OptionDialog::pluginChanged(int row) {
     m_pUi->plugBox->setTitle(tr("Plugin options"));
 
-    if (m_pUi->plugBox->layout() != NULL)
-        for (int i = 1; i < m_pUi->plugBox->layout()->count(); i++)
+    if (m_pUi->plugBox->layout() != NULL) {
+        for (int i = 1; i < m_pUi->plugBox->layout()->count(); ++i) {
             m_pUi->plugBox->layout()->removeItem(m_pUi->plugBox->layout()->itemAt(i));
+        }
+    }
 
     // Close any current plugin dialogs
-    if (curPlugin >= 0)
-    {
+    if (curPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(curPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
@@ -474,15 +474,13 @@ void OptionDialog::pluginChanged(int row)
     // Open the new plugin dialog
     curPlugin = row;
     s_currentPlugin = row;
-    if (row >= 0)
-    {
+    if (row >= 0) {
         loadPluginDialog(m_pUi->plugList->item(row));
     }
 }
 
 
-void OptionDialog::loadPluginDialog(QListWidgetItem* item)
-{
+void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     QWidget* win = g_pluginHandler->doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
     if (win != NULL) {
         if (m_pUi->plugBox->layout() != NULL)
@@ -494,8 +492,7 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item)
 }
 
 
-void OptionDialog::pluginItemChanged(QListWidgetItem* iz)
-{
+void OptionDialog::pluginItemChanged(QListWidgetItem* iz) {
     int row = m_pUi->plugList->currentRow();
     if (row == -1)
         return;
@@ -532,7 +529,7 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* iz)
 
 
 void OptionDialog::logLevelChanged(int index) {
-    QLogger::setLogLevel(index);
+    Logger::setLogLevel(index);
 }
 
 void OptionDialog::catalogProgressUpdated(int value) {
@@ -543,19 +540,16 @@ void OptionDialog::catalogProgressUpdated(int value) {
 }
 
 
-void OptionDialog::catalogBuilt()
-{
+void OptionDialog::catalogBuilt() {
     m_pUi->catProgress->setVisible(false);
     m_pUi->catRescan->setEnabled(true);
 
     m_pUi->catSize->setText(tr("Index has %n items", "", g_catalog->count()));
     m_pUi->catSize->setVisible(true);
-
 }
 
 
-void OptionDialog::catRescanClicked(bool val)
-{
+void OptionDialog::catRescanClicked(bool val) {
     val = val; // Compiler warning
 
     // Apply Directory Options
@@ -579,9 +573,8 @@ void OptionDialog::catTypesDirChanged(int state)
 }
 
 
-void OptionDialog::catTypesExeChanged(int state)
-{
-    state = state; // Compiler warning
+void OptionDialog::catTypesExeChanged(int state) {
+    Q_UNUSED(state)
     int row = m_pUi->catDirectories->currentRow();
     if (row == -1)
         return;
@@ -591,8 +584,7 @@ void OptionDialog::catTypesExeChanged(int state)
 }
 
 
-void OptionDialog::catDirItemChanged(QListWidgetItem* item)
-{
+void OptionDialog::catDirItemChanged(QListWidgetItem* item) {
     int row = m_pUi->catDirectories->currentRow();
     if (row == -1)
         return;
@@ -605,24 +597,19 @@ void OptionDialog::catDirItemChanged(QListWidgetItem* item)
 }
 
 
-void OptionDialog::catDirDragEnter(QDragEnterEvent *event)
-{
+void OptionDialog::catDirDragEnter(QDragEnterEvent *event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData && mimeData->hasUrls())
         event->acceptProposedAction();
 }
 
 
-void OptionDialog::catDirDrop(QDropEvent *event)
-{
+void OptionDialog::catDirDrop(QDropEvent *event) {
     const QMimeData* mimeData = event->mimeData();
-    if (mimeData && mimeData->hasUrls())
-    {
-        foreach(QUrl url, mimeData->urls())
-        {
+    if (mimeData && mimeData->hasUrls()) {
+        foreach(QUrl url, mimeData->urls()) {
             QFileInfo info(url.toLocalFile());
-            if (info.exists() && info.isDir())
-            {
+            if (info.exists() && info.isDir()) {
                 addDirectory(info.filePath());
             }
         }
@@ -630,14 +617,12 @@ void OptionDialog::catDirDrop(QDropEvent *event)
 }
 
 
-void OptionDialog::dirRowChanged(int row)
-{
+void OptionDialog::dirRowChanged(int row) {
     if (row == -1)
         return;
 
     m_pUi->catTypes->clear();
-    foreach(QString str, memDirs[row].types)
-    {
+    foreach(QString str, memDirs[row].types) {
         QListWidgetItem* item = new QListWidgetItem(str, m_pUi->catTypes);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
     }
@@ -659,8 +644,7 @@ void OptionDialog::catDirMinusClicked(bool c) {
     memDirs.removeAt(dirRow);
 
     if (dirRow >= m_pUi->catDirectories->count()
-        && m_pUi->catDirectories->count() > 0)
-    {
+        && m_pUi->catDirectories->count() > 0) {
         m_pUi->catDirectories->setCurrentRow(m_pUi->catDirectories->count() - 1);
         dirRowChanged(m_pUi->catDirectories->count() - 1);
     }
@@ -740,7 +724,6 @@ void OptionDialog::catTypesMinusClicked(bool c) {
     needRescan = true;
 }
 
-
 void OptionDialog::catDepthChanged(int d) {
     int row = m_pUi->catDirectories->currentRow();
     if (row != -1)
@@ -748,4 +731,5 @@ void OptionDialog::catDepthChanged(int d) {
 
     needRescan = true;
 }
+
 }

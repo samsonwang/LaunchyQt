@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppBase.h"
 #include "GlobalVar.h"
 #include "Catalog.h"
+#include "OptionItem.h"
 
 namespace launchy {
 
@@ -77,7 +78,7 @@ void FileSearch::search(const QString& searchText,
     // This is a windows network search
     if (searchPath.startsWith("//")) {
         // Exit if the user doesn't want to browse networks
-        if (!g_settings->value("GenOps/showNetwork", true).toBool())
+        if (!g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool())
             return;
 
         // Check for a search against just the network name
@@ -104,7 +105,7 @@ void FileSearch::search(const QString& searchText,
         filePart = filePart.toLower();
 #endif
 
-        if (g_settings->value("GenOps/showHiddenFiles", false).toBool())
+        if (g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool())
             filters |= QDir::Hidden;
 
         itemList = dir.entryList(filters, QDir::DirsLast | QDir::IgnoreCase | QDir::LocaleAware);

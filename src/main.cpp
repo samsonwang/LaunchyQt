@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
                 command |= launchy::Exit;
             }
             else if (arg.compare("log", Qt::CaseInsensitive) == 0) {
-                launchy::QLogger::setLogLevel(QtDebugMsg);
+                launchy::Logger::setLogLevel(QtDebugMsg);
             }
             else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
                 if (++i < args.length()) {

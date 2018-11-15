@@ -191,6 +191,7 @@ exit 0</Command>
     <ClCompile Include="InputDataList.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OptionItem.cpp" />
     <ClCompile Include="SettingsManager.cpp" />
     <ClCompile Include="CatalogBuilder.cpp" />
     <ClCompile Include="Catalog.cpp" />
@@ -249,6 +250,7 @@ exit 0</Command>
     <ClInclude Include="AnimationLabel.h" />
     <ClInclude Include="InputDataList.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="OptionItem.h" />
     <ClInclude Include="win\IconProviderWin.h" />
     <ClInclude Include="win\CrashDumper.h" />
     <ClInclude Include="win\UtilWin.h" />
