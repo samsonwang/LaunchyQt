@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginHandler.h"
 #include "FileBrowserDelegate.h"
 #include "SettingsManager.h"
-#include "QLogger.h"
+#include "Logger.h"
 #include "CatalogBuilder.h"
 
 

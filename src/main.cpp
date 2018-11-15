@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "AppBase.h"
 #include "LaunchyWidget.h"
 #include "SettingsManager.h"
-#include "QLogger.h"
+#include "Logger.h"
 
 int main(int argc, char* argv[]) {
 

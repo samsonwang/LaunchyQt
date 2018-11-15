@@ -102,9 +102,6 @@
     <ClCompile Include="OptionDialog.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="QLogger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win\AppWin.cpp">
       <Filter>Application</Filter>
     </ClCompile>
@@ -219,6 +216,9 @@
     <ClCompile Include="FileBrowserDelegate.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -241,9 +241,6 @@
     </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_OptionDialog.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QLogger.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AppBase.h">
       <Filter>Application</Filter>
@@ -268,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="PluginHandler.h">
       <Filter>Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

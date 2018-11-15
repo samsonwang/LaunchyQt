@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyWidget.h"
 #include "GlobalVar.h"
 #include "AppBase.h"
-#include "QLogger.h"
+#include "Logger.h"
 
 const char* iniName = "/launchy.ini";
 const char* dbName = "/launchy.db";

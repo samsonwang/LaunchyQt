@@ -1,5 +1,5 @@
 
-#include "QLogger.h"
+#include "Logger.h"
 #include <QDir>
 #include <QString>
 #include <QDateTime>

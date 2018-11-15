@@ -189,7 +189,7 @@ exit 0</Command>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_launchy.cpp" />
     <ClCompile Include="InputDataList.cpp" />
-    <ClCompile Include="QLogger.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SettingsManager.cpp" />
     <ClCompile Include="CatalogBuilder.cpp" />
@@ -248,6 +248,7 @@ exit 0</Command>
     </CustomBuild>
     <ClInclude Include="AnimationLabel.h" />
     <ClInclude Include="InputDataList.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="win\IconProviderWin.h" />
     <ClInclude Include="win\CrashDumper.h" />
     <ClInclude Include="win\UtilWin.h" />
@@ -329,7 +330,6 @@ exit 0</Command>
     </CustomBuild>
     <ClInclude Include="FileSearch.h" />
     <ClInclude Include="GeneratedFiles\ui_OptionDialog.h" />
-    <ClInclude Include="QLogger.h" />
     <ClInclude Include="SettingsManager.h" />
     <CustomBuild Include="CatalogBuilder.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp" "-fPrecompiled.h" "-f../CatalogBuilder.h"  -D_WINDOWS -DVC_EXTRALEAN -DWIN32 -DNDEBUG -D_UNICODE -DUNICODE -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_WINEXTRAS_LIB -DQAPPLICATION_CLASS=QApplication "-I." "-I.\GeneratedFiles" "-I.\lib" "-I.\..\deps" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtWinExtras" "-I$(QTDIR)\mkspecs\win32-msvc2015"</Command>
