@@ -227,7 +227,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
     connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
     g_pluginHandler->loadPlugins();
-    foreach(PluginInfo info, g_pluginHandler->getPlugins()) {
+    foreach(const PluginInfo& info, g_pluginHandler->getPlugins()) {
         m_pUi->plugList->addItem(info.name);
         QListWidgetItem* item = m_pUi->plugList->item(m_pUi->plugList->count()-1);
         item->setData(Qt::UserRole, info.id);

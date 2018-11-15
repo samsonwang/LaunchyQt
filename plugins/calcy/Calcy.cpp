@@ -149,10 +149,10 @@ int Calcy::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* it
 }
 
 QString Calcy::getIcon() {
-    return m_libPath + "/icons/calcy.png";
+    return m_libPath + "/calcy.png";
 }
 
-void Calcy::setPath(QString* path) {
+void Calcy::setPath(const QString* path) {
     qDebug() << "Calcy::setPath, path:" << *path;
     m_libPath = *path;
 }
@@ -211,7 +211,7 @@ int Calcy::msg(int msgId, void* wParam, void* lParam) {
         endDialog(wParam != 0);
         break;
     case MSG_PATH:
-        setPath((QString*)wParam);
+        setPath((const QString*)wParam);
     default:
         break;
     }

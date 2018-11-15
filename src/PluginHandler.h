@@ -44,10 +44,17 @@ public:
     int launchItem(QList<InputData>*, CatItem*);
     QWidget* doDialog(QWidget* parent, uint pluginId);
     void endDialog(uint pluginId, bool accept);
-    QHash<uint, PluginInfo> & getPlugins() { return plugins; }
+    const QHash<uint, PluginInfo>& getPlugins() const;
 
 private:
-    QHash<uint, PluginInfo> plugins;
+    // load plugin written in python
+    void loadPythonPlugin(const QString& pluginName, const QString& pluginPath);
+    // load plugin written in cpp
+    void loadCppPlugin(const QString& pluginName, const QString& pluginPath);
+
+private:
+    QHash<uint, PluginInfo> m_plugins;
+    QHash<uint, bool> m_loadable;
 };
 
 class INotifyProgressStep {

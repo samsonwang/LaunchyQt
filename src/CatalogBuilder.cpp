@@ -44,7 +44,7 @@ void CatalogBuilder::buildCatalog() {
     m_indexed.clear();
 
     QList<Directory> memDirs = SettingsManager::instance().readCatalogDirectories();
-    QHash<uint, PluginInfo> pluginsInfo = g_pluginHandler->getPlugins();
+    const QHash<uint, PluginInfo>& pluginsInfo = g_pluginHandler->getPlugins();
     m_totalItems = memDirs.count() + pluginsInfo.count();
     m_currentItem = 0;
 

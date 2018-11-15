@@ -38,7 +38,7 @@ public:
 
 private:
     void getID(uint* id);
-    void setPath(QString* path);
+    void setPath(const QString* path);
     void getName(QString* name);
     void getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results);
     int launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item);

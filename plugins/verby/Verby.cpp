@@ -26,7 +26,7 @@ using namespace launchy;
 void Verby::init() {
 }
 
-void Verby::setPath(QString * path) {
+void Verby::setPath(const QString* path) {
     m_libPath = *path;
 }
 
@@ -41,7 +41,6 @@ void Verby::getName(QString* str) {
 QString Verby::getIcon() {
     return getIconPath() + "verby.png";
 }
-
 
 void Verby::getLabels(QList<launchy::InputData>* inputData) {
     if (inputData->count() == 1) {
@@ -65,9 +64,8 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
 }
 
 
-QString Verby::getIconPath() const
-{
-    return m_libPath + "/icons/";
+QString Verby::getIconPath() const {
+    return m_libPath;
 }
 
 bool Verby::isMatch(const QString& text1, const QString& text2) {
@@ -86,12 +84,11 @@ bool Verby::isMatch(const QString& text1, const QString& text2) {
 
 void Verby::addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName) {
     if (text.isEmpty() || isMatch(shortName, text)) {
-        CatItem item = CatItem(fullName, shortName, HASH_VERBY, getIconPath() + iconName);
+        CatItem item = CatItem(fullName, shortName, HASH_VERBY, getIconPath()  + "/" + iconName);
         item.usage = (*settings)->value("verby/" + shortName.replace(" ", ""), 0).toInt();
         results->push_back(item);
     }
 }
-
 
 void Verby::updateUsage(CatItem& item) {
     (*settings)->setValue("verby/" + item.shortName.replace(" ", ""), item.usage + 1);

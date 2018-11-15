@@ -35,7 +35,7 @@ public:
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
 private:
-    void setPath(QString* path);
+    void setPath(const QString* path);
     void getLabels(QList<launchy::InputData>* inputData);
     void getID(uint* id);
     void getName(QString* name);

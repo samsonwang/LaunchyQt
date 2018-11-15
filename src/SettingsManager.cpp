@@ -34,7 +34,6 @@ SettingsManager::SettingsManager()
     : m_portable(false) {
 }
 
-
 SettingsManager & SettingsManager::instance() {
     static SettingsManager s_obj;
     return s_obj;
