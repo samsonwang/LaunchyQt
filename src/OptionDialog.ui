@@ -45,13 +45,25 @@
    <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
+   </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="General">
       <attribute name="title">
@@ -62,7 +74,7 @@
         <number>2</number>
        </property>
        <property name="bottomMargin">
-        <number>2</number>
+        <number>8</number>
        </property>
        <property name="verticalSpacing">
         <number>6</number>
@@ -89,7 +101,7 @@
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <property name="topMargin">
-           <number>1</number>
+           <number>2</number>
           </property>
           <property name="bottomMargin">
            <number>5</number>
@@ -125,6 +137,12 @@
             </property>
             <item>
              <widget class="QLabel" name="label_5">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>22</height>
+               </size>
+              </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -141,6 +159,12 @@
             </item>
             <item>
              <widget class="QCheckBox" name="genHCenter">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>22</height>
+               </size>
+              </property>
               <property name="text">
                <string>horizontally</string>
               </property>
@@ -148,6 +172,12 @@
             </item>
             <item>
              <widget class="QCheckBox" name="genVCenter">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>22</height>
+               </size>
+              </property>
               <property name="text">
                <string>vertically</string>
               </property>
@@ -170,6 +200,12 @@
           </item>
           <item>
            <widget class="QCheckBox" name="genShiftDrag">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>22</height>
+             </size>
+            </property>
             <property name="text">
              <string>Only allow dragging whilst Shift is pressed</string>
             </property>
@@ -201,7 +237,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>18</height>
+                <height>20</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -236,7 +272,7 @@
               <property name="minimumSize">
                <size>
                 <width>50</width>
-                <height>18</height>
+                <height>20</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -293,7 +329,7 @@
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <property name="topMargin">
-           <number>1</number>
+           <number>2</number>
           </property>
           <property name="bottomMargin">
            <number>3</number>
@@ -303,7 +339,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>18</height>
+              <height>22</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -336,7 +372,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>18</height>
+                <height>22</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -368,6 +404,12 @@
             </item>
             <item>
              <widget class="QComboBox" name="genCondensed">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>21</height>
+               </size>
+              </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -401,13 +443,10 @@
           <item>
            <layout class="QGridLayout" name="gridLayout_2">
             <property name="bottomMargin">
-             <number>5</number>
+             <number>3</number>
             </property>
-            <property name="horizontalSpacing">
-             <number>6</number>
-            </property>
-            <property name="verticalSpacing">
-             <number>5</number>
+            <property name="spacing">
+             <number>1</number>
             </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label_11">
@@ -420,7 +459,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>18</height>
+                <height>22</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -475,7 +514,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>18</height>
+                <height>22</height>
                </size>
               </property>
               <property name="text">
@@ -510,7 +549,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>18</height>
+                <height>22</height>
                </size>
               </property>
               <property name="text">
@@ -545,7 +584,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>18</height>
+                <height>22</height>
                </size>
               </property>
               <property name="text">
@@ -749,10 +788,10 @@
              <number>3</number>
             </property>
             <property name="topMargin">
-             <number>3</number>
+             <number>6</number>
             </property>
             <property name="bottomMargin">
-             <number>9</number>
+             <number>6</number>
             </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -1005,6 +1044,9 @@
        <string>Skins</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <property name="topMargin">
+        <number>2</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBox_3">
          <property name="minimumSize">
@@ -1055,6 +1097,12 @@
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <property name="spacing">
           <number>3</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
          </property>
          <item>
           <widget class="QGroupBox" name="groupBox_8">
@@ -1124,7 +1172,7 @@
              <number>3</number>
             </property>
             <property name="topMargin">
-             <number>3</number>
+             <number>6</number>
             </property>
             <property name="rightMargin">
              <number>3</number>

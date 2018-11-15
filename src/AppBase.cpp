@@ -31,6 +31,7 @@ AppBase::AppBase(int& argc, char** argv)
     setQuitOnLastWindowClosed(false);
     setApplicationName("Launchy");
     setOrganizationDomain("Launchy");
+    setStyle(QStyleFactory::create("Fusion"));
 }
 
 AppBase::~AppBase() {
