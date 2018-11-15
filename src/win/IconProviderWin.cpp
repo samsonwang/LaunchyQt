@@ -154,7 +154,6 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
                 imageListIndex = SHIL_EXTRALARGE;
             }
             else {
-                //imageListIndex = SHIL_EXTRALARGE;
                 imageListIndex = SHIL_JUMBO;
             }
                 
@@ -169,8 +168,9 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 
             // Ensure there's also a 32x32 icon - extralarge and above often only contain
             // a large frame with the 32x32 icon in the middle or looks blurry
-            if (imageListIndex == SHIL_EXTRALARGE || imageListIndex == SHIL_JUMBO)
+            if (imageListIndex == SHIL_EXTRALARGE || imageListIndex == SHIL_JUMBO) {
                 addIconFromImageList(SHIL_LARGE, sfi.iIcon, retIcon);
+            }
         }
         // isSymLink is case sensitive when it perhaps shouldn't be
         else if (info.isSymLink() || fileExtension == "lnk") {

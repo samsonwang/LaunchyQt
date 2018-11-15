@@ -53,6 +53,11 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
     // The stylesheet doesn't load immediately, so we cache the placement rectangle here
     if (m_baseGeometry.isNull()) {
         m_baseGeometry = geometry();
+        qDebug() << "CharListWidget::updateGeometry, base geometry(x y h w):"
+            << m_baseGeometry.x()
+            << m_baseGeometry.y()
+            << m_baseGeometry.height()
+            << m_baseGeometry.width();
     }
 
     QRect rect = m_baseGeometry;
@@ -60,6 +65,8 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
     //QRect rect = m_alternativeList->geometry();
     rect.setHeight(min * sizeHintForRow(0));
     rect.translate(basePos);
+
+    qDebug() << "CharListWidget::updateGeometry, height:" << rect.height();
 
     // Is there room for the dropdown box?
     if (rect.y() + rect.height() > qApp->desktop()->height()) {

@@ -304,6 +304,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
         if (item->data(mode == 1 ? ROLE_SHORT : ROLE_FULL) != fullPath) {
             // condensedTempIcon is a blank icon or null
             item->setData(ROLE_ICON, QIcon());
+            item->setSizeHint(QSize(32, 32));
         }
         item->setData(mode == 1 ? ROLE_FULL : ROLE_SHORT, m_searchResult[i].shortName);
         item->setData(mode == 1 ? ROLE_SHORT : ROLE_FULL, fullPath);
