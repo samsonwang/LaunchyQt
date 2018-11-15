@@ -3,6 +3,7 @@
 I have been using Launchy for years, and found that this project has not been updated since 2010. I love this tool and want to maintain this project.
 
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
+You can checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/blob/master/docs/CHANGELOG.org][here]] .
 
 ** Latest release
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].

@@ -1,11 +1,13 @@
 
+* developing in progress
+- built-in python support (write plugin in python)
 
-* 3.0.3 (in developing)
+
+* 3.0.3 (developed finished, not released)
 - fix display bug in alternative list caused by different icon size
 - put all plugin in each standalone folder (doing this to prepare for build-in python script integration)
 - option dialog use fusion style from qt
 - pack additional vcredist file (just in case that you do not want to download install vcredist2015)
-
 
 * 3.0.2
 - Verby plugin works now
