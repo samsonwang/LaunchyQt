@@ -1,5 +1,19 @@
 
 
+* 3.0.3 (in developing)
+- fix display bug in alternative list caused by different icon size
+- put all plugin in each standalone folder (doing this to prepare for build-in python script integration)
+- option dialog use fusion style from qt
+- pack additional vcredist file (just in case that you do not want to download install vcredist2015)
+
+
+* 3.0.2
+- Verby plugin works now
+- Calcy plugin can convert among octal decimal hexadecimal, this works when input has a trailing equal symbol, try following input: =035== , =35== , =0x35==
+- add skins for high DPI, this may help in 2k or 4k display (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
+- pack additional qt dll (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
+- fix bug in key bindings
+
 * 3.0.1
 - tray icon show message while starting second instance
 - write log file in sytem temp folder, log could be turn off in option dialog
