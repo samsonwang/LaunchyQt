@@ -27,6 +27,7 @@ void Verby::init() {
 }
 
 void Verby::setPath(const QString* path) {
+    qDebug() << "Verby::setPath, m_libPath:" << m_libPath;
     m_libPath = *path;
 }
 
@@ -39,7 +40,7 @@ void Verby::getName(QString* str) {
 }
 
 QString Verby::getIcon() {
-    return getIconPath() + "verby.png";
+    return getIconPath() + "/verby.png";
 }
 
 void Verby::getLabels(QList<launchy::InputData>* inputData) {
@@ -125,7 +126,7 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
 
         // ensure there's always an item at the top of the list for launching with parameters.
         results->push_front(CatItem("Run", inputData->last().getText(), INT_MAX,
-                                    getIconPath() + "verby_run.png"));
+                                    getIconPath() + "/verby_run.png"));
     }
 }
 
