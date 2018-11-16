@@ -54,7 +54,6 @@ static HICON getHIconFromExe(HWND hWnd) {
     HICON hIcon = NULL;
     if (procId != 0) {
         HANDLE hndl = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, procId);
-
         if (hndl != 0) {
             TCHAR filename[2048];
             if (GetModuleFileNameEx(hndl, NULL, filename, sizeof(filename) / sizeof(TCHAR))) {
@@ -64,45 +63,6 @@ static HICON getHIconFromExe(HWND hWnd) {
         }
     }
     return hIcon;
-}
-
-static QString getIconFromHWND(HWND hWnd) {
-    QString iconPath = qApp->applicationDirPath() + "/plugins/Tasky/cache/" + QString::number((int64_t)hWnd) + ".png";
-
-    //no need to get icon if it already exists
-    if (!QFile::exists(iconPath)) {
-        //try to get large icon from window
-        HICON hIcon = (HICON)GetClassLongPtr(hWnd, GCLP_HICON);
-
-        //if not possible, get large icon from exe
-        if (hIcon == NULL) {
-            hIcon = getHIconFromExe(hWnd);
-        }
-
-        if (hIcon != NULL) {
-            QPixmap qpix = QtWin::fromHICON(hIcon);
-
-            if (qpix.width() < 32) {
-                hIcon = getHIconFromExe(hWnd);
-
-                if (hIcon != NULL) {
-                    qpix = QtWin::fromHICON(hIcon);
-                }
-            }
-            qpix.save(iconPath);
-        }
-    }
-
-    return iconPath;
-}
-
-static QString fromWCharArray(const wchar_t *string) {
-    if (sizeof(wchar_t) == sizeof(QChar)) {
-        return QString::fromUtf16((ushort *)string, -1);
-    }
-    else {
-        return QString::fromUcs4((uint *)string, -1);
-    }
 }
 
 static BOOL windowHasTaskbarButton(HWND hWnd) {
@@ -124,23 +84,24 @@ static BOOL windowHasTaskbarButton(HWND hWnd) {
     return TRUE;
 }
 
-static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
+static BOOL CALLBACK enumWindowsProc(HWND hWnd, LPARAM lParam) {
     Q_UNUSED(lParam)
     if (!windowHasTaskbarButton(hWnd))
         return TRUE;
 
     int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
-    wchar_t* title = new wchar_t[len+1];
-    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title)))
+    QScopedPointer<wchar_t> title(new wchar_t[len+1]);
+    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title.data()))) {
         return TRUE; // No Title
+    }
 
-    g_windowTitles.push_back(fromWCharArray(title));
-    g_iconPaths.push_back(getIconFromHWND(hWnd));
+    g_windowTitles.push_back(QString::fromWCharArray(title.data()));
+    g_iconPaths.push_back(g_taskyInstance->getIconFromHWND(hWnd));
 
     return TRUE;
 }
 
-static BOOL CALLBACK FindWindowTitle(HWND hWnd, LPARAM lParam) {
+static BOOL CALLBACK findWindowTitle(HWND hWnd, LPARAM lParam) {
     Q_UNUSED(lParam)
     if (!hWnd)
         return TRUE; // Not a window
@@ -149,11 +110,11 @@ static BOOL CALLBACK FindWindowTitle(HWND hWnd, LPARAM lParam) {
         return TRUE; // Not visible
 
     int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
-    wchar_t* title = new wchar_t[len+1];
-    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title)))
+    QScopedPointer<wchar_t> title(new wchar_t[len+1]);
+    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title.data())))
         return TRUE; // No Title
 
-    if (g_selectedCatItemText == fromWCharArray(title)) {
+    if (g_selectedCatItemText == QString::fromWCharArray(title.data())) {
         g_hSelectedWindow = hWnd;
         return FALSE;
     }
@@ -161,7 +122,7 @@ static BOOL CALLBACK FindWindowTitle(HWND hWnd, LPARAM lParam) {
     return TRUE;
 }
 
-static BOOL searchWindowTitle(QString search, QString windowTitle) {
+static bool searchWindowTitle(const QString& search, const QString& windowTitle) {
     for (int i = 0; i < search.size(); ++i) {
         int titleCount = windowTitle.count(search[i], Qt::CaseInsensitive);
         int searchCount = search.count(search[i], Qt::CaseInsensitive);
@@ -170,7 +131,6 @@ static BOOL searchWindowTitle(QString search, QString windowTitle) {
             return false;
         }
     }
-
     return true;
 }
 
@@ -212,12 +172,16 @@ void Tasky::getResults(QList<InputData>* inputList, QList<CatItem>* result) {
     g_iconPaths.clear();
     initIconDir();
 
-    EnumWindows(EnumWindowsProc, NULL);
+    EnumWindows(enumWindowsProc, NULL);
 
     QString text = inputList->last().getText();
     for (int i = 0; i < g_windowTitles.size(); ++i) {
-        if (searchWindowTitle(text, g_windowTitles[i]))
-            result->push_front(CatItem(g_windowTitles[i] + "." + PLUGIN_NAME, g_windowTitles[i], HASH_TASKY, g_iconPaths[i]));
+        if (searchWindowTitle(text, g_windowTitles[i])) {
+            result->push_front(CatItem(g_windowTitles[i] + "." + PLUGIN_NAME,
+                                       g_windowTitles[i],
+                                       HASH_TASKY,
+                                       g_iconPaths[i]));
+        }
     }
 
 }
@@ -236,7 +200,7 @@ void Tasky::launchItem(QList<InputData>* id, CatItem* item) {
     CatItem* base = (id->count() == 1) ? &id->first().getTopResult() : &id->last().getTopResult();
     g_selectedCatItemText = base->shortName;
 
-    EnumWindows(FindWindowTitle, NULL);
+    EnumWindows(findWindowTitle, NULL);
 
     WINDOWPLACEMENT wp;
     if (!GetWindowPlacement(g_hSelectedWindow, &wp))
@@ -277,12 +241,43 @@ void Tasky::initIconDir() {
     }
 }
 
-Tasky::Tasky() {
-    HASH_TASKY = qHash(QString(PLUGIN_NAME));
+QString Tasky::getIconFromHWND(HWND hWnd) {
+    QString iconPath = m_libPath + "/cache/" + QString::number((int64_t)hWnd) + ".png";
+
+    //no need to get icon if it already exists
+    if (!QFile::exists(iconPath)) {
+        //try to get large icon from window
+        HICON hIcon = (HICON)GetClassLongPtr(hWnd, GCLP_HICON);
+
+        //if not possible, get large icon from exe
+        if (hIcon == NULL) {
+            hIcon = getHIconFromExe(hWnd);
+        }
+
+        if (hIcon != NULL) {
+            QPixmap qpix = QtWin::fromHICON(hIcon);
+
+            if (qpix.width() < 32) {
+                hIcon = getHIconFromExe(hWnd);
+
+                if (hIcon != NULL) {
+                    qpix = QtWin::fromHICON(hIcon);
+                }
+            }
+            qpix.save(iconPath);
+        }
+    }
+
+    return iconPath;
+}
+
+Tasky::Tasky()
+    : HASH_TASKY(qHash(QString(PLUGIN_NAME))) {
+    g_taskyInstance = this;
 }
 
 Tasky::~Tasky() {
-
+    g_taskyInstance = nullptr;
 }
 
 int Tasky::msg(int msgId, void* wParam, void* lParam) {

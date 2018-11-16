@@ -32,6 +32,8 @@ public:
 	virtual ~Tasky();
 
 	virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
+    
+    QString getIconFromHWND(HWND hWnd);
 
 private:
     void setPath(const QString* path);
