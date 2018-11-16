@@ -144,14 +144,14 @@ protected:
 
     QHotkey* m_pHotKey;
 
-    QAction* actShow;
-    QAction* actRebuild;
-    QAction* actReloadSkin;
-    QAction* actOptions;
-    QAction* actExit;
+    QAction* m_actShow;
+    QAction* m_actRebuild;
+    QAction* m_actReloadSkin;
+    QAction* m_actOptions;
+    QAction* m_actExit;
 
-    QTimer* updateTimer;
-    QTimer* dropTimer;
+    QTimer* m_updateTimer;
+    QTimer* m_dropTimer;
 
     IconExtractor m_iconExtractor;
 
@@ -161,10 +161,10 @@ protected:
     CatItem m_outputItem;
     bool m_alwaysShowLaunchy;
 
-    bool dragging;
-    QPoint dragStartPoint;
-    bool menuOpen;
-    bool optionsOpen;
+    bool m_dragging;
+    QPoint m_dragStartPoint;
+    bool m_menuOpen;
+    bool m_optionsOpen;
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);

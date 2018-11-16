@@ -64,15 +64,15 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_trayIcon(new QSystemTrayIcon(this)),
       m_fader(new Fader(this)),
       m_pHotKey(new QHotkey(this)),
-      updateTimer(new QTimer(this)),
-      dropTimer(new QTimer(this)) {
+      m_updateTimer(new QTimer(this)),
+      m_dropTimer(new QTimer(this)),
+      m_alwaysShowLaunchy(false),
+      m_dragging(false),
+      m_menuOpen(false),
+      m_optionsOpen(false) {
 
     g_mainWidget.reset(this);
     g_searchText = "";
-    menuOpen = false;
-    optionsOpen = false;
-    dragging = false;
-    m_alwaysShowLaunchy = false;
 
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
@@ -185,11 +185,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
             this, &LaunchyWidget::onSecondInstance);
 
     // Set the timers
-    dropTimer->setSingleShot(true);
-    connect(dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
+    m_dropTimer->setSingleShot(true);
+    connect(m_dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
 
-    updateTimer->setSingleShot(true);
-    connect(updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
+    m_updateTimer->setSingleShot(true);
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
     startUpdateTimer();
 }
 
@@ -272,14 +272,15 @@ void LaunchyWidget::showTrayIcon() {
     m_trayIcon->show();
     connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
-
-    QMenu* trayMenu = new QMenu(this);
-    trayMenu->addAction(actShow);
-    trayMenu->addAction(actRebuild);
-    trayMenu->addAction(actOptions);
-    trayMenu->addSeparator();
-    trayMenu->addAction(actExit);
-    m_trayIcon->setContextMenu(trayMenu);
+    if (!m_trayIcon->contextMenu()) {
+        QMenu* trayMenu = new QMenu(this);
+        trayMenu->addAction(m_actShow);
+        trayMenu->addAction(m_actRebuild);
+        trayMenu->addAction(m_actOptions);
+        trayMenu->addSeparator();
+        trayMenu->addAction(m_actExit);
+        m_trayIcon->setContextMenu(trayMenu);
+    }
 }
 
 
@@ -328,7 +329,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
 void LaunchyWidget::showAlternativeList() {
     // Ensure that any pending shows of the alternatives list are cancelled
     // so that we only update the list once.
-    dropTimer->stop();
+    m_dropTimer->stop();
 
     m_alternativeList->show();
     m_alternativeList->setFocus();
@@ -338,7 +339,7 @@ void LaunchyWidget::showAlternativeList() {
 void LaunchyWidget::hideAlternativeList() {
     // Ensure that any pending shows of the alternatives list are cancelled
     // so that the list isn't erroneously shown shortly after being dismissed.
-    dropTimer->stop();
+    m_dropTimer->stop();
 
     // clear the selection before hiding to prevent flicker
     m_alternativeList->setCurrentRow(-1);
@@ -554,7 +555,7 @@ void LaunchyWidget::onAlternativeListFocusOut() {
     if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
-        && !optionsOpen
+        && !m_optionsOpen
         && !m_fader->isFading()) {
         hideLaunchy();
     }
@@ -838,7 +839,7 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
 void LaunchyWidget::startDropTimer() {
     int delay = g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt();
     if (delay > 0)
-        dropTimer->start(delay);
+        m_dropTimer->start(delay);
     else
         dropTimeout();
 }
@@ -951,13 +952,13 @@ void LaunchyWidget::saveSettings() {
 void LaunchyWidget::startUpdateTimer() {
     int time = g_settings->value(OPSTION_UPDATETIMER, OPSTION_UPDATETIMER_DEFAULT).toInt();
     if (time > 0)
-        updateTimer->start(time * 60000);
+        m_updateTimer->start(time * 60000);
     else
-        updateTimer->stop();
+        m_updateTimer->stop();
 }
 
 void LaunchyWidget::onHotkey() {
-    if (menuOpen || optionsOpen) {
+    if (m_menuOpen || m_optionsOpen) {
         showLaunchy(true);
         return;
     }
@@ -1017,7 +1018,7 @@ void LaunchyWidget::onInputBoxFocusOut() {
     if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
-        && !optionsOpen
+        && !m_optionsOpen
         && !m_fader->isFading()) {
         hideLaunchy();
     }
@@ -1127,8 +1128,8 @@ void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton) {
         if (!g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool()
             || (event->modifiers() & Qt::ShiftModifier)) {
-            dragging = true;
-            dragStartPoint = event->pos();
+            m_dragging = true;
+            m_dragStartPoint = event->pos();
         }
     }
     hideAlternativeList();
@@ -1137,9 +1138,9 @@ void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
 }
 
 void LaunchyWidget::mouseMoveEvent(QMouseEvent *event) {
-    if (event->buttons() == Qt::LeftButton && dragging) {
-        QPoint p = event->globalPos() - dragStartPoint;
-        move(p);
+    if (event->buttons() == Qt::LeftButton && m_dragging) {
+        QPoint pt = event->globalPos() - m_dragStartPoint;
+        move(pt);
         hideAlternativeList();
         m_inputBox->setFocus();
     }
@@ -1147,21 +1148,21 @@ void LaunchyWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
     Q_UNUSED(event)
-    dragging = false;
+    m_dragging = false;
     hideAlternativeList();
     m_inputBox->setFocus();
 }
 
 void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event) {
     QMenu menu(this);
-    menu.addAction(actRebuild);
-    menu.addAction(actReloadSkin);
-    menu.addAction(actOptions);
+    menu.addAction(m_actRebuild);
+    menu.addAction(m_actReloadSkin);
+    menu.addAction(m_actOptions);
     menu.addSeparator();
-    menu.addAction(actExit);
-    menuOpen = true;
+    menu.addAction(m_actExit);
+    m_menuOpen = true;
     menu.exec(event->globalPos());
-    menuOpen = false;
+    m_menuOpen = false;
 }
 
 void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -1178,7 +1179,7 @@ void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) 
 }
 
 void LaunchyWidget::buildCatalog() {
-    updateTimer->stop();
+    m_updateTimer->stop();
     saveSettings();
 
     // Use the catalog builder to refresh the catalog in a worker thread
@@ -1188,9 +1189,9 @@ void LaunchyWidget::buildCatalog() {
 }
 
 void LaunchyWidget::showOptionDialog() {
-    if (!optionsOpen) {
+    if (!m_optionsOpen) {
         showLaunchy(true);
-        optionsOpen = true;
+        m_optionsOpen = true;
         OptionDialog options(NULL);
         options.setObjectName("options");
 #ifdef Q_OS_WIN
@@ -1203,7 +1204,7 @@ void LaunchyWidget::showOptionDialog() {
         activateWindow();
         m_inputBox->setFocus();
         m_inputBox->selectAll();
-        optionsOpen = false;
+        m_optionsOpen = false;
     }
 }
 
@@ -1297,25 +1298,25 @@ int LaunchyWidget::getHotkey() const {
 }
 
 void LaunchyWidget::createActions() {
-    actShow = new QAction(tr("Show Launchy"), this);
-    connect(actShow, SIGNAL(triggered()), this, SLOT(showLaunchy()));
+    m_actShow = new QAction(tr("Show Launchy"), this);
+    connect(m_actShow, SIGNAL(triggered()), this, SLOT(showLaunchy()));
 
-    actRebuild = new QAction(tr("Rebuild catalog"), this);
-    actRebuild->setShortcut(QKeySequence(Qt::Key_F5));
-    connect(actRebuild, SIGNAL(triggered()), this, SLOT(buildCatalog()));
-    addAction(actRebuild);
+    m_actRebuild = new QAction(tr("Rebuild catalog"), this);
+    m_actRebuild->setShortcut(QKeySequence(Qt::Key_F5));
+    connect(m_actRebuild, SIGNAL(triggered()), this, SLOT(buildCatalog()));
+    addAction(m_actRebuild);
 
-    actReloadSkin = new QAction(tr("Reload skin"), this);
-    actReloadSkin->setShortcut(QKeySequence(Qt::Key_F5 | Qt::SHIFT));
-    connect(actReloadSkin, SIGNAL(triggered()), this, SLOT(reloadSkin()));
-    addAction(actReloadSkin);
+    m_actReloadSkin = new QAction(tr("Reload skin"), this);
+    m_actReloadSkin->setShortcut(QKeySequence(Qt::Key_F5 | Qt::SHIFT));
+    connect(m_actReloadSkin, SIGNAL(triggered()), this, SLOT(reloadSkin()));
+    addAction(m_actReloadSkin);
 
-    actOptions = new QAction(tr("Options"), this);
-    actOptions->setShortcut(QKeySequence(Qt::Key_Comma | Qt::CTRL));
-    connect(actOptions, SIGNAL(triggered()), this, SLOT(showOptionDialog()));
-    addAction(actOptions);
+    m_actOptions = new QAction(tr("Options"), this);
+    m_actOptions->setShortcut(QKeySequence(Qt::Key_Comma | Qt::CTRL));
+    connect(m_actOptions, SIGNAL(triggered()), this, SLOT(showOptionDialog()));
+    addAction(m_actOptions);
 
-    actExit = new QAction(tr("Exit"), this);
-    connect(actExit, SIGNAL(triggered()), this, SLOT(exit()));
+    m_actExit = new QAction(tr("Exit"), this);
+    connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
 }
 }
