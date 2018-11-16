@@ -31,7 +31,6 @@ class QSystemTrayIcon;
 class QPushButton;
 class QHotkey;
 
-
 namespace launchy {
 class Fader;
 class AnimationLabel;
@@ -121,14 +120,12 @@ protected slots:
     void exit();
     void onAlternativeListRowChanged(int index);
     void onAlternativeListKeyPressed(QKeyEvent* event);
+    void onAlternativeListFocusOut();
     void onInputBoxKeyPressed(QKeyEvent* event);
     void onInputBoxFocusOut();
     void onInputBoxInputMethod(QInputMethodEvent* event);
     void onInputBoxTextEdited(const QString& str);
     void onSecondInstance();
-
-public:
-    //PluginHandler m_plugins;
 
 protected:
     QString m_currentSkin;

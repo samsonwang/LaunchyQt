@@ -1,13 +1,16 @@
 
-* developing in progress
+* x.x.x developing in progress
 - built-in python support (write plugin in python)
 
 
-* 3.0.3 (developed finished, not released)
+* 3.0.3 (develop finished, not released)
 - fix display bug in alternative list caused by different icon size
 - put all plugin in each standalone folder (doing this to prepare for build-in python script integration)
 - option dialog use fusion style from qt
-- pack additional vcredist file (just in case that you do not want to download install vcredist2015)
+- pack additional vcredist file (just in case that you do not want to download and install vcredist2015)
+- tasky plugin works now
+- fix "hide when lost focus" fails when focus is on alternative list
+
 
 * 3.0.2
 - Verby plugin works now

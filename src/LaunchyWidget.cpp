@@ -114,7 +114,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     setAlternativeListMode(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
     connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
     connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
-    //connect(alternatives, SIGNAL(focusOut(QFocusEvent*)), this, SLOT(focusOutEvent(QFocusEvent*)));
+    connect(m_alternativeList, SIGNAL(focusOut()), this, SLOT(onAlternativeListFocusOut()));
 
     m_optionButton->setObjectName("opsButton");
     m_optionButton->setToolTip(tr("Launchy Options"));
@@ -547,6 +547,19 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
 }
 
 
+void LaunchyWidget::onAlternativeListFocusOut() {
+    qDebug() << "LaunchyWidget::onAlternativeFocusOut"
+        << "is main widget activeWindow:" << isActiveWindow()
+        << "is alternative list active window:" << m_alternativeList->isActiveWindow();
+    if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
+        && !isActiveWindow()
+        && !m_alternativeList->isActiveWindow()
+        && !optionsOpen
+        && !m_fader->isFading()) {
+        hideLaunchy();
+    }
+}
+
 void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
     qDebug() << "LaunchyWidget::keyPressEvent,"
         << "key:" << event->key()
@@ -664,7 +677,6 @@ void LaunchyWidget::doBackTab()
         m_inputBox->clear();
     }
 }
-
 
 void LaunchyWidget::doTab()
 {

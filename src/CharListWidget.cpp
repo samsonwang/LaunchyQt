@@ -114,12 +114,13 @@ void CharListWidget::mouseDoubleClickEvent(QMouseEvent* /*event*/) {
 }
 
 void CharListWidget::focusInEvent(QFocusEvent* event) {
-    emit focusIn(event);
     QListWidget::focusInEvent(event);
+    emit focusIn();
 }
 
 void CharListWidget::focusOutEvent(QFocusEvent* event) {
-    emit focusOut(event);
+    qDebug() << "CharListWidget::focusOutEvent";
     QListWidget::focusOutEvent(event);
+    emit focusOut();
 }
 }

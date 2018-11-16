@@ -42,8 +42,8 @@ protected:
 
 signals:
     void keyPressed(QKeyEvent* event);
-    void focusIn(QFocusEvent* event);
-    void focusOut(QFocusEvent* event);
+    void focusIn();
+    void focusOut();
 
 private:
     QRect m_baseGeometry;
