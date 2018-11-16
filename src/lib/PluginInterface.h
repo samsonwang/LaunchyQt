@@ -19,8 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QObject>
+#include <QScopedPointer>
 #include <QSettings>
+#include <QString>
 #include "LaunchyLib.h"
 
 namespace launchy {
@@ -131,7 +132,7 @@ public:
     \param args The arguments to the command
     \param translateSeparators Whether to translate / into native separators
 */
-LAUNCHY_EXPORT void runProgram(QString file, QString args, bool translateSeparators = true);
+LAUNCHY_EXPORT void runProgram(const QString& file, const QString& args, bool translateSeparators = true);
 LAUNCHY_EXPORT int getDesktop();
 }
 

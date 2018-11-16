@@ -69,7 +69,7 @@ static QString aliasTo64(QString path) {
 int getDesktop() { return DESKTOP_WINDOWS; }
 
 
-void runProgram(QString path, QString args) {
+static void runProgram(const QString& path, const QString& args) {
 
     SHELLEXECUTEINFO ShExecInfo;
     bool elevated = (GetKeyState(VK_SHIFT) & 0x80000000) != 0 && (GetKeyState(VK_CONTROL) & 0x80000000) != 0;
@@ -97,9 +97,9 @@ void runProgram(QString path, QString args) {
     ShellExecuteEx(&ShExecInfo);
 }
 
-void runProgram(QString path, QString args, bool translateSeparators) {
+void runProgram(const QString& path, const QString& args, bool translateSeparators) {
     // This 64 bit aliasing needs to be gotten rid of if we have a 64 bit build
-    path = aliasTo64(path);
+    QString path64 = aliasTo64(path);
 
     SHELLEXECUTEINFO ShExecInfo;
     bool elevated = (GetKeyState(VK_SHIFT) & 0x80000000) != 0 && (GetKeyState(VK_CONTROL) & 0x80000000) != 0;
@@ -109,7 +109,7 @@ void runProgram(QString path, QString args, bool translateSeparators) {
     ShExecInfo.fMask = NULL;
     ShExecInfo.hwnd = NULL;
     ShExecInfo.lpVerb = elevated ? L"runas" : NULL;
-    QString filePath = translateSeparators ? QDir::toNativeSeparators(path) : path;
+    QString filePath = translateSeparators ? QDir::toNativeSeparators(path64) : path64;
     ShExecInfo.lpFile = (LPCTSTR)filePath.utf16();
 
     if (!args.isEmpty()) {
@@ -119,8 +119,8 @@ void runProgram(QString path, QString args, bool translateSeparators) {
         ShExecInfo.lpParameters = NULL;
     }
 
-    QDir dir(path);
-    QFileInfo info(path);
+    QDir dir(path64);
+    QFileInfo info(path64);
     if (!info.isDir() && info.isFile())
         dir.cdUp();
     QString directory = QDir::toNativeSeparators(dir.absolutePath());

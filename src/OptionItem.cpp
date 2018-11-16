@@ -52,7 +52,7 @@ const char*     OPSTION_AUTOSUGGESTDELAY                       = "GenOps/autoSug
 const int       OPSTION_AUTOSUGGESTDELAY_DEFAULT               = 1000;
 
 const char*     OPSTION_UPDATETIMER                            = "GenOps/updatetimer";
-const int       OPSTION_UPDATETIMER_DEFAULT                    = 10;
+const int       OPSTION_UPDATETIMER_DEFAULT                    = 30;
 
 const char*     OPSTION_NUMVIEWABLE                            = "GenOps/numviewable";
 const int       OPSTION_NUMVIEWABLE_DEFAULT                    = 4;
