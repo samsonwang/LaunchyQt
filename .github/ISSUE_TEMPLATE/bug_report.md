@@ -13,7 +13,8 @@ Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
-4. See error
+4. type '...'
+5. See error
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -22,9 +23,8 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+ - Operation System: [e.g. windows 7 sp1]
+ - Launchy Version: [e.g. 3.0.2]
 
 **Additional context**
 Add any other context about the problem here.
