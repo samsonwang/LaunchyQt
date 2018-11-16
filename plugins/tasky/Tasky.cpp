@@ -19,195 +19,76 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Tasky.h"
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <psapi.h>
+#include <shlobj.h>
+#include <tchar.h>
+#include <WinUser.h>
+#include <QtWin>
+#endif
+
 #include <QtGui>
 #include <QUrl>
 #include <QFile>
 #include <QRegExp>
 #include <QTextCodec>
 #include <QPixmap>
-
-#ifdef Q_OS_WIN
-#include <windows.h>
-#include <psapi.h>
-#include <shlobj.h>
-#include <tchar.h>
-#endif
-
 #include "PluginMsg.h"
+
+#define PLUGIN_NAME "tasky"
 
 using namespace launchy;
 
-taskyPlugin* gtaskyInstance = NULL;
+Tasky* g_taskyInstance = NULL;
 
-QList<QString> windowTitles;
-QList<QString> iconPaths;
-QString selectedCatItemText;
-HWND selectedWindow;
+static QList<QString> g_windowTitles;
+static QList<QString> g_iconPaths;
+static QString g_selectedCatItemText;
+static HWND g_hSelectedWindow;
 
-static QImage qt_fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h)
-{
-    BITMAPINFO bmi;
-    memset(&bmi, 0, sizeof(bmi));
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = w;
-    bmi.bmiHeader.biHeight = -h;
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 32;
-    bmi.bmiHeader.biCompression = BI_RGB;
-    bmi.bmiHeader.biSizeImage = w * h * 4;
-
-    QImage image(w, h, QImage::Format_ARGB32_Premultiplied);
-    if (image.isNull())
-        return image;
-
-    // Get bitmap bits
-    uchar *data = (uchar *)qMalloc(bmi.bmiHeader.biSizeImage);
-
-    if (GetDIBits(hdc, bitmap, 0, h, data, &bmi, DIB_RGB_COLORS)) {
-        // Create image and copy data into image.
-        for (int y = 0; y<h; ++y) {
-            void *dest = (void *)image.scanLine(y);
-            void *src = data + y * image.bytesPerLine();
-            memcpy(dest, src, image.bytesPerLine());
-        }
-    }
-    else {
-        qWarning("qt_fromWinHBITMAP(), failed to get bitmap bits");
-    }
-    qFree(data);
-
-    return image;
-}
-
-QPixmap convertHIconToPixmap(const HICON icon)
-{
-    bool foundAlpha = false;
-    HDC screenDevice = GetDC(0);
-    HDC hdc = CreateCompatibleDC(screenDevice);
-    ReleaseDC(0, screenDevice);
-
-    ICONINFO iconinfo;
-    bool result = GetIconInfo(icon, &iconinfo); //x and y Hotspot describes the icon center
-    if (!result)
-        qWarning("convertHIconToPixmap(), failed to GetIconInfo()");
-
-    int w = iconinfo.xHotspot * 2;
-    int h = iconinfo.yHotspot * 2;
-
-    BITMAPINFOHEADER bitmapInfo;
-    bitmapInfo.biSize = sizeof(BITMAPINFOHEADER);
-    bitmapInfo.biWidth = w;
-    bitmapInfo.biHeight = h;
-    bitmapInfo.biPlanes = 1;
-    bitmapInfo.biBitCount = 32;
-    bitmapInfo.biCompression = BI_RGB;
-    bitmapInfo.biSizeImage = 0;
-    bitmapInfo.biXPelsPerMeter = 0;
-    bitmapInfo.biYPelsPerMeter = 0;
-    bitmapInfo.biClrUsed = 0;
-    bitmapInfo.biClrImportant = 0;
-    DWORD* bits;
-
-    HBITMAP winBitmap = CreateDIBSection(hdc, (BITMAPINFO*)&bitmapInfo, DIB_RGB_COLORS, (VOID**)&bits, NULL, 0);
-    HGDIOBJ oldhdc = (HBITMAP)SelectObject(hdc, winBitmap);
-    DrawIconEx(hdc, 0, 0, icon, iconinfo.xHotspot * 2, iconinfo.yHotspot * 2, 0, 0, DI_NORMAL);
-    QImage image = qt_fromWinHBITMAP(hdc, winBitmap, w, h);
-
-    for (int y = 0; y < h && !foundAlpha; y++) {
-        QRgb *scanLine = reinterpret_cast<QRgb *>(image.scanLine(y));
-        for (int x = 0; x < w; x++) {
-            if (qAlpha(scanLine[x]) != 0) {
-                foundAlpha = true;
-                break;
-            }
-        }
-    }
-    if (!foundAlpha) {
-        //If no alpha was found, we use the mask to set alpha values
-        DrawIconEx(hdc, 0, 0, icon, w, h, 0, 0, DI_MASK);
-        QImage mask = qt_fromWinHBITMAP(hdc, winBitmap, w, h);
-
-        for (int y = 0; y < h; y++) {
-            QRgb *scanlineImage = reinterpret_cast<QRgb *>(image.scanLine(y));
-            QRgb *scanlineMask = mask.isNull() ? 0 : reinterpret_cast<QRgb *>(mask.scanLine(y));
-            for (int x = 0; x < w; x++) {
-                if (scanlineMask && qRed(scanlineMask[x]) != 0)
-                    scanlineImage[x] = 0; //mask out this pixel
-                else
-                    scanlineImage[x] |= 0xff000000; // set the alpha channel to 255
-            }
-        }
-    }
-    //dispose resources created by iconinfo call
-    DeleteObject(iconinfo.hbmMask);
-    DeleteObject(iconinfo.hbmColor);
-
-    SelectObject(hdc, oldhdc); //restore state
-    DeleteObject(winBitmap);
-    DeleteDC(hdc);
-    return QPixmap::fromImage(image);
-}
-
-HICON getHIconFromExe(HWND hWnd)
-{
+static HICON getHIconFromExe(HWND hWnd) {
     DWORD procId = 0;
-
     GetWindowThreadProcessId(hWnd, &procId);
 
     HICON hIcon = NULL;
-
-    if (procId != 0)
-    {
+    if (procId != 0) {
         HANDLE hndl = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, procId);
 
-        if (hndl != 0)
-        {
+        if (hndl != 0) {
             TCHAR filename[2048];
-
-            if (GetModuleFileNameEx(hndl, NULL, filename, sizeof(filename) / sizeof(TCHAR)))
-            {
+            if (GetModuleFileNameEx(hndl, NULL, filename, sizeof(filename) / sizeof(TCHAR))) {
                 ExtractIconEx(filename, 0, &hIcon, 0, 1);
             }
-
             CloseHandle(hndl);
         }
     }
-
     return hIcon;
 }
 
-QString getIconFromHwnd(HWND hWnd)
-{
-    QString iconPath = qApp->applicationDirPath() + "/plugins/icons/tasky/" + QString::number((int)hWnd) + ".png";
+static QString getIconFromHWND(HWND hWnd) {
+    QString iconPath = qApp->applicationDirPath() + "/plugins/Tasky/cache/" + QString::number((int64_t)hWnd) + ".png";
 
     //no need to get icon if it already exists
-    if (!QFile::exists(iconPath))
-    {
-        HICON hIcon = NULL;
-
+    if (!QFile::exists(iconPath)) {
         //try to get large icon from window
-        hIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
+        HICON hIcon = (HICON)GetClassLongPtr(hWnd, GCLP_HICON);
 
         //if not possible, get large icon from exe
-        if (hIcon == NULL)
-        {
+        if (hIcon == NULL) {
             hIcon = getHIconFromExe(hWnd);
         }
 
-        if (hIcon != NULL)
-        {
-            QPixmap qpix = convertHIconToPixmap(hIcon);
+        if (hIcon != NULL) {
+            QPixmap qpix = QtWin::fromHICON(hIcon);
 
-            if (qpix.width() < 32)
-            {
+            if (qpix.width() < 32) {
                 hIcon = getHIconFromExe(hWnd);
 
-                if (hIcon != NULL)
-                {
-                    qpix = convertHIconToPixmap(hIcon);
+                if (hIcon != NULL) {
+                    qpix = QtWin::fromHICON(hIcon);
                 }
             }
-
             qpix.save(iconPath);
         }
     }
@@ -215,22 +96,7 @@ QString getIconFromHwnd(HWND hWnd)
     return iconPath;
 }
 
-void initIconDir()
-{
-    QDir iconDir(qApp->applicationDirPath() + "/plugins/icons/tasky/");
-    if (!iconDir.exists())
-    {
-        iconDir.mkpath(qApp->applicationDirPath() + "/plugins/icons/tasky/");
-    }
-    QDirIterator iconDirIt(iconDir);
-    while (iconDirIt.hasNext())
-    {
-        iconDir.remove(iconDirIt.next());
-    }
-}
-
-QString fromWCharArray(const wchar_t *string)
-{
+static QString fromWCharArray(const wchar_t *string) {
     if (sizeof(wchar_t) == sizeof(QChar)) {
         return QString::fromUtf16((ushort *)string, -1);
     }
@@ -239,7 +105,7 @@ QString fromWCharArray(const wchar_t *string)
     }
 }
 
-BOOL windowHasTaskbarButton(HWND hWnd)
+static BOOL windowHasTaskbarButton(HWND hWnd)
 {
     if (!hWnd)
         return FALSE; // Not a window
@@ -259,53 +125,47 @@ BOOL windowHasTaskbarButton(HWND hWnd)
     return TRUE;
 }
 
-BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
-    wchar_t *title;
-
+static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
     if (!windowHasTaskbarButton(hWnd))
         return TRUE;
 
-    int len = static_cast<int>(SendMessageW(hWnd, WM_GETTEXTLENGTH, 0, 0));
-    title = new wchar_t[len+1];
-    if (!SendMessageW(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title)))
+    int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
+    wchar_t* title = new wchar_t[len+1];
+    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title)))
         return TRUE; // No Title
 
-    windowTitles.push_back(fromWCharArray(title));
-    iconPaths.push_back(getIconFromHwnd(hWnd));
+    g_windowTitles.push_back(fromWCharArray(title));
+    g_iconPaths.push_back(getIconFromHWND(hWnd));
 
     return TRUE;
 }
 
-BOOL CALLBACK FindWindowTitle(HWND hWnd, LPARAM lParam) {
-    wchar_t *title;
-
+static BOOL CALLBACK FindWindowTitle(HWND hWnd, LPARAM lParam) {
     if (!hWnd)
         return TRUE; // Not a window
 
     if (!::IsWindowVisible(hWnd))
         return TRUE; // Not visible
 
-    int len = static_cast<int>(SendMessageW(hWnd, WM_GETTEXTLENGTH, 0, 0));
-    title = new wchar_t[len+1];
-    if (!SendMessageW(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title)))
+    int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
+    wchar_t* title = new wchar_t[len+1];
+    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title)))
         return TRUE; // No Title
 
-    if (selectedCatItemText == fromWCharArray(title)) {
-        selectedWindow = hWnd;
+    if (g_selectedCatItemText == fromWCharArray(title)) {
+        g_hSelectedWindow = hWnd;
         return FALSE;
     }
 
     return TRUE;
 }
 
-BOOL searchWindowTitle(QString search, QString windowTitle)
-{
+static BOOL searchWindowTitle(QString search, QString windowTitle) {
     for (int i = 0; i < search.size(); ++i) {
         int titleCount = windowTitle.count(search[i], Qt::CaseInsensitive);
         int searchCount = search.count(search[i], Qt::CaseInsensitive);
 
-        if (titleCount < searchCount)
-        {
+        if (titleCount < searchCount) {
             return false;
         }
     }
@@ -313,125 +173,115 @@ BOOL searchWindowTitle(QString search, QString windowTitle)
     return true;
 }
 
-void taskyPlugin::getID(uint* id)
-{
-    *id = HASH_tasky;
+void Tasky::getID(uint* id) {
+    *id = HASH_TASKY;
 }
 
-void taskyPlugin::getName(QString* str)
-{
-    *str = PLUGIN_NAME;
+void Tasky::getName(QString* name) {
+    *name = PLUGIN_NAME;
 }
 
-void taskyPlugin::init()
-{
+void Tasky::init() {
     initIconDir();
 }
 
-void taskyPlugin::getLabels(QList<InputData>* id)
-{
+void Tasky::setPath(const QString* path) {
+    Q_ASSERT(path);
+    m_libPath = *path;
+    qDebug() << "Tasky::setPath, m_libPath:" << m_libPath;
 }
 
-void taskyPlugin::getResults(QList<InputData>* id, QList<CatItem>* results)
-{
+void Tasky::getLabels(QList<InputData>* id) {
+}
+
+void Tasky::getResults(QList<InputData>* id, QList<CatItem>* results) {
     QString text = id->first().getText();
 
-    if (id->count() < 3)
-    {
-        if (id->count() == 1)
-        {
-            if (text == "")
+    if (id->count() < 3) {
+        if (id->count() == 1) {
+            if (text.isEmpty())
                 return;
         }
-        else
-        {
+        else {
             if (!text.contains("tasky", Qt::CaseInsensitive))
                 return;
 
             text = id->last().getText();
         }
 
-        windowTitles.clear();
-        iconPaths.clear();
+        g_windowTitles.clear();
+        g_iconPaths.clear();
         initIconDir();
 
         EnumWindows(EnumWindowsProc, NULL);
 
-        for (int i = 0; i < windowTitles.size(); ++i) {
-            if (searchWindowTitle(text, windowTitles[i]))
-                results->push_front(CatItem(windowTitles[i] + "." + PLUGIN_NAME, windowTitles[i], HASH_tasky, iconPaths[i]));
+        for (int i = 0; i < g_windowTitles.size(); ++i) {
+            if (searchWindowTitle(text, g_windowTitles[i]))
+                results->push_front(CatItem(g_windowTitles[i] + "." + PLUGIN_NAME, g_windowTitles[i], HASH_TASKY, g_iconPaths[i]));
         }
     }
 }
 
-QString taskyPlugin::getIcon()
-{
-#ifdef Q_OS_WIN
-    return qApp->applicationDirPath() + "/plugins/icons/tasky.png";
-#endif
+QString Tasky::getIcon() {
+    return m_libPath + "/tasky.png";
 }
 
-void taskyPlugin::getCatalog(QList<CatItem>* items)
-{
-    items->push_back(CatItem("Tasky.tasky", "Tasky", HASH_tasky, getIcon()));
+void Tasky::getCatalog(QList<CatItem>* items) {
+    items->push_back(CatItem("Tasky.tasky", "Tasky", HASH_TASKY, getIcon()));
 }
 
-void taskyPlugin::launchItem(QList<InputData>* id, CatItem* item)
-{
+void Tasky::launchItem(QList<InputData>* id, CatItem* item) {
     CatItem* base = (id->count() == 1) ? &id->first().getTopResult() : &id->last().getTopResult();
 
-    selectedCatItemText = base->shortName;
+    g_selectedCatItemText = base->shortName;
 
     EnumWindows(FindWindowTitle, NULL);
 
     WINDOWPLACEMENT wp;
-
-    if (!GetWindowPlacement(selectedWindow, &wp))
+    if (!GetWindowPlacement(g_hSelectedWindow, &wp))
         return;
 
     switch (wp.showCmd) {
     case SW_SHOWMINIMIZED:
-        ShowWindow(selectedWindow, SW_RESTORE);
+        ShowWindow(g_hSelectedWindow, SW_RESTORE);
     case SW_SHOWNORMAL:
     case SW_SHOWMAXIMIZED:
     default:
-        BringWindowToTop(selectedWindow);
+        BringWindowToTop(g_hSelectedWindow);
         break;
     }
 
-    SetForegroundWindow(selectedWindow);
-    SetActiveWindow(selectedWindow);
+    SetForegroundWindow(g_hSelectedWindow);
+    SetActiveWindow(g_hSelectedWindow);
     return;
 }
 
-void taskyPlugin::doDialog(QWidget* parent, QWidget** newDlg)
-{
+void Tasky::doDialog(QWidget* parent, QWidget** dialog) {
 }
 
-void taskyPlugin::endDialog(bool accept)
-{
+void Tasky::endDialog(bool accept) {
 }
 
-void taskyPlugin::hide()
-{
+void Tasky::initIconDir() {
+    QDir iconDir(m_libPath + "/cache/");
+    if (!iconDir.exists()) {
+        iconDir.mkpath(".");
+    }
+    QDirIterator iconDirIt(iconDir);
+    while (iconDirIt.hasNext()) {
+        iconDir.remove(iconDirIt.next());
+    }
 }
 
-void taskyPlugin::show()
-{
+Tasky::Tasky() {
+    HASH_TASKY = qHash(QString(PLUGIN_NAME));
 }
 
-taskyPlugin::taskyPlugin()
-{
-    HASH_tasky = qHash(QString(PLUGIN_NAME));
-}
-
-taskyPlugin::~taskyPlugin()
-{
+Tasky::~Tasky() {
 
 }
 
-int taskyPlugin::msg(int msgId, void* wParam, void* lParam)
-{
+int Tasky::msg(int msgId, void* wParam, void* lParam) {
     bool handled = false;
     switch (msgId)
     {
@@ -475,16 +325,12 @@ int taskyPlugin::msg(int msgId, void* wParam, void* lParam)
         // This isn't called unless you return true to MSG_HAS_DIALOG
         endDialog((bool)wParam);
         break;
-    case MSG_LAUNCHY_HIDE:
-        hide();
+    case MSG_PATH:
+        setPath((const QString*)wParam);
         break;
-    case MSG_LAUNCHY_SHOW:
-        show();
     default:
         break;
     }
 
     return handled;
 }
-
-Q_EXPORT_PLUGIN2(tasky, taskyPlugin)

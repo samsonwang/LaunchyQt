@@ -18,25 +18,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #pragma once
 
-#define PLUGIN_NAME "tasky"
-
 #include <QList>
 #include "PluginInterface.h"
 #include "InputData.h"
 #include "CatalogItem.h"
 
-
-class taskyPlugin : public QObject, public launchy::PluginInterface {
+class Tasky : public QObject, public launchy::PluginInterface {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(launchy::PluginInterface)
 public:
-	taskyPlugin();
-	virtual ~taskyPlugin();
+	Tasky();
+	virtual ~Tasky();
 
 	virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
 
 private:
+    void setPath(const QString* path);
 	void getLabels(QList<launchy::InputData>* inputData);
 	void getID(uint* id);
 	void getName(QString* name);
@@ -46,15 +44,14 @@ private:
 	void doDialog(QWidget* parent, QWidget** dialog);
 	void endDialog(bool accept);
 	void init();
-	void hide();
-	void show();
 	QString getIcon();
 
-public:
-    uint HASH_tasky;
-private:
+    void initIconDir();
 
+private:
+    uint HASH_TASKY;
+    QString m_libPath;
 };
 
-extern taskyPlugin* gtaskyInstance;
+extern Tasky* g_taskyInstance;
 

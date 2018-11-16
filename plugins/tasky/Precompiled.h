@@ -26,6 +26,7 @@
 #include <psapi.h>
 #include <shlobj.h>
 #include <tchar.h>
+#include <QtWin>
 
 #include <QtGui>
 #include <QUrl>
