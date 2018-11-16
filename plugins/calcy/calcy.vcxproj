@@ -72,7 +72,6 @@
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)\calcy.pch</PrecompiledHeaderOutputFile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;NDEBUG;QT_NO_DEBUG;QT_PLUGIN;QT_GUI_LIB;QT_CORE_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
