@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LaunchyLib", "src\lib\Launc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginPy", "src\pluginpy\PluginPy.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tasky", "plugins\tasky\tasky.vcxproj", "{6755D6C5-564F-4C1E-9D6C-DE6666767368}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +73,10 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x64.Build.0 = Debug|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.Build.0 = Release|x64
+		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Debug|x64.ActiveCfg = Debug|x64
+		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Debug|x64.Build.0 = Debug|x64
+		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Release|x64.ActiveCfg = Release|x64
+		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

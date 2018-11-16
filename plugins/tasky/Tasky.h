@@ -35,12 +35,12 @@ public:
 
 private:
     void setPath(const QString* path);
-	void getLabels(QList<launchy::InputData>* inputData);
+	void getLabels(QList<launchy::InputData>* inputList);
 	void getID(uint* id);
 	void getName(QString* name);
-	void getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* result);
+	void getResults(QList<launchy::InputData>* inputList, QList<launchy::CatItem>* result);
 	void getCatalog(QList<launchy::CatItem>* item);
-	void launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item);
+	void launchItem(QList<launchy::InputData>* inputList, launchy::CatItem* item);
 	void doDialog(QWidget* parent, QWidget** dialog);
 	void endDialog(bool accept);
 	void init();

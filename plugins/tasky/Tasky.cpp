@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QPixmap>
 #include "PluginMsg.h"
 
-#define PLUGIN_NAME "tasky"
+#define PLUGIN_NAME "Tasky"
 
 using namespace launchy;
 
@@ -105,8 +105,7 @@ static QString fromWCharArray(const wchar_t *string) {
     }
 }
 
-static BOOL windowHasTaskbarButton(HWND hWnd)
-{
+static BOOL windowHasTaskbarButton(HWND hWnd) {
     if (!hWnd)
         return FALSE; // Not a window
 
@@ -126,6 +125,7 @@ static BOOL windowHasTaskbarButton(HWND hWnd)
 }
 
 static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
+    Q_UNUSED(lParam)
     if (!windowHasTaskbarButton(hWnd))
         return TRUE;
 
@@ -141,6 +141,7 @@ static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam) {
 }
 
 static BOOL CALLBACK FindWindowTitle(HWND hWnd, LPARAM lParam) {
+    Q_UNUSED(lParam)
     if (!hWnd)
         return TRUE; // Not a window
 
@@ -191,35 +192,34 @@ void Tasky::setPath(const QString* path) {
     qDebug() << "Tasky::setPath, m_libPath:" << m_libPath;
 }
 
-void Tasky::getLabels(QList<InputData>* id) {
+void Tasky::getLabels(QList<InputData>* inputList) {
+    QString text = inputList->first().getText();
+    //text.replace(" ", "");
+    if (text.compare("tasky", Qt::CaseInsensitive) == 0) {
+        inputList->first().setLabel(HASH_TASKY);
+    }
 }
 
-void Tasky::getResults(QList<InputData>* id, QList<CatItem>* results) {
-    QString text = id->first().getText();
-
-    if (id->count() < 3) {
-        if (id->count() == 1) {
-            if (text.isEmpty())
-                return;
-        }
-        else {
-            if (!text.contains("tasky", Qt::CaseInsensitive))
-                return;
-
-            text = id->last().getText();
-        }
-
-        g_windowTitles.clear();
-        g_iconPaths.clear();
-        initIconDir();
-
-        EnumWindows(EnumWindowsProc, NULL);
-
-        for (int i = 0; i < g_windowTitles.size(); ++i) {
-            if (searchWindowTitle(text, g_windowTitles[i]))
-                results->push_front(CatItem(g_windowTitles[i] + "." + PLUGIN_NAME, g_windowTitles[i], HASH_TASKY, g_iconPaths[i]));
-        }
+void Tasky::getResults(QList<InputData>* inputList, QList<CatItem>* result) {
+    if (!inputList
+        || inputList->isEmpty()
+        || inputList->count() > 3
+        || !inputList->first().hasLabel(HASH_TASKY)) {
+        return;
     }
+
+    g_windowTitles.clear();
+    g_iconPaths.clear();
+    initIconDir();
+
+    EnumWindows(EnumWindowsProc, NULL);
+
+    QString text = inputList->last().getText();
+    for (int i = 0; i < g_windowTitles.size(); ++i) {
+        if (searchWindowTitle(text, g_windowTitles[i]))
+            result->push_front(CatItem(g_windowTitles[i] + "." + PLUGIN_NAME, g_windowTitles[i], HASH_TASKY, g_iconPaths[i]));
+    }
+
 }
 
 QString Tasky::getIcon() {
@@ -231,8 +231,9 @@ void Tasky::getCatalog(QList<CatItem>* items) {
 }
 
 void Tasky::launchItem(QList<InputData>* id, CatItem* item) {
-    CatItem* base = (id->count() == 1) ? &id->first().getTopResult() : &id->last().getTopResult();
+    Q_UNUSED(item)
 
+    CatItem* base = (id->count() == 1) ? &id->first().getTopResult() : &id->last().getTopResult();
     g_selectedCatItemText = base->shortName;
 
     EnumWindows(FindWindowTitle, NULL);
@@ -257,9 +258,12 @@ void Tasky::launchItem(QList<InputData>* id, CatItem* item) {
 }
 
 void Tasky::doDialog(QWidget* parent, QWidget** dialog) {
+    Q_UNUSED(parent)
+    Q_UNUSED(dialog)
 }
 
 void Tasky::endDialog(bool accept) {
+    Q_UNUSED(accept)
 }
 
 void Tasky::initIconDir() {
@@ -283,8 +287,7 @@ Tasky::~Tasky() {
 
 int Tasky::msg(int msgId, void* wParam, void* lParam) {
     bool handled = false;
-    switch (msgId)
-    {
+    switch (msgId) {
     case MSG_INIT:
         init();
         handled = true;
