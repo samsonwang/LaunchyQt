@@ -223,7 +223,7 @@ void LaunchyWidget::executeStartupCommand(int command) {
         buildCatalog();
 
     if (command & Exit)
-        close();
+        exit();
 }
 
 void LaunchyWidget::showEvent(QShowEvent* event) {
