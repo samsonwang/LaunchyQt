@@ -143,6 +143,11 @@ void PluginHandler::loadPlugins() {
 
 void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& pluginPath) {
     qDebug() << "plugin from python:" << pluginName << pluginPath;
+
+    // this function gets correct PluginInfo and put it in member variable m_plugins
+
+    // consider dynamic load the PluginPy library
+
 }
 
 void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& pluginPath) {

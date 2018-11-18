@@ -16,8 +16,22 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
+#include <string>
+#include <pybind11/pybind11.h>
+
+namespace py = pybind11;
+
 namespace exportpy {
 
+void registerPlugin(py::object pluginClass);
+
+unsigned int hash(const std::string& str);
 
 
+
+
+// for debu and test use
+void objectReceiver(py::object obj);
 }

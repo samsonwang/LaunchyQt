@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <pybind11/pybind11.h>
+#include "ExportPy.h"
+#include <iostream>
+#include <QHash>
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"
 
@@ -27,7 +29,10 @@ static int add_five(int x) {
 PYBIND11_MODULE(launchy, m) {
     m.doc() = "launchy plugin module for python";
     // Export our basic testing function
-    m.def("add_five", &add_five, "function which increase 5");
+    m.def("add_five", &add_five, "function which increase number by 5");
+
+    m.def("registerPlugin", &exportpy::registerPlugin);
+    m.def("objectReceiver", &exportpy::objectReceiver);
 
     exportpy::ExportCatItem(m);
     exportpy::ExportPlugin(m);
@@ -37,13 +42,53 @@ PYBIND11_MODULE(launchy, m) {
     //python_export::export_ScriptPlugin();
 }
 
-// pybind11 demo module
-static int add(int i, int j) {
-    return i + j;
+namespace exportpy {
+
+void registerPlugin(py::object pluginClass) {
+    std::cout << "registerPlugin called" << std::endl;
+
+    py::object pluginObj = pluginClass();
+
+    if (py::isinstance<Plugin>(pluginObj)) {
+        std::cout << "plugin register succeeded" << std::endl;
+        Plugin* pluginPtr = pluginObj.cast<Plugin*>();
+        if (pluginPtr) {
+            std::string name = pluginPtr->getName();
+            std::cout << "registered plugin name:" << name << std::endl;
+        }
+    }
+    else {
+        std::cout << "plugin register failed" << std::endl;
+    }
 }
 
-PYBIND11_MODULE(example, m) {
-    m.doc() = "pybind11 example plugin"; // optional module docstring
+unsigned int hash(const std::string& str) {
+    QString qstr = QString::fromStdString(str);
+    return qHash(qstr);
+}
 
-    m.def("add", &add, "A function which adds two numbers");
+void objectReceiver(py::object obj) {
+    if (py::isinstance<exportpy::CatItem>(obj)) {
+        std::cout << "objectReceiver, got CatItem" << std::endl;
+        CatItem item = py::cast<CatItem>(obj);
+        std::cout << "fullPath:" << item.fullPath << std::endl;
+        std::cout << "shortName" << item.shortName << std::endl;
+        std::cout << "icon" << item.icon << std::endl;
+    }
+
+    else if (py::isinstance<exportpy::Plugin*>(obj)) {
+        std::cout << "objectReceiver, got Plugin ptr" << std::endl;
+
+    }
+
+    else if (py::isinstance<exportpy::Plugin>(obj)) {
+        std::cout << "objectReceiver, got Plugin" << std::endl;
+
+    }
+
+    else {
+        std::cout << "objectReceiver, got unknown" << std::endl;
+    }
+}
+
 }
