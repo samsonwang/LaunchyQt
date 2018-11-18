@@ -10,7 +10,7 @@
 - pack additional vcredist file (just in case that you do not want to download and install vcredist2015)
 - tasky plugin works now
 - fix "hide when lost focus" fails when focus is on alternative list
-
+- change skin name (hDPI -> HiDPI)
 
 * 3.0.2
 - Verby plugin works now
