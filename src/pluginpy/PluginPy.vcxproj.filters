@@ -24,10 +24,7 @@
       <Extensions>moc;h;cpp</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="demo">
-      <UniqueIdentifier>{2e6f7c52-710c-4ffe-88c9-5f420d77ab2c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PyExport">
+    <Filter Include="ExportPy">
       <UniqueIdentifier>{c96881f6-d8b2-46f6-9b7f-bca74b187896}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -38,17 +35,17 @@
     <ClCompile Include="GeneratedFiles\Precompiled.h.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="pybind11_demo\fibonacci.cpp">
-      <Filter>demo</Filter>
-    </ClCompile>
     <ClCompile Include="ExportPy.cpp">
-      <Filter>PyExport</Filter>
+      <Filter>ExportPy</Filter>
     </ClCompile>
     <ClCompile Include="ExportPyQString.cpp">
-      <Filter>PyExport</Filter>
+      <Filter>ExportPy</Filter>
     </ClCompile>
     <ClCompile Include="ExportPyCatItem.cpp">
-      <Filter>PyExport</Filter>
+      <Filter>ExportPy</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportPyPlugin.cpp">
+      <Filter>ExportPy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,17 +55,17 @@
     <ClInclude Include="PluginPyLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pybind11_demo\fibonacci.h">
-      <Filter>demo</Filter>
-    </ClInclude>
     <ClInclude Include="ExportPy.h">
-      <Filter>PyExport</Filter>
+      <Filter>ExportPy</Filter>
     </ClInclude>
     <ClInclude Include="ExportPyQString.h">
-      <Filter>PyExport</Filter>
+      <Filter>ExportPy</Filter>
     </ClInclude>
     <ClInclude Include="ExportPyCatItem.h">
-      <Filter>PyExport</Filter>
+      <Filter>ExportPy</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportPyPlugin.h">
+      <Filter>ExportPy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

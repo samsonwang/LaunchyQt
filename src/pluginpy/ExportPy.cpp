@@ -1,6 +1,6 @@
 /*
-SmartLaunch: multi-function app launcher.
-Copyright (C) 2017 Samson Wang
+PluginPy
+Copyright (C) 2018 Samson Wang
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <pybind11/pybind11.h>
+#include "ExportPyPlugin.h"
+#include "ExportPyCatItem.h"
 
 static int add_five(int x) {
     return x+5;
@@ -27,13 +29,15 @@ PYBIND11_MODULE(launchy, m) {
     // Export our basic testing function
     m.def("add_five", &add_five, "function which increase 5");
 
+    exportpy::ExportCatItem(m);
+    exportpy::ExportPlugin(m);
     //python_export::export_QString();
     //python_export::export_pylaunchy();
     //python_export::export_catalog();
     //python_export::export_ScriptPlugin();
 }
 
-// pybind11 demo
+// pybind11 demo module
 static int add(int i, int j) {
     return i + j;
 }

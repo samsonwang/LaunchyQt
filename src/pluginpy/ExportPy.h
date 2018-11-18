@@ -1,6 +1,6 @@
 /*
-SmartLaunch: multi-function app launcher.
-Copyright (C) 2017 Samson Wang
+PluginPy
+Copyright (C) 2018 Samson Wang
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,5 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 namespace exportpy {
+
+
 
 }

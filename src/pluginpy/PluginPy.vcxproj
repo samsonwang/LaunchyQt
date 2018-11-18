@@ -35,6 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\release\</OutDir>
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -59,7 +60,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;PLUGINPY_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../lib;../../deps/;.;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(PYTHON_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../lib;../../deps/;.;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(PYTHONPATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -69,33 +70,34 @@
       <ForcedUsingFiles>
       </ForcedUsingFiles>
       <ForcedIncludeFiles>Precompiled.h</ForcedIncludeFiles>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)$(ProjectName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONPATH)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;$(PYTHON_LIB_FILE);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExportPyCatItem.cpp" />
+    <ClCompile Include="ExportPyPlugin.cpp" />
     <ClCompile Include="GeneratedFiles\Precompiled.h.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="PluginPy.cpp" />
-    <ClCompile Include="pybind11_demo\fibonacci.cpp" />
     <ClCompile Include="ExportPy.cpp" />
     <ClCompile Include="ExportPyQString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExportPy.h" />
     <ClInclude Include="ExportPyCatItem.h" />
+    <ClInclude Include="ExportPyPlugin.h" />
     <ClInclude Include="ExportPyQString.h" />
     <ClInclude Include="PluginPy.h" />
     <ClInclude Include="PluginPyLib.h" />
-    <ClInclude Include="pybind11_demo\fibonacci.h" />
     <CustomBuild Include="Precompiled.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo /*-------------------------------------------------------------------- &gt;GeneratedFiles/Precompiled.h.cpp
 if errorlevel 1 goto VCEnd
