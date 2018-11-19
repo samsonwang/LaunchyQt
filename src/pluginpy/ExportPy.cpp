@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QHash>
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"
+#include "PluginMgr.h"
 
 static int add_five(int x) {
     return x+5;
@@ -30,6 +31,8 @@ PYBIND11_MODULE(launchy, m) {
     m.doc() = "launchy plugin module for python";
     // Export our basic testing function
     m.def("add_five", &add_five, "function which increase number by 5");
+
+    m.def("hash", &exportpy::hash);
 
     m.def("registerPlugin", &exportpy::registerPlugin);
     m.def("objectReceiver", &exportpy::objectReceiver);
@@ -46,19 +49,24 @@ namespace exportpy {
 
 void registerPlugin(py::object pluginClass) {
     std::cout << "registerPlugin called" << std::endl;
-
+    // qDebug() << "exportpy::registerPlugin, register plugin called";
     py::object pluginObj = pluginClass();
 
     if (py::isinstance<Plugin>(pluginObj)) {
         std::cout << "plugin register succeeded" << std::endl;
+        // qDebug() << "exportpy::registerPlugin, plugin register succeed";
         Plugin* pluginPtr = pluginObj.cast<Plugin*>();
         if (pluginPtr) {
             std::string name = pluginPtr->getName();
             std::cout << "registered plugin name:" << name << std::endl;
+         //   qDebug() << "exportpy::registerPlugin, plugin name:" << name.c_str();
         }
+        pluginpy::PluginMgr& mgr = pluginpy::PluginMgr::instance();
+        mgr.registerPlugin(pluginClass);
     }
     else {
         std::cout << "plugin register failed" << std::endl;
+        // qDebug() << "exportpy::registerPlugin, plugin register failed";
     }
 }
 

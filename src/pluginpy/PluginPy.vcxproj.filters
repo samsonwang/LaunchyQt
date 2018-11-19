@@ -47,6 +47,15 @@
     <ClCompile Include="ExportPyPlugin.cpp">
       <Filter>ExportPy</Filter>
     </ClCompile>
+    <ClCompile Include="PluginWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PluginPy.h">
@@ -66,6 +75,15 @@
     </ClInclude>
     <ClInclude Include="ExportPyPlugin.h">
       <Filter>ExportPy</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginLoader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

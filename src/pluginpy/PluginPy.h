@@ -1,10 +1,14 @@
+
 #pragma once
 
 #include "PluginPyLib.h"
-namespace launchy {
+
+namespace pluginpy {
 
 class PLUGINPY_EXPORT PluginPy {
 public:
     PluginPy();
+
 };
+
 }

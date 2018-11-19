@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GlobalVar.h"
 #include "Catalog.h"
 #include "SettingsManager.h"
+#include "PluginLoader.h"
 
 #if defined(Q_OS_WIN)
 #define LIB_EXT ".dll"
@@ -140,23 +141,49 @@ void PluginHandler::loadPlugins() {
     }
 }
 
-
 void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& pluginPath) {
-    qDebug() << "plugin from python:" << pluginName << pluginPath;
+    qDebug() << "PluginHandler::loadPythonPlugin, plugin:" << pluginName << "(" << pluginPath << ")";
 
     // this function gets correct PluginInfo and put it in member variable m_plugins
 
     // consider dynamic load the PluginPy library
+    QString pluginFullPath = pluginPath + "/" + pluginName + ".py";
+    pluginpy::PluginLoader loader(pluginName, pluginPath);
+    PluginInterface* plugin = loader.instance();
+    if (!plugin) {
+        qWarning() << pluginFullPath << "is not a Launchy plugin";
+        return;
+    }
+    qDebug() << "Plugin loaded:" << pluginFullPath;
 
+    PluginInfo info;
+    info.obj = plugin;
+    info.path = pluginFullPath;
+    bool handled = info.sendMsg(MSG_GET_ID, (void*)&info.id) != 0;
+    info.sendMsg(MSG_GET_NAME, (void*)&info.name);
+
+    // configured not to load
+    if (handled && (!m_loadable.contains(info.id) || m_loadable[info.id])) {
+        info.loaded = true;
+        info.sendMsg(MSG_INIT);
+        info.sendMsg(MSG_PATH, (void*)&pluginPath);
+    }
+    else {
+        // set not load
+        info.loaded = false;
+    }
+
+    m_plugins[info.id] = info;
 }
 
 void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& pluginPath) {
     QString pluginFullPath = pluginPath + "/" + pluginName + LIB_EXT;
     QPluginLoader loader(pluginFullPath);
-    qDebug() << "Loading plugin:" << pluginFullPath;
-    PluginInterface *plugin = qobject_cast<PluginInterface*>(loader.instance());
+    qDebug() << "PluginHandler::loadCppPlugin, plugin:" << pluginFullPath;
+    PluginInterface* plugin = qobject_cast<PluginInterface*>(loader.instance());
     if (!plugin) {
         qWarning() << pluginFullPath << "is not a Launchy plugin";
+        return;
     }
     qDebug() << "Plugin loaded:" << pluginFullPath;
 

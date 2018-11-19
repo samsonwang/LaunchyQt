@@ -16,10 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "PluginWrapper.h"
-
+#include "PluginMsg.h"
 #include "ExportPyPlugin.h"
+
 //#include "ScriptPluginsSynchronizer.h"
 //#include "PythonUtils.h"
 
@@ -38,18 +38,18 @@ PluginWrapper::~PluginWrapper() {
 }
 
 void PluginWrapper::getID(uint* id) {
-    
-//    GUARDED_CALL_TO_PYTHON(
-//        LOG_DEBUG("Calling plugin getID");
+    //    GUARDED_CALL_TO_PYTHON(
+    //        LOG_DEBUG("Calling plugin getID");
     *id = m_plugin->getID();
-//    );
+    //    );
 }
 
-void PluginWrapper::getName(QString* str) {
+void PluginWrapper::getName(QString* name) {
     //LOG_FUNCTRACK;
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getName");
-    *str = QString::fromStdString(m_plugin->getName());
+    std::string pluginName = m_plugin->getName();
+    *name = QString::fromStdString(pluginName);
     //);
 }
 
@@ -61,7 +61,12 @@ void PluginWrapper::init() {
     //);
 }
 
-void PluginWrapper::getLabels(QList<InputData>* id) {
+void PluginWrapper::setPath(const QString* path) {
+    std::string str = (*path).toStdString();
+    m_plugin->setPath(str);
+}
+
+void PluginWrapper::getLabels(QList<launchy::InputData>* inputData) {
     //LOG_FUNCTRACK;
 
     //ScriptInputDataList inputDataList(prepareInputDataList(id));
@@ -73,7 +78,7 @@ void PluginWrapper::getLabels(QList<InputData>* id) {
 //    );
 }
 
-void PluginWrapper::getResults(QList<InputData>* id, QList<CatItem>* results) {
+void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* result) {
     //ScriptInputDataList inputDataList(prepareInputDataList(id));
     //ScriptResultsList scriptResults(*results);
 
@@ -85,9 +90,7 @@ void PluginWrapper::getResults(QList<InputData>* id, QList<CatItem>* results) {
     //);
 }
 
-void PluginWrapper::getCatalog(QList<CatItem>* items) {
-    //LOG_FUNCTRACK;
-
+void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
     //ScriptResultsList scriptResults(*items);
 
     //GUARDED_CALL_TO_PYTHON(
@@ -97,9 +100,7 @@ void PluginWrapper::getCatalog(QList<CatItem>* items) {
     //);
 }
 
-void PluginWrapper::launchItem(QList<InputData>* id, CatItem* item) {
-    //LOG_FUNCTRACK;
-
+void PluginWrapper::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
     //CatItem& topResult = id->last().getTopResult();
     //item = &topResult;
 
@@ -110,76 +111,63 @@ void PluginWrapper::launchItem(QList<InputData>* id, CatItem* item) {
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin launchItem");
     std::vector<std::string> inputDataList;
-    m_plugin->launchItem(inputDataList, *item);
+    std::string launItem;
+    m_plugin->launchItem(inputDataList, launItem);
     //);
 
     //LOG_DEBUG("Finished launching item");
 }
 
 bool PluginWrapper::hasDialog() {
-    LOG_FUNCTRACK;
-    bool hasDialog = false;
+    bool bRet = false;
 
-    GUARDED_CALL_TO_PYTHON(
-        LOG_DEBUG("Calling plugin hasDialog");
-    hasDialog = m_plugin->hasDialog();
-    );
+    //GUARDED_CALL_TO_PYTHON(
+    //    LOG_DEBUG("Calling plugin hasDialog");
+    bRet = m_plugin->hasDialog();
+    //);
 
-    return hasDialog;
+    return bRet;
 }
 
-void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg)
-{
-    LOG_FUNCTRACK;
-    m_scriptPluginsSynchronizer.enteringDoDialog();
+void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
+    //m_scriptPluginsSynchronizer.enteringDoDialog();
 
-    GUARDED_CALL_TO_PYTHON(
-        LOG_DEBUG("Calling plugin doDialog");
+    //GUARDED_CALL_TO_PYTHON(
+    //    LOG_DEBUG("Calling plugin doDialog");
     void* result = m_plugin->doDialog((void*)parent);
     if (result) {
-        *newDlg = reinterpret_cast<QWidget*>(result);
+        *newDlg = static_cast<QWidget*>(result);
     }
     else {
-        LOG_DEBUG("doDialog returned NULL");
+    //    LOG_DEBUG("doDialog returned NULL");
         *newDlg = NULL;
     }
-    );
-
-
+    //);
 }
 
-void PluginWrapper::endDialog(bool accept)
-{
-    LOG_FUNCTRACK;
+void PluginWrapper::endDialog(bool accept) {
+    // LOG_FUNCTRACK;
 
-    GUARDED_CALL_TO_PYTHON(
-        LOG_DEBUG("Calling plugin endDialog");
+    // GUARDED_CALL_TO_PYTHON(
+    //    LOG_DEBUG("Calling plugin endDialog");
     m_plugin->endDialog(accept);
-    );
+    // );
 
-    m_scriptPluginsSynchronizer.finishedEndDialog();
+    // m_scriptPluginsSynchronizer.finishedEndDialog();
 }
 
-void PluginWrapper::launchyShow()
-{
-    LOG_FUNCTRACK;
-
-    GUARDED_CALL_TO_PYTHON(
-        LOG_DEBUG("Calling plugin launchyShow");
+void PluginWrapper::launchyShow() {
+    // GUARDED_CALL_TO_PYTHON(
+    //   LOG_DEBUG("Calling plugin launchyShow");
     m_plugin->launchyShow();
-    );
-
-
+    // );
 }
 
-void PluginWrapper::launchyHide()
-{
-    LOG_FUNCTRACK;
-
-    GUARDED_CALL_TO_PYTHON(
-        LOG_DEBUG("Calling plugin launchyHide");
+void PluginWrapper::launchyHide() {
+    // GUARDED_CALL_TO_PYTHON(
+    //    LOG_DEBUG("Calling plugin launchyHide");
     m_plugin->launchyHide();
-    );
+    // );
 }
 
 int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
@@ -218,14 +206,14 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     */
 
     // Disptach the actual Python function
-    const bool result = dispatchFunction(msgId, wParam, lParam);
+    int result = dispatchFunction(msgId, wParam, lParam);
 
     // m_scriptPluginsSynchronizer.unlockInPythonMutex();
     return result;
 }
 
+/*
 bool PluginWrapper::isInPythonFunction() const {
-    /*
     const bool waitingForPythonFunctionToReturn =
         !m_scriptPluginsSynchronizer.tryLockInPythonMutex();
 
@@ -233,12 +221,12 @@ bool PluginWrapper::isInPythonFunction() const {
         m_scriptPluginsSynchronizer.unlockInPythonMutex();
     }
     return waitingForPythonFunctionToReturn;
-    */
     return false;
 }
+*/
 
-bool PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
-    bool handled = false;
+int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
+    int handled = false;
 
     switch (msgId) {
     case MSG_INIT:
@@ -246,7 +234,7 @@ bool PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
         handled = true;
         break;
     case MSG_GET_LABELS:
-        getLabels((QList<InputData>*) wParam);
+        getLabels((QList<launchy::InputData>*) wParam);
         handled = true;
         break;
     case MSG_GET_ID:
@@ -257,16 +245,19 @@ bool PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
         getName((QString*)wParam);
         handled = true;
         break;
+    case MSG_PATH:
+        setPath((const QString*)wParam);
+        break;
     case MSG_GET_RESULTS:
-        getResults((QList<InputData>*) wParam, (QList<CatItem>*) lParam);
+        getResults((QList<launchy::InputData>*) wParam, (QList<launchy::CatItem>*) lParam);
         handled = true;
         break;
     case MSG_GET_CATALOG:
-        getCatalog((QList<CatItem>*) wParam);
+        getCatalog((QList<launchy::CatItem>*) wParam);
         handled = true;
         break;
     case MSG_LAUNCH_ITEM:
-        launchItem((QList<InputData>*) wParam, (CatItem*)lParam);
+        launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         handled = true;
         break;
     case MSG_HAS_DIALOG:
@@ -289,7 +280,6 @@ bool PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
         handled = true;
         launchyHide();
         break;
-
     default:
         break;
     }

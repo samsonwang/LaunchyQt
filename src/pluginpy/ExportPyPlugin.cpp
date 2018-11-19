@@ -11,6 +11,7 @@ void ExportPlugin(const pybind11::module& m) {
         .def("init", &exportpy::Plugin::init)
         .def("getID", &exportpy::Plugin::getID)
         .def("getName", &exportpy::Plugin::getName)
+        .def("setPath", &exportpy::Plugin::setPath)
         .def("getLabels", &exportpy::Plugin::getLabels)
         .def("getResults", &exportpy::Plugin::getResults)
         .def("getCatalog", &exportpy::Plugin::getCatalog)

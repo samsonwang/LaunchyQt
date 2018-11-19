@@ -1,8 +1,10 @@
 
-//#include "Precompiled.h"
 #include "PluginPy.h"
-namespace launchy {
+
+namespace pluginpy {
+
 PluginPy::PluginPy() {
 
 }
+
 }

@@ -19,6 +19,8 @@ public:
 
     virtual std::string getName() = 0;
 
+    virtual void setPath(const std::string& path) = 0;
+
     virtual void getLabels(std::vector<std::string>& inputDataList) = 0;
 
     virtual void getResults(std::vector<std::string>& inputDataList,
@@ -69,6 +71,15 @@ public:
             std::string,
             Plugin,
             getName
+        );
+    }
+
+    void setPath(const std::string& path) override {
+        PYBIND11_OVERLOAD_PURE(
+            void,
+            Plugin,
+            setPath,
+            path
         );
     }
 
