@@ -39,6 +39,7 @@ PYBIND11_MODULE(launchy, m) {
 
     exportpy::ExportCatItem(m);
     exportpy::ExportPlugin(m);
+
     //python_export::export_QString();
     //python_export::export_pylaunchy();
     //python_export::export_catalog();

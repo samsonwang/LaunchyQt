@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ExportPyCatItem.h"
+#include "CatalogItem.h"
 
 namespace py = pybind11;
 
@@ -32,7 +33,36 @@ CatItem::CatItem(const std::string& full,
     id(pluginId) {
 }
 
-void ExportCatItem(const pybind11::module& m) {
+CatItem::CatItem()
+    : usage(0),
+      data(nullptr),
+      id(0) {
+
+}
+
+CatItem::CatItem(const launchy::CatItem& item)
+    : fullPath(item.fullPath.toStdString()),
+      shortName(item.shortName.toStdString()),
+      lowName(item.lowName.toStdString()),
+      icon(item.icon.toStdString()),
+      usage(item.usage),
+      data(item.data),
+      id(item.id) {
+
+}
+
+CatItem& CatItem::operator=(const launchy::CatItem& item) {
+    fullPath = item.fullPath.toStdString();
+    shortName = item.shortName.toStdString();
+    lowName = item.lowName.toStdString();
+    icon = item.icon.toStdString();
+    usage = item.usage;
+    data = item.data;
+    id = item.id;
+    return *this;
+}
+
+void ExportCatItem(const py::module& m) {
 
     py::class_<exportpy::CatItem>(m, "CatItem")
         .def(py::init<const std::string&, const std::string&, int, const std::string&>())

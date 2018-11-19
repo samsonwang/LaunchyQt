@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <pybind11/pybind11.h>
+#include "ExportPyInputData.h"
 
 namespace exportpy {
 
@@ -21,10 +22,10 @@ public:
 
     virtual void setPath(const std::string& path) = 0;
 
-    virtual void getLabels(std::vector<std::string>& inputDataList) = 0;
+    virtual void getLabels(std::vector<InputData> inputDataList) = 0;
 
-    virtual void getResults(std::vector<std::string>& inputDataList,
-                            std::vector<std::string>& resultsList) = 0;
+    virtual void getResults(std::vector<InputData>& inputDataList,
+                            std::vector<CatItem>& resultsList) = 0;
 
     virtual void getCatalog(std::vector<std::string>& resultsList) = 0;
 
@@ -83,7 +84,7 @@ public:
         );
     }
 
-    void getLabels(std::vector<std::string>& inputDataList) override {
+    void getLabels(std::vector<InputData> inputDataList) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
@@ -92,8 +93,8 @@ public:
         );
     }
 
-    void getResults(std::vector<std::string>& inputDataList,
-                    std::vector<std::string>& resultsList) override {
+    void getResults(std::vector<InputData>& inputDataList,
+                    std::vector<CatItem>& resultsList) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,

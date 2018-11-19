@@ -84,12 +84,15 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)launchy.pyd</Command>
-      <Message>copy $(OutputPath)$(TargetFileName) to $(OutputPath)launchy.pyd</Message>
+      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)launchy.pyd &amp;&amp; echo "prepare launchy.pyd"</Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
+    <PreBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExportPyCatItem.cpp" />
+    <ClCompile Include="ExportPyInputData.cpp" />
     <ClCompile Include="ExportPyPlugin.cpp" />
     <ClCompile Include="GeneratedFiles\Precompiled.h.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -105,6 +108,7 @@
   <ItemGroup>
     <ClInclude Include="ExportPy.h" />
     <ClInclude Include="ExportPyCatItem.h" />
+    <ClInclude Include="ExportPyInputData.h" />
     <ClInclude Include="ExportPyPlugin.h" />
     <ClInclude Include="ExportPyQString.h" />
     <ClInclude Include="PluginPy.h" />

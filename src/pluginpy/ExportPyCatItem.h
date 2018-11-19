@@ -20,9 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <pybind11/pybind11.h>
 
+namespace launchy { class CatItem; }
+
+namespace py = pybind11;
+
 namespace exportpy {
 
-void ExportCatItem(const pybind11::module& m);
+void ExportCatItem(const py::module& m);
 
 class CatItem {
 public:
@@ -41,6 +45,8 @@ public:
     /** The plugin id of the creator of this CatItem */
     int id;
 
+    CatItem();
+
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
     \param shortN The abbreviated name for the entry
@@ -53,6 +59,9 @@ public:
             const std::string& shortN,
             int pluginId,
             const std::string& iconPath);
+
+    CatItem(const launchy::CatItem& item);
+    CatItem& operator=(const launchy::CatItem& item);
 };
 
 }

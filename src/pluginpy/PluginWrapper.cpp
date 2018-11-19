@@ -17,8 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PluginWrapper.h"
+#include <pybind11/pybind11.h>
 #include "PluginMsg.h"
 #include "ExportPyPlugin.h"
+
+namespace py = pybind11;
 
 //#include "ScriptPluginsSynchronizer.h"
 //#include "PythonUtils.h"
@@ -73,7 +76,12 @@ void PluginWrapper::getLabels(QList<launchy::InputData>* inputData) {
 
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getLabels");
-    std::vector<std::string> inputDataList;
+    std::vector<exportpy::InputData> inputDataList;
+
+    foreach(launchy::InputData data, *inputData) {
+        inputDataList.push_back(exportpy::InputData(data));
+    }
+
     m_plugin->getLabels(inputDataList);
 //    );
 }
@@ -84,8 +92,17 @@ void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launc
 
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getResults");
-    std::vector<std::string> inputDataList;
-    std::vector<std::string> scriptResults;
+
+    std::vector<exportpy::InputData> inputDataList;
+    foreach(launchy::InputData data, *inputData) {
+        inputDataList.push_back(exportpy::InputData(data));
+    }
+    
+    std::vector<exportpy::CatItem> scriptResults;
+    foreach(launchy::CatItem item, *result) {
+        scriptResults.push_back(exportpy::CatItem(item));
+    }
+
     m_plugin->getResults(inputDataList, scriptResults);
     //);
 }
@@ -206,7 +223,20 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     */
 
     // Disptach the actual Python function
-    int result = dispatchFunction(msgId, wParam, lParam);
+    int result = 0;
+    try {
+        result = dispatchFunction(msgId, wParam, lParam);
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        const char* errInfo = e.what();
+        qWarning() << "PluginWrapper::msg, exception catched on dispatchFunction,"
+            << "msgId:" << msgId << "error info:" << errInfo;
+
+        //throw std::runtime_error("error message mismatch");
+    }
+    
 
     // m_scriptPluginsSynchronizer.unlockInPythonMutex();
     return result;
