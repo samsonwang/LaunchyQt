@@ -27,8 +27,8 @@ void Verby::init() {
 }
 
 void Verby::setPath(const QString* path) {
-    qDebug() << "Verby::setPath, m_libPath:" << m_libPath;
     m_libPath = *path;
+    qDebug() << "Verby::setPath, m_libPath:" << m_libPath;
 }
 
 void Verby::getID(uint* id) {

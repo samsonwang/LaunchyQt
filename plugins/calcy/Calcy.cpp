@@ -29,7 +29,7 @@ Calcy* g_plugin;
 Calcy::Calcy() {
     g_plugin = this;
     HASH_CALCY = qHash(QString("calcy"));
-    qDebug() << "calcyPlugin, id:" << HASH_CALCY;
+    qDebug() << "Calcy pluginId:" << HASH_CALCY;
 }
 
 Calcy::~Calcy() {
