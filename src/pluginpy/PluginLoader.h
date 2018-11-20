@@ -30,9 +30,10 @@ public:
 
     launchy::PluginInterface* instance();
 
+    bool unload();
+
 private:
     void setFileName(const QString& fileName);
-    bool unload();
     bool load();
 
 private:

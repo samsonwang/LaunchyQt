@@ -39,42 +39,31 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
         << "path:" << pluginPath;
 
     uint pluginId = qHash(pluginName);
-    if (m_pluginClass.contains(pluginId) && m_pluginInterface.contains(pluginId)) {
+    if (m_pluginInterface.contains(pluginId)) {
         qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin alread loaded, name:" << pluginName
             << "path:" << pluginPath;
         return m_pluginInterface[pluginId];
     }
 
-    // add dir to os path
-    QString pluginFileName = pluginPath + "/" + pluginName + ".py";
-    pluginFileName = QDir::toNativeSeparators(pluginFileName);
-    std::string fileName = pluginFileName.toLocal8Bit().data();
-    
-    //py::scoped_interpreter guard{};
-    //py::initialize_interpreter();
-    // import plugin module or execute plugin file
-    //py::module sys = py::module::import("sys");
-    //sys.attr("path");
-    //py::object mainModule = py::module::import("__main__");
-    //py::object mainScope = mainModule.attr("__dict__");
-    //py::eval_file(fileName, mainScope);
+    if (!m_pluginObject.contains(pluginId)) {
+//         QString pluginFileName = pluginPath + "/" + pluginName + ".py";
+//         pluginFileName = QDir::toNativeSeparators(pluginFileName);
+//         std::string fileName = pluginFileName.toLocal8Bit().data();
 
-    // Make .py files in the working directory available by default
-    //module::import("sys").attr("path").cast<list>().append(".");
+        // add dir to os path
+        // Make .py files in the working directory available by default
+        //module::import("sys").attr("path").cast<list>().append(".");
+        //std::string path = QDir::toNativeSeparators(pluginPath).toStdString();
+        py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
+        pathObj.append(qPrintable(QDir::toNativeSeparators(pluginPath)));
+        //std::list pathList = pathObj.cast<std::list>();
+        py::object mod = py::module::import(qPrintable(pluginName));
+        py::object pluginClass = mod.attr("getPlugin")();
 
-    std::string path = QDir::toNativeSeparators(pluginPath).toStdString();
-    py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
-    pathObj.append(path);
+        m_pluginObject.insert(pluginId, pluginClass());
+    }
 
-    //std::list pathList = pathObj.cast<std::list>();
-
-    py::object mod = py::module::import("CalcyPy");
-    py::object pluginClass = mod.attr("getPlugin")();
-
-    
-    m_pluginClass.insert(pluginId, pluginClass());
-
-    py::object& pluginObject = m_pluginClass[pluginId];
+    py::object& pluginObject = m_pluginObject[pluginId];
 
     if (py::isinstance<exportpy::Plugin>(pluginObject)) {
         qDebug() << "PluginMgr::loadPlugin, plugin load succeed";
@@ -91,25 +80,20 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
             m_pluginInterface.insert(pluginId, intf);
             return intf;
         }
-        //pluginpy::PluginMgr& mgr = pluginpy::PluginMgr::instance();
-        //mgr.registerPlugin(pluginClass);
     }
-
-
-    //py::scoped_interpreter guard{};
-    //py::module sys = py::module::import("sys");
-    //py::module plugin = py::module::import("CalcyPy");
-    //auto syspath = sys.attr("path");
-    //py::print(py::str(syspath));
-//    py::print(sys.attr("path"));
-    //auto syspath = sys.attr("path");
-    
 
     return nullptr;
 }
 
 bool PluginMgr::unloadPlugin(uint pluginId) {
     qDebug() << "pluginpy::PluginMgr::unloadPlugin, id:" << pluginId;
+
+    launchy::PluginInterface* plugin = m_pluginInterface[pluginId];
+    if (plugin) {
+        delete plugin;
+        plugin = nullptr;
+    }
+    m_pluginInterface.remove(pluginId);
 
     return true;
 }
@@ -125,6 +109,14 @@ PluginMgr::PluginMgr() {
 }
 
 PluginMgr::~PluginMgr() {
+    QHashIterator<uint, launchy::PluginInterface*> it1(m_pluginInterface);
+    while (it1.hasNext()) {
+        it1.next();
+        delete it1.value();
+    }
+    m_pluginInterface.clear();
+    m_pluginObject.clear();
+
     py::finalize_interpreter();
 }
 

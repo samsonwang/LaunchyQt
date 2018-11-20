@@ -30,6 +30,8 @@ namespace py = pybind11;
 //static ScriptInputDataList prepareInputDataList(QList<InputData>* id);
 namespace pluginpy {
 
+QMutex PluginWrapper::s_inPythonLock;
+
 PluginWrapper::PluginWrapper(exportpy::Plugin* plugin)
     //ScriptPluginsSynchronizer& scriptPluginsSynchronizer)
     : m_plugin(plugin) {
@@ -153,6 +155,7 @@ bool PluginWrapper::hasDialog() {
 }
 
 void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
+    return;
     //m_scriptPluginsSynchronizer.enteringDoDialog();
 
     //GUARDED_CALL_TO_PYTHON(
@@ -169,6 +172,7 @@ void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
 }
 
 void PluginWrapper::endDialog(bool accept) {
+    return;
     // LOG_FUNCTRACK;
 
     // GUARDED_CALL_TO_PYTHON(
@@ -228,6 +232,13 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     }
     */
 
+    // python GIL
+    const bool inPython = !s_inPythonLock.tryLock();
+    if (inPython) {
+        qDebug() << "PluginWrapper::dispatchFunction, wait for python lock";
+        return 0;
+    }
+
     // Disptach the actual Python function
     int result = 0;
     try {
@@ -239,12 +250,9 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
         const char* errInfo = e.what();
         qWarning() << "PluginWrapper::msg, exception catched on dispatchFunction,"
             << "msgId:" << msgId << "error info:" << errInfo;
-
-        //throw std::runtime_error("error message mismatch");
     }
     
-
-    // m_scriptPluginsSynchronizer.unlockInPythonMutex();
+    s_inPythonLock.unlock();
     return result;
 }
 
@@ -322,17 +330,5 @@ int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
 
     return handled;
 }
-
-/*
-ScriptInputDataList prepareInputDataList(QList<InputData>* id)
-{
-    ScriptInputDataList inputDataList;
-    QList<InputData>::iterator itr = id->begin();
-    for (; itr != id->end(); ++itr) {
-        inputDataList.push_back(&(*itr));
-    }
-    return inputDataList;
-}
-*/
 
 }

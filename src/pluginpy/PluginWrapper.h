@@ -40,7 +40,7 @@ private:
 
 private:
     exportpy::Plugin* m_plugin;
-
+    static QMutex s_inPythonLock;
 };
 
 }

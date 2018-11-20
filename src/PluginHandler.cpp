@@ -145,7 +145,6 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     qDebug() << "PluginHandler::loadPythonPlugin, plugin:" << pluginName << "(" << pluginPath << ")";
 
     // this function gets correct PluginInfo and put it in member variable m_plugins
-
     // consider dynamic load the PluginPy library
     QString pluginFullPath = pluginPath + "/" + pluginName + ".py";
     pluginpy::PluginLoader loader(pluginName, pluginPath);
@@ -154,12 +153,12 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
         qWarning() << pluginFullPath << "is not a Launchy plugin";
         return;
     }
-    qDebug() << "Plugin loaded:" << pluginFullPath;
+    qDebug() << "PluginHandler::loadPythonPlugin, plugin loaded:" << pluginFullPath;
 
     PluginInfo info;
     info.obj = plugin;
     info.path = pluginFullPath;
-    bool handled = info.sendMsg(MSG_GET_ID, (void*)&info.id) != 0;
+    bool handled = (info.sendMsg(MSG_GET_ID, (void*)&info.id) != 0);
     info.sendMsg(MSG_GET_NAME, (void*)&info.name);
 
     // configured not to load
@@ -171,6 +170,7 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     else {
         // set not load
         info.loaded = false;
+        loader.unload();
     }
 
     m_plugins[info.id] = info;

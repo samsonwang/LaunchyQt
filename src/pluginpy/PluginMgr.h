@@ -41,7 +41,7 @@ private:
     PluginMgr& operator=(const PluginMgr&) = delete;
 
 private:
-    QHash<uint, py::object> m_pluginClass;
+    QHash<uint, py::object> m_pluginObject;
     QHash<uint, launchy::PluginInterface*> m_pluginInterface;
     //QVector<py::object> m_pluginObject;
 };
