@@ -172,9 +172,6 @@
     <ClCompile Include="PluginHandler.cpp">
       <Filter>Plugin</Filter>
     </ClCompile>
-    <ClCompile Include="Directory.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="FileBrowser.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
@@ -276,6 +273,9 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_CatalogBuilder.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Directory.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
