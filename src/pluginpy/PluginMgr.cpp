@@ -106,6 +106,10 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
 
 PluginMgr::PluginMgr() {
     py::initialize_interpreter();
+
+    QString pythonLibPath = qApp->applicationDirPath() + "/python";
+    py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
+    pathObj.append(qPrintable(QDir::toNativeSeparators(pythonLibPath)));
 }
 
 PluginMgr::~PluginMgr() {

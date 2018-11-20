@@ -87,7 +87,7 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)launchy.pyd &amp;&amp; echo "copying target to launchy.pyd"</Command>
+      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd &amp;&amp; echo "copying target to launchy.pyd"</Command>
       <Message>
       </Message>
     </PostBuildEvent>
