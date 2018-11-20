@@ -110,6 +110,9 @@ PluginMgr::PluginMgr() {
     QString pythonLibPath = qApp->applicationDirPath() + "/python";
     py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
     pathObj.append(qPrintable(QDir::toNativeSeparators(pythonLibPath)));
+
+    pythonLibPath += "/python36.zip";
+    pathObj.append(qPrintable(QDir::toNativeSeparators(pythonLibPath)));
 }
 
 PluginMgr::~PluginMgr() {

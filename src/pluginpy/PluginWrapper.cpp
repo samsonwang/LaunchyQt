@@ -112,12 +112,13 @@ void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launc
 }
 
 void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
+    return;
     //ScriptResultsList scriptResults(*items);
 
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getCatalog");
-    exportpy::CatItemList scriptResults(catItem);
-    m_plugin->getCatalog(scriptResults);
+    exportpy::CatItemList resultList(catItem);
+    m_plugin->getCatalog(resultList);
     //);
 }
 
@@ -235,10 +236,13 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     // python GIL
     const bool inPython = !s_inPythonLock.tryLock();
     if (inPython) {
-        qDebug() << "PluginWrapper::dispatchFunction, wait for python lock";
+        qDebug() << "PluginWrapper::dispatchFunction, wait for python lock"
+            << "msgId:" << msgId;
         return 0;
     }
 
+    qDebug() << "PluginWrapper::dispatchFunction, lock mutex, msgId:"
+        << msgId;
     // Disptach the actual Python function
     int result = 0;
     try {
@@ -252,6 +256,8 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
             << "msgId:" << msgId << "error info:" << errInfo;
     }
     
+    qDebug() << "PluginWrapper::dispatchFunction, unlock mutex, msgId:"
+        << msgId;
     s_inPythonLock.unlock();
     return result;
 }
