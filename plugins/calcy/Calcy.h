@@ -35,10 +35,10 @@ public:
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
 private:
-    void setPath(const QString* path);
-    void getLabels(QList<launchy::InputData>* inputData);
     void getID(uint* id);
     void getName(QString* name);
+    void setPath(const QString* path);
+    void getLabels(QList<launchy::InputData>* inputData);
     void getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* result);
     int launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item);
     void doDialog(QWidget* parent, QWidget** dialog);
