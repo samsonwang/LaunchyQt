@@ -66,7 +66,7 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint i)
 CatItem::CatItem(const QString& full, const QString& shortN, uint i, const QString& iconPath)
     : fullPath(full),
       shortName(shortN),
-      icon(iconPath),
+      iconPath(iconPath),
       usage(0),
       data(NULL),
       id(i) {
@@ -85,7 +85,7 @@ QDataStream& operator<<(QDataStream& out, const CatItem &item) {
     out << item.fullPath;
     out << item.shortName;
     out << item.lowName;
-    out << item.icon;
+    out << item.iconPath;
     out << item.usage;
     out << item.id;
     return out;
@@ -95,7 +95,7 @@ QDataStream& operator>>(QDataStream& in, CatItem &item) {
     in >> item.fullPath;
     in >> item.shortName;
     in >> item.lowName;
-    in >> item.icon;
+    in >> item.iconPath;
     in >> item.usage;
     in >> item.id;
     return in;

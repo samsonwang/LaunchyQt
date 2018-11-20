@@ -37,7 +37,7 @@ public:
     /** The lowercase name of the indexed item */
     QString lowName;
     /** A path to an icon for the item */
-    QString icon;
+    QString iconPath;
     /** How many times this item has been called by the user */
     int usage;
     /** This is unused, and meant for plugin writers and future extensions */

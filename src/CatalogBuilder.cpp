@@ -140,7 +140,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
             CatItem item(dir + "/" + files[i]);
             g_app->alterItem(&item);
 #ifdef Q_OS_LINUX
-            if (item.fullPath.endsWith(".desktop") && item.icon == "")
+            if (item.fullPath.endsWith(".desktop") && item.iconPath == "")
                 continue;
 #endif
             g_catalog->addItem(item);

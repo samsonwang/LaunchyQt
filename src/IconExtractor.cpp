@@ -103,11 +103,11 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
     qDebug() << "Fetching icon for" << item.fullPath;
 
 #ifdef Q_OS_MAC
-    if (item.icon.endsWith(".png") || item.icon.endsWith(".ico"))
-        return QIcon(item.icon);
+    if (item.iconPath.endsWith(".png") || item.iconPath.endsWith(".ico"))
+        return QIcon(item.iconPath);
 #endif
 
-    if (item.icon.isNull()) {
+    if (item.iconPath.isNull()) {
 #ifdef Q_OS_LINUX
         QFileInfo info(item.fullPath);
         if (info.isDir())
@@ -119,11 +119,11 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
     }
     else {
 #ifdef Q_OS_LINUX
-        if (QFile::exists(item.icon)) {
-            return QIcon(item.icon);
+        if (QFile::exists(item.iconPath)) {
+            return QIcon(item.iconPath);
         }
 #endif
-        return g_app->icon(QDir::toNativeSeparators(item.icon));
+        return g_app->icon(QDir::toNativeSeparators(item.iconPath));
     }
 }
 }
