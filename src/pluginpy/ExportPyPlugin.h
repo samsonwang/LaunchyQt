@@ -24,12 +24,12 @@ public:
 
     virtual void getLabels(const std::vector<InputData>& inputDataList) = 0;
 
-    virtual void getResults(std::vector<InputData> inputDataList,
-                            CatItemList& resultsList) = 0;
+    virtual void getResults(const std::vector<InputData>& inputDataList,
+                            const CatItemList& resultsList) = 0;
 
-    virtual void getCatalog(std::vector<std::string>& resultsList) = 0;
+    virtual void getCatalog(const CatItemList& resultsList) = 0;
 
-    virtual void launchItem(std::vector<InputData> inputDataList,
+    virtual void launchItem(const std::vector<InputData>& inputDataList,
                             std::string& item) = 0;
 
     virtual bool hasDialog() = 0;
@@ -93,8 +93,8 @@ public:
         );
     }
 
-    void getResults(std::vector<InputData> inputDataList,
-                    CatItemList& resultsList) override {
+    void getResults(const std::vector<InputData>& inputDataList,
+                    const CatItemList& resultsList) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
@@ -104,7 +104,7 @@ public:
         );
     }
 
-    void getCatalog(std::vector<std::string>& resultsList) override {
+    void getCatalog(const CatItemList& resultsList) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
@@ -113,7 +113,7 @@ public:
         );
     }
 
-    void launchItem(std::vector<InputData> inputDataList,
+    void launchItem(const std::vector<InputData>& inputDataList,
                     std::string& item) override {
         PYBIND11_OVERLOAD_PURE(
             void,

@@ -26,53 +26,47 @@ namespace exportpy {
 CatItem::CatItem(const std::string& full,
                  const std::string& shortN,
                  unsigned int pluginId,
-                 const std::string& iconPath)
-    : fullPath(full),
-    shortName(shortN),
-    icon(iconPath),
-    id(pluginId),
-    usage(0),
-    data(nullptr) {
+                 const std::string& iconPath) {
 
-    m_data.fullPath = QString::fromStdString(full);
+    m_data = launchy::CatItem(QString::fromStdString(full),
+                              QString::fromStdString(shortN),
+                              uint(pluginId),
+                              QString::fromStdString(iconPath));
 }
 
-CatItem::CatItem()
-    : usage(0),
-      data(nullptr),
-      id(0) {
-
+const launchy::CatItem& CatItem::getData() const {
+    return m_data;
 }
 
-CatItem::CatItem(const launchy::CatItem& item)
-    : fullPath(item.fullPath.toStdString()),
-      shortName(item.shortName.toStdString()),
-      lowName(item.lowName.toStdString()),
-      icon(item.icon.toStdString()),
-      usage(item.usage),
-      data(item.data),
-      id(item.id) {
-
-}
-
-CatItem& CatItem::operator=(const launchy::CatItem& item) {
-    fullPath = item.fullPath.toStdString();
-    shortName = item.shortName.toStdString();
-    lowName = item.lowName.toStdString();
-    icon = item.icon.toStdString();
-    usage = item.usage;
-    data = item.data;
-    id = item.id;
-    return *this;
-}
-
+// CatItem::CatItem(const launchy::CatItem& item)
+//     : fullPath(item.fullPath.toStdString()),
+//     shortName(item.shortName.toStdString()),
+//     lowName(item.lowName.toStdString()),
+//     icon(item.icon.toStdString()),
+//     usage(item.usage),
+//     data(item.data),
+//     id(item.id) {
+// 
+// }
+// 
+// CatItem& CatItem::operator=(const launchy::CatItem& item) {
+//     fullPath = item.fullPath.toStdString();
+//     shortName = item.shortName.toStdString();
+//     lowName = item.lowName.toStdString();
+//     icon = item.icon.toStdString();
+//     usage = item.usage;
+//     data = item.data;
+//     id = item.id;
+//     return *this;
+// }
+// 
 void ExportCatItem(const py::module& m) {
 
     py::class_<exportpy::CatItem>(m, "CatItem")
-        .def(py::init<const std::string&, const std::string&, unsigned int, const std::string&>())
-        .def_readwrite("fullPath", &exportpy::CatItem::fullPath)
-        .def_readwrite("shortName", &exportpy::CatItem::shortName)
-        .def_readwrite("icon", &exportpy::CatItem::icon);
+        .def(py::init<const std::string&, const std::string&, unsigned int, const std::string&>());
+//         .def_readwrite("fullPath", &exportpy::CatItem::fullPath)
+//         .def_readwrite("shortName", &exportpy::CatItem::shortName)
+//         .def_readwrite("icon", &exportpy::CatItem::icon);
 
     py::class_<exportpy::CatItemList>(m, "CatItemList")
         //.def(py::init<>())
@@ -90,21 +84,21 @@ void CatItemList::append(const CatItem& item) {
 //     launchy::CatItem temp;
 //     temp.fullPath = item.m_data;
 //     //m_head->push_front(item);
-    m_data->push_back(item.m_data);
+    m_data->push_back(item.getData());
 }
 
 void CatItemList::prepend(const CatItem& item) {
-    m_data->push_front(item.m_data);
+    m_data->push_front(item.getData());
     //m_rear->push_back(item);
 }
 
 void CatItemList::push_front(const CatItem& item) {
-    m_data->push_front(item.m_data);
+    m_data->push_front(item.getData());
     //m_head->push_front(item);
 }
 
 void CatItemList::push_back(const CatItem& item) {
-    m_data->push_back(item.m_data);
+    m_data->push_back(item.getData());
     //m_rear->push_back(item);
 }
 

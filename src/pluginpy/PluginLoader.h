@@ -27,16 +27,13 @@ namespace pluginpy {
 class PLUGINPY_EXPORT PluginLoader {
 public:
     PluginLoader(const QString& pluginName, const QString& pluginPath);
-    
-    void setFileName(const QString& fileName);
-    bool load();
-
-    bool unload();
 
     launchy::PluginInterface* instance();
 
 private:
-    
+    void setFileName(const QString& fileName);
+    bool unload();
+    bool load();
 
 private:
     QString m_pluginName;

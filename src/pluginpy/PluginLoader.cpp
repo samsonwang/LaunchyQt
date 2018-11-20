@@ -40,15 +40,38 @@ launchy::PluginInterface* PluginLoader::instance() {
 }
 
 bool PluginLoader::unload() {
-    PluginMgr& mgr = PluginMgr::instance();
-    m_interface = nullptr;
-    return mgr.unloadPlugin(qHash(m_pluginName));
+    bool ret = false;
+    try {
+        // finally get m_interface
+        PluginMgr& mgr = PluginMgr::instance();
+        m_interface = nullptr;
+        mgr.unloadPlugin(qHash(m_pluginName));
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        const char* errInfo = e.what();
+        qWarning() << "PluginLoader::load, exception catched on load plugin"
+            << "error info:" << errInfo;
+    }
+
+    return ret;
 }
 
 bool PluginLoader::load() {
-    PluginMgr& mgr = PluginMgr::instance();
-    // finally get m_interface
-    m_interface = mgr.loadPlugin(m_pluginName, m_pluginPath);
+    try {
+        // finally get m_interface
+        PluginMgr& mgr = PluginMgr::instance();
+        m_interface = mgr.loadPlugin(m_pluginName, m_pluginPath);
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        const char* errInfo = e.what();
+        qWarning() << "PluginLoader::load, exception catched on load plugin"
+            << "error info:" << errInfo;
+    }
+
     return m_interface != nullptr;
 }
 

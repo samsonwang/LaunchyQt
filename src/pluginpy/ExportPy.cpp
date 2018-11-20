@@ -63,8 +63,8 @@ void registerPlugin(py::object pluginClass) {
             std::cout << "registered plugin name:" << name << std::endl;
          //   qDebug() << "exportpy::registerPlugin, plugin name:" << name.c_str();
         }
-        pluginpy::PluginMgr& mgr = pluginpy::PluginMgr::instance();
-        mgr.registerPlugin(pluginClass);
+  //      pluginpy::PluginMgr& mgr = pluginpy::PluginMgr::instance();
+//        mgr.registerPlugin(pluginClass);
     }
     else {
         std::cout << "plugin register failed" << std::endl;
@@ -81,9 +81,9 @@ void objectReceiver(py::object obj) {
     if (py::isinstance<exportpy::CatItem>(obj)) {
         std::cout << "objectReceiver, got CatItem" << std::endl;
         CatItem item = py::cast<CatItem>(obj);
-        std::cout << "fullPath:" << item.fullPath << std::endl;
-        std::cout << "shortName" << item.shortName << std::endl;
-        std::cout << "icon" << item.icon << std::endl;
+//         std::cout << "fullPath:" << item.fullPath << std::endl;
+//         std::cout << "shortName" << item.shortName << std::endl;
+//         std::cout << "icon" << item.icon << std::endl;
     }
 
     else if (py::isinstance<exportpy::Plugin*>(obj)) {

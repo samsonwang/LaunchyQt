@@ -106,7 +106,6 @@
     <ClCompile Include="PluginMgr.cpp" />
     <ClCompile Include="PluginPy.cpp" />
     <ClCompile Include="ExportPy.cpp" />
-    <ClCompile Include="ExportPyQString.cpp" />
     <ClCompile Include="PluginWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -114,7 +113,6 @@
     <ClInclude Include="ExportPyCatItem.h" />
     <ClInclude Include="ExportPyInputData.h" />
     <ClInclude Include="ExportPyPlugin.h" />
-    <ClInclude Include="ExportPyQString.h" />
     <ClInclude Include="PluginPy.h" />
     <ClInclude Include="PluginPyLib.h" />
     <ClInclude Include="PluginLoader.h" />

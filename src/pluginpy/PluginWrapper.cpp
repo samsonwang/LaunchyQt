@@ -114,7 +114,7 @@ void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
 
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getCatalog");
-    std::vector<std::string> scriptResults;
+    exportpy::CatItemList scriptResults(catItem);
     m_plugin->getCatalog(scriptResults);
     //);
 }

@@ -31,22 +31,22 @@ void ExportCatItem(const py::module& m);
 
 class CatItem {
 public:
-    /** The full path of the indexed item */
-    std::string fullPath;
-    /** The abbreviated name of the indexed item */
-    std::string shortName;
-    /** The lowercase name of the indexed item */
-    std::string lowName;
-    /** A path to an icon for the item */
-    std::string icon;
-    /** How many times this item has been called by the user */
-    int usage;
-    /** This is unused, and meant for plugin writers and future extensions */
-    void* data;
-    /** The plugin id of the creator of this CatItem */
-    unsigned int id;
-
-    CatItem();
+//     /** The full path of the indexed item */
+//     std::string fullPath;
+//     /** The abbreviated name of the indexed item */
+//     std::string shortName;
+//     /** The lowercase name of the indexed item */
+//     std::string lowName;
+//     /** A path to an icon for the item */
+//     std::string icon;
+//     /** How many times this item has been called by the user */
+//     int usage;
+//     /** This is unused, and meant for plugin writers and future extensions */
+//     void* data;
+//     /** The plugin id of the creator of this CatItem */
+//     unsigned int id;
+// 
+//     CatItem();
 
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
@@ -61,10 +61,12 @@ public:
             unsigned int pluginId,
             const std::string& iconPath);
 
-    CatItem(const launchy::CatItem& item);
-    CatItem& operator=(const launchy::CatItem& item);
+//     CatItem(const launchy::CatItem& item);
+//     CatItem& operator=(const launchy::CatItem& item);
 
-//private:
+    const launchy::CatItem& getData() const;
+
+private:
     launchy::CatItem m_data;
 };
 

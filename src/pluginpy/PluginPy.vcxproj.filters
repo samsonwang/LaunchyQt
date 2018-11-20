@@ -38,9 +38,6 @@
     <ClCompile Include="ExportPy.cpp">
       <Filter>ExportPy</Filter>
     </ClCompile>
-    <ClCompile Include="ExportPyQString.cpp">
-      <Filter>ExportPy</Filter>
-    </ClCompile>
     <ClCompile Include="ExportPyCatItem.cpp">
       <Filter>ExportPy</Filter>
     </ClCompile>
@@ -68,9 +65,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExportPy.h">
-      <Filter>ExportPy</Filter>
-    </ClInclude>
-    <ClInclude Include="ExportPyQString.h">
       <Filter>ExportPy</Filter>
     </ClInclude>
     <ClInclude Include="ExportPyCatItem.h">
