@@ -25,12 +25,16 @@ namespace exportpy {
 
 CatItem::CatItem(const std::string& full,
                  const std::string& shortN,
-                 int pluginId,
+                 unsigned int pluginId,
                  const std::string& iconPath)
     : fullPath(full),
     shortName(shortN),
     icon(iconPath),
-    id(pluginId) {
+    id(pluginId),
+    usage(0),
+    data(nullptr) {
+
+    m_data.fullPath = QString::fromStdString(full);
 }
 
 CatItem::CatItem()
@@ -65,11 +69,43 @@ CatItem& CatItem::operator=(const launchy::CatItem& item) {
 void ExportCatItem(const py::module& m) {
 
     py::class_<exportpy::CatItem>(m, "CatItem")
-        .def(py::init<const std::string&, const std::string&, int, const std::string&>())
+        .def(py::init<const std::string&, const std::string&, unsigned int, const std::string&>())
         .def_readwrite("fullPath", &exportpy::CatItem::fullPath)
         .def_readwrite("shortName", &exportpy::CatItem::shortName)
         .def_readwrite("icon", &exportpy::CatItem::icon);
 
+    py::class_<exportpy::CatItemList>(m, "CatItemList")
+        //.def(py::init<>())
+        .def("append", &exportpy::CatItemList::append)
+        .def("prepend", &exportpy::CatItemList::prepend)
+        .def("push_front", &exportpy::CatItemList::push_front)
+        .def("push_back", &exportpy::CatItemList::push_back);
+}
+
+CatItemList::CatItemList(QList<launchy::CatItem>* data)
+    : m_data(data) {
+}
+
+void CatItemList::append(const CatItem& item) {
+//     launchy::CatItem temp;
+//     temp.fullPath = item.m_data;
+//     //m_head->push_front(item);
+    m_data->push_back(item.m_data);
+}
+
+void CatItemList::prepend(const CatItem& item) {
+    m_data->push_front(item.m_data);
+    //m_rear->push_back(item);
+}
+
+void CatItemList::push_front(const CatItem& item) {
+    m_data->push_front(item.m_data);
+    //m_head->push_front(item);
+}
+
+void CatItemList::push_back(const CatItem& item) {
+    m_data->push_back(item.m_data);
+    //m_rear->push_back(item);
 }
 
 }

@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ExportPyPlugin.h"
 #include "PluginWrapper.h"
 
+#include "InputData.h"
+
 namespace py = pybind11;
 
 namespace pluginpy {
@@ -41,13 +43,18 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     std::string fileName = pluginFileName.toLocal8Bit().data();
     
     //py::scoped_interpreter guard{};
-    py::initialize_interpreter();
+    //py::initialize_interpreter();
     // import plugin module or execute plugin file
-    py::module sys = py::module::import("sys");
-    sys.attr("path");
+    //py::module sys = py::module::import("sys");
+    
+    
+    //sys.attr("path");
     //py::object mainModule = py::module::import("__main__");
     //py::object mainScope = mainModule.attr("__dict__");
     //py::eval_file(fileName, mainScope);
+
+    // Make .py files in the working directory available by default
+    //module::import("sys").attr("path").cast<list>().append(".");
 
     py::object mod = py::module::import("CalcyPy");
     py::object pluginClass = mod.attr("getPlugin")();
@@ -64,6 +71,8 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
         if (pluginPtr) {
             std::string name = pluginPtr->getName();
             uint id = pluginPtr->getID();
+            //exportpy::InputData data;
+            //pluginPtr->getLabels(data);
             //std::cout << "registered plugin name:" << name << std::endl;
             qDebug() << "exportpy::registerPlugin, plugin name:" << name.c_str();
             launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr);
@@ -99,7 +108,7 @@ void PluginMgr::registerPlugin(py::object pluginClass) {
 }
 
 PluginMgr::PluginMgr() {
-
+    py::initialize_interpreter();
 }
 
 }

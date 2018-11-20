@@ -19,8 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <pybind11/pybind11.h>
+#include "CatalogItem.h"
 
-namespace launchy { class CatItem; }
+//namespace launchy { class CatItem; }
 
 namespace py = pybind11;
 
@@ -43,7 +44,7 @@ public:
     /** This is unused, and meant for plugin writers and future extensions */
     void* data;
     /** The plugin id of the creator of this CatItem */
-    int id;
+    unsigned int id;
 
     CatItem();
 
@@ -57,11 +58,28 @@ public:
     */
     CatItem(const std::string& full,
             const std::string& shortN,
-            int pluginId,
+            unsigned int pluginId,
             const std::string& iconPath);
 
     CatItem(const launchy::CatItem& item);
     CatItem& operator=(const launchy::CatItem& item);
+
+//private:
+    launchy::CatItem m_data;
+};
+
+
+class CatItemList {
+public:
+    CatItemList(QList<launchy::CatItem>* data);
+
+    void append(const CatItem& item);
+    void prepend(const CatItem& item);
+    void push_front(const CatItem& item);
+    void push_back(const CatItem& item);
+
+private:
+    QList<launchy::CatItem>* m_data;
 };
 
 }

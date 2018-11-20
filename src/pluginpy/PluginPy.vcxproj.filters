@@ -57,7 +57,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExportPyInputData.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ExportPy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +89,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExportPyInputData.h">
-      <Filter>Header Files</Filter>
+      <Filter>ExportPy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

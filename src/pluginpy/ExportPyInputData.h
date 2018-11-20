@@ -32,12 +32,9 @@ void ExportInputData(const py::module& m);
 
 class InputData {
 public:
-    InputData();
-    InputData(const std::string& str);
-    InputData(const launchy::InputData& data);
+    //InputData() = default;
+    InputData(launchy::InputData* data);
 
-    /** Get the labels applied to this query segment */
-    const std::set<unsigned int>& getLabels() const;
     /** Apply a label to this query segment */
     void setLabel(unsigned int l);
     /** Remove a label from this query segment */
@@ -59,7 +56,7 @@ public:
     unsigned int getID() const;
 
     /** Get the text of the query segment */
-    const std::string& getText() const;
+    std::string getText() const;
 
     /** Set the text of the query segment */
     void setText(const std::string& text);
@@ -67,22 +64,23 @@ public:
     /** Get the text of the query segment */
     bool hasText() const;
 
-    /** Get a pointer to the best catalog match for this segment of the query */
-    CatItem& getTopResult();
-    //const CatItem& getTopResult() const;
-
-    /** Change the best catalog match for this segment */
-    void setTopResult(const CatItem& sr);
 
 private:
-    /** The user's entry */
-    std::string m_text;
-    /** Any assigned labels to this query segment */
-    std::set<unsigned int> m_labels;
-    /** A pointer to the best catalog match for this segment of the query */
-    CatItem m_topResult;
-    /** The plugin id of this query's owner */
-    unsigned int m_id;
+    launchy::InputData* m_data;
 };
+
+//typedef InputDataList;
+
+// class InputDataList {
+// public:
+//     InputDataList();
+// 
+//     void push_back(const InputData& data);
+// 
+// private:
+//     std::vector<InputData>* m_vecData;
+// };
+
+
 }
 

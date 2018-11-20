@@ -37,8 +37,9 @@ PYBIND11_MODULE(launchy, m) {
     m.def("registerPlugin", &exportpy::registerPlugin);
     m.def("objectReceiver", &exportpy::objectReceiver);
 
-    exportpy::ExportCatItem(m);
     exportpy::ExportPlugin(m);
+    exportpy::ExportCatItem(m);
+    exportpy::ExportInputData(m);
 
     //python_export::export_QString();
     //python_export::export_pylaunchy();

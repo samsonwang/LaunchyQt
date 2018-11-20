@@ -37,8 +37,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\release\</OutDir>
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <TargetName>$(ProjectName)d</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -50,7 +49,6 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Precompiled.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ForcedIncludeFiles>Precompiled.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
@@ -60,10 +58,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(TargetDir)Launchyd.lib;Qt5Cored.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)launchy.pyd &amp;&amp; echo "prepare launchy.pyd"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;PLUGINPY_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;QT_CORE_LIB;PLUGINPY_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../lib;../../deps/;.;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(PYTHONPATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -86,7 +87,7 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)launchy.pyd &amp;&amp; echo "prepare launchy.pyd"</Command>
+      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)launchy.pyd &amp;&amp; echo "copying target to launchy.pyd"</Command>
       <Message>
       </Message>
     </PostBuildEvent>

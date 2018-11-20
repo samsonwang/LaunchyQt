@@ -23,91 +23,65 @@ namespace py = pybind11;
 
 namespace exportpy {
 
-InputData::InputData()
-    : m_id(0) {
+InputData::InputData(launchy::InputData* data)
+    : m_data(data) {
 
-}
-
-InputData::InputData(const std::string& str)
-    : m_text(str),
-      m_id(0){
-
-}
-
-InputData::InputData(const launchy::InputData& data) {
-    m_text = data.getText().toStdString();
-    foreach(uint l, data.getLabels()) {
-        m_labels.insert(l);
-    }
-    m_topResult = data.getTopResult();
-    m_id = data.getID();
-}
-
-const std::set<unsigned int>& InputData::getLabels() const {
-    return m_labels;
 }
 
 void InputData::setLabel(unsigned int l) {
-    m_labels.insert(l);
+    m_data->setLabel(l);
 }
 
 void InputData::removeLabel(unsigned int l) {
-    m_labels.erase(l);
+    m_data->removeLabel(l);
 }
 
 bool InputData::hasLabel(unsigned int l) {
-    return m_labels.count(l) > 0;
+    return m_data->hasLabel(l);
 }
 
 void InputData::setID(unsigned int i) {
-    m_id = i;
+    m_data->setID(i);
 }
 
 unsigned int InputData::getID() const {
-    return m_id;
+    return m_data->getID();
 }
 
-const std::string& InputData::getText() const {
-    return m_text;
+std::string InputData::getText() const {
+    return m_data->getText().toStdString();
 }
 
 void InputData::setText(const std::string& t) {
-    m_text = t;
+    m_data->setText(QString::fromStdString(t));
 }
 
 bool InputData::hasText() const {
-    return !m_text.empty();
+    return m_data->hasText();
 }
-
-CatItem& InputData::getTopResult() {
-    return m_topResult;
-    //return const_cast<CatItem&>(static_cast<const InputData*>(this)->getTopResult());
-}
-
-// const CatItem& InputData::getTopResult() const {
-//     return m_topResult;
-// }
-
-void InputData::setTopResult(const CatItem& sr) {
-    m_topResult = sr;
-}
-
 
 void ExportInputData(const py::module& m) {
 
     py::class_<exportpy::InputData>(m, "InputData")
-        .def(py::init<>())
-        .def(py::init<const std::string&>())
-        .def("getLabels", &exportpy::InputData::getLabels)
         .def("setLabel", &exportpy::InputData::setLabel)
+        .def("removeLabel", &exportpy::InputData::removeLabel)
         .def("hasLabel", &exportpy::InputData::hasLabel)
         .def("setID", &exportpy::InputData::setID)
         .def("getID", &exportpy::InputData::getID)
         .def("getText", &exportpy::InputData::getText)
-        .def("setText", &exportpy::InputData::setText)
-        .def("getTopResult", &exportpy::InputData::getTopResult)
-        .def("setTopResult", &exportpy::InputData::setTopResult);
+        .def("setText", &exportpy::InputData::setText);
 
-}
+//     py::class_<exportpy::InputDataList>(m, "InputDataList")
+//         .def(py::init<>())
+//         .def("push_back", &exportpy::InputDataList::push_back);
+}   
+
+// InputDataList::InputDataList() {
+//     m_vecData = new std::vector<InputData>;
+// }
+// 
+// void InputDataList::push_back(const InputData& data) {
+//     m_vecData->push_back(data);
+// }
 
 }

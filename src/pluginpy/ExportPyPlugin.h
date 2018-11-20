@@ -22,14 +22,14 @@ public:
 
     virtual void setPath(const std::string& path) = 0;
 
-    virtual void getLabels(std::vector<InputData> inputDataList) = 0;
+    virtual void getLabels(const std::vector<InputData>& inputDataList) = 0;
 
-    virtual void getResults(std::vector<InputData>& inputDataList,
-                            std::vector<CatItem>& resultsList) = 0;
+    virtual void getResults(std::vector<InputData> inputDataList,
+                            CatItemList& resultsList) = 0;
 
     virtual void getCatalog(std::vector<std::string>& resultsList) = 0;
 
-    virtual void launchItem(std::vector<std::string>& inputDataList,
+    virtual void launchItem(std::vector<InputData> inputDataList,
                             std::string& item) = 0;
 
     virtual bool hasDialog() = 0;
@@ -84,7 +84,7 @@ public:
         );
     }
 
-    void getLabels(std::vector<InputData> inputDataList) override {
+    void getLabels(const std::vector<InputData>& inputDataList) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
@@ -93,8 +93,8 @@ public:
         );
     }
 
-    void getResults(std::vector<InputData>& inputDataList,
-                    std::vector<CatItem>& resultsList) override {
+    void getResults(std::vector<InputData> inputDataList,
+                    CatItemList& resultsList) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
@@ -113,7 +113,7 @@ public:
         );
     }
 
-    void launchItem(std::vector<std::string>& inputDataList,
+    void launchItem(std::vector<InputData> inputDataList,
                     std::string& item) override {
         PYBIND11_OVERLOAD_PURE(
             void,

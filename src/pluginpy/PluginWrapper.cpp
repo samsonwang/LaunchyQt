@@ -76,10 +76,10 @@ void PluginWrapper::getLabels(QList<launchy::InputData>* inputData) {
 
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getLabels");
-    std::vector<exportpy::InputData> inputDataList;
 
-    foreach(launchy::InputData data, *inputData) {
-        inputDataList.push_back(exportpy::InputData(data));
+    std::vector<exportpy::InputData> inputDataList;
+    for (auto it = inputData->begin(); it != inputData->end(); ++it) {
+        inputDataList.push_back(exportpy::InputData(&(*it)));
     }
 
     m_plugin->getLabels(inputDataList);
@@ -93,16 +93,18 @@ void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launc
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin getResults");
 
+//     std::vector<exportpy::CatItem> scriptResults;
+//     foreach(launchy::CatItem item, *result) {
+//         scriptResults.push_back(exportpy::CatItem(item));
+//     }
+
     std::vector<exportpy::InputData> inputDataList;
-    foreach(launchy::InputData data, *inputData) {
-        inputDataList.push_back(exportpy::InputData(data));
-    }
-    
-    std::vector<exportpy::CatItem> scriptResults;
-    foreach(launchy::CatItem item, *result) {
-        scriptResults.push_back(exportpy::CatItem(item));
+    for (auto it = inputData->begin();
+         it != inputData->end(); ++it) {
+        inputDataList.push_back(exportpy::InputData(&(*it)));
     }
 
+    exportpy::CatItemList scriptResults(result);
     m_plugin->getResults(inputDataList, scriptResults);
     //);
 }
@@ -117,17 +119,21 @@ void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
     //);
 }
 
-void PluginWrapper::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
+void PluginWrapper::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item) {
     //CatItem& topResult = id->last().getTopResult();
     //item = &topResult;
-
-    //ScriptInputDataList inputDataList(prepareInputDataList(id));
 
     //LOG_DEBUG("Begining to launch item");
 
     //GUARDED_CALL_TO_PYTHON(
     //    LOG_DEBUG("Calling plugin launchItem");
-    std::vector<std::string> inputDataList;
+    std::vector<exportpy::InputData> inputDataList;
+
+    for (auto it = inputData->begin();
+         it != inputData->end(); ++it) {
+        inputDataList.push_back(exportpy::InputData(&(*it)));
+    }
+
     std::string launItem;
     m_plugin->launchItem(inputDataList, launItem);
     //);
@@ -263,10 +269,6 @@ int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
         init();
         handled = true;
         break;
-    case MSG_GET_LABELS:
-        getLabels((QList<launchy::InputData>*) wParam);
-        handled = true;
-        break;
     case MSG_GET_ID:
         getID((uint*)wParam);
         handled = true;
@@ -277,6 +279,10 @@ int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
         break;
     case MSG_PATH:
         setPath((const QString*)wParam);
+        break;
+    case MSG_GET_LABELS:
+        getLabels((QList<launchy::InputData>*) wParam);
+        handled = true;
         break;
     case MSG_GET_RESULTS:
         getResults((QList<launchy::InputData>*) wParam, (QList<launchy::CatItem>*) lParam);
