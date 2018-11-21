@@ -35,9 +35,8 @@
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\release\</OutDir>
+    <OutDir>..\..\$(Configuration)\</OutDir>
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -71,13 +70,12 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Precompiled.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ForcedUsingFiles>
       </ForcedUsingFiles>
       <ForcedIncludeFiles>Precompiled.h</ForcedIncludeFiles>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -87,7 +85,9 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>cp -f $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd &amp;&amp; echo "copying target to launchy.pyd"</Command>
+      <Command>mkdir $(OutputPath)python
+cp -f $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
+echo "copying target to launchy.pyd"</Command>
       <Message>
       </Message>
     </PostBuildEvent>
