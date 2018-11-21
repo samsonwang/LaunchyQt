@@ -431,4 +431,9 @@
       <Filter>Widgets</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="win\launchy.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

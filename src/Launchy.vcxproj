@@ -581,6 +581,9 @@ echo #include "Precompiled.h"&gt;&gt;Precompiled.h.cpp</Command>
   <ItemGroup>
     <ResourceCompile Include="win\launchy.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="win\launchy.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
   <ProjectExtensions>

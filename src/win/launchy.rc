@@ -1,30 +1,45 @@
-IDI_ICON1               ICON    DISCARDABLE     "launchy.ico"
+
+#include <windows.h>
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON          DISCARDABLE           "launchy.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,9,9,1
- PRODUCTVERSION 1,9,9,1
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
+ FILEVERSION 3,0,3,0
+ PRODUCTVERSION 3,0,3,0
+//  FILEFLAGSMASK 0x3fL
+// #ifdef _DEBUG
+//  FILEFLAGS 0x1L
+// #else
+//  FILEFLAGS 0x0L
+// #endif
+//  FILEOS 0x4L
+//  FILETYPE 0x1L
+//  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904e4"
+        BLOCK "040904E4"
         BEGIN
-            VALUE "CompanyName", "Code Jelly"
-            VALUE "FileDescription", "Launchy"
-            VALUE "FileVersion", "1.0.0"
-            VALUE "InternalName", "Launchy.exe"
-            VALUE "LegalCopyright", "This is GNU Software copyright Josh Karlin"
-            VALUE "OriginalFilename", "Launchy.exe"
-            VALUE "ProductName", "Launchy"
-            VALUE "ProductVersion", "2.0"
+            VALUE "FileDescription",        "LaunchyQt"
+            VALUE "FileVersion",            "3.0.3.0"
+            VALUE "InternalName",           "Launchy.exe"
+            VALUE "LegalCopyright",         "GPLv3"
+            VALUE "OriginalFilename",       "Launchy.exe"
+            VALUE "ProductName",            "Launchy"
+            VALUE "ProductVersion",         "3.0.3.0"
         END
     END
     BLOCK "VarFileInfo"
