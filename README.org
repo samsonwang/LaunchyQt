@@ -19,6 +19,11 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - pack additional vcredist file (just in case that you do not want to download and install vcredist2015)
 - change skin name (hDPI -> HiDPI)
 
-** Original Code
-- original code forked from https://sourceforge.net/projects/launchy
-- original svn path https://svn.code.sf.net/p/launchy/code/trunk/Launchy_QT [R671]
+
+** Credits
+- [[https://sourceforge.net/projects/launchy][Launchy code]]                            GPLv2
+- [[https://github.com/mitei/qglobalshortcut][qglobalshortcut (Qhotkey)]]               N/A
+- [[https://github.com/itay-grudev/SingleApplication][singleapplition]]                         MIT
+- [[https://sourceforge.net/projects/tasky-launchy/][tasky]]                                   N/A
+- [[https://github.com/kshahar/pylaunchy][pylaunchy (develop plugin in python)]]    GPLv2
+- [[https://github.com/pybind/pybind11][pybind11]]                                [[https://github.com/pybind/pybind11/blob/master/LICENSE][LICENSE]]
