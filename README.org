@@ -9,12 +9,15 @@ Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt
 ** Latest release
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
 
-*3.0.2* Changes:
-- Verby plugin works now
-- Calcy plugin can convert among octal decimal hexadecimal, this works when input has a trailing equal symbol, try following input: =035== , =35== , =0x35==
-- add skins for high DPI, this may help in 2k or 4k display (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
-- pack additional qt dll (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
-- fix bug in key bindings
+*3.0.3* Changes:
+- built-in python support (write plugin in python) (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
+- put all plugin in each standalone folder (doing this to prepare for build-in python script integration)
+- tasky plugin works now
+- option dialog use fusion style from qt
+- fix display bug in alternative list caused by different icon size
+- fix "hide when lost focus" fails when focus is on alternative list
+- pack additional vcredist file (just in case that you do not want to download and install vcredist2015)
+- change skin name (hDPI -> HiDPI)
 
 ** Original Code
 - original code forked from https://sourceforge.net/projects/launchy
