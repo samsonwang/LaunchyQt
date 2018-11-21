@@ -184,6 +184,9 @@
     <ClCompile Include="OptionItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Directory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_singleapplication_p.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -273,9 +276,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_CatalogBuilder.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Directory.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
