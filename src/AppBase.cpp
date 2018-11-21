@@ -32,6 +32,15 @@ AppBase::AppBase(int& argc, char** argv)
     setApplicationName("Launchy");
     setOrganizationDomain("Launchy");
     setStyle(QStyleFactory::create("Fusion"));
+
+    // hidpi detecttion
+    static const char ENV_VAR_QT_DEVICE_PIXEL_RATIO[] = "QT_DEVICE_PIXEL_RATIO";
+    if (!qEnvironmentVariableIsSet(ENV_VAR_QT_DEVICE_PIXEL_RATIO)
+        && !qEnvironmentVariableIsSet("QT_AUTO_SCREEN_SCALE_FACTOR")
+        && !qEnvironmentVariableIsSet("QT_SCALE_FACTOR")
+        && !qEnvironmentVariableIsSet("QT_SCREEN_SCALE_FACTORS")) {
+        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    }
 }
 
 AppBase::~AppBase() {
