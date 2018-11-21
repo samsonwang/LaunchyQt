@@ -143,7 +143,7 @@ void Tasky::getName(QString* name) {
 }
 
 void Tasky::init() {
-    initIconDir();
+
 }
 
 void Tasky::setPath(const QString* path) {

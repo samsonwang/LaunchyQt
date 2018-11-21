@@ -11,16 +11,32 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "controly", "plugins\controly\controly.vcxproj", "{5463BC53-32AB-3BBC-8A03-9358BB56ECF2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calcy", "plugins\calcy\calcy.vcxproj", "{88EE52DD-589D-3ABD-9EE1-1883731E4943}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Verby", "plugins\verby\verby.vcxproj", "{423E9997-610F-3946-A755-069D2F49A77A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Launchy", "src\Launchy.vcxproj", "{13D14477-03AD-397D-A892-E8D2527CFED5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
+		{B12702AD-ABFB-343A-A199-8E24837244A3} = {B12702AD-ABFB-343A-A199-8E24837244A3}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LaunchyLib", "src\lib\LaunchyLib.vcxproj", "{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginPy", "src\pluginpy\PluginPy.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tasky", "plugins\tasky\tasky.vcxproj", "{6755D6C5-564F-4C1E-9D6C-DE6666767368}"
+	ProjectSection(ProjectDependencies) = postProject
+		{13D14477-03AD-397D-A892-E8D2527CFED5} = {13D14477-03AD-397D-A892-E8D2527CFED5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
