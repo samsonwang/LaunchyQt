@@ -91,7 +91,7 @@ class CalcyPy(launchy.Plugin):
 		except:
 			pass
 		else:
-			item = launchy.CatItem(str(result), str(result), self.getID(), self.getIcon() )
+			item = launchy.CatItem(str(result)+".calcypy", str(result), self.getID(), self.getIcon() )
 			resultsList.append( item )
 
 	def getCatalog(self, resultsList):
@@ -108,6 +108,3 @@ class CalcyPy(launchy.Plugin):
 
 def getPlugin():
 	return CalcyPy
-
-with open("python/path.txt", "w") as file:
-	file.write(str(sys.path))
