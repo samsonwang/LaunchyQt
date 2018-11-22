@@ -41,8 +41,9 @@ AppBase::AppBase(int& argc, char** argv)
       m_iconProvider(nullptr) {
     g_app.reset(this);
     setQuitOnLastWindowClosed(false);
-    setApplicationName("Launchy");
-    setOrganizationDomain("Launchy");
+    setApplicationName("LaunchyQt");
+    setOrganizationName("LaunchyQt");
+    setOrganizationDomain("launchyqt.com");
     setStyle(QStyleFactory::create("Fusion"));
 
 

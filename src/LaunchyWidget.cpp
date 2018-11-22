@@ -965,7 +965,7 @@ void LaunchyWidget::onHotkey() {
     if (!m_alwaysShowLaunchy
         && isVisible()
         && !m_fader->isFading()
-        && QApplication::activeWindow() !=0) {
+        && QApplication::activeWindow() != nullptr) {
         hideLaunchy();
     }
     else {
