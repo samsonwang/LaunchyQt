@@ -29,9 +29,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PluginPy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Precompiled.h.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PluginPy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PluginPyLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>

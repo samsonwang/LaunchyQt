@@ -1,5 +1,7 @@
 
 * x.x.x developing in progress
+- fix display problem in 4k hidpi
+- use pip to manage python package
 - better python plugin support
 
 * 3.0.4 (develop finished, not released)

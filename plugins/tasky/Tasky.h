@@ -46,7 +46,7 @@ private:
 	void doDialog(QWidget* parent, QWidget** dialog);
 	void endDialog(bool accept);
 	void init();
-	QString getIcon();
+	QString getIcon() const;
 
     void initIconDir();
 

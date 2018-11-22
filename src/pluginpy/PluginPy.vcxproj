@@ -133,7 +133,7 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>mkdir $(OutputPath)python
+      <Command>mkdir $(OutputPath)python 2&gt;nul
 cp -f $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
 echo "copying target to launchy.pyd"</Command>
       <Message>
@@ -189,7 +189,6 @@ echo "copying target to launchy.pyd"</Command>
     </ClCompile>
     <ClCompile Include="PluginLoader.cpp" />
     <ClCompile Include="PluginMgr.cpp" />
-    <ClCompile Include="PluginPy.cpp" />
     <ClCompile Include="ExportPy.cpp" />
     <ClCompile Include="PluginWrapper.cpp" />
   </ItemGroup>
@@ -198,7 +197,6 @@ echo "copying target to launchy.pyd"</Command>
     <ClInclude Include="ExportPyCatItem.h" />
     <ClInclude Include="ExportPyInputData.h" />
     <ClInclude Include="ExportPyPlugin.h" />
-    <ClInclude Include="PluginPy.h" />
     <ClInclude Include="PluginPyLib.h" />
     <ClInclude Include="PluginLoader.h" />
     <ClInclude Include="PluginMgr.h" />

@@ -186,7 +186,7 @@ void Tasky::getResults(QList<InputData>* inputList, QList<CatItem>* result) {
 
 }
 
-QString Tasky::getIcon() {
+QString Tasky::getIcon() const {
     return m_libPath + "/tasky.png";
 }
 
