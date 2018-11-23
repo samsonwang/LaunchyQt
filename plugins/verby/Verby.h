@@ -38,14 +38,14 @@ public:
 
 private:
     void getID(uint* id);
-    void setPath(const QString* path);
     void getName(QString* name);
+    void init();
+    void setPath(const QString* path);
+    void getLabels(QList<launchy::InputData>* inputData);
     void getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results);
     int launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item);
     void doDialog(QWidget* parent, QWidget** dialog);
     void endDialog(bool accept);
-    void getLabels(QList<launchy::InputData>* inputData);
-    void init();
     bool isMatch(const QString& text1, const QString& text2);
     void addCatItem(QString text, QList<launchy::CatItem>* results, QString fullName, QString shortName, QString iconName);
     void updateUsage(launchy::CatItem& item);
