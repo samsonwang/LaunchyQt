@@ -30,7 +30,7 @@ public:
     virtual void getCatalog(const CatItemList& resultsList) = 0;
 
     virtual void launchItem(const std::vector<InputData>& inputDataList,
-                            std::string& item) = 0;
+                            const CatItem& item) = 0;
 
     virtual bool hasDialog() = 0;
 
@@ -114,7 +114,7 @@ public:
     }
 
     void launchItem(const std::vector<InputData>& inputDataList,
-                    std::string& item) override {
+                    const CatItem& item) override {
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,

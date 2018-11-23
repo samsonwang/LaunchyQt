@@ -46,7 +46,7 @@ public:
 //     /** The plugin id of the creator of this CatItem */
 //     unsigned int id;
 // 
-//     CatItem();
+    CatItem() = default;
 
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute

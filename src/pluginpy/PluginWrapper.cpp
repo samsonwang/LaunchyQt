@@ -137,7 +137,8 @@ void PluginWrapper::launchItem(QList<launchy::InputData>* inputData, launchy::Ca
         inputDataList.push_back(exportpy::InputData(&(*it)));
     }
 
-    std::string launItem;
+    //std::string launItem;
+    exportpy::CatItem launItem;
     m_plugin->launchItem(inputDataList, launItem);
     //);
 
