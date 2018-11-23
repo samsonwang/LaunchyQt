@@ -58,7 +58,6 @@ class CalcyPy(launchy.Plugin):
 	def __init__(self):
 		launchy.Plugin.__init__(self)
 		self.hash = launchy.hash(self.getName())
-		self.labelHash = launchy.hash("CalcyPy")
 
 	def init(self):
 		pass
@@ -91,8 +90,7 @@ class CalcyPy(launchy.Plugin):
 		except:
 			pass
 		else:
-			item = launchy.CatItem(str(result)+".calcypy", str(result), self.getID(), self.getIcon() )
-			resultsList.append( item )
+			resultsList.append(launchy.CatItem(str(result)+".calcypy", str(result), self.getID(), self.getIcon() ) )
 
 	def getCatalog(self, resultsList):
 		pass
