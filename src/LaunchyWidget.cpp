@@ -72,7 +72,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_optionsOpen(false) {
 
     g_mainWidget.reset(this);
-    g_searchText = "";
+    g_searchText.clear();
 
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
@@ -278,6 +278,7 @@ void LaunchyWidget::showTrayIcon() {
         trayMenu->addAction(m_actRebuild);
         trayMenu->addAction(m_actOptions);
         trayMenu->addSeparator();
+        trayMenu->addAction(m_actRestart);
         trayMenu->addAction(m_actExit);
         m_trayIcon->setContextMenu(trayMenu);
     }
@@ -1318,5 +1319,13 @@ void LaunchyWidget::createActions() {
 
     m_actExit = new QAction(tr("Exit"), this);
     connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
+
+    m_actRestart = new QAction(tr("Restart Launchy"), this);
+    connect(m_actRestart, &QAction::triggered, []() {
+        qInfo() << "Performing application reboot...";
+        // restart:
+        qApp->quit();
+        QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+    });
 }
 }

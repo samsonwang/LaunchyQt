@@ -39,13 +39,14 @@ class CharListWidget;
 class CharLineEdit;
 
 enum CommandFlag {
-    Default = 0,
-    ShowLaunchy = 1,
-    ShowOptions = 2,
-    ResetPosition = 4,
-    ResetSkin = 8,
-    Rescan = 16,
-    Exit = 32
+    Default         = 0,
+    ShowLaunchy     = 1,
+    ShowOptions     = 2,
+    ResetPosition   = 4,
+    ResetSkin       = 8,
+    Rescan          = 16,
+    Exit            = 32,
+    Restart         = 64
 };
 
 Q_DECLARE_FLAGS(CommandFlags, CommandFlag)
@@ -149,6 +150,7 @@ protected:
     QAction* m_actReloadSkin;
     QAction* m_actOptions;
     QAction* m_actExit;
+    QAction* m_actRestart;
 
     QTimer* m_updateTimer;
     QTimer* m_dropTimer;
