@@ -134,7 +134,7 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>mkdir $(OutputPath)python 2&gt;nul
-cp -f $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
+xcopy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
 echo "copying target to launchy.pyd"</Command>
       <Message>
       </Message>

@@ -150,7 +150,7 @@ echo try to kill running Launchy process
 exit 0</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>cp -f *.png $(OutputPath)</Command>
+      <Command>xcopy /y *.png $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
