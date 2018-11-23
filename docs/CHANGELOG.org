@@ -1,11 +1,12 @@
 
 * x.x.x developing in progress
-- fix display problem in 4k hidpi
 - use pip to manage python package
 - better python plugin support
 
 * 3.0.4 (develop finished, not released)
-- nothing (just released 3.0.3)
+- fix display problem in 4k hidpi
+- in portable mode, put ini file in config folder, I think it mory tidy this way
+
 
 * 3.0.3
 - built-in python support (write plugin in python)

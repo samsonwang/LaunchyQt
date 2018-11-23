@@ -112,7 +112,7 @@ QHash<QString, QList<QString> > AppWin::getDirectories() {
     QString userDataPath = info.absolutePath();
 
     out["config"] << userDataPath;
-    out["portableConfig"] << qApp->applicationDirPath();
+    out["portableConfig"] << qApp->applicationDirPath() + "/config";
     out["skins"] << qApp->applicationDirPath() + "/skins"
         << userDataPath + "/skins";
     out["plugins"] << qApp->applicationDirPath() + "/plugins"

@@ -40,17 +40,17 @@ SettingsManager & SettingsManager::instance() {
 }
 
 void SettingsManager::load() {
-	// Load settings
-	m_dirs = g_app->getDirectories();
-	m_portable = QFile::exists(m_dirs["portableConfig"][0] + iniName);
+    // Load settings
+    m_dirs = g_app->getDirectories();
+    m_portable = QFile::exists(m_dirs["portableConfig"][0] + iniName);
 
-	QString iniPath = configDirectory(m_portable) + iniName;
-	g_settings.reset(new QSettings(configDirectory(m_portable) + iniName, QSettings::IniFormat));
-	if (!QFile::exists(iniPath)) {
-		// Ini file doesn't exist, create some defaults and save them to disk
-		QList<Directory> directories = g_app->getDefaultCatalogDirectories();
-		writeCatalogDirectories(directories);
-	}
+    QString iniPath = configDirectory(m_portable) + iniName;
+    g_settings.reset(new QSettings(configDirectory(m_portable) + iniName, QSettings::IniFormat));
+    if (!QFile::exists(iniPath)) {
+        // Ini file doesn't exist, create some defaults and save them to disk
+        QList<Directory> directories = g_app->getDefaultCatalogDirectories();
+        writeCatalogDirectories(directories);
+    }
 
     int logLevel = g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt();
     Logger::setLogLevel(logLevel);
@@ -62,33 +62,33 @@ void SettingsManager::load() {
 }
 
 bool SettingsManager::isPortable() const {
-	return m_portable;
+    return m_portable;
 }
 
 QList<QString> SettingsManager::directory(QString name) const {
-	return m_dirs[name];
+    return m_dirs[name];
 }
 
 
 QString SettingsManager::catalogFilename() const {
-	return configDirectory(m_portable) + dbName;
+    return configDirectory(m_portable) + dbName;
 }
 
 QString SettingsManager::historyFilename() const {
-	return configDirectory(m_portable) + historyName;
+    return configDirectory(m_portable) + historyName;
 }
 
 // Find the skin with the specified name ensuring that it contains at least a stylesheet
 QString SettingsManager::skinPath(const QString& skinName) const {
-	QString directory;
+    QString directory;
 
     foreach(QString dir, m_dirs["skins"]) {
-		dir += QString("/") + skinName + "/";
+        dir += QString("/") + skinName + "/";
         if (QFile::exists(dir + "style.qss")) {
-			directory = dir;
-			break;
-		}
-	}
+            directory = dir;
+            break;
+        }
+    }
 
     return directory;
 }
@@ -96,98 +96,99 @@ QString SettingsManager::skinPath(const QString& skinName) const {
 
 // Switch between portable and installed mode
 void SettingsManager::setPortable(bool makePortable) {
-	if (makePortable != m_portable) {
-		qInfo("Converting to %s mode", makePortable ? "portable" : "installed");
+    if (makePortable != m_portable) {
+        qInfo("Converting to %s mode", makePortable ? "portable" : "installed");
 
-		// Destroy the QSettings object first so it writes any changes to disk
+        // Destroy the QSettings object first so it writes every changes to disk
         g_settings.reset(nullptr);
 
-		QString oldDir = configDirectory(m_portable);
-		QString oldIniName = oldDir + iniName;
-		QString oldDbName = oldDir + dbName;
-		QString oldHistoryName = oldDir + historyName;
+        QString oldDir = configDirectory(m_portable);
+        QString oldIniName = oldDir + iniName;
+        QString oldDbName = oldDir + dbName;
+        QString oldHistoryName = oldDir + historyName;
 
-		// Copy the settings to the new location
-		// and delete the original settings if they are copied successfully
-		QString newDir = configDirectory(makePortable);
-		if (QFile::copy(oldIniName, newDir + iniName)
+        // Copy the settings to the new location
+        // and delete the original settings if they are copied successfully
+        QString newDir = configDirectory(makePortable);
+        QDir(newDir).mkpath(".");
+        if (QFile::copy(oldIniName, newDir + iniName)
             && QFile::copy(oldDbName, newDir + dbName)
             && QFile::copy(oldHistoryName, newDir + historyName)) {
-			QFile::remove(oldIniName);
-			QFile::remove(oldDbName);
-			QFile::remove(oldHistoryName);
-		}
-		else {
-			qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
-			if (makePortable) {
-				QMessageBox::warning(g_mainWidget.data(), QObject::tr("Launchy"),
+            QFile::remove(oldIniName);
+            QFile::remove(oldDbName);
+            QFile::remove(oldHistoryName);
+        }
+        else {
+            qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
+            if (makePortable) {
+                QMessageBox::warning(g_mainWidget.data(), QObject::tr("Launchy"),
                                      QObject::tr("Could not convert to portable mode."
-                                     " Please check you have write access to the %1 directory.")
+                                                 " Please check you have write access to the %1 directory.")
                                      .arg(newDir));
-			}
-		}
+            }
+        }
 
-		load();
-	}
+        load();
+    }
 }
 
 
 // Delete all settings files in both installed and portable directories
 void SettingsManager::removeAll() {
-	QFile::remove(configDirectory(false) + iniName);
-	QFile::remove(configDirectory(false) + dbName);
-	QFile::remove(configDirectory(false) + historyName);
+    QFile::remove(configDirectory(false) + iniName);
+    QFile::remove(configDirectory(false) + dbName);
+    QFile::remove(configDirectory(false) + historyName);
 
-	QFile::remove(configDirectory(true) + iniName);
-	QFile::remove(configDirectory(true) + dbName);
-	QFile::remove(configDirectory(true) + historyName);
+    QFile::remove(configDirectory(true) + iniName);
+    QFile::remove(configDirectory(true) + dbName);
+    QFile::remove(configDirectory(true) + historyName);
 }
 
 // Get the configuration directory
 QString SettingsManager::configDirectory(bool portable) const {
-	QString result = m_dirs[portable ? "portableConfig" : "config"][0];
-	if (m_profileName.length() > 0) {
-		result += "/profiles/" + m_profileName;
-	}
-	return result;
+    QString result = m_dirs[portable ? "portableConfig" : "config"][0];
+    if (!m_profileName.isEmpty()) {
+        result += "/profiles/" + m_profileName;
+    }
+    return result;
 }
 
 void SettingsManager::setProfileName(const QString& name) {
-	m_profileName = name;
+    m_profileName = name;
 }
 
 QList<Directory> SettingsManager::readCatalogDirectories() {
-	QList<Directory> result;
-	int size = g_settings->beginReadArray("directories");
-	for (int i = 0; i < size; ++i) {
-		g_settings->setArrayIndex(i);
-		Directory tmp;
-		tmp.name = g_settings->value("name").toString();
-		if (tmp.name.length() > 0) {
-			tmp.types = g_settings->value("types").toStringList();
-			tmp.indexDirs = g_settings->value("indexDirs", false).toBool();
-			tmp.indexExe = g_settings->value("indexExes", false).toBool();
-			tmp.depth = g_settings->value("depth", 100).toInt();
-			result.append(tmp);
-		}
-	}
-	g_settings->endArray();
+    QList<Directory> result;
+    int size = g_settings->beginReadArray("directories");
+    for (int i = 0; i < size; ++i) {
+        g_settings->setArrayIndex(i);
+        Directory tmp;
+        tmp.name = g_settings->value("name").toString();
+        if (tmp.name.length() > 0) {
+            tmp.types = g_settings->value("types").toStringList();
+            tmp.indexDirs = g_settings->value("indexDirs", false).toBool();
+            tmp.indexExe = g_settings->value("indexExes", false).toBool();
+            tmp.depth = g_settings->value("depth", 100).toInt();
+            result.append(tmp);
+        }
+    }
+    g_settings->endArray();
 
-	return result;
+    return result;
 }
 
 void SettingsManager::writeCatalogDirectories(QList<Directory>& directories) {
-	g_settings->beginWriteArray("directories");
-	for (int i = 0; i < directories.count(); ++i) {
-		if (directories[i].name.length() > 0) {
-			g_settings->setArrayIndex(i);
-			g_settings->setValue("name", directories[i].name);
-			g_settings->setValue("types", directories[i].types);
-			g_settings->setValue("indexDirs", directories[i].indexDirs);
-			g_settings->setValue("indexExes", directories[i].indexExe);
-			g_settings->setValue("depth", directories[i].depth);
-		}
-	}
-	g_settings->endArray();
+    g_settings->beginWriteArray("directories");
+    for (int i = 0; i < directories.count(); ++i) {
+        if (directories[i].name.length() > 0) {
+            g_settings->setArrayIndex(i);
+            g_settings->setValue("name", directories[i].name);
+            g_settings->setValue("types", directories[i].types);
+            g_settings->setValue("indexDirs", directories[i].indexDirs);
+            g_settings->setValue("indexExes", directories[i].indexExe);
+            g_settings->setValue("depth", directories[i].depth);
+        }
+    }
+    g_settings->endArray();
 }
 }
