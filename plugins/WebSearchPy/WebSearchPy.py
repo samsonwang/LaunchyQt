@@ -36,11 +36,11 @@ class WebSearchPy(launchy.Plugin):
             "name": "Baidu Maps"
         },
         "tao": {
-            "url": "http://s.taobao.com/search?q=%s",
+            "url": "https://s.taobao.com/search?q=%s",
             "name": "Taobao"
         },
         "jd": {
-            "url": "http://search.jd.com/Search?keyword=%s&enc=utf-8",
+            "url": "https://search.jd.com/Search?keyword=%s&enc=utf-8",
             "name": "Jingdong"
         },
         "sn": {
@@ -52,8 +52,8 @@ class WebSearchPy(launchy.Plugin):
             "name": "Pronto"
         },
         "cpp": {
-            "url": "http://www.cplusplus.com/search.do?q=%s",
-            "name": "C++"
+            "url": "https://en.cppreference.com/mwiki/index.php?title=Special%%3ASearch&search=%s",
+            "name": "Cpp Reference"
         },
         "dd": {
             "url": "http://www.dictionary.com/browse/%s",
