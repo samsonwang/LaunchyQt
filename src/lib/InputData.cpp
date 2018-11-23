@@ -31,6 +31,10 @@ void InputData::removeLabel(uint l) {
     m_labels.remove(l);
 }
 
+void InputData::clearLabel() {
+    m_labels.clear();
+}
+
 bool InputData::hasLabel(uint l) {
     return m_labels.contains(l);
 }

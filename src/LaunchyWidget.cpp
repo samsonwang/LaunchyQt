@@ -679,15 +679,12 @@ void LaunchyWidget::doBackTab()
     }
 }
 
-void LaunchyWidget::doTab()
-{
-    if (m_inputData.count() > 0 && m_searchResult.count() > 0)
-    {
+void LaunchyWidget::doTab() {
+    if (m_inputData.count() > 0 && m_searchResult.count() > 0) {
         // If it's an incomplete file or directory, complete it
         QFileInfo info(m_searchResult[0].fullPath);
 
-        if (m_inputData.last().hasLabel(LABEL_FILE) || info.isDir())
-        {
+        if (m_inputData.last().hasLabel(LABEL_FILE) || info.isDir()) {
             QString path;
             if (info.isSymLink())
                 path = info.symLinkTarget();
@@ -713,10 +710,10 @@ void LaunchyWidget::doTab()
 void LaunchyWidget::doEnter() {
     hideAlternativeList();
 
-    if ((m_inputData.count() > 0 && m_searchResult.count() > 0)
+    if ((!m_inputData.isEmpty() && !m_searchResult.isEmpty())
         || m_inputData.count() > 1) {
         CatItem& item = m_inputData[0].getTopResult();
-        qDebug() << "Launching" << item.shortName << ":" << item.fullPath;
+        qDebug() << "LaunchyWidget::doEnter, launching" << item.shortName << ":" << item.fullPath;
         launchItem(item);
         hideLaunchy();
     }
@@ -1122,6 +1119,9 @@ void LaunchyWidget::applySkin(const QString& name) {
         m_frameGraphic.swap(frame);
         resize(m_frameGraphic.size());
     }
+
+    // separator may change when skin change
+    InputDataList::setSeparator(m_inputBox->separatorText());
 }
 
 void LaunchyWidget::mousePressEvent(QMouseEvent *event) {

@@ -41,8 +41,9 @@ public:
     const QSet<uint>& getLabels() const;
     /** Apply a label to this query segment */
     void setLabel(uint l);
-    /** Remove a label from this query segment */
+    /** Remove label from this query segment */
     void removeLabel(uint l);
+    void clearLabel();
     /** Check if it has the given label applied to it */
     bool hasLabel(uint l);
 

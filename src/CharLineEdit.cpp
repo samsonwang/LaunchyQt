@@ -119,14 +119,16 @@ void CharLineEdit::inputMethodEvent(QInputMethodEvent* event) {
 QChar CharLineEdit::separatorChar() const {
     QFontMetrics met = fontMetrics();
     QChar arrow(0x25ba);
-    if (met.inFont(arrow))
+    if (met.inFont(arrow)) {
         return arrow;
-    else
+    }
+    else {
         return QChar('|');
+    }
 }
 
 QString CharLineEdit::separatorText() const {
-    return QString(" ") + separatorChar() + " ";
+    return QString(" ") + separatorChar() + QString(" ");
 }
 
 bool CharLineEdit::isAtStartOfSeparator() const {

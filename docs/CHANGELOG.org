@@ -4,9 +4,9 @@
 - better python plugin support
 
 * 3.0.4 (develop finished, not released)
-- fix display problem in 4k hidpi
+- fix display problem in 4k hidpi (issue [[https://github.com/samsonwang/LaunchyQt/issues/2][2]])
 - in portable mode, put ini file in config folder, I think it mory tidy this way
-
+- fix a bug in input text parsing
 
 * 3.0.3
 - built-in python support (write plugin in python)
