@@ -32,7 +32,7 @@ public:
     launchy::PluginInterface* loadPlugin(const QString& pluginName, const QString& pluginPath);
     bool unloadPlugin(uint pluginId);
 
-    //void registerPlugin(py::object pluginClass);
+    void registerPlugin(py::object pluginClass);
 
 private:
     PluginMgr();
@@ -41,6 +41,7 @@ private:
     PluginMgr& operator=(const PluginMgr&) = delete;
 
 private:
+    // type of python (embedable or installed)
     QHash<uint, py::object> m_pluginObject;
     QHash<uint, launchy::PluginInterface*> m_pluginInterface;
     //QVector<py::object> m_pluginObject;

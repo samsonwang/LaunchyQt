@@ -71,17 +71,6 @@ void ExportInputData(const py::module& m) {
         .def("getText", &exportpy::InputData::getText)
         .def("setText", &exportpy::InputData::setText);
 
-//     py::class_<exportpy::InputDataList>(m, "InputDataList")
-//         .def(py::init<>())
-//         .def("push_back", &exportpy::InputDataList::push_back);
-}   
-
-// InputDataList::InputDataList() {
-//     m_vecData = new std::vector<InputData>;
-// }
-// 
-// void InputDataList::push_back(const InputData& data) {
-//     m_vecData->push_back(data);
-// }
+}
 
 }

@@ -55,7 +55,7 @@ void PluginHandler::hideLaunchy() {
 }
 
 void PluginHandler::getLabels(QList<InputData>* inputData) {
-    if (inputData->count() > 0) {
+    if (!inputData->isEmpty()) {
         foreach(PluginInfo info, m_plugins) {
             if (info.loaded)
                 info.sendMsg(MSG_GET_LABELS, (void*)inputData);
@@ -64,7 +64,7 @@ void PluginHandler::getLabels(QList<InputData>* inputData) {
 }
 
 void PluginHandler::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
-    if (inputData->count() > 0) {
+    if (!inputData->isEmpty()) {
         foreach(PluginInfo info, m_plugins) {
             if (info.loaded)
                 info.sendMsg(MSG_GET_RESULTS, (void*)inputData, (void*)results);

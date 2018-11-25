@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <pybind11/pytypes.h>
 #include "ExportPyPlugin.h"
 #include "PluginWrapper.h"
-
 #include "InputData.h"
 
 namespace py = pybind11;
@@ -56,7 +55,6 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
         //std::string path = QDir::toNativeSeparators(pluginPath).toStdString();
         py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
         pathObj.append(qPrintable(QDir::toNativeSeparators(pluginPath)));
-        //std::list pathList = pathObj.cast<std::list>();
         py::object mod = py::module::import(qPrintable(pluginName));
         py::object pluginClass = mod.attr("getPlugin")();
 
@@ -70,10 +68,6 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
         exportpy::Plugin* pluginPtr = pluginObject.cast<exportpy::Plugin*>();
         if (pluginPtr) {
             std::string name = pluginPtr->getName();
-            //uint id = pluginPtr->getID();
-            //exportpy::InputData data;
-            //pluginPtr->getLabels(data);
-            //std::cout << "registered plugin name:" << name << std::endl;
             qDebug() << "exportpy::registerPlugin, plugin name:" << name.c_str();
             launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr);
             // store this pointer in manager
@@ -98,11 +92,11 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
     return true;
 }
 
-// void PluginMgr::registerPlugin(py::object pluginClass) {
-//     qDebug() << "PluginMgr::registerPlugin, register plugin called";
-// 
-// 
-// }
+void PluginMgr::registerPlugin(py::object pluginClass) {
+    qDebug() << "PluginMgr::registerPlugin, register plugin called";
+
+
+}
 
 PluginMgr::PluginMgr() {
     py::initialize_interpreter();

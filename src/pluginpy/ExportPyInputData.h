@@ -69,18 +69,5 @@ private:
     launchy::InputData* m_data;
 };
 
-//typedef InputDataList;
-
-// class InputDataList {
-// public:
-//     InputDataList();
-// 
-//     void push_back(const InputData& data);
-// 
-// private:
-//     std::vector<InputData>* m_vecData;
-// };
-
-
 }
 
