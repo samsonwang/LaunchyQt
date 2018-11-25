@@ -33,8 +33,11 @@ PYBIND11_MODULE(launchy, m) {
     m.def("add_five", &add_five, "function which increase number by 5");
 
     m.def("hash", &exportpy::hash);
+    //m.def("registerPlugin", &exportpy::registerPlugin);
 
     m.def("registerPlugin", &exportpy::registerPlugin);
+
+    // for testing
     m.def("objectReceiver", &exportpy::objectReceiver);
 
     exportpy::ExportPlugin(m);
@@ -50,8 +53,13 @@ PYBIND11_MODULE(launchy, m) {
 namespace exportpy {
 
 void registerPlugin(py::object pluginClass) {
-    std::cout << "registerPlugin called" << std::endl;
-    // qDebug() << "exportpy::registerPlugin, register plugin called";
+    //std::cout << "registerPlugin called" << std::endl;
+    qDebug() << "exportpy::registerPlugin, register plugin called";
+
+    pluginpy::PluginMgr& mgr = pluginpy::PluginMgr::instance();
+    mgr.registerPlugin(pluginClass);
+
+    /*
     py::object pluginObj = pluginClass();
 
     if (py::isinstance<Plugin>(pluginObj)) {
@@ -70,6 +78,7 @@ void registerPlugin(py::object pluginClass) {
         std::cout << "plugin register failed" << std::endl;
         // qDebug() << "exportpy::registerPlugin, plugin register failed";
     }
+    */
 }
 
 unsigned int hash(const std::string& str) {

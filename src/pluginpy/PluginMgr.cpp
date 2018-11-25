@@ -94,7 +94,7 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
 
 void PluginMgr::registerPlugin(py::object pluginClass) {
     qDebug() << "PluginMgr::registerPlugin, register plugin called";
-
+    m_pluginClass.push_back(pluginClass);
 
 }
 

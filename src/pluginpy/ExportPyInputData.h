@@ -18,9 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <set>
 #include <pybind11/pybind11.h>
-#include "ExportPyCatItem.h"
 
 namespace launchy { class InputData; }
 
