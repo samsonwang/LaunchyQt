@@ -25,16 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Logger.h"
 #include "OptionItem.h"
 
-const char* iniName = "/launchy.ini";
-const char* dbName = "/launchy.db";
-const char* historyName = "/history.db";
+static const char* iniName = "/launchy.ini";
+static const char* dbName = "/launchy.db";
+static const char* historyName = "/history.db";
 
 namespace launchy {
 SettingsManager::SettingsManager()
     : m_portable(false) {
 }
 
-SettingsManager & SettingsManager::instance() {
+SettingsManager& SettingsManager::instance() {
     static SettingsManager s_obj;
     return s_obj;
 }
@@ -93,43 +93,44 @@ QString SettingsManager::skinPath(const QString& skinName) const {
     return directory;
 }
 
-
 // Switch between portable and installed mode
 void SettingsManager::setPortable(bool makePortable) {
-    if (makePortable != m_portable) {
-        qInfo("Converting to %s mode", makePortable ? "portable" : "installed");
-
-        // Destroy the QSettings object first so it writes every changes to disk
-        g_settings.reset(nullptr);
-
-        QString oldDir = configDirectory(m_portable);
-        QString oldIniName = oldDir + iniName;
-        QString oldDbName = oldDir + dbName;
-        QString oldHistoryName = oldDir + historyName;
-
-        // Copy the settings to the new location
-        // and delete the original settings if they are copied successfully
-        QString newDir = configDirectory(makePortable);
-        QDir(newDir).mkpath(".");
-        if (QFile::copy(oldIniName, newDir + iniName)
-            && QFile::copy(oldDbName, newDir + dbName)
-            && QFile::copy(oldHistoryName, newDir + historyName)) {
-            QFile::remove(oldIniName);
-            QFile::remove(oldDbName);
-            QFile::remove(oldHistoryName);
-        }
-        else {
-            qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
-            if (makePortable) {
-                QMessageBox::warning(g_mainWidget.data(), QObject::tr("Launchy"),
-                                     QObject::tr("Could not convert to portable mode."
-                                                 " Please check you have write access to the %1 directory.")
-                                     .arg(newDir));
-            }
-        }
-
-        load();
+    if (makePortable == m_portable) {
+        return;
     }
+
+    qInfo("Converting to %s mode", makePortable ? "portable" : "installed");
+
+    // Destroy the QSettings object first so it writes every changes to disk
+    g_settings.reset(nullptr);
+
+    QString oldDir = configDirectory(m_portable);
+    QString oldIniName = oldDir + iniName;
+    QString oldDbName = oldDir + dbName;
+    QString oldHistoryName = oldDir + historyName;
+
+    // Copy the settings to the new location
+    // and delete the original settings if they are copied successfully
+    QString newDir = configDirectory(makePortable);
+    QDir(newDir).mkpath(".");
+    if (QFile::copy(oldIniName, newDir + iniName)
+        && QFile::copy(oldDbName, newDir + dbName)
+        && QFile::copy(oldHistoryName, newDir + historyName)) {
+        QFile::remove(oldIniName);
+        QFile::remove(oldDbName);
+        QFile::remove(oldHistoryName);
+    }
+    else {
+        qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
+        if (makePortable) {
+            QMessageBox::warning(g_mainWidget.data(), QObject::tr("Launchy"),
+                                 QObject::tr("Could not convert to portable mode."
+                                             " Please check you have write access to the %1 directory.")
+                                 .arg(newDir));
+        }
+    }
+
+    load();
 }
 
 

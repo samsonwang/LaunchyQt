@@ -101,7 +101,7 @@ void CommandHistory::search(const QString& searchText, QList<CatItem>& searchRes
     int64_t index = 0;
     foreach(InputDataList historyItem, m_history) {
         CatItem item = historyItem.first().getTopResult();
-        item.id = HASH_HISTORY;
+        item.pluginId = HASH_HISTORY;
         item.data = (void*)index++;
         searchResults.push_back(item);
     }

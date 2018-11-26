@@ -64,9 +64,6 @@
     <Filter Include="SingleApplication">
       <UniqueIdentifier>{1629723e-3465-48c1-9841-da5390f9faf8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Plugin">
-      <UniqueIdentifier>{e4b012c8-d7ac-4991-9dfe-8b61a92d4b00}</UniqueIdentifier>
-    </Filter>
     <Filter Include="QHotKey">
       <UniqueIdentifier>{71c7d8e2-bef8-4ca3-9539-3ffedf6cd634}</UniqueIdentifier>
     </Filter>
@@ -79,6 +76,9 @@
       <UniqueIdentifier>{c1fa0b42-6061-4462-8c44-62e9889e05ce}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="PluginHandler">
+      <UniqueIdentifier>{e4b012c8-d7ac-4991-9dfe-8b61a92d4b00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,7 +170,7 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="PluginHandler.cpp">
-      <Filter>Plugin</Filter>
+      <Filter>PluginHandler</Filter>
     </ClCompile>
     <ClCompile Include="FileBrowser.cpp">
       <Filter>Widgets</Filter>
@@ -322,7 +322,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PluginHandler.h">
-      <Filter>Plugin</Filter>
+      <Filter>PluginHandler</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>

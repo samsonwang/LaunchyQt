@@ -54,7 +54,7 @@ void FileSearch::search(const QString& searchText,
                 volumeName = QDir::toNativeSeparators(info.filePath());
             }
             CatItem item(QDir::toNativeSeparators(info.filePath()), volumeName);
-            item.id = HASH_LAUNCHYFILE;
+            item.pluginId = HASH_LAUNCHYFILE;
             searchResults.push_front(item);
         }
         return;
@@ -116,7 +116,7 @@ void FileSearch::search(const QString& searchText,
         QString filePath = QDir::cleanPath(dir.absolutePath() + "/" + fileName);
         CatItem item(QDir::toNativeSeparators(filePath), fileName);
         if (filePart.length() == 0 || Catalog::matches(&item, filePart.toLower())) {
-            item.id = HASH_LAUNCHYFILE;
+            item.pluginId = HASH_LAUNCHYFILE;
             searchResults.push_front(item);
         }
     }
@@ -131,7 +131,7 @@ void FileSearch::search(const QString& searchText,
         QString fullPath = QDir::toNativeSeparators(directoryPart);
         QString name = dir.dirName();
         CatItem item(fullPath, name.length() == 0 ? fullPath : name);
-        item.id = HASH_LAUNCHYFILE;
+        item.pluginId = HASH_LAUNCHYFILE;
         searchResults.push_front(item);
     }
     else if (sort) {

@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 class Catalog;
-
-// This interface is used to notify clients when a step in a long running process occurs
 class INotifyProgressStep;
 
 class PluginHandler {
@@ -41,7 +39,7 @@ public:
     void getLabels(QList<InputData>* inputData);
     void getResults(QList<InputData>* inputData, QList<CatItem>* results);
     void getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep);
-    int launchItem(QList<InputData>*, CatItem*);
+    int launchItem(QList<InputData>* inputData, CatItem* item);
     QWidget* doDialog(QWidget* parent, uint pluginId);
     void endDialog(uint pluginId, bool accept);
     const QHash<uint, PluginInfo>& getPlugins() const;
@@ -57,6 +55,7 @@ private:
     QHash<uint, bool> m_loadable;
 };
 
+// This interface is used to notify clients when a step in a long running process occurs
 class INotifyProgressStep {
 public:
     virtual bool progressStep(int newStep) = 0;

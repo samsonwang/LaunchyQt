@@ -23,7 +23,7 @@ namespace launchy {
 CatItem::CatItem()
     : usage(0),
       data(NULL),
-      id(0) {
+      pluginId(0) {
 
 }
 
@@ -31,7 +31,7 @@ CatItem::CatItem(const QString& full, bool isDir)
     : fullPath(full),
       usage(0),
       data(NULL), 
-      id(0) {
+      pluginId(0) {
     int last = fullPath.lastIndexOf("/");
     if (last == -1) {
         shortName = fullPath;
@@ -50,7 +50,7 @@ CatItem::CatItem(const QString& full, const QString& shortN)
       shortName(shortN),
       usage(0),
       data(NULL),
-      id(0) {
+      pluginId(0) {
     lowName = shortName.toLower();
 }
 
@@ -59,7 +59,7 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint i)
       shortName(shortN),
       usage(0),
       data(NULL),
-      id(i) {
+      pluginId(i) {
     lowName = shortName.toLower();
 }
 
@@ -69,7 +69,7 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint i, const QStri
       iconPath(iconPath),
       usage(0),
       data(NULL),
-      id(i) {
+      pluginId(i) {
     lowName = shortName.toLower();
 }
 
@@ -87,7 +87,7 @@ QDataStream& operator<<(QDataStream& out, const CatItem &item) {
     out << item.lowName;
     out << item.iconPath;
     out << item.usage;
-    out << item.id;
+    out << item.pluginId;
     return out;
 }
 
@@ -97,7 +97,7 @@ QDataStream& operator>>(QDataStream& in, CatItem &item) {
     in >> item.lowName;
     in >> item.iconPath;
     in >> item.usage;
-    in >> item.id;
+    in >> item.pluginId;
     return in;
 }
 }

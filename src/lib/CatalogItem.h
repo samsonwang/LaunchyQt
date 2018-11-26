@@ -43,7 +43,7 @@ public:
     /** This is unused, and meant for plugin writers and future extensions */
     void* data;
     /** The plugin id of the creator of this CatItem */
-    uint id;
+    uint pluginId;
 
     CatItem();
 

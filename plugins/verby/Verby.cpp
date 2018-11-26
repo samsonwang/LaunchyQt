@@ -128,7 +128,7 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
 
     // Mark the item as a Verby item so that Verby has a chance to process it before Launchy
     inputData->first().setID(HASH_VERBY);
-    inputData->first().getTopResult().id = HASH_VERBY;
+    inputData->first().getTopResult().pluginId = HASH_VERBY;
 
     // ensure there's always an item at the top of the list for launching with parameters.
     results->push_front(CatItem("Run " + inputData->first().getText(),

@@ -32,13 +32,13 @@ void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
 
     if (highPriority) {
         // use an id of -1 to indicate high priority
-        if (m_items.count() > 0 && m_items[0].id == -1) {
+        if (m_items.count() > 0 && m_items[0].pluginId == -1) {
             m_items.replace(0, item);
         }
         else {
             m_items.push_front(item);
         }
-        m_items[0].id = -1;
+        m_items[0].pluginId = -1;
     }
     else {
         m_items.push_back(item);
@@ -59,14 +59,14 @@ void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
         // reset the queue, but keep the most recent high priority item
         CatItem item = m_items.dequeue();
         m_items.clear();
-        if (item.id == -1)
+        if (item.pluginId == -1)
             m_items.append(item);
         itemCount = m_items.size();
     }
 
     m_items += newItems;
     for (int i = itemCount; i < m_items.size(); ++i)
-        m_items[i].id = i - itemCount;
+        m_items[i].pluginId = i - itemCount;
 
     m_mutex.unlock();
 
@@ -94,7 +94,7 @@ void IconExtractor::run() {
         m_mutex.unlock();
         if (itemsRemaining) {
             QIcon icon = getIcon(item);
-            emit iconExtracted(item.id, item.fullPath, icon);
+            emit iconExtracted(item.pluginId, item.fullPath, icon);
         }
     } while (itemsRemaining);
 }

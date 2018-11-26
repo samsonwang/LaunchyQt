@@ -353,7 +353,7 @@ void LaunchyWidget::hideAlternativeList() {
 void LaunchyWidget::launchItem(CatItem& item) {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
-    if (item.id != HASH_LAUNCHY && item.id != HASH_LAUNCHYFILE) {
+    if (item.pluginId != HASH_LAUNCHY && item.pluginId != HASH_LAUNCHYFILE) {
         ops = g_pluginHandler->launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
@@ -424,7 +424,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
         int64_t hi = reinterpret_cast<int64_t>(item.data);
         int historyIndex = static_cast<int>(hi);
 
-        if (item.id == HASH_HISTORY && historyIndex < m_searchResult.count()) {
+        if (item.pluginId == HASH_HISTORY && historyIndex < m_searchResult.count()) {
             m_inputData = m_history.getItem(historyIndex);
             m_inputBox->selectAll();
             m_inputBox->insert(m_inputData.toString());
@@ -515,7 +515,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
         int row = m_alternativeList->currentRow();
         if (row > -1) {
             const CatItem& item = m_searchResult[row];
-            if (item.id == HASH_HISTORY) {
+            if (item.pluginId == HASH_HISTORY) {
                 // Delete selected history entry from the alternatives list
                 qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
                     << "delete history:" << item.shortName;
@@ -623,7 +623,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
     else if (event->key() == Qt::Key_Slash
              || event->key() == Qt::Key_Backslash) {
         if (m_inputData.count() > 0 && m_inputData.last().hasLabel(LABEL_FILE) &&
-            m_searchResult.count() > 0 && m_searchResult[0].id == HASH_LAUNCHYFILE)
+            m_searchResult.count() > 0 && m_searchResult[0].pluginId == HASH_LAUNCHYFILE)
             doTab();
         processKey();
     }
@@ -813,10 +813,10 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
             m_iconExtractor.processIcon(m_searchResult[0], true);
         }
 
-        if (m_outputItem.id != HASH_HISTORY) {
+        if (m_outputItem.pluginId != HASH_HISTORY) {
             // Did the plugin take control of the input?
             if (m_inputData.last().getID() != 0)
-                m_outputItem.id = m_inputData.last().getID();
+                m_outputItem.pluginId = m_inputData.last().getID();
             m_inputData.last().setTopResult(m_searchResult[0]);
         }
 

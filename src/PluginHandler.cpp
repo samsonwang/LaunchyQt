@@ -91,9 +91,9 @@ void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressS
 }
 
 int PluginHandler::launchItem(QList<InputData>* inputData, CatItem* result) {
-    if (!m_plugins.contains(result->id) || !m_plugins[result->id].loaded)
+    if (!m_plugins.contains(result->pluginId) || !m_plugins[result->pluginId].loaded)
         return 0;
-    return m_plugins[result->id].sendMsg(MSG_LAUNCH_ITEM, (void*)inputData, (void*)result);
+    return m_plugins[result->pluginId].sendMsg(MSG_LAUNCH_ITEM, (void*)inputData, (void*)result);
 }
 
 QWidget* PluginHandler::doDialog(QWidget* parent, uint id) {
