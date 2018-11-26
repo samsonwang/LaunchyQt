@@ -10,3 +10,4 @@
 - [[https://sourceforge.net/projects/tasky-launchy/][tasky]]                                  - N/A
 - [[https://github.com/kshahar/pylaunchy][pylaunchy (develop plugin in python)]]   - GPLv2
 - [[https://github.com/pybind/pybind11][pybind11]]                               - [[https://github.com/pybind/pybind11/blob/master/LICENSE][LICENSE]]
+- [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
