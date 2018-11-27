@@ -101,6 +101,7 @@ unix:!macx {
                 icon \
                 desktop
 }
+
 win32 {
     QT += winextras
     ICON = Launchy.ico
@@ -134,6 +135,7 @@ win32 {
     QMAKE_CXXFLAGS_RELEASE += /Zi
     QMAKE_LFLAGS_RELEASE += /DEBUG
 }
+
 macx {
     ICON = ../misc/Launchy_Icon/launchy_icon_mac.icns
     SOURCES += mac/platform_mac.cpp \

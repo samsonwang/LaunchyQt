@@ -25,6 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginMsg.h"
 
 namespace launchy {
+
+PluginInterface::PluginInterface() {
+
+}
+
+PluginInterface::~PluginInterface() {
+
+}
+
+
 #ifdef Q_OS_WIN
 // This doesn't exist until qt 4.6 (currently 4.5 in ubuntu 10.04)
 #include <QProcessEnvironment>
@@ -161,22 +171,24 @@ int getDesktop() {
     return -1;
 }
 
-void runProgram(QString path, QString args, bool translateSeparators) {
+void runProgram(const QString& file, const QString& args, bool translateSeparators) {
     Q_UNUSED(translateSeparators)
-        QString fullname = path.split(" ")[0];
+    QString path = file;
+    QString arg = args;
+    QString fullname = path.split(" ")[0];
     QFileInfo info(fullname);
 
     /* I would argue that launchy does not need to fully
        support the desktop entry specification yet/ever.
        NOTE: %c, %k, and %i are handled during loading */
     if (path.contains("%")) {
-        path.replace("%U", args);
-        path.replace("%u", args);
-        path.replace("%F", args);
-        path.replace("%f", args);
+        path.replace("%U", arg);
+        path.replace("%u", arg);
+        path.replace("%F", arg);
+        path.replace("%f", arg);
         /* remove specifiers either not yet supported or depricated */
         path.remove(QRegExp("%."));
-        args = "";
+        arg = "";
     }
 
     QString cmd;
@@ -191,8 +203,8 @@ void runProgram(QString path, QString args, bool translateSeparators) {
     }
     else /* gnome, xfce, etc */ {
         path.replace("\"", "\\\"");
-        args.replace("\"", "\\\"");
-        cmd = "sh -c \"" + path.trimmed() + " " + args.trimmed() + "\"";
+        arg.replace("\"", "\\\"");
+        cmd = "sh -c \"" + path.trimmed() + " " + arg.trimmed() + "\"";
     }
 
     QProcess::startDetached(cmd);
@@ -201,14 +213,5 @@ void runProgram(QString path, QString args, bool translateSeparators) {
 }
 
 #endif
-
-
-PluginInterface::PluginInterface() {
-
-}
-
-PluginInterface::~PluginInterface() {
-
-}
 
 }

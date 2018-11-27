@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "IconExtractor.h"
 #include "AppBase.h"
 #include "GlobalVar.h"
@@ -32,13 +32,13 @@ void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
 
     if (highPriority) {
         // use an id of -1 to indicate high priority
-        if (m_items.count() > 0 && m_items[0].pluginId == -1) {
+        if (m_items.count() > 0 && m_items[0].pluginId == (uint)-1) {
             m_items.replace(0, item);
         }
         else {
             m_items.push_front(item);
         }
-        m_items[0].pluginId = -1;
+        m_items[0].pluginId = (uint)-1;
     }
     else {
         m_items.push_back(item);
@@ -59,7 +59,7 @@ void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
         // reset the queue, but keep the most recent high priority item
         CatItem item = m_items.dequeue();
         m_items.clear();
-        if (item.pluginId == -1)
+        if (item.pluginId == (uint)-1)
             m_items.append(item);
         itemCount = m_items.size();
     }

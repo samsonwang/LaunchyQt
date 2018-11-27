@@ -28,9 +28,9 @@ namespace launchy {
 const int LAUNCHY_VERSION = 303;
 const char* LAUNCHY_VERSION_STRING = "3.0.3";
 
-const int HASH_LAUNCHY = 0;
-const int HASH_HISTORY = 1;
-const int HASH_LAUNCHYFILE = 2;
+const uint HASH_LAUNCHY = 0;
+const uint HASH_HISTORY = 1;
+const uint HASH_LAUNCHYFILE = 2;
 const uint LABEL_FILE = 0;
 const uint LABEL_AUTOSUGGEST = 1;
 const uint LABEL_HISTORY = 2;

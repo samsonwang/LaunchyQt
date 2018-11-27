@@ -21,14 +21,17 @@
 
 #include "AppBase.h"
 #include "platform_unix_util.h"
+#include "Directory.h"
 
-class PlatformUnix :  public AppBase {
+namespace launchy {
+
+class AppUnix :  public AppBase {
     Q_OBJECT
  public:
-    PlatformUnix(int& argc, char** argv);
-    virtual ~PlatformUnix();
+    AppUnix(int& argc, char** argv);
+    virtual ~AppUnix();
     
-    void setPreferredIconSize(int size) { size = size; return; }
+    void setPreferredIconSize(int size);
 
     QString GetSettingsDirectory() { return ""; }
     QList<Directory> getDefaultCatalogDirectories();
@@ -52,6 +55,7 @@ class PlatformUnix :  public AppBase {
     virtual void alterItem(CatItem*);
 };
 
+}
 
 
 

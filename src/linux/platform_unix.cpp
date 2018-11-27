@@ -17,7 +17,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "platform_unix.h"
 #include <QtGui>
 #include <QApplication>
@@ -29,7 +29,9 @@
 #include "Catalog.h"
 #include "LaunchyWidget.h"
 
-PlatformUnix::PlatformUnix(int& argc, char** argv)
+namespace launchy {
+
+AppUnix::AppUnix(int& argc, char** argv)
     : AppBase(argc, argv) {
     m_iconProvider = new UnixIconProvider();
 }
@@ -45,12 +47,16 @@ PlatformUnix::PlatformUnix(int& argc, char** argv)
 return app;
 }
 */
-PlatformUnix::~PlatformUnix() {
+AppUnix::~AppUnix() {
     // GlobalShortcutManager::clear();
     // delete icons;
 }
 
-QList<Directory> PlatformUnix::getDefaultCatalogDirectories() {
+void AppUnix::setPreferredIconSize(int size) {
+    size = size; return;
+}
+
+QList<Directory> AppUnix::getDefaultCatalogDirectories() {
     QList<Directory> list;
     const char *dirs[] = {"/usr/share/applications/",
                           "/usr/local/share/applications/",
@@ -69,7 +75,7 @@ QList<Directory> PlatformUnix::getDefaultCatalogDirectories() {
 }
 
 
-QHash<QString, QList<QString> > PlatformUnix::getDirectories() {
+QHash<QString, QList<QString> > AppUnix::getDirectories() {
     QHash<QString, QList<QString> > out;
     QDir d;
     d.mkdir(QDir::homePath() + "/.launchy");
@@ -110,12 +116,12 @@ alpha.reset( new AlphaBorder(w, ImageName) );
 return true;
 }
 */
-bool PlatformUnix::supportsAlphaBorder() const {
+bool AppUnix::supportsAlphaBorder() const {
     return QX11Info::isCompositingManagerRunning();
 }
 
 
-void PlatformUnix::alterItem(CatItem* item) {
+void AppUnix::alterItem(CatItem* item) {
     if (!item->fullPath.endsWith(".desktop", Qt::CaseInsensitive))
         return;
 
@@ -198,14 +204,14 @@ void PlatformUnix::alterItem(CatItem* item) {
         return;
     }
 
-    item->icon = icon;
+    item->iconPath = icon;
 
     file.close();
     return;
 }
 
 
-QString PlatformUnix::expandEnvironmentVars(QString txt)
+QString AppUnix::expandEnvironmentVars(QString txt)
 {
 	QStringList list = QProcess::systemEnvironment();
 	txt.replace('~', "$HOME$");
@@ -242,10 +248,12 @@ QString PlatformUnix::expandEnvironmentVars(QString txt)
 
 // Create the application object
 QApplication* createApplication(int& argc, char** argv) {
-    return new PlatformUnix(argc, argv);
+    return new AppUnix(argc, argv);
 }
 
 // Create the main widget for the application
 LaunchyWidget* createLaunchyWidget(CommandFlags command) {
     return new LaunchyWidget(command);
+}
+
 }

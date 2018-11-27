@@ -1621,7 +1621,7 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>launchy::DropListWidget</class>
    <extends>QListWidget</extends>
-   <header>Droplistwidget.h</header>
+   <header>DropListWidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -17,7 +17,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "Catalog.h"
 #include "GlobalVar.h"
 #include "OptionItem.h"

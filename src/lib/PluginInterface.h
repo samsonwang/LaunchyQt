@@ -36,7 +36,7 @@ namespace launchy {
 class LAUNCHY_EXPORT PluginInterface {
 public:
     PluginInterface();
-    virtual ~PluginInterface();;
+    virtual ~PluginInterface();
 
 
     /**
@@ -138,7 +138,3 @@ LAUNCHY_EXPORT int getDesktop();
 
 #define PLUGININTERFACE_IID "com.launchyqt.PluginInterface/1.0"
 Q_DECLARE_INTERFACE(launchy::PluginInterface, PLUGININTERFACE_IID)
-
-
-
-
