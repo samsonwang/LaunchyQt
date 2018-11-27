@@ -10,7 +10,7 @@ QT += network widgets
 PRECOMPILED_HEADER = precompiled.h
 CONFIG += precompile_header
 
-INCLUDEPATH += ../deps ./lib
+INCLUDEPATH += ../deps ./lib ./pluginpy
 SOURCES = main.cpp \
     AppBase.cpp \
     LaunchyWidget.cpp \
@@ -32,7 +32,9 @@ SOURCES = main.cpp \
     FileSearch.cpp \
     AnimationLabel.cpp \
     SettingsManager.cpp \
-    QLogger.cpp
+    Logger.cpp \
+    OptionItem.cpp \
+    Directory.cpp
 HEADERS = AppBase.h \
     GlobalVar.h \
     LaunchyWidget.h \
@@ -54,15 +56,17 @@ HEADERS = AppBase.h \
     FileSearch.h \
     AnimationLabel.h \
     SettingsManager.h \
-    QLogger.h
+    Logger.h \
+    OptionItem.h \
+    Directory.h
 FORMS = OptionDialog.ui
 
 include(../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../deps/QHotkey/QHotkey.pri)
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/src/lib/release/ -llaunchy
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/src/lib/debug/ -llaunchy
+win32:CONFIG(release, debug|release): LIBS += $$OUT_PWD/lib/release/Launchy.lib
+else:win32:CONFIG(debug, debug|release): LIBS += $$OUT_PWD/lib/debug/Launchy.lib
 else:unix: LIBS += -L$$OUT_PWD/src/lib/ lib/liblaunchy.so
 
 INCLUDEPATH += $$PWD/src/lib
