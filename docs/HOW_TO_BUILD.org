@@ -1,6 +1,6 @@
 
 
-* how to build
+* How to build
 
 ** Windows with Visual Studio 2015
 *** Environments
@@ -17,8 +17,7 @@ After you have all the above installed, you need to:
 3. Add "PYTHONPATH" in user environment variables, the value should be the path that you installed python.
 
 *** Build and debug
-Now you can build and debug Launchy.
-*Tips:*
-1. You should build in "Release x64" configuration
+Now you can build and debug Launchy. There are the tips:
+1. You should build in "Release x64" configuration.
 2. Even when you are debugging, you should still use release configuration, because we have installed python in release, [[https://docs.microsoft.com/en-us/visualstudio/python/working-with-c-cpp-python-in-visual-studio?view=vs-2017][this page]] have more detailed information about VS working with python.
-3. When debugging in release configuration, you may see "unwanted fast jumps" when stepping the code, this is because of compile optimization, and you can turn it off temporary in project property panel.
+3. When debugging in release configuration, you may encounter "unwanted fast jumps" when stepping the code, this is because of compile optimization, and you can turn it off temporary in project property panel.
