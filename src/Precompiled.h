@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#pragma once
+#if !defined(PRECOMPILED_H)
+#define PRECOMPILED_H
 
 #ifdef _MSC_VER
 #pragma warning (disable : 4091)
@@ -69,3 +70,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#define _WIN32_IE 0x0700
 
 
+#endif /* PRECOMPILED */
