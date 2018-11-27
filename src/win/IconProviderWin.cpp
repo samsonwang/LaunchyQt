@@ -1,26 +1,24 @@
 /*
-Launchy: Application Launcher
-Copyright (C) 2007-2009  Josh Karlin, Simon Capewell
+  Launchy: Application Launcher
+  Copyright (C) 2007-2009  Josh Karlin, Simon Capewell
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-
-#include "UtilWin.h"
 #include "IconProviderWin.h"
+#include "UtilWin.h"
 
 #if 0
 // Temporary work around to avoid having to install the latest Windows SDK
@@ -104,10 +102,10 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     QIcon retIcon;
     QString fileExtension = info.suffix().toLower();
 
-    if (fileExtension == "png" ||
-        fileExtension == "bmp" ||
-        fileExtension == "jpg" ||
-        fileExtension == "jpeg") {
+    if (fileExtension == "png"
+        || fileExtension == "bmp"
+        || fileExtension == "jpg"
+        || fileExtension == "jpeg") {
         retIcon = QIcon(info.filePath());
     }
     else if (fileExtension == "cpl") {
@@ -156,7 +154,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             else {
                 imageListIndex = SHIL_JUMBO;
             }
-                
+
             // If the OS supports SHCreateItemFromParsingName, get a 256x256 icon
             if (!addIconFromShellFactory(filePath, retIcon)) {
                 // otherwise get the largest appropriate size
