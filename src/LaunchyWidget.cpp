@@ -458,7 +458,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
 }
 
 void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
-    // Launchy widget would not receive Key_Tab from inputbox，
+    // Launchy widget would not receive Key_Tab from inputbox,
     // we have to pass it manually
     if (event->key() == Qt::Key_Tab) {
         qDebug() << "LaunchyWidget::onInputBoxKeyPressed,"
