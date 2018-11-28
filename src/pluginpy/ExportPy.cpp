@@ -38,7 +38,9 @@ PYBIND11_MODULE(launchy, m) {
     m.def("registerPlugin", &exportpy::registerPlugin);
 
     //
-    m.def("getAppPath", &exportpy::getAppPath, "get launchy application path");
+    m.def("getAppPath", &exportpy::getAppPath,
+          "get launchy application path",
+          py::arg("toNative") = true);
 
     // for testing
     m.def("objectReceiver", &exportpy::objectReceiver);
@@ -89,8 +91,11 @@ unsigned int hash(const std::string& str) {
     return qHash(qstr);
 }
 
-std::string getAppPath() {
+std::string getAppPath(bool toNative) {
     QString path = qApp->applicationDirPath();
+    if (toNative) {
+        path = QDir::toNativeSeparators(path);
+    }
     return path.toStdString();
 }
 

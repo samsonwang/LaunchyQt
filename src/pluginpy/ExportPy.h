@@ -29,7 +29,7 @@ void registerPlugin(py::object pluginClass);
 
 unsigned int hash(const std::string& str);
 
-std::string getAppPath();
+std::string getAppPath(bool toNative = true);
 
 
 // for debu and test use
