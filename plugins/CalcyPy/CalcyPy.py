@@ -14,7 +14,7 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 # Version 1.0:
-#	* First public release
+#   * First public release
 #
 #import rpdb2; rpdb2.start_embedded_debugger("password")
 
@@ -25,84 +25,84 @@ import launchy
 
 # Based on http://www.peterbe.com/plog/calculator-in-python-for-dummies
 class Calculator:
-	whitelist = '|'.join(
-		# oprators, digits
-		['-', '\+', '/', '\\', '\*', '\^', '\*\*', '\(', '\)', '\d+', 'e']
-		# functions of math module (ex. __xxx__)
-		+ [f for f in dir(math) if f[:2] != '__' and f != 'e']
-	)
+    whitelist = '|'.join(
+        # oprators, digits
+        ['-', '\+', '/', '\\', '\*', '\^', '\*\*', '\(', '\)', '\d+', 'e']
+        # functions of math module (ex. __xxx__)
+        + [f for f in dir(math) if f[:2] != '__' and f != 'e']
+    )
 
-	integers_regex = re.compile(r'\b[\d\.]+\b')
+    integers_regex = re.compile(r'\b[\d\.]+\b')
 
-	@staticmethod
-	def isValidExpression(exp):
-		return re.match(Calculator.whitelist, exp)
+    @staticmethod
+    def isValidExpression(exp):
+        return re.match(Calculator.whitelist, exp)
 
-	@staticmethod
-	def calc(expr, advanced=False):
-		def safe_eval(expr, symbols={}):
-			return eval(expr, dict(__builtins__=None), symbols)
-		def whole_number_to_float(match):
-			group = match.group()
-			if group.find('.') == -1:
-				return group + '.0'
-			return group
-		expr = expr.replace('^','**')
-		expr = Calculator.integers_regex.sub(whole_number_to_float, expr)
-		if advanced:
-			return safe_eval(expr, vars(math))
-		else:
-			return safe_eval(expr)
+    @staticmethod
+    def calc(expr, advanced=False):
+        def safe_eval(expr, symbols={}):
+            return eval(expr, dict(__builtins__=None), symbols)
+        def whole_number_to_float(match):
+            group = match.group()
+            if group.find('.') == -1:
+                return group + '.0'
+            return group
+        expr = expr.replace('^','**')
+        expr = Calculator.integers_regex.sub(whole_number_to_float, expr)
+        if advanced:
+            return safe_eval(expr, vars(math))
+        else:
+            return safe_eval(expr)
 
 class CalcyPy(launchy.Plugin):
-	def __init__(self):
-		launchy.Plugin.__init__(self)
-		self.hash = launchy.hash(self.getName())
+    def __init__(self):
+        launchy.Plugin.__init__(self)
+        self.hash = launchy.hash(self.getName())
 
-	def init(self):
-		pass
+    def init(self):
+        pass
 
-	def getID(self):
-		return int(self.hash)
+    def getID(self):
+        return int(self.hash)
 
-	def getName(self):
-		return "CalcyPy"
+    def getName(self):
+        return "CalcyPy"
 
-	def setPath(self, path):
-		self.path = path
+    def setPath(self, path):
+        self.path = path
 
-	def getIcon(self):
-		return self.path + "/calcpy.ico"
+    def getIcon(self):
+        return self.path + "/calcpy.ico"
 
-	def getLabels(self, inputDataList):
-		pass
+    def getLabels(self, inputDataList):
+        pass
 
-	def getResults(self, inputDataList, resultsList):
-		if len(inputDataList) > 1:
-			return
+    def getResults(self, inputDataList, resultsList):
+        if len(inputDataList) > 1:
+            return
 
-		text = inputDataList[0].getText()
-		if not Calculator.isValidExpression(text):
-			return
+        text = inputDataList[0].getText()
+        if not Calculator.isValidExpression(text):
+            return
 
-		try:
-			result = Calculator.calc(text, advanced=True)
-		except:
-			pass
-		else:
-			resultsList.append(launchy.CatItem(str(result)+".calcypy", str(result), self.getID(), self.getIcon() ) )
+        try:
+            result = Calculator.calc(text, advanced=True)
+        except:
+            pass
+        else:
+            resultsList.append(launchy.CatItem(str(result)+".calcypy", str(result), self.getID(), self.getIcon() ) )
 
-	def getCatalog(self, resultsList):
-		pass
+    def getCatalog(self, resultsList):
+        pass
 
-	def launchItem(self, inputDataList, catItemOrig):
-		pass
+    def launchItem(self, inputDataList, catItemOrig):
+        pass
 
-	def launchyShow(self):
-		pass
+    def launchyShow(self):
+        pass
 
-	def launchyHide(self):
-		pass
+    def launchyHide(self):
+        pass
 
 def getPlugin():
-	return CalcyPy
+    return CalcyPy
