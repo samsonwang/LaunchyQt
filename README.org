@@ -1,3 +1,6 @@
+
+[[https://github.com/samsonwang/LaunchyQt][file:https://raw.githubusercontent.com/samsonwang/LaunchyQt/master/misc/Launchy_Icon/launchy_icon.png]]
+
 * LaunchyQt
 [[https://doc.qt.io/qt-5.11/][file:https://img.shields.io/badge/Qt-5.11.1-41cd52.svg]]
 [[https://www.python.org/downloads/release/python-367/][file:https://img.shields.io/badge/python-3.6.7-blue.svg]]
