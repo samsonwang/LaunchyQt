@@ -64,11 +64,11 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     py::object& pluginObject = m_pluginObject[pluginId];
 
     if (py::isinstance<exportpy::Plugin>(pluginObject)) {
-        qDebug() << "PluginMgr::loadPlugin, plugin load succeed";
+        qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin load succeed";
         exportpy::Plugin* pluginPtr = pluginObject.cast<exportpy::Plugin*>();
         if (pluginPtr) {
             std::string name = pluginPtr->getName();
-            qDebug() << "exportpy::registerPlugin, plugin name:" << name.c_str();
+            qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin name:" << name.c_str();
             launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr);
             // store this pointer in manager
             m_pluginInterface.insert(pluginId, intf);
@@ -93,7 +93,7 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
 }
 
 void PluginMgr::registerPlugin(py::object pluginClass) {
-    qDebug() << "PluginMgr::registerPlugin, register plugin called";
+    qDebug() << "pluginpy::PluginMgr::registerPlugin, register plugin called";
     m_pluginClass.push_back(pluginClass);
 
 }
@@ -104,6 +104,18 @@ PluginMgr::PluginMgr() {
     QString pythonLibPath = qApp->applicationDirPath() + "/python";
     py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
     pathObj.append(qPrintable(QDir::toNativeSeparators(pythonLibPath)));
+
+    try {
+        // import config.py
+        py::module::import("pluginconf");
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        const char* errInfo = e.what();
+        qDebug() << "pluginpy::PluginMgr::PluginMgr, pluginconf module not imported," << errInfo;
+    }
+
 }
 
 PluginMgr::~PluginMgr() {

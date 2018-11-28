@@ -32,10 +32,13 @@ PYBIND11_MODULE(launchy, m) {
     // Export our basic testing function
     m.def("add_five", &add_five, "function which increase number by 5");
 
-    m.def("hash", &exportpy::hash);
+    m.def("hash", &exportpy::hash, "hash function from qt");
     //m.def("registerPlugin", &exportpy::registerPlugin);
 
     m.def("registerPlugin", &exportpy::registerPlugin);
+
+    //
+    m.def("getAppPath", &exportpy::getAppPath, "get launchy application path");
 
     // for testing
     m.def("objectReceiver", &exportpy::objectReceiver);
@@ -84,6 +87,11 @@ void registerPlugin(py::object pluginClass) {
 unsigned int hash(const std::string& str) {
     QString qstr = QString::fromStdString(str);
     return qHash(qstr);
+}
+
+std::string getAppPath() {
+    QString path = qApp->applicationDirPath();
+    return path.toStdString();
 }
 
 void objectReceiver(py::object obj) {
