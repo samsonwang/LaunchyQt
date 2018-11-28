@@ -55,11 +55,12 @@
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\$(Configuration)\</OutDir>
+    <OutDir>..\..\$(Configuration)$(Platform)\</OutDir>
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>..\..\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\$(Configuration)$(Platform)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -134,7 +135,7 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>mkdir $(OutputPath)python 2&gt;nul
-xcopy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
+ECHO F|xcopy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
 echo "copying target to launchy.pyd"</Command>
       <Message>
       </Message>
@@ -143,8 +144,8 @@ echo "copying target to launchy.pyd"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>QT_NO_DEBUG;QT_CORE_LIB;PLUGINPY_LIB;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;Q_BYTE_ORDER=Q_LITTLE_ENDIAN;WINAPI_FAMILY=WINAPI_FAMILY_PC_APP;WINAPI_PARTITION_PHONE_APP=1;X64;__X64__;__x64__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\..\lib;.\..\..\deps;.;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(PYTHONPATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;QT_NO_DEBUG;QT_CORE_LIB;PLUGINPY_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\..\lib;.\..\..\deps;.;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(PYTHONPATH32)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -160,15 +161,15 @@ echo "copying target to launchy.pyd"</Command>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(TargetDir)$(TargetFileName)</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONPATH)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONPATH32)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(TargetDir)Launchy.lib;qtmain.lib;Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalOptions> /SUBSYSTEM:WINDOWS</AdditionalOptions>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>mkdir $(OutputPath)python
-cp -f $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
+      <Command>mkdir $(OutputPath)python 2&gt;nul
+ECHO F|xcopy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
 echo "copying target to launchy.pyd"</Command>
       <Message>
       </Message>
@@ -345,7 +346,7 @@ echo #include "Precompiled.h"&gt;&gt;GeneratedFiles/Precompiled.h.cpp
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="Qt5.11.1x64winrt" Qt5Version_x0020_x64="Qt5.11.1x64" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="Qt5.11.1x86" Qt5Version_x0020_x64="Qt5.11.1x64" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

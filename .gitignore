@@ -47,9 +47,9 @@ GRTAGS
 *.opendb
 ipch
 x64
-build*
-debug
-release
+[B|b]uild*
+[D|d]ebug*
+[R|r]elease*
 .vs
 GeneratedFiles
-precompiled.h.cpp
+[P|p]recompiled.h.cpp
