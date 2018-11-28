@@ -8,6 +8,8 @@
 - in portable mode, put ini file in config folder, I think it is more tidy this way
 - fix a bug in input text parsing
 - add "restart launchy" to tray menu
+- add python plugin configuration file "pluginconf.py" in "launchy/python", this file is optional and loaded before all python plugins
+- new plugin in python, WebSearchPy, it is ported from [[https://github.com/j5shi/Thruster][Thruster]]
 
 * 3.0.3
 - built-in python support (write plugin in python)
