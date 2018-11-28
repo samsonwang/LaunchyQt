@@ -4,7 +4,8 @@
 * LaunchyQt
 [[https://doc.qt.io/qt-5.11/][file:https://img.shields.io/badge/Qt-5.11.1-41cd52.svg]]
 [[https://www.python.org/downloads/release/python-367/][file:https://img.shields.io/badge/python-3.6.7-blue.svg]]
-[[https://github.com/samsonwang/LaunchyQt/blob/master/LICENSE][file:https://img.shields.io/github/license/samsonwang/launchyqt.svg]]
+[[https://github.com/samsonwang/LaunchyQt/blob/master/LICENSE][file:https://img.shields.io/github/license/samsonwang/LaunchyQt.svg]]
+[[https://github.com/samsonwang/LaunchyQt/releases][https://img.shields.io/github/downloads/samsonwang/LaunchyQt/total.svg]]
 
 I have been using Launchy for years, and found that this project has not been updated since 2010. I love this tool and want to maintain this project.
 
