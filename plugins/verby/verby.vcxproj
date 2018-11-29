@@ -154,7 +154,7 @@ echo try to kill running Launchy process
 exit 0</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /y *.png $(OutputPath)</Command>
+      <Command>copy /y *.png $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -211,7 +211,7 @@ echo try to kill running Launchy process
 exit 0</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /y *.png $(OutputPath)</Command>
+      <Command>copy /y *.png $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
