@@ -12,7 +12,6 @@ class PluginWrapper : public launchy::PluginInterface {
 
 public:
     PluginWrapper(exportpy::Plugin* plugin);
-                 //ScriptPluginsSynchronizer& scriptPluginsSynchronizer);
     virtual ~PluginWrapper();
 
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
@@ -31,8 +30,6 @@ private:
     void endDialog(bool accept);
     void launchyShow();
     void launchyHide();
-
-    //QString getIcon();
 
     //! Does the actual work of calling a Python function
     int dispatchFunction(int msgId, void* wParam, void* lParam);

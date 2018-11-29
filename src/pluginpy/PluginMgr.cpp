@@ -94,7 +94,7 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
 
 void PluginMgr::registerPlugin(py::object pluginClass) {
     qDebug() << "pluginpy::PluginMgr::registerPlugin, register plugin called";
-    m_pluginClass.push_back(pluginClass);
+    //m_pluginClass.push_back(pluginClass);
 
 }
 
@@ -106,7 +106,7 @@ PluginMgr::PluginMgr() {
     pathObj.append(qPrintable(QDir::toNativeSeparators(pythonLibPath)));
 
     try {
-        // import config.py
+        // import pluginconf.py
         py::module::import("pluginconf");
     }
     catch (const py::error_already_set& e) {
