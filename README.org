@@ -16,15 +16,13 @@ Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt
 ** Latest release
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
 
-*3.0.3* Changes:
-- built-in python support (write plugin in python) (Issue [[https://github.com/samsonwang/LaunchyQt/issues/1][#1]])
-- put all plugin in each standalone folder (doing this to prepare for build-in python script integration)
-- tasky plugin works now
-- option dialog use fusion style from qt
-- fix display bug in alternative list caused by different icon size
-- fix "hide when lost focus" fails when focus is on alternative list
-- pack additional vcredist file (just in case that you do not want to download and install vcredist2015)
-- change skin name (hDPI -> HiDPI)
+*3.0.4* Changes:
+- fix display problem in 4k hidpi (issue [[https://github.com/samsonwang/LaunchyQt/issues/2][#2]])
+- in portable mode, put ini file in config folder, I think it is more tidy this way
+- fix a bug in input text parsing
+- add "restart launchy" to tray menu
+- add python plugin configuration file "pluginconf.py" in "launchy/python", this file is optional and loaded before all python plugins
+- new plugin in python, WebSearchPy, it is ported from [[https://github.com/j5shi/Thruster][Thruster]]
 
 ** Credits
 - [[https://sourceforge.net/projects/launchy][Launchy]]                                - GPLv2
