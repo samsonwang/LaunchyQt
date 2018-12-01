@@ -105,5 +105,15 @@ const int       OPSTION_VERSION_DEFAULT                        = 0;
 const char*     OPSTION_POS                                    = "Display/pos";
 const QPoint    OPSTION_POS_DEFAULT                            = QPoint(0, 0);
 
+const char*     OPTION_UPDATE_CHECK_ON_STARTUP                 = "Update/checkOnStartup";
+const bool      OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT         = true;
 
+const char*     OPTION_UPDATE_CHECK_ON_STARTUP_DELAY           = "Update/checkOnStartupDelay";
+const int       OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT   = 60;
+
+const char*     OPTION_UPDATE_CHECK_REPEAT                     = "Update/checkRepeat";
+const bool      OPTION_UPDATE_CHECK_REPEAT_DEFAULT             = true;
+
+const char*     OPTION_UPDATE_CHECK_REPEAT_INTERVAL            = "Update/checkRepeatInterval";
+const int       OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT    = 24;
 }

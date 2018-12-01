@@ -213,7 +213,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     if (m_pUi->catDirectories->count() > 0)
         m_pUi->catDirectories->setCurrentRow(0);
 
-    m_pUi->genOpaqueness->setRange(15, 100);
+
 
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
@@ -222,6 +222,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     if (g_builder->isRunning()) {
         catalogProgressUpdated(g_builder->getProgress());
     }
+    m_pUi->catDirectories->installEventFilter(this);
 
     // Load up the plugins		
     connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
@@ -241,8 +242,18 @@ OptionDialog::OptionDialog(QWidget * parent)
     if (m_pUi->plugList->count() > 0) {
         m_pUi->plugList->setCurrentRow(s_currentPlugin);
     }
+
+    // Update
+    m_pUi->gbCheckUpdate->setChecked(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP, OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool());
+    m_pUi->sbCheckUpdateDelay->setValue(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt());
+    m_pUi->cbCheckUpdateRepeat->setChecked(g_settings->value(OPTION_UPDATE_CHECK_REPEAT, OPTION_UPDATE_CHECK_REPEAT_DEFAULT).toBool());
+    m_pUi->sbCheckUpdateInterval->setValue(g_settings->value(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT).toInt());
+
+    // Proxy
+    
+    // About
     m_pUi->aboutVer->setText(tr("This is Launchy %1").arg(LAUNCHY_VERSION_STRING));
-    m_pUi->catDirectories->installEventFilter(this);
+
 
     needRescan = false;
 }
@@ -290,7 +301,6 @@ void OptionDialog::accept() {
 //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
     g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
     g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
-//    g_settings->setValue("GenOps/updatecheck", m_pUi->genUpdateCheck->isChecked());
     g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
     g_settings->setValue(OPSTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
     g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
@@ -310,6 +320,15 @@ void OptionDialog::accept() {
 
     g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
     g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
+
+    // Update
+    //g_settings->setValue();
+    //    g_settings->setValue("GenOps/updatecheck", m_pUi->genUpdateCheck->isChecked());
+
+
+    // Proxy
+
+
 
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
