@@ -98,4 +98,18 @@ extern const int        OPSTION_VERSION_DEFAULT;
 
 extern const char*      OPSTION_POS;
 extern const QPoint     OPSTION_POS_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP;
+extern const bool       OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP_DELAY;
+extern const int        OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_REPEAT;
+extern const bool       OPTION_UPDATE_CHECK_REPEAT_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_REPEAT_INTERVAL;
+extern const int        OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT;
+
+
 }

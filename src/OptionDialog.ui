@@ -689,6 +689,9 @@
                   <height>18</height>
                  </size>
                 </property>
+                <property name="minimum">
+                 <number>15</number>
+                </property>
                 <property name="maximum">
                  <number>100</number>
                 </property>
@@ -1549,6 +1552,15 @@
                 <property name="suffix">
                  <string> s</string>
                 </property>
+                <property name="maximum">
+                 <number>300</number>
+                </property>
+                <property name="singleStep">
+                 <number>5</number>
+                </property>
+                <property name="value">
+                 <number>60</number>
+                </property>
                </widget>
               </item>
              </layout>
@@ -1556,9 +1568,12 @@
             <item row="1" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QCheckBox" name="cbCheckUpdateInterval">
+               <widget class="QCheckBox" name="cbCheckUpdateRepeat">
                 <property name="text">
                  <string>Every</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -1572,6 +1587,15 @@
                 </property>
                 <property name="suffix">
                  <string> h</string>
+                </property>
+                <property name="maximum">
+                 <number>96</number>
+                </property>
+                <property name="singleStep">
+                 <number>6</number>
+                </property>
+                <property name="value">
+                 <number>24</number>
                 </property>
                </widget>
               </item>
@@ -1630,7 +1654,11 @@
             <item row="1" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_12">
               <item>
-               <widget class="QLineEdit" name="leProxyServerIp"/>
+               <widget class="QLineEdit" name="leProxyServerIp">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_18">
@@ -1641,6 +1669,9 @@
               </item>
               <item>
                <widget class="QLineEdit" name="leServerPort">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>80</width>
@@ -1668,7 +1699,11 @@
             <item row="3" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_14">
               <item>
-               <widget class="QLineEdit" name="leProxyUsername"/>
+               <widget class="QLineEdit" name="leProxyUsername">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_7">
@@ -1695,7 +1730,11 @@
             <item row="4" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_15">
               <item>
-               <widget class="QLineEdit" name="leProxyPassword"/>
+               <widget class="QLineEdit" name="leProxyPassword">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_8">
