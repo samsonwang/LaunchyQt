@@ -1,9 +1,11 @@
 
 
 * x.x.x developing in progress
-- use pip to manage python package
+- network proxy setting
+- update check and new version notify
 - add "run as admin" in verby
 - better python plugin support
+- use pip to manage python package
 
 * 3.0.5 (develop finished, not released)
 - nothing (just released 3.0.4)
