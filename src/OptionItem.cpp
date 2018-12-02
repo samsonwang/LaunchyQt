@@ -105,6 +105,7 @@ const int       OPSTION_VERSION_DEFAULT                        = 0;
 const char*     OPSTION_POS                                    = "Display/pos";
 const QPoint    OPSTION_POS_DEFAULT                            = QPoint(0, 0);
 
+// Update
 const char*     OPTION_UPDATE_CHECK_ON_STARTUP                 = "Update/checkOnStartup";
 const bool      OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT         = true;
 
@@ -116,4 +117,8 @@ const bool      OPTION_UPDATE_CHECK_REPEAT_DEFAULT             = true;
 
 const char*     OPTION_UPDATE_CHECK_REPEAT_INTERVAL            = "Update/checkRepeatInterval";
 const int       OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT    = 24;
+
+// Proxy
+
+
 }

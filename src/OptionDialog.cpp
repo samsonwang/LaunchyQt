@@ -321,9 +321,12 @@ void OptionDialog::accept() {
     g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
     g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
 
+
     // Update
-    //g_settings->setValue();
-    //    g_settings->setValue("GenOps/updatecheck", m_pUi->genUpdateCheck->isChecked());
+    g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP, m_pUi->gbCheckUpdate->isChecked());
+    g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, m_pUi->sbCheckUpdateDelay->value());
+    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT, m_pUi->cbCheckUpdateRepeat->isChecked());
+    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
 
 
     // Proxy
