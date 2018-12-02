@@ -1,0 +1,5 @@
+
+* THANKS
+
+** [[https://github.com/ygao9999][ygao9999]]
+ygao999 helps a lot on python plugin development, he gives me very useful advices and makes good efforts on launchy python package management.
