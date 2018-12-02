@@ -34,3 +34,7 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - [[https://github.com/pybind/pybind11][pybind11]]                               - [[https://github.com/pybind/pybind11/blob/master/LICENSE][LICENSE]]
 - [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
 - WebSearchPy (from [[https://github.com/j5shi/Thruster][Thruster]])            - GPLv2
+
+
+** Thanks
+Thank you all for helping me in launchy development, here is the [[https://github.com/samsonwang/LaunchyQt/blob/master/docs/THANKS.org][full context]] .
