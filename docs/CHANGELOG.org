@@ -1,8 +1,8 @@
 
-
 * x.x.x developing in progress
 - network proxy setting
 - update check and new version notify
+- launchy may crash on restart from tray menu
 - add "run as admin" in verby
 - better python plugin support
 - use pip to manage python package
