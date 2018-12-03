@@ -58,6 +58,20 @@ bool PluginLoader::unload() {
     return ret;
 }
 
+void PluginLoader::initSettings(QSettings* setting) {
+    try {
+        PluginMgr& mgr = PluginMgr::instance();
+        mgr.initSettings(setting);
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        const char* errInfo = e.what();
+        qWarning() << "PluginLoader::initSettings, exception catched,"
+            << "error info:" << errInfo;
+    }
+}
+
 bool PluginLoader::load() {
     try {
         // finally get m_interface
@@ -68,7 +82,7 @@ bool PluginLoader::load() {
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
-        qWarning() << "PluginLoader::load, exception catched on load plugin"
+        qWarning() << "PluginLoader::load, exception catched,"
             << "error info:" << errInfo;
     }
 

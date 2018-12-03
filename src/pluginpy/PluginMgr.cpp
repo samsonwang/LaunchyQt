@@ -45,14 +45,6 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     }
 
     if (!m_pluginObject.contains(pluginId)) {
-//         QString pluginFileName = pluginPath + "/" + pluginName + ".py";
-//         pluginFileName = QDir::toNativeSeparators(pluginFileName);
-//         std::string fileName = pluginFileName.toLocal8Bit().data();
-
-        // add dir to os path
-        // Make .py files in the working directory available by default
-        //module::import("sys").attr("path").cast<list>().append(".");
-        //std::string path = QDir::toNativeSeparators(pluginPath).toStdString();
         py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
         pathObj.append(qPrintable(QDir::toNativeSeparators(pluginPath)));
         py::object mod = py::module::import(qPrintable(pluginName));
@@ -90,6 +82,30 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
     m_pluginInterface.remove(pluginId);
 
     return true;
+}
+
+void PluginMgr::initSettings(QSettings* setting) {
+    if (!setting) {
+        qWarning() << "PluginMgr::initSettings, setting is nullptr";
+        return;
+    }
+    try {
+        // init qsetting
+        py::object launchyModule = py::module::import("launchy");
+        py::object launchyDict = launchyModule.attr("__dict__");
+        PyObject* settingPyObj = PyLong_FromVoidPtr(setting);
+        launchyDict["__settings"] = py::handle(settingPyObj);
+
+        // run setQSetting from launchy_util
+        py::object launchyUtilModule = py::module::import("launchy_util");
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        const char* errInfo = e.what();
+        qDebug() << "pluginpy::PluginMgr::initSettings,"
+            << "fail to init QSetting," << errInfo;
+    }
 }
 
 void PluginMgr::registerPlugin(py::object pluginClass) {
