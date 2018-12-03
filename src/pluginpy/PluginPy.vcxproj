@@ -136,11 +136,18 @@
     <PostBuildEvent>
       <Command>mkdir $(OutputPath)python 2&gt;nul
 copy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
-echo "copying target to launchy.pyd"</Command>
+echo "copying target to launchy.pyd"
+copy /y launchy_util.py $(OutputPath)python\launchy_util.py
+echo "copying launchy_util.py"</Command>
       <Message>
       </Message>
     </PostBuildEvent>
     <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>taskkill /im "Launchy.exe" /f 2&gt;nul 1&gt;nul
+echo try to kill running Launchy process
+exit 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -170,11 +177,18 @@ echo "copying target to launchy.pyd"</Command>
     <PostBuildEvent>
       <Command>mkdir $(OutputPath)python 2&gt;nul
 copy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
-echo "copying target to launchy.pyd"</Command>
+echo "copying target to launchy.pyd"
+copy /y launchy_util.py $(OutputPath)python\launchy_util.py
+echo "copying launchy_util.py"</Command>
       <Message>
       </Message>
     </PostBuildEvent>
     <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>taskkill /im "Launchy.exe" /f 2&gt;nul 1&gt;nul
+echo try to kill running Launchy process
+exit 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExportPyCatItem.cpp" />
