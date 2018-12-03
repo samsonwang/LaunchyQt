@@ -46,7 +46,7 @@ int OptionDialog::s_currentPlugin;
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
-      directoryItemDelegate(this, FileBrowser::Directory) {
+      m_directoryItemDelegate(this, FileBrowser::Directory) {
 
     m_pUi->setupUi(this);
 
@@ -55,7 +55,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint;
     setWindowFlags(windowsFlags);
 
-    curPlugin = -1;
+    m_curPlugin = -1;
 
     restoreGeometry(s_windowGeometry);
     m_pUi->tabWidget->setCurrentIndex(s_currentTab);
@@ -186,63 +186,9 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
-    // Load the directories and types
-    m_pUi->catDirectories->setItemDelegate(&directoryItemDelegate);
+    initCatalogWidget();
 
-    connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)), this, SLOT(dirRowChanged(int)));
-    connect(m_pUi->catDirectories, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(catDirDragEnter(QDragEnterEvent*)));
-    connect(m_pUi->catDirectories, SIGNAL(drop(QDropEvent*)), this, SLOT(catDirDrop(QDropEvent*)));
-    connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catDirItemChanged(QListWidgetItem*)));
-    connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)), this, SLOT(catDirPlusClicked(bool)));
-    connect(m_pUi->catDirMinus, SIGNAL(clicked(bool)), this, SLOT(catDirMinusClicked(bool)));
-    connect(m_pUi->catTypes, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catTypesItemChanged(QListWidgetItem*)));
-    connect(m_pUi->catTypesPlus, SIGNAL(clicked(bool)), this, SLOT(catTypesPlusClicked(bool)));
-    connect(m_pUi->catTypesMinus, SIGNAL(clicked(bool)), this, SLOT(catTypesMinusClicked(bool)));
-    connect(m_pUi->catCheckDirs, SIGNAL(stateChanged(int)), this, SLOT(catTypesDirChanged(int)));
-    connect(m_pUi->catCheckBinaries, SIGNAL(stateChanged(int)), this, SLOT(catTypesExeChanged(int)));
-    connect(m_pUi->catDepth, SIGNAL(valueChanged(int)), this, SLOT(catDepthChanged(int)));
-    connect(m_pUi->catRescan, SIGNAL(clicked(bool)), this, SLOT(catRescanClicked(bool)));
-    m_pUi->catProgress->setVisible(false);
-
-    memDirs = SettingsManager::instance().readCatalogDirectories();
-    for (int i = 0; i < memDirs.count(); ++i) {
-        m_pUi->catDirectories->addItem(memDirs[i].name);
-        QListWidgetItem* it = m_pUi->catDirectories->item(i);
-        it->setFlags(it->flags() | Qt::ItemIsEditable);
-    }
-
-    if (m_pUi->catDirectories->count() > 0)
-        m_pUi->catDirectories->setCurrentRow(0);
-
-
-
-    m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
-
-    connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
-    if (g_builder->isRunning()) {
-        catalogProgressUpdated(g_builder->getProgress());
-    }
-    m_pUi->catDirectories->installEventFilter(this);
-
-    // Load up the plugins		
-    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
-    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
-    g_pluginHandler->loadPlugins();
-    foreach(const PluginInfo& info, g_pluginHandler->getPlugins()) {
-        m_pUi->plugList->addItem(info.name);
-        QListWidgetItem* item = m_pUi->plugList->item(m_pUi->plugList->count()-1);
-        item->setData(Qt::UserRole, info.id);
-        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-        if (info.loaded)
-            item->setCheckState(Qt::Checked);
-        else
-            item->setCheckState(Qt::Unchecked);
-    }
-    m_pUi->plugList->sortItems();
-    if (m_pUi->plugList->count() > 0) {
-        m_pUi->plugList->setCurrentRow(s_currentPlugin);
-    }
+    initPluginsWidget();
 
     initUpdateWidget();
 
@@ -251,7 +197,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     // About
     m_pUi->aboutVer->setText(tr("This is Launchy %1").arg(LAUNCHY_VERSION_STRING));
 
-    needRescan = false;
+    m_needRescan = false;
 }
 
 
@@ -281,13 +227,16 @@ void OptionDialog::setVisible(bool visible) {
 
 
 void OptionDialog::accept() {
-    if (g_settings.isNull())
+    if (g_settings.isNull()) {
+        qWarning() << "OptionDialog::accept, fail to save setting.";
         return;
+    }
 
     // See if the new hotkey works, if not we're not leaving the dialog.
     QKeySequence hotkey(iMetaKeys[m_pUi->genModifierBox->currentIndex()] + iActionKeys[m_pUi->genKeyBox->currentIndex()]);
     if (!g_mainWidget->setHotkey(hotkey)) {
-        QMessageBox::warning(this, tr("Launchy"), tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
+        QMessageBox::warning(this, tr("Launchy"), 
+                             tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
         return;
     }
 
@@ -317,23 +266,19 @@ void OptionDialog::accept() {
     g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
     g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
 
-    saveUpdateSettings();
-
-    saveProxySettings();
-
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
     g_mainWidget->startUpdateTimer();
     g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
     g_mainWidget->loadOptions();
 
-    // Apply Directory Options
-    SettingsManager::instance().writeCatalogDirectories(memDirs);
+    saveCatalogSettings();
 
-    if (curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(curPlugin);
-        g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
-    }
+    savePluginsSettings();
+
+    saveUpdateSettings();
+
+    saveProxySettings();
 
     g_settings->sync();
 
@@ -354,19 +299,19 @@ void OptionDialog::accept() {
         show |= true;
     }
 
-    if (needRescan)
+    if (m_needRescan) {
         g_mainWidget->buildCatalog();
+    }
 
-    if (show)
+    if (show) {
         g_mainWidget->showLaunchy();
+    }
 }
 
 
-void OptionDialog::reject()
-{
-    if (curPlugin >= 0)
-    {
-        QListWidgetItem* item = m_pUi->plugList->item(curPlugin);
+void OptionDialog::reject() {
+    if (m_curPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), false);
     }
 
@@ -376,17 +321,16 @@ void OptionDialog::reject()
 
 void OptionDialog::tabChanged(int tab) {
     Q_UNUSED(tab)
-        // Redraw the current skin (necessary because of dialog resizing issues)
-        if (m_pUi->tabWidget->currentWidget()->objectName() == "Skins") {
-            skinChanged(m_pUi->skinList->currentItem()->text());
-        }
-        else if (m_pUi->tabWidget->currentWidget()->objectName() == "Plugins") {
-            // We've currently no way of checking if a plugin requires a catalog rescan
-            // so assume that we need one if the user has viewed the plugins tab
-            needRescan = true;
-        }
+    // Redraw the current skin (necessary because of dialog resizing issues)
+    if (m_pUi->tabWidget->currentWidget()->objectName() == "Skins") {
+        skinChanged(m_pUi->skinList->currentItem()->text());
+    }
+    else if (m_pUi->tabWidget->currentWidget()->objectName() == "Plugins") {
+        // We've currently no way of checking if a plugin requires a catalog rescan
+        // so assume that we need one if the user has viewed the plugins tab
+        m_needRescan = true;
+    }
 }
-
 
 void OptionDialog::autoUpdateCheckChanged(int state) {
     m_pUi->genUpdateMinutes->setEnabled(state > 0);
@@ -476,13 +420,13 @@ void OptionDialog::pluginChanged(int row) {
     }
 
     // Close any current plugin dialogs
-    if (curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(curPlugin);
+    if (m_curPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
     // Open the new plugin dialog
-    curPlugin = row;
+    m_curPlugin = row;
     s_currentPlugin = row;
     if (row >= 0) {
         loadPluginDialog(m_pUi->plugList->item(row));
@@ -508,8 +452,8 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* iz) {
         return;
 
     // Close any current plugin dialogs
-    if (curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(curPlugin);
+    if (m_curPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
@@ -591,9 +535,9 @@ void OptionDialog::catRescanClicked(bool val) {
     val = val; // Compiler warning
 
     // Apply Directory Options
-    SettingsManager::instance().writeCatalogDirectories(memDirs);
+    SettingsManager::instance().writeCatalogDirectories(m_memDirs);
 
-    needRescan = false;
+    m_needRescan = false;
     m_pUi->catRescan->setEnabled(false);
     g_mainWidget->buildCatalog();
 }
@@ -605,9 +549,9 @@ void OptionDialog::catTypesDirChanged(int state)
     int row = m_pUi->catDirectories->currentRow();
     if (row == -1)
         return;
-    memDirs[row].indexDirs = m_pUi->catCheckDirs->isChecked();
+    m_memDirs[row].indexDirs = m_pUi->catCheckDirs->isChecked();
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 
@@ -616,9 +560,9 @@ void OptionDialog::catTypesExeChanged(int state) {
     int row = m_pUi->catDirectories->currentRow();
     if (row == -1)
         return;
-    memDirs[row].indexExe = m_pUi->catCheckBinaries->isChecked();
+    m_memDirs[row].indexExe = m_pUi->catCheckBinaries->isChecked();
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 
@@ -629,9 +573,9 @@ void OptionDialog::catDirItemChanged(QListWidgetItem* item) {
     if (item != m_pUi->catDirectories->item(row))
         return;
 
-    memDirs[row].name = item->text();
+    m_memDirs[row].name = item->text();
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 
@@ -660,15 +604,15 @@ void OptionDialog::dirRowChanged(int row) {
         return;
 
     m_pUi->catTypes->clear();
-    foreach(QString str, memDirs[row].types) {
+    foreach(QString str, m_memDirs[row].types) {
         QListWidgetItem* item = new QListWidgetItem(str, m_pUi->catTypes);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
     }
-    m_pUi->catCheckDirs->setChecked(memDirs[row].indexDirs);
-    m_pUi->catCheckBinaries->setChecked(memDirs[row].indexExe);
-    m_pUi->catDepth->setValue(memDirs[row].depth);
+    m_pUi->catCheckDirs->setChecked(m_memDirs[row].indexDirs);
+    m_pUi->catCheckBinaries->setChecked(m_memDirs[row].indexExe);
+    m_pUi->catDepth->setValue(m_memDirs[row].depth);
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 
@@ -679,7 +623,7 @@ void OptionDialog::catDirMinusClicked(bool c) {
     delete m_pUi->catDirectories->takeItem(dirRow);
     m_pUi->catTypes->clear();
 
-    memDirs.removeAt(dirRow);
+    m_memDirs.removeAt(dirRow);
 
     if (dirRow >= m_pUi->catDirectories->count()
         && m_pUi->catDirectories->count() > 0) {
@@ -693,6 +637,80 @@ void OptionDialog::catDirPlusClicked(bool c) {
     addDirectory("", true);
 }
 
+void OptionDialog::initCatalogWidget() {
+    // Load the directories and types
+    m_pUi->catDirectories->setItemDelegate(&m_directoryItemDelegate);
+
+    connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)), this, SLOT(dirRowChanged(int)));
+    connect(m_pUi->catDirectories, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(catDirDragEnter(QDragEnterEvent*)));
+    connect(m_pUi->catDirectories, SIGNAL(drop(QDropEvent*)), this, SLOT(catDirDrop(QDropEvent*)));
+    connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catDirItemChanged(QListWidgetItem*)));
+    connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)), this, SLOT(catDirPlusClicked(bool)));
+    connect(m_pUi->catDirMinus, SIGNAL(clicked(bool)), this, SLOT(catDirMinusClicked(bool)));
+    connect(m_pUi->catTypes, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catTypesItemChanged(QListWidgetItem*)));
+    connect(m_pUi->catTypesPlus, SIGNAL(clicked(bool)), this, SLOT(catTypesPlusClicked(bool)));
+    connect(m_pUi->catTypesMinus, SIGNAL(clicked(bool)), this, SLOT(catTypesMinusClicked(bool)));
+    connect(m_pUi->catCheckDirs, SIGNAL(stateChanged(int)), this, SLOT(catTypesDirChanged(int)));
+    connect(m_pUi->catCheckBinaries, SIGNAL(stateChanged(int)), this, SLOT(catTypesExeChanged(int)));
+    connect(m_pUi->catDepth, SIGNAL(valueChanged(int)), this, SLOT(catDepthChanged(int)));
+    connect(m_pUi->catRescan, SIGNAL(clicked(bool)), this, SLOT(catRescanClicked(bool)));
+    m_pUi->catProgress->setVisible(false);
+
+    m_memDirs = SettingsManager::instance().readCatalogDirectories();
+    for (int i = 0; i < m_memDirs.count(); ++i) {
+        m_pUi->catDirectories->addItem(m_memDirs[i].name);
+        QListWidgetItem* it = m_pUi->catDirectories->item(i);
+        it->setFlags(it->flags() | Qt::ItemIsEditable);
+    }
+
+    if (m_pUi->catDirectories->count() > 0) {
+        m_pUi->catDirectories->setCurrentRow(0);
+    }
+
+    m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
+
+    connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+    connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    if (g_builder->isRunning()) {
+        catalogProgressUpdated(g_builder->getProgress());
+    }
+    m_pUi->catDirectories->installEventFilter(this);
+}
+
+void OptionDialog::saveCatalogSettings() {
+    // Apply Directory Options
+    SettingsManager::instance().writeCatalogDirectories(m_memDirs);
+}
+
+void OptionDialog::initPluginsWidget() {
+    // Load up the plugins		
+    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
+    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
+    g_pluginHandler->loadPlugins();
+    foreach(const PluginInfo& info, g_pluginHandler->getPlugins()) {
+        QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
+        m_pUi->plugList->addItem(item);
+        item->setData(Qt::UserRole, info.id);
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        if (info.loaded) {
+            item->setCheckState(Qt::Checked);
+        }
+        else {
+            item->setCheckState(Qt::Unchecked);
+        }
+    }
+    m_pUi->plugList->sortItems();
+    if (m_pUi->plugList->count() > s_currentPlugin) {
+        m_pUi->plugList->setCurrentRow(s_currentPlugin);
+    }
+}
+
+void OptionDialog::savePluginsSettings() {
+    if (m_curPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
+        g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
+    }
+}
 
 void OptionDialog::initUpdateWidget() {
     connect(m_pUi->gbCheckUpdate, &QGroupBox::toggled, this, &OptionDialog::onCheckUpdateToggled);
@@ -794,7 +812,7 @@ void OptionDialog::saveProxySettings() {
 void OptionDialog::addDirectory(const QString& directory, bool edit) {
     QString nativeDir = QDir::toNativeSeparators(directory);
     Directory dir(nativeDir);
-    memDirs.append(dir);
+    m_memDirs.append(dir);
 
     m_pUi->catTypes->clear();
     QListWidgetItem* item = new QListWidgetItem(nativeDir, m_pUi->catDirectories);
@@ -805,7 +823,7 @@ void OptionDialog::addDirectory(const QString& directory, bool edit) {
         m_pUi->catDirectories->editItem(item);
     }
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 
@@ -819,9 +837,9 @@ void OptionDialog::catTypesItemChanged(QListWidgetItem* item) {
     if (typesRow == -1)
         return;
 
-    memDirs[row].types[typesRow] = m_pUi->catTypes->item(typesRow)->text();
+    m_memDirs[row].types[typesRow] = m_pUi->catTypes->item(typesRow)->text();
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 
@@ -831,13 +849,13 @@ void OptionDialog::catTypesPlusClicked(bool c) {
     if (row == -1)
         return;
 
-    memDirs[row].types << "";
+    m_memDirs[row].types << "";
     QListWidgetItem* item = new QListWidgetItem(m_pUi->catTypes);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     m_pUi->catTypes->setCurrentItem(item);
     m_pUi->catTypes->editItem(item);
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 void OptionDialog::catTypesMinusClicked(bool c) {
@@ -850,22 +868,22 @@ void OptionDialog::catTypesMinusClicked(bool c) {
     if (typesRow == -1)
         return;
 
-    memDirs[dirRow].types.removeAt(typesRow);
+    m_memDirs[dirRow].types.removeAt(typesRow);
     delete m_pUi->catTypes->takeItem(typesRow);
 
     if (typesRow >= m_pUi->catTypes->count()
         && m_pUi->catTypes->count() > 0)
         m_pUi->catTypes->setCurrentRow(m_pUi->catTypes->count() - 1);
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 void OptionDialog::catDepthChanged(int d) {
     int row = m_pUi->catDirectories->currentRow();
     if (row != -1)
-        memDirs[row].depth = d;
+        m_memDirs[row].depth = d;
 
-    needRescan = true;
+    m_needRescan = true;
 }
 
 }
