@@ -104,5 +104,11 @@ class CalcyPy(launchy.Plugin):
     def launchyHide(self):
         pass
 
+    def doDialog(self):
+        pass
+
+    def endDialog(self):
+        pass
+
 def getPlugin():
     return CalcyPy
