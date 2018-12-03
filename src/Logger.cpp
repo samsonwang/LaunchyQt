@@ -40,7 +40,7 @@ void Logger::setLogLevel(QtMsgType type) {
             tempDir.mkpath(".");
         }
         QString logFileName = tempPath + QString("/launchy.log");
-        s_logFile = fopen(logFileName.toUtf8(), "a");
+        s_logFile = fopen(logFileName.toUtf8(), "w");
         if (s_logFile) {
             qInstallMessageHandler(Logger::messageHandler);
         }
