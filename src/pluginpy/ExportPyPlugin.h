@@ -134,12 +134,40 @@ public:
     }
 
     void* doDialog(void* parentWidget) override {
+        PyObject* pw = PyLong_FromVoidPtr(parentWidget);
+        auto pwo = py::handle(pw);
+        py::object result;
+
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function overload = pybind11::get_overload(static_cast<const Plugin *>(this), "doDialog");
+        if (overload) {
+            auto o = overload(pwo);
+            if (pybind11::detail::cast_is_temporary_value_reference<py::object>::value) {
+                static pybind11::detail::overload_caster_t<py::object> caster;
+                result = pybind11::detail::cast_ref<py::object>(std::move(o), caster);
+            }
+            else {
+                result = pybind11::detail::cast_safe<py::object>(std::move(o));
+            }
+        }
+        
+        PyObject* resultPtr = result.ptr();
+        const bool isLong = PyObject_IsInstance(resultPtr, (PyObject*)&PyLong_Type);
+        if (isLong) {
+            return PyLong_AsVoidPtr(resultPtr);
+        }
+        else {
+            return NULL;
+        }
+
+        /*
         PYBIND11_OVERLOAD_PURE(
             void*,
             Plugin,
             doDialog,
             parentWidget
         );
+        */
     }
 
     void endDialog(bool accept) override {
