@@ -32,6 +32,8 @@ public:
     launchy::PluginInterface* loadPlugin(const QString& pluginName, const QString& pluginPath);
     bool unloadPlugin(uint pluginId);
 
+    void initSettings(QSettings* setting);
+
     void registerPlugin(py::object pluginClass);
 
 private:

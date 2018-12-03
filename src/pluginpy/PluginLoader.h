@@ -32,6 +32,8 @@ public:
 
     bool unload();
 
+    static void initSettings(QSettings* setting);
+
 private:
     void setFileName(const QString& fileName);
     bool load();
