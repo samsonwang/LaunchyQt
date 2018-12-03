@@ -1569,16 +1569,22 @@
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
                <widget class="QCheckBox" name="cbCheckUpdateRepeat">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="text">
                  <string>Every</string>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QSpinBox" name="sbCheckUpdateInterval">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>60</width>
@@ -1668,7 +1674,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="leServerPort">
+               <widget class="QLineEdit" name="leProxyServerPort">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -1684,6 +1690,9 @@
             </item>
             <item row="2" column="1">
              <widget class="QCheckBox" name="cbProxyRequiresPassword">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Proxy server requires password</string>
               </property>

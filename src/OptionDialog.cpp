@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CatalogBuilder.h"
 #include "OptionItem.h"
 
+// to store QNetworkProxy::ProxyType in QVariant
+Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
 
 namespace launchy {
 
@@ -70,7 +72,6 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->genVCenter->setChecked((center & 2) != 0);
 
     m_pUi->genShiftDrag->setChecked(g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool());
-//    m_pUi->genUpdateCheck->setChecked(g_settings->value("GenOps/updatecheck", true).toBool());
     m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
     connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
 
@@ -243,17 +244,12 @@ OptionDialog::OptionDialog(QWidget * parent)
         m_pUi->plugList->setCurrentRow(s_currentPlugin);
     }
 
-    // Update
-    m_pUi->gbCheckUpdate->setChecked(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP, OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool());
-    m_pUi->sbCheckUpdateDelay->setValue(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt());
-    m_pUi->cbCheckUpdateRepeat->setChecked(g_settings->value(OPTION_UPDATE_CHECK_REPEAT, OPTION_UPDATE_CHECK_REPEAT_DEFAULT).toBool());
-    m_pUi->sbCheckUpdateInterval->setValue(g_settings->value(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT).toInt());
+    initUpdateWidget();
 
-    // Proxy
-    
+    initProxyWidget();
+
     // About
     m_pUi->aboutVer->setText(tr("This is Launchy %1").arg(LAUNCHY_VERSION_STRING));
-
 
     needRescan = false;
 }
@@ -321,17 +317,9 @@ void OptionDialog::accept() {
     g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
     g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
 
+    saveUpdateSettings();
 
-    // Update
-    g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP, m_pUi->gbCheckUpdate->isChecked());
-    g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, m_pUi->sbCheckUpdateDelay->value());
-    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT, m_pUi->cbCheckUpdateRepeat->isChecked());
-    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
-
-
-    // Proxy
-
-
+    saveProxySettings();
 
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
@@ -554,6 +542,34 @@ void OptionDialog::logLevelChanged(int index) {
     Logger::setLogLevel(index);
 }
 
+void OptionDialog::onCheckUpdateToggled(bool checked) {
+    if (checked) {
+        m_pUi->sbCheckUpdateInterval->setEnabled(m_pUi->cbCheckUpdateRepeat->isChecked());
+    }
+    else {
+        m_pUi->sbCheckUpdateInterval->setEnabled(false);
+    }
+}
+
+void OptionDialog::onCheckUpdateRepeatToggled(bool checked) {
+    m_pUi->sbCheckUpdateInterval->setEnabled(checked);
+}
+
+void OptionDialog::onProxyTypeChanged(int index) {
+    bool enable = index > 1;
+    m_pUi->leProxyServerIp->setEnabled(enable);
+    m_pUi->leProxyServerPort->setEnabled(enable);
+    m_pUi->cbProxyRequiresPassword->setEnabled(enable);
+    bool requirePassword = m_pUi->cbProxyRequiresPassword->isChecked();
+    m_pUi->leProxyUsername->setEnabled(enable && requirePassword);
+    m_pUi->leProxyPassword->setEnabled(enable && requirePassword);
+}
+
+void OptionDialog::onProxyRequiresPasswordToggled(bool checked) {
+    m_pUi->leProxyUsername->setEnabled(checked);
+    m_pUi->leProxyPassword->setEnabled(checked);
+}
+
 void OptionDialog::catalogProgressUpdated(int value) {
     m_pUi->catSize->setVisible(false);
     m_pUi->catProgress->setValue(value);
@@ -675,6 +691,104 @@ void OptionDialog::catDirMinusClicked(bool c) {
 void OptionDialog::catDirPlusClicked(bool c) {
     Q_UNUSED(c)
     addDirectory("", true);
+}
+
+
+void OptionDialog::initUpdateWidget() {
+    connect(m_pUi->gbCheckUpdate, &QGroupBox::toggled, this, &OptionDialog::onCheckUpdateToggled);
+    connect(m_pUi->cbCheckUpdateRepeat, &QCheckBox::toggled, this, &OptionDialog::onCheckUpdateRepeatToggled);
+
+    // Update
+    m_pUi->gbCheckUpdate->setChecked(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP,
+                                                       OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool());
+    m_pUi->sbCheckUpdateDelay->setValue(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY,
+                                                          OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt());
+    m_pUi->cbCheckUpdateRepeat->setChecked(g_settings->value(OPTION_UPDATE_CHECK_REPEAT,
+                                                             OPTION_UPDATE_CHECK_REPEAT_DEFAULT).toBool());
+    m_pUi->sbCheckUpdateInterval->setValue(g_settings->value(OPTION_UPDATE_CHECK_REPEAT_INTERVAL,
+                                                             OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT).toInt());
+
+    bool enable = m_pUi->gbCheckUpdate->isChecked() && m_pUi->cbCheckUpdateRepeat->isChecked();
+    m_pUi->sbCheckUpdateInterval->setEnabled(enable);
+
+}
+
+void OptionDialog::saveUpdateSettings() {
+    // Update
+    g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP, m_pUi->gbCheckUpdate->isChecked());
+    g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, m_pUi->sbCheckUpdateDelay->value());
+    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT, m_pUi->cbCheckUpdateRepeat->isChecked());
+    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
+}
+
+void OptionDialog::initProxyWidget() {
+
+    m_pUi->cbProxyType->addItem(tr("No Proxy"), QNetworkProxy::NoProxy);
+    m_pUi->cbProxyType->addItem(tr("System Proxy"), QNetworkProxy::DefaultProxy);
+    m_pUi->cbProxyType->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
+    m_pUi->cbProxyType->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
+
+    connect(m_pUi->cbProxyType, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(onProxyTypeChanged(int)));
+    connect(m_pUi->cbProxyRequiresPassword, SIGNAL(toggled(bool)),
+            this, SLOT(onProxyRequiresPasswordToggled(bool)));
+
+    // Proxy
+    QNetworkProxy::ProxyType proxyType
+        = g_settings->value(OPTION_PROXY_TYPE,
+                            OPTION_PROXY_TYPE_DEFAULT).value<QNetworkProxy::ProxyType>();
+
+    // convert proxy type to index in combobox
+    int proxyIndex = 0;
+    switch (proxyType) {
+    case QNetworkProxy::NoProxy:
+        proxyIndex = 0;
+        break;
+    case QNetworkProxy::DefaultProxy:
+        proxyIndex = 1;
+        break;
+    case QNetworkProxy::HttpProxy:
+        proxyIndex = 2;
+        break;
+    case QNetworkProxy::Socks5Proxy:
+        proxyIndex = 3;
+        break;
+    default:
+        break;
+    }
+    m_pUi->cbProxyType->setCurrentIndex(proxyIndex);
+
+    if (proxyType == QNetworkProxy::NoProxy || proxyType == QNetworkProxy::DefaultProxy) {
+        return;
+    }
+
+    m_pUi->leProxyServerIp->setText(g_settings->value(OPTION_PROXY_SERVER_IP,
+                                                      OPTION_PROXY_SERVER_IP_DEFAULT).toString());
+    
+    m_pUi->leProxyServerPort->setText(g_settings->value(OPTION_PROXY_SERVER_PORT,
+                                                        OPTION_PROXY_SERVER_PORT_DEFAULT).toString());
+
+    m_pUi->cbProxyRequiresPassword->setChecked(g_settings->value(OPTION_PROXY_REQUIRE_PASSWORD,
+                                                                 OPTION_PROXY_REQUIRE_PASSWORD_DEFAULT).toBool());
+
+    if (m_pUi->cbProxyRequiresPassword->isChecked()) {
+        m_pUi->leProxyUsername->setText(g_settings->value(OPTION_PROXY_USERNAME,
+                                                          OPTION_PROXY_USERNAME_DEFAULT).toString());
+        m_pUi->leProxyPassword->setText(g_settings->value(OPTION_PROXY_PASSWORD,
+                                                          OPTION_PROXY_PASSWORD_DEFAULT).toString());
+    }
+}
+
+
+void OptionDialog::saveProxySettings() {
+    // Proxy
+    QNetworkProxy::ProxyType proxyType = m_pUi->cbProxyType->currentData().value<QNetworkProxy::ProxyType>();
+    g_settings->setValue(OPTION_PROXY_TYPE, proxyType);
+    g_settings->setValue(OPTION_PROXY_SERVER_IP, m_pUi->leProxyServerIp->text());
+    g_settings->setValue(OPTION_PROXY_SERVER_PORT, m_pUi->leProxyServerPort->text());
+    g_settings->setValue(OPTION_PROXY_REQUIRE_PASSWORD, m_pUi->cbProxyRequiresPassword->isChecked());
+    g_settings->setValue(OPTION_PROXY_USERNAME, m_pUi->leProxyUsername->text());
+    g_settings->setValue(OPTION_PROXY_PASSWORD, m_pUi->leProxyPassword->text());
 }
 
 void OptionDialog::addDirectory(const QString& directory, bool edit) {

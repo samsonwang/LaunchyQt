@@ -39,6 +39,19 @@ public:
 public slots:
     virtual void accept();
     virtual void reject();
+
+private:
+    void initUpdateWidget();
+    void saveUpdateSettings();
+
+    void initProxyWidget();
+    void saveProxySettings();
+
+    void addDirectory(const QString& directory, bool edit = false);
+    void loadPluginDialog(QListWidgetItem* item);
+    // void connectCatalogBuilderEvents();
+
+private slots:
     void autoUpdateCheckChanged(int state);
     void tabChanged(int tab);
     void skinChanged(const QString& newSkin);
@@ -60,11 +73,12 @@ public slots:
     void pluginChanged(int row);
     void pluginItemChanged(QListWidgetItem* state);
     void logLevelChanged(int index);
-
-private:
-    void addDirectory(const QString& directory, bool edit = false);
-    void loadPluginDialog(QListWidgetItem* item);
-    // void connectCatalogBuilderEvents();
+    // update
+    void onCheckUpdateToggled(bool checked);
+    void onCheckUpdateRepeatToggled(bool checked);
+    // proxy
+    void onProxyTypeChanged(int index);
+    void onProxyRequiresPasswordToggled(bool checked);
 
 private:
     Ui::OptionDialog* m_pUi;
