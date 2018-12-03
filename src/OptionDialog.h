@@ -39,12 +39,35 @@ public:
 public slots:
     virtual void accept();
     virtual void reject();
+
+private:
+    // catalog
+    void initCatalogWidget();
+    void saveCatalogSettings();
+    // plugins
+    void initPluginsWidget();
+    void savePluginsSettings();
+    // update
+    void initUpdateWidget();
+    void saveUpdateSettings();
+    // proxy
+    void initProxyWidget();
+    void saveProxySettings();
+
+    void addDirectory(const QString& directory, bool edit = false);
+    void loadPluginDialog(QListWidgetItem* item);
+    // void connectCatalogBuilderEvents();
+
+private slots:
+    void logLevelChanged(int index);
     void autoUpdateCheckChanged(int state);
     void tabChanged(int tab);
+    // skins
     void skinChanged(const QString& newSkin);
+    // catalog
     void dirRowChanged(int row);
     void catDirItemChanged(QListWidgetItem* item);
-    void catDirDragEnter(QDragEnterEvent *event);
+    void catDirDragEnter(QDragEnterEvent* event);
     void catDirDrop(QDropEvent *event);
     void catDirPlusClicked(bool c);
     void catDirMinusClicked(bool c);
@@ -57,29 +80,30 @@ public slots:
     void catalogProgressUpdated(int);
     void catalogBuilt();
     void catRescanClicked(bool);
+    // plugins
     void pluginChanged(int row);
     void pluginItemChanged(QListWidgetItem* state);
-    void logLevelChanged(int index);
-
-private:
-    void addDirectory(const QString& directory, bool edit = false);
-    void loadPluginDialog(QListWidgetItem* item);
-    // void connectCatalogBuilderEvents();
+    // update
+    void onCheckUpdateToggled(bool checked);
+    void onCheckUpdateRepeatToggled(bool checked);
+    // proxy
+    void onProxyTypeChanged(int index);
+    void onProxyRequiresPasswordToggled(bool checked);
 
 private:
     Ui::OptionDialog* m_pUi;
 
-    FileBrowserDelegate directoryItemDelegate;
-    int curPlugin;
-    bool needRescan;
+    FileBrowserDelegate m_directoryItemDelegate;
+    int m_curPlugin;
+    bool m_needRescan;
     QStringList metaKeys;
     QStringList actionKeys;
     QList<int> iMetaKeys;
     QList<int> iActionKeys;
-    QList<Directory> memDirs;
-    QList<QPair<QString, uint>> pluginNames;
-    QVBoxLayout* pluginLayout;
-    QString lastDir;
+    QList<Directory> m_memDirs;
+    //QList<QPair<QString, uint>> pluginNames;
+    //QVBoxLayout* pluginLayout;
+    //QString lastDir;
 
     static QByteArray s_windowGeometry;
     static int s_currentTab;

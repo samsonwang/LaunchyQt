@@ -98,4 +98,37 @@ extern const int        OPSTION_VERSION_DEFAULT;
 
 extern const char*      OPSTION_POS;
 extern const QPoint     OPSTION_POS_DEFAULT;
+
+// update
+extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP;
+extern const bool       OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP_DELAY;
+extern const int        OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_REPEAT;
+extern const bool       OPTION_UPDATE_CHECK_REPEAT_DEFAULT;
+
+extern const char*      OPTION_UPDATE_CHECK_REPEAT_INTERVAL;
+extern const int        OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT;
+
+// proxy
+extern const char*      OPTION_PROXY_TYPE;
+extern const int        OPTION_PROXY_TYPE_DEFAULT;
+
+extern const char*      OPTION_PROXY_SERVER_IP;
+extern const char*      OPTION_PROXY_SERVER_IP_DEFAULT;
+
+extern const char*      OPTION_PROXY_SERVER_PORT;
+extern const char*      OPTION_PROXY_SERVER_PORT_DEFAULT;
+
+extern const char*      OPTION_PROXY_REQUIRE_PASSWORD;
+extern const bool       OPTION_PROXY_REQUIRE_PASSWORD_DEFAULT;
+
+extern const char*      OPTION_PROXY_USERNAME;
+extern const char*      OPTION_PROXY_USERNAME_DEFAULT;
+
+extern const char*      OPTION_PROXY_PASSWORD;
+extern const char*      OPTION_PROXY_PASSWORD_DEFAULT;
+
 }
