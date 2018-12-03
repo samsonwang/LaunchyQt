@@ -140,6 +140,13 @@ class WebSearchPy(launchy.Plugin):
     def launchyHide(self):
         pass
 
+    def doDialog(self):
+        pass
+
+    def endDialog(self):
+        pass
+
+
     @classmethod
     def encodeQuery(cls, query):
         return urllib.parse.quote(query.encode("utf8"))
