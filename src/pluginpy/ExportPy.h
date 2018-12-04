@@ -31,6 +31,7 @@ unsigned int hash(const std::string& str);
 
 std::string getAppPath(bool toNative = true);
 
+void runProgram(const std::string& file, const std::string& args);
 
 // for debu and test use
 void objectReceiver(py::object obj);

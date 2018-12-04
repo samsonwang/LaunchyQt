@@ -32,6 +32,7 @@ void ExportCatItem(const py::module& m);
 class CatItem {
 public:
     CatItem() = default;
+    CatItem(const launchy::CatItem& item);
 
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
@@ -47,6 +48,10 @@ public:
             const std::string& iconPath);
 
     const launchy::CatItem& getData() const;
+
+    std::string fullPath() const;
+    std::string shortName() const;
+    std::string iconPath() const;
 
 private:
     launchy::CatItem m_data;

@@ -34,16 +34,33 @@ CatItem::CatItem(const std::string& full,
                               QString::fromStdString(iconPath));
 }
 
+CatItem::CatItem(const launchy::CatItem& item)
+    : m_data(item) {
+
+}
+
 const launchy::CatItem& CatItem::getData() const {
     return m_data;
 }
 
+std::string CatItem::fullPath() const {
+    return m_data.fullPath.toStdString();
+}
+
+std::string CatItem::shortName() const {
+    return m_data.shortName.toStdString();
+}
+
+std::string CatItem::iconPath() const {
+    return m_data.iconPath.toStdString();
+}
+
 void ExportCatItem(const py::module& m) {
     py::class_<exportpy::CatItem>(m, "CatItem")
-        .def(py::init<const std::string&, const std::string&, unsigned int, const std::string&>());
-//         .def_readwrite("fullPath", &exportpy::CatItem::fullPath)
-//         .def_readwrite("shortName", &exportpy::CatItem::shortName)
-//         .def_readwrite("icon", &exportpy::CatItem::icon);
+        .def(py::init<const std::string&, const std::string&, unsigned int, const std::string&>())
+        .def("fullPath", &exportpy::CatItem::fullPath)
+        .def("shortName", &exportpy::CatItem::shortName)
+        .def("iconPath", &exportpy::CatItem::iconPath);
 
     py::class_<exportpy::CatItemList>(m, "CatItemList")
         //.def(py::init<>())
