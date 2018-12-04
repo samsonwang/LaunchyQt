@@ -103,7 +103,7 @@ void PluginMgr::initSettings(QSettings* setting) {
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
-        qDebug() << "pluginpy::PluginMgr::initSettings,"
+        qWarning() << "pluginpy::PluginMgr::initSettings,"
             << "fail to init QSetting," << errInfo;
     }
 }
