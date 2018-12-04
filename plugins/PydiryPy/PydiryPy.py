@@ -57,8 +57,11 @@ class PyDiry(launchy.Plugin):
     def getName(self):
         return "PyDiry"
 
-#    def getIcon(self):
-#        return self.icon
+    def setPath(self, path):
+        self.path = path
+
+    def getIcon(self):
+        return self.path + "/pydiry.ico"
 
     def getLabels(self, inputDataList):
         pass
@@ -95,7 +98,7 @@ class PyDiry(launchy.Plugin):
 
     def launchItem(self, inputDataList, catItemOrig):
         catItem = inputDataList[-1].getTopResult()
-        if catItem.fullPath.endswith(".pydiry"):
+        if catItem.fullPath().endswith(".pydiry"):
             # Launch the directory itself
             try:
                 path = self.dirs[catItem.shortName]
@@ -106,7 +109,7 @@ class PyDiry(launchy.Plugin):
                 pass
         else:
             # Launchy a file or directory
-            launchy.runProgram( catItem.fullPath, "" )
+            launchy.runProgram(catItem.fullPath(), "" )
 
     def hasDialog(self):
         return True
@@ -161,12 +164,6 @@ class PyDiry(launchy.Plugin):
             return os.path.split(itemPath)[1]
         except:
             return itemPath
-
-    def setPath(self, path):
-        self.path = path
-
-    def getIcon(self):
-        return self.path + "/pydiry.ico"
 
     def launchyShow(self):
         pass
