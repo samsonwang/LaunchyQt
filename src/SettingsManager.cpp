@@ -29,6 +29,9 @@ static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";
 static const char* historyName = "/history.db";
 
+// for QNetworkProxy::ProxyType in QVariant
+Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
+
 namespace launchy {
 SettingsManager::SettingsManager()
     : m_portable(false) {
@@ -59,6 +62,36 @@ void SettingsManager::load() {
         << "(build" << __DATE__ << __TIME__ << ")";
     qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
+
+    // load proxy
+    QNetworkProxy::ProxyType proxyType
+        = g_settings->value(OPTION_PROXY_TYPE,
+                            OPTION_PROXY_TYPE_DEFAULT).value<QNetworkProxy::ProxyType>();
+
+    QString serverName = g_settings->value(OPTION_PROXY_SERVER_NAME,
+                                           OPTION_PROXY_SERVER_NAME_DEFAULT).toString();
+    QString serverPort = g_settings->value(OPTION_PROXY_SERVER_PORT,
+                                           OPTION_PROXY_SERVER_PORT_DEFAULT).toString();
+    bool requirePassword = g_settings->value(OPTION_PROXY_REQUIRE_PASSWORD,
+                                             OPTION_PROXY_REQUIRE_PASSWORD_DEFAULT).toBool();
+
+
+    QNetworkProxy proxy;
+    proxy.setType(proxyType);
+    proxy.setHostName(serverName);
+    proxy.setPort(serverPort.toUInt());
+    if (requirePassword) {
+        QString username = g_settings->value(OPTION_PROXY_USERNAME,
+                                             OPTION_PROXY_USERNAME_DEFAULT).toString();
+        QString password = g_settings->value(OPTION_PROXY_PASSWORD,
+                                             OPTION_PROXY_PASSWORD_DEFAULT).toString();
+        proxy.setUser(username);
+        proxy.setPassword(password);
+    }
+
+    QNetworkProxy::setApplicationProxy(proxy);
+
+
 }
 
 bool SettingsManager::isPortable() const {

@@ -33,8 +33,7 @@ public:
 
 private:
     UpdateChecker();
-    UpdateChecker(const UpdateChecker&) = delete;
-    UpdateChecker& operator= (const UpdateChecker&) = delete;
+    Q_DISABLE_COPY(UpdateChecker)
 
 private slots:
     void checkUpdate();
