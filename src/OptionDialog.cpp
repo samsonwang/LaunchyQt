@@ -40,14 +40,16 @@ namespace launchy {
 // check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
 
-QByteArray OptionDialog::s_windowGeometry;
-int OptionDialog::s_currentTab;
-int OptionDialog::s_currentPlugin;
+// QByteArray OptionDialog::s_windowGeometry;
+// int OptionDialog::s_currentTab;
+//int OptionDialog::s_currentPlugin;
 
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
-      m_directoryItemDelegate(this, FileBrowser::Directory) {
+      m_directoryItemDelegate(this, FileBrowser::Directory),
+      m_currentPlugin(-1),
+      m_needRescan(false) {
 
     m_pUi->setupUi(this);
 
@@ -56,10 +58,8 @@ OptionDialog::OptionDialog(QWidget * parent)
     windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint;
     setWindowFlags(windowsFlags);
 
-    m_curPlugin = -1;
-
-    restoreGeometry(s_windowGeometry);
-    m_pUi->tabWidget->setCurrentIndex(s_currentTab);
+    //restoreGeometry(s_windowGeometry);
+    //m_pUi->tabWidget->setCurrentIndex(s_currentTab);
 
     // Load General Options		
     m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
@@ -198,7 +198,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     // About
     m_pUi->aboutVer->setText(tr("This is Launchy %1").arg(LAUNCHY_VERSION_STRING));
 
-    m_needRescan = false;
+    //m_needRescan = false;
 }
 
 
@@ -208,8 +208,8 @@ OptionDialog::~OptionDialog() {
         disconnect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     }
 
-    s_currentTab = m_pUi->tabWidget->currentIndex();
-    s_windowGeometry = saveGeometry();
+//     s_currentTab = m_pUi->tabWidget->currentIndex();
+//     s_windowGeometry = saveGeometry();
 
     delete m_pUi;
     m_pUi = nullptr;
@@ -311,14 +311,28 @@ void OptionDialog::accept() {
 
 
 void OptionDialog::reject() {
-    if (m_curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
+    if (m_currentPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), false);
     }
 
     QDialog::reject();
 }
 
+void OptionDialog::showEvent(QShowEvent* event) {
+
+    if (m_currentPlugin < 0 && m_pUi->plugList->count() > 0) {
+        m_pUi->plugList->setCurrentRow(0);
+    }
+
+    if (m_currentPlugin >= 0
+        && m_currentPlugin < m_pUi->plugList->count()) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
+        loadPluginDialog(item);
+    }
+
+    QDialog::showEvent(event);
+}
 
 void OptionDialog::tabChanged(int tab) {
     Q_UNUSED(tab)
@@ -421,39 +435,42 @@ void OptionDialog::pluginChanged(int row) {
     }
 
     // Close any current plugin dialogs
-    if (m_curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
+    if (m_currentPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
     // Open the new plugin dialog
-    m_curPlugin = row;
-    s_currentPlugin = row;
+    m_currentPlugin = row;
+    //s_currentPlugin = row;
     if (row >= 0) {
         loadPluginDialog(m_pUi->plugList->item(row));
     }
 }
 
-
 void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     QWidget* win = g_pluginHandler->doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
     if (win != NULL) {
-        if (m_pUi->plugBox->layout() != NULL)
+        if (m_pUi->plugBox->layout() != NULL) {
             m_pUi->plugBox->layout()->addWidget(win);
+        }
+
         win->show();
-        if (win->windowTitle() != "Form")
+        if (win->windowTitle() != "Form") {
             m_pUi->plugBox->setTitle(win->windowTitle());
+        }
     }
 }
 
-void OptionDialog::pluginItemChanged(QListWidgetItem* iz) {
+void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     int row = m_pUi->plugList->currentRow();
-    if (row == -1)
+    if (row == -1) {
         return;
+    }
 
     // Close any current plugin dialogs
-    if (m_curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
+    if (m_currentPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
@@ -476,8 +493,8 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* iz) {
     g_pluginHandler->loadPlugins();
 
     // If enabled, reload the dialog
-    if (iz->checkState() == Qt::Checked) {
-        loadPluginDialog(iz);
+    if (item->checkState() == Qt::Checked) {
+        loadPluginDialog(item);
     }
 }
 
@@ -665,9 +682,7 @@ void OptionDialog::saveCatalogSettings() {
 }
 
 void OptionDialog::initPluginsWidget() {
-    // Load up the plugins		
-    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
-    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
+    // Load up the plugins
     g_pluginHandler->loadPlugins();
     foreach(const PluginInfo& info, g_pluginHandler->getPlugins()) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
@@ -682,14 +697,14 @@ void OptionDialog::initPluginsWidget() {
         }
     }
     m_pUi->plugList->sortItems();
-    if (m_pUi->plugList->count() > s_currentPlugin) {
-        m_pUi->plugList->setCurrentRow(s_currentPlugin);
-    }
+
+    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
+    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
 }
 
 void OptionDialog::savePluginsSettings() {
-    if (m_curPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_curPlugin);
+    if (m_currentPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
         g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 }

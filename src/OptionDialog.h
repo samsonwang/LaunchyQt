@@ -40,6 +40,9 @@ public slots:
     virtual void accept();
     virtual void reject();
 
+protected:
+    virtual void showEvent(QShowEvent* event);
+
 private:
     // catalog
     void initCatalogWidget();
@@ -82,7 +85,7 @@ private slots:
     void catRescanClicked(bool);
     // plugins
     void pluginChanged(int row);
-    void pluginItemChanged(QListWidgetItem* state);
+    void pluginItemChanged(QListWidgetItem* item);
     // proxy
     void onProxyTypeChanged(int index);
     void onProxyRequiresPasswordToggled(bool checked);
@@ -91,19 +94,20 @@ private:
     Ui::OptionDialog* m_pUi;
 
     FileBrowserDelegate m_directoryItemDelegate;
-    int m_curPlugin;
+    int m_currentPlugin;
     bool m_needRescan;
     QStringList metaKeys;
     QStringList actionKeys;
     QList<int> iMetaKeys;
     QList<int> iActionKeys;
     QList<Directory> m_memDirs;
+
     //QList<QPair<QString, uint>> pluginNames;
     //QVBoxLayout* pluginLayout;
     //QString lastDir;
 
-    static QByteArray s_windowGeometry;
-    static int s_currentTab;
-    static int s_currentPlugin;
+    //static QByteArray s_windowGeometry;
+    //static int s_currentTab;
+    //static int s_currentPlugin;
 };
 }
