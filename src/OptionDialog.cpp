@@ -446,7 +446,6 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     }
 }
 
-
 void OptionDialog::pluginItemChanged(QListWidgetItem* iz) {
     int row = m_pUi->plugList->currentRow();
     if (row == -1)
@@ -487,19 +486,6 @@ void OptionDialog::logLevelChanged(int index) {
     Logger::setLogLevel(index);
 }
 
-void OptionDialog::onCheckUpdateToggled(bool checked) {
-    if (checked) {
-        m_pUi->sbCheckUpdateInterval->setEnabled(m_pUi->cbCheckUpdateRepeat->isChecked());
-    }
-    else {
-        m_pUi->sbCheckUpdateInterval->setEnabled(false);
-    }
-}
-
-void OptionDialog::onCheckUpdateRepeatToggled(bool checked) {
-    m_pUi->sbCheckUpdateInterval->setEnabled(checked);
-}
-
 void OptionDialog::onProxyTypeChanged(int index) {
     bool enable = index > 1;
     m_pUi->leProxyServerName->setEnabled(enable);
@@ -531,10 +517,8 @@ void OptionDialog::catalogBuilt() {
     m_pUi->catSize->setVisible(true);
 }
 
-
 void OptionDialog::catRescanClicked(bool val) {
-    val = val; // Compiler warning
-
+    Q_UNUSED(val)
     // Apply Directory Options
     SettingsManager::instance().writeCatalogDirectories(m_memDirs);
 
@@ -555,7 +539,6 @@ void OptionDialog::catTypesDirChanged(int state)
     m_needRescan = true;
 }
 
-
 void OptionDialog::catTypesExeChanged(int state) {
     Q_UNUSED(state)
     int row = m_pUi->catDirectories->currentRow();
@@ -565,7 +548,6 @@ void OptionDialog::catTypesExeChanged(int state) {
 
     m_needRescan = true;
 }
-
 
 void OptionDialog::catDirItemChanged(QListWidgetItem* item) {
     int row = m_pUi->catDirectories->currentRow();
@@ -598,7 +580,6 @@ void OptionDialog::catDirDrop(QDropEvent *event) {
         }
     }
 }
-
 
 void OptionDialog::dirRowChanged(int row) {
     if (row == -1)
@@ -714,31 +695,21 @@ void OptionDialog::savePluginsSettings() {
 }
 
 void OptionDialog::initUpdateWidget() {
-    connect(m_pUi->gbCheckUpdate, &QGroupBox::toggled, this, &OptionDialog::onCheckUpdateToggled);
-    connect(m_pUi->cbCheckUpdateRepeat, &QCheckBox::toggled, this, &OptionDialog::onCheckUpdateRepeatToggled);
-
     // Update
     m_pUi->gbCheckUpdate->setChecked(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP,
                                                        OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool());
     m_pUi->sbCheckUpdateDelay->setValue(g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY,
                                                           OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt());
-    m_pUi->cbCheckUpdateRepeat->setChecked(g_settings->value(OPTION_UPDATE_CHECK_REPEAT,
-                                                             OPTION_UPDATE_CHECK_REPEAT_DEFAULT).toBool());
-    m_pUi->sbCheckUpdateInterval->setValue(g_settings->value(OPTION_UPDATE_CHECK_REPEAT_INTERVAL,
-                                                             OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT).toInt());
-
-    bool enable = m_pUi->gbCheckUpdate->isChecked() && m_pUi->cbCheckUpdateRepeat->isChecked();
-    m_pUi->sbCheckUpdateInterval->setEnabled(enable);
-
+    m_pUi->sbCheckUpdateInterval->setValue(g_settings->value(OPTION_UPDATE_CHECK_INTERVAL,
+                                                             OPTION_UPDATE_CHECK_INTERVAL_DEFAULT).toInt());
 }
 
 void OptionDialog::saveUpdateSettings() {
     // Update
     g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP, m_pUi->gbCheckUpdate->isChecked());
     g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, m_pUi->sbCheckUpdateDelay->value());
-    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT, m_pUi->cbCheckUpdateRepeat->isChecked());
-    g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
-
+    g_settings->setValue(OPTION_UPDATE_CHECK_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
+    
     UpdateChecker::instance().reloadConfig();
 }
 

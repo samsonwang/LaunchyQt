@@ -1522,7 +1522,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="2,3">
+        <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="0,3">
          <item>
           <widget class="QGroupBox" name="gbCheckUpdate">
            <property name="title">
@@ -1533,15 +1533,15 @@
            </property>
            <layout class="QFormLayout" name="formLayout_2">
             <item row="0" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_15">
                 <property name="text">
                  <string>Delay:</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="1">
                <widget class="QSpinBox" name="sbCheckUpdateDelay">
                 <property name="minimumSize">
                  <size>
@@ -1563,27 +1563,17 @@
                 </property>
                </widget>
               </item>
-             </layout>
-            </item>
-            <item row="1" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_17">
-              <item>
-               <widget class="QCheckBox" name="cbCheckUpdateRepeat">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_21">
                 <property name="text">
-                 <string>Every</string>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
+                 <string>Every:</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="1">
                <widget class="QSpinBox" name="sbCheckUpdateInterval">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="minimumSize">
                  <size>
