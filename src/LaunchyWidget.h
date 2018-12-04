@@ -69,6 +69,7 @@ public:
     void loadOptions();
     int getHotkey() const;
     void startUpdateTimer();
+    void trayNotify(const QString& infoMsg);
 
 public slots:
     void showLaunchy(bool noFade = false);

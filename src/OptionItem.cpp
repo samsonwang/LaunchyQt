@@ -122,8 +122,8 @@ const int       OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT    = 24;
 const char*     OPTION_PROXY_TYPE                              = "Proxy/proxyType";
 const int       OPTION_PROXY_TYPE_DEFAULT                      = QNetworkProxy::NoProxy;
 
-const char*     OPTION_PROXY_SERVER_IP                         = "Proxy/serverIp";
-const char*     OPTION_PROXY_SERVER_IP_DEFAULT                 = "";
+const char*     OPTION_PROXY_SERVER_NAME                       = "Proxy/serverName";
+const char*     OPTION_PROXY_SERVER_NAME_DEFAULT               = "";
 
 const char*     OPTION_PROXY_SERVER_PORT                       = "Proxy/serverPort";
 const char*     OPTION_PROXY_SERVER_PORT_DEFAULT               = "";
