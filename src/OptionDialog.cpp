@@ -313,7 +313,7 @@ void OptionDialog::accept() {
 void OptionDialog::reject() {
     if (m_currentPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
-        g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), false);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), false);
     }
 
     QDialog::reject();
@@ -437,7 +437,7 @@ void OptionDialog::pluginChanged(int row) {
     // Close any current plugin dialogs
     if (m_currentPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
-        g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
     // Open the new plugin dialog
@@ -449,7 +449,7 @@ void OptionDialog::pluginChanged(int row) {
 }
 
 void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
-    QWidget* win = g_pluginHandler->doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
+    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
     if (win != NULL) {
         if (m_pUi->plugBox->layout() != NULL) {
             m_pUi->plugBox->layout()->addWidget(win);
@@ -471,7 +471,7 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     // Close any current plugin dialogs
     if (m_currentPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
-        g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
     // Write out the new config
@@ -490,7 +490,7 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     g_settings->endArray();
 
     // Reload the plugins
-    g_pluginHandler->loadPlugins();
+    PluginHandler::instance().loadPlugins();
 
     // If enabled, reload the dialog
     if (item->checkState() == Qt::Checked) {
@@ -683,8 +683,8 @@ void OptionDialog::saveCatalogSettings() {
 
 void OptionDialog::initPluginsWidget() {
     // Load up the plugins
-    g_pluginHandler->loadPlugins();
-    foreach(const PluginInfo& info, g_pluginHandler->getPlugins()) {
+    PluginHandler::instance().loadPlugins();
+    foreach(const PluginInfo& info, PluginHandler::instance().getPlugins()) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
         m_pUi->plugList->addItem(item);
         item->setData(Qt::UserRole, info.id);
@@ -705,7 +705,7 @@ void OptionDialog::initPluginsWidget() {
 void OptionDialog::savePluginsSettings() {
     if (m_currentPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
-        g_pluginHandler->endDialog(item->data(Qt::UserRole).toUInt(), true);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 }
 

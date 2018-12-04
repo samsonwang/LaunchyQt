@@ -34,10 +34,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 
-PluginHandler::PluginHandler() {
+PluginHandler& PluginHandler::instance() {
+    static PluginHandler s_obj;
+    return s_obj;
 }
 
-PluginHandler::~PluginHandler() {
+PluginHandler::PluginHandler() {
 }
 
 void PluginHandler::showLaunchy() {

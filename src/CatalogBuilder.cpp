@@ -43,8 +43,9 @@ void CatalogBuilder::buildCatalog() {
     g_catalog->incrementTimestamp();
     m_indexed.clear();
 
+    PluginHandler& pluginHandler = PluginHandler::instance();
     QList<Directory> memDirs = SettingsManager::instance().readCatalogDirectories();
-    const QHash<uint, PluginInfo>& pluginsInfo = g_pluginHandler->getPlugins();
+    const QHash<uint, PluginInfo>& pluginsInfo = pluginHandler.getPlugins();
     m_totalItems = memDirs.count() + pluginsInfo.count();
     m_currentItem = 0;
 
@@ -56,7 +57,7 @@ void CatalogBuilder::buildCatalog() {
     }
 
     // Don't call the pluginhandler to request catalog because we need to track progress
-    g_pluginHandler->getCatalogs(g_catalog.data(), this);
+    pluginHandler.getCatalogs(g_catalog.data(), this);
 
     g_catalog->purgeOldItems();
     m_indexed.clear();

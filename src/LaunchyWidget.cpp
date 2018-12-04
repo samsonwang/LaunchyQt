@@ -166,8 +166,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Load the plugins
-    g_pluginHandler.reset(new PluginHandler);
-    g_pluginHandler->loadPlugins();
+    PluginHandler::instance().loadPlugins();
 
     // Load the history
     m_history.load(SettingsManager::instance().historyFilename());
@@ -363,7 +362,7 @@ void LaunchyWidget::launchItem(CatItem& item) {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
     if (item.pluginId != HASH_LAUNCHY && item.pluginId != HASH_LAUNCHYFILE) {
-        ops = g_pluginHandler->launchItem(&m_inputData, &item);
+        ops = PluginHandler::instance().launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
             exit();
@@ -781,8 +780,9 @@ void LaunchyWidget::searchOnInput() {
 
         // Give plugins a chance to add their own dynamic matches
         // why getLabels first then getResults, why not getResult straightforward
-        g_pluginHandler->getLabels(&m_inputData);
-        g_pluginHandler->getResults(&m_inputData, &m_searchResult);
+        PluginHandler& pluginHandler = PluginHandler::instance();
+        pluginHandler.getLabels(&m_inputData);
+        pluginHandler.getResults(&m_inputData, &m_searchResult);
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
@@ -1267,7 +1267,7 @@ void LaunchyWidget::showLaunchy(bool noFade) {
     m_inputBox->setFocus();
 
     // Let the plugins know
-    g_pluginHandler->showLaunchy();
+    PluginHandler::instance().showLaunchy();
 }
 
 void LaunchyWidget::hideLaunchy(bool noFade) {
@@ -1284,7 +1284,7 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
     }
 
     // let the plugins know
-    g_pluginHandler->hideLaunchy();
+    PluginHandler::instance().hideLaunchy();
 }
 
 

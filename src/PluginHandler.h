@@ -30,8 +30,7 @@ class INotifyProgressStep;
 
 class PluginHandler {
 public:
-    PluginHandler();
-    ~PluginHandler();
+    static PluginHandler& instance();
 
     void loadPlugins();
     void showLaunchy();
@@ -49,6 +48,10 @@ private:
     void loadPythonPlugin(const QString& pluginName, const QString& pluginPath);
     // load plugin written in cpp
     void loadCppPlugin(const QString& pluginName, const QString& pluginPath);
+
+private:
+    PluginHandler();
+    Q_DISABLE_COPY(PluginHandler)
 
 private:
     QHash<uint, PluginInfo> m_plugins;
