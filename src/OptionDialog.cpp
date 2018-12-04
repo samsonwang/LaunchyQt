@@ -734,6 +734,8 @@ void OptionDialog::initProxyWidget() {
     m_pUi->cbProxyType->addItem(tr("System Proxy"), QNetworkProxy::DefaultProxy);
     m_pUi->cbProxyType->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
     m_pUi->cbProxyType->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
+    QValidator* validator = new QIntValidator(0, 65535, m_pUi->leProxyServerPort);
+    m_pUi->leProxyServerPort->setValidator(validator);
 
     connect(m_pUi->cbProxyType, SIGNAL(currentIndexChanged(int)),
             this, SLOT(onProxyTypeChanged(int)));
