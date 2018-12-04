@@ -106,12 +106,21 @@ public:
     }
 
     void getCatalog(const CatItemList& resultsList) override {
+
+        //pybind11::gil_scoped_acquire gil;
+        pybind11::function overload = pybind11::get_overload(static_cast<const Plugin *>(this), "getCatalog");
+        if (overload) {
+            overload(resultsList);
+        }
+
+        /*
         PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             getCatalog,
             resultsList
         );
+        */
     }
 
     void launchItem(const std::vector<InputData>& inputDataList,
