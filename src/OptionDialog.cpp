@@ -52,7 +52,7 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     Qt::WindowFlags windowsFlags = windowFlags();
     windowsFlags = windowsFlags & (~Qt::WindowContextHelpButtonHint);
-    windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint;
+    windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint;
     setWindowFlags(windowsFlags);
 
     m_curPlugin = -1;

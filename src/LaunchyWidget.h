@@ -37,6 +37,7 @@ class AnimationLabel;
 class IconDelegate;
 class CharListWidget;
 class CharLineEdit;
+class OptionDialog;
 
 enum CommandFlag {
     Default         = 0,
@@ -166,6 +167,8 @@ protected:
     bool m_dragging;
     QPoint m_dragStartPoint;
     bool m_menuOpen;
+
+    OptionDialog* m_optionDialog;
     bool m_optionsOpen;
 };
 
