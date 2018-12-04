@@ -39,14 +39,12 @@ class AppBase;
 class LaunchyWidget;
 class Catalog;
 class CatalogBuilder;
-class PluginHandler;
 
 extern QScopedPointer<AppBase> g_app;
 extern QScopedPointer<LaunchyWidget> g_mainWidget;
 extern QScopedPointer<QSettings> g_settings;
 extern QScopedPointer<Catalog> g_catalog;
 extern QScopedPointer<CatalogBuilder> g_builder;
-extern QScopedPointer<PluginHandler> g_pluginHandler;
 extern QString g_searchText;
 
 }

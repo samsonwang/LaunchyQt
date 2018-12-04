@@ -40,7 +40,6 @@ QScopedPointer<LaunchyWidget> g_mainWidget;
 QScopedPointer<QSettings> g_settings;
 QScopedPointer<Catalog> g_catalog;
 QScopedPointer<CatalogBuilder> g_builder;
-QScopedPointer<PluginHandler> g_pluginHandler;
 QString g_searchText;
 
 }
