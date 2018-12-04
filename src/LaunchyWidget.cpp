@@ -1056,10 +1056,7 @@ void LaunchyWidget::onInputBoxTextEdited(const QString& str) {
 }
 
 void LaunchyWidget::onSecondInstance() {
-    if (m_trayIcon) {
-        m_trayIcon->showMessage(tr("Launchy"), tr("Launchy is already running!"),
-                              QIcon(":/resources/launchy128.png"));
-    }
+    trayNotify(tr("Launchy is already running!"));
 }
 
 void LaunchyWidget::applySkin(const QString& name) {

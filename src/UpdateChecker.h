@@ -43,8 +43,6 @@ private slots:
 private:
     QNetworkAccessManager* m_mgr;
     QTimer* m_timerStartup;
-    int m_repeatInterval;
-    QTimer* m_timerRepeat;
 };
 
 }

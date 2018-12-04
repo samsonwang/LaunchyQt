@@ -112,11 +112,11 @@ const bool      OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT         = true;
 const char*     OPTION_UPDATE_CHECK_ON_STARTUP_DELAY           = "Update/checkOnStartupDelay";
 const int       OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT   = 60;
 
-const char*     OPTION_UPDATE_CHECK_REPEAT                     = "Update/checkRepeat";
-const bool      OPTION_UPDATE_CHECK_REPEAT_DEFAULT             = false;
+const char*     OPTION_UPDATE_CHECK_INTERVAL                   = "Update/checkInterval";
+const int       OPTION_UPDATE_CHECK_INTERVAL_DEFAULT           = 24;
 
-const char*     OPTION_UPDATE_CHECK_REPEAT_INTERVAL            = "Update/checkRepeatInterval";
-const int       OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT    = 24;
+const char*     OPTION_UPDATE_LAST_CHECK                       = "Update/lastCheck";
+const char*     OPTION_UPDATE_LAST_CHECK_DEFAULT               = "1970-01-01 00:00:00";
 
 // Proxy
 const char*     OPTION_PROXY_TYPE                              = "Proxy/proxyType";

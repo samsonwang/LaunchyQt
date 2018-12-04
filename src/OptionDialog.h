@@ -83,9 +83,6 @@ private slots:
     // plugins
     void pluginChanged(int row);
     void pluginItemChanged(QListWidgetItem* state);
-    // update
-    void onCheckUpdateToggled(bool checked);
-    void onCheckUpdateRepeatToggled(bool checked);
     // proxy
     void onProxyTypeChanged(int index);
     void onProxyRequiresPasswordToggled(bool checked);

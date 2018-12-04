@@ -106,11 +106,11 @@ extern const bool       OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT;
 extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP_DELAY;
 extern const int        OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT;
 
-extern const char*      OPTION_UPDATE_CHECK_REPEAT;
-extern const bool       OPTION_UPDATE_CHECK_REPEAT_DEFAULT;
+extern const char*      OPTION_UPDATE_CHECK_INTERVAL;
+extern const int        OPTION_UPDATE_CHECK_INTERVAL_DEFAULT;
 
-extern const char*      OPTION_UPDATE_CHECK_REPEAT_INTERVAL;
-extern const int        OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT;
+extern const char*      OPTION_UPDATE_LAST_CHECK;
+extern const char*      OPTION_UPDATE_LAST_CHECK_DEFAULT;
 
 // proxy
 extern const char*      OPTION_PROXY_TYPE;

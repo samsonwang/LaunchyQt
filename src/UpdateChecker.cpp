@@ -28,19 +28,13 @@ namespace launchy {
 
 UpdateChecker::UpdateChecker()
     : m_mgr(new QNetworkAccessManager(this)),
-      m_timerStartup(new QTimer(this)),
-      m_repeatInterval(OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT * 1000 * 3600),
-      m_timerRepeat(new QTimer(this)) {
+      m_timerStartup(new QTimer(this)) {
 
     connect(m_mgr, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
 
     m_timerStartup->setSingleShot(true);
     connect(m_timerStartup, SIGNAL(timeout()),
-            this, SLOT(checkUpdate()));
-
-    m_timerRepeat->setSingleShot(false);
-    connect(m_timerRepeat, SIGNAL(timeout()),
             this, SLOT(checkUpdate()));
 }
 
@@ -50,10 +44,6 @@ UpdateChecker& UpdateChecker::instance() {
 }
 
 void UpdateChecker::startup() {
-//     QNetworkProxy::ProxyType proxyType
-//         = g_settings->value(OPTION_PROXY_TYPE,
-//                             OPTION_PROXY_TYPE_DEFAULT).value<QNetworkProxy::ProxyType>();
-
     bool checkOnStartup = g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP,
                                             OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool();
     if (!checkOnStartup) {
@@ -61,41 +51,39 @@ void UpdateChecker::startup() {
         return;
     }
 
+    int interval = g_settings->value(OPTION_UPDATE_CHECK_INTERVAL,
+                                     OPTION_UPDATE_CHECK_INTERVAL_DEFAULT).toInt();
+
+    QString lastUpdate = g_settings->value(OPTION_UPDATE_LAST_CHECK,
+                                           OPTION_UPDATE_LAST_CHECK_DEFAULT).toString();
+
+    QDateTime last = QDateTime::fromString(lastUpdate, "yyyy-MM-dd HH:mm:ss");
+    QDateTime now = QDateTime::currentDateTime();
+    qDebug() << "UpdateChecker::startup, last:" << last.toString(Qt::ISODate);
+
+    if (now < last.addSecs(interval * 3600)) {
+        qDebug() << "UpdateChecker::startup, last update time:" << lastUpdate
+            << ", wait for next startup";
+        return;
+    }
+
     int delay = g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY,
                                   OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt();
 
-    qDebug() << "UpdateChecker::startup, check delay (second):" << delay;
+    qDebug() << "UpdateChecker::startup, will update in" << delay << "seconds";
+
     m_timerStartup->start(delay * 1000);
-
-    bool checkRepeat = g_settings->value(OPTION_UPDATE_CHECK_REPEAT,
-                                         OPTION_UPDATE_CHECK_REPEAT_DEFAULT).toBool();
-    if (checkRepeat) {
-        qDebug() << "UpdateChecker::startup, no repeat check";
-        return;
-    }
-
-    int checkInterval = g_settings->value(OPTION_UPDATE_CHECK_REPEAT_INTERVAL,
-                                          OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT).toInt();
-    qDebug() << "UpdateChecker::startup, repeat check interval (hour):" << checkInterval;
-    
-    m_repeatInterval = checkInterval * 1000 * 3600;
-    m_timerRepeat->start(m_repeatInterval);
 }
 
 void UpdateChecker::reloadConfig() {
-    bool checkRepeat = g_settings->value(OPTION_UPDATE_CHECK_REPEAT,
-                                         OPTION_UPDATE_CHECK_REPEAT_DEFAULT).toBool();
-    if (checkRepeat) {
-        qDebug() << "UpdateChecker::reloadConfig, no repeat check";
+    bool checkOnStartup = g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP,
+                                            OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool();
+
+    if (!checkOnStartup && m_timerStartup->isActive()) {
+        qDebug() << "UpdateChecker::reloadConfig, no update check";
+        m_timerStartup->stop();
         return;
     }
-
-    int checkInterval = g_settings->value(OPTION_UPDATE_CHECK_REPEAT_INTERVAL,
-                                          OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT).toInt();
-    qDebug() << "UpdateChecker::reloadConfig, repeat check interval (hour):" << checkInterval;
-
-    m_repeatInterval = checkInterval * 1000 * 3600;
-    m_timerRepeat->start(m_repeatInterval);
 }
 
 void UpdateChecker::checkUpdate() {
@@ -121,20 +109,25 @@ void UpdateChecker::replyFinished(QNetworkReply* reply) {
                 QXmlStreamAttributes attr = reader.attributes();
                 if (attr.hasAttribute("version")) {
                     lastestVersion = attr.value("version").toInt();
-                    qDebug() << "UpdateChecker::replyFinished, latest version:" << lastestVersion;
+                    qInfo() << "UpdateChecker::replyFinished, latest version:" << lastestVersion;
                 }
             }
         }
-    }
-
-    if (lastestVersion > LAUNCHY_VERSION) {
-        g_mainWidget->trayNotify(tr("A new version of Launchy is available!"));
     }
 
     if (reader.hasError()) {
         qWarning() << "UpdateChecker::replyFinished, xml error:"
             << reader.errorString();
     }
+
+    if (lastestVersion > LAUNCHY_VERSION) {
+        g_mainWidget->trayNotify(tr("A new version of Launchy is available!"));
+    }
+
+    // write to setting
+    QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+    g_settings->setValue(OPTION_UPDATE_LAST_CHECK, now);
+
     reader.clear();
 }
 
