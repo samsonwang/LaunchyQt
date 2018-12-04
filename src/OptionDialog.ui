@@ -1660,7 +1660,7 @@
             <item row="1" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_12">
               <item>
-               <widget class="QLineEdit" name="leProxyServerIp">
+               <widget class="QLineEdit" name="leProxyServerName">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>

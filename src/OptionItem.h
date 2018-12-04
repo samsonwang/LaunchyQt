@@ -116,8 +116,8 @@ extern const int        OPTION_UPDATE_CHECK_REPEAT_INTERVAL_DEFAULT;
 extern const char*      OPTION_PROXY_TYPE;
 extern const int        OPTION_PROXY_TYPE_DEFAULT;
 
-extern const char*      OPTION_PROXY_SERVER_IP;
-extern const char*      OPTION_PROXY_SERVER_IP_DEFAULT;
+extern const char*      OPTION_PROXY_SERVER_NAME;
+extern const char*      OPTION_PROXY_SERVER_NAME_DEFAULT;
 
 extern const char*      OPTION_PROXY_SERVER_PORT;
 extern const char*      OPTION_PROXY_SERVER_PORT_DEFAULT;

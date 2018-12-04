@@ -29,8 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Logger.h"
 #include "CatalogBuilder.h"
 #include "OptionItem.h"
+#include "UpdateChecker.h"
 
-// to store QNetworkProxy::ProxyType in QVariant
+// for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
 
 namespace launchy {
@@ -501,7 +502,7 @@ void OptionDialog::onCheckUpdateRepeatToggled(bool checked) {
 
 void OptionDialog::onProxyTypeChanged(int index) {
     bool enable = index > 1;
-    m_pUi->leProxyServerIp->setEnabled(enable);
+    m_pUi->leProxyServerName->setEnabled(enable);
     m_pUi->leProxyServerPort->setEnabled(enable);
     m_pUi->cbProxyRequiresPassword->setEnabled(enable);
     bool requirePassword = m_pUi->cbProxyRequiresPassword->isChecked();
@@ -737,6 +738,8 @@ void OptionDialog::saveUpdateSettings() {
     g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, m_pUi->sbCheckUpdateDelay->value());
     g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT, m_pUi->cbCheckUpdateRepeat->isChecked());
     g_settings->setValue(OPTION_UPDATE_CHECK_REPEAT_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
+
+    UpdateChecker::instance().reloadConfig();
 }
 
 void OptionDialog::initProxyWidget() {
@@ -780,8 +783,8 @@ void OptionDialog::initProxyWidget() {
         return;
     }
 
-    m_pUi->leProxyServerIp->setText(g_settings->value(OPTION_PROXY_SERVER_IP,
-                                                      OPTION_PROXY_SERVER_IP_DEFAULT).toString());
+    m_pUi->leProxyServerName->setText(g_settings->value(OPTION_PROXY_SERVER_NAME,
+                                                        OPTION_PROXY_SERVER_NAME_DEFAULT).toString());
     
     m_pUi->leProxyServerPort->setText(g_settings->value(OPTION_PROXY_SERVER_PORT,
                                                         OPTION_PROXY_SERVER_PORT_DEFAULT).toString());
@@ -802,11 +805,24 @@ void OptionDialog::saveProxySettings() {
     // Proxy
     QNetworkProxy::ProxyType proxyType = m_pUi->cbProxyType->currentData().value<QNetworkProxy::ProxyType>();
     g_settings->setValue(OPTION_PROXY_TYPE, proxyType);
-    g_settings->setValue(OPTION_PROXY_SERVER_IP, m_pUi->leProxyServerIp->text());
+    g_settings->setValue(OPTION_PROXY_SERVER_NAME, m_pUi->leProxyServerName->text());
     g_settings->setValue(OPTION_PROXY_SERVER_PORT, m_pUi->leProxyServerPort->text());
     g_settings->setValue(OPTION_PROXY_REQUIRE_PASSWORD, m_pUi->cbProxyRequiresPassword->isChecked());
     g_settings->setValue(OPTION_PROXY_USERNAME, m_pUi->leProxyUsername->text());
     g_settings->setValue(OPTION_PROXY_PASSWORD, m_pUi->leProxyPassword->text());
+
+
+    QNetworkProxy proxy;
+    proxy.setType(proxyType);
+    proxy.setHostName(m_pUi->leProxyServerName->text());
+    proxy.setPort(m_pUi->leProxyServerPort->text().toUInt());
+    if (m_pUi->cbProxyRequiresPassword->isChecked()) {
+        proxy.setUser(m_pUi->leProxyUsername->text());
+        proxy.setPassword(m_pUi->leProxyPassword->text());
+    }
+
+    QNetworkProxy::setApplicationProxy(proxy);
+
 }
 
 void OptionDialog::addDirectory(const QString& directory, bool edit) {

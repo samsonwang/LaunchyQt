@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CatalogBuilder.h"
 #include "PluginInterface.h"
 #include "PluginMsg.h"
+#include "UpdateChecker.h"
 
 namespace launchy {
 
@@ -192,6 +193,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     m_updateTimer->setSingleShot(true);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
     startUpdateTimer();
+
+    // start update checker
+    UpdateChecker::instance().startup();
 }
 
 LaunchyWidget::~LaunchyWidget() {
@@ -958,6 +962,14 @@ void LaunchyWidget::startUpdateTimer() {
         m_updateTimer->start(time * 60000);
     else
         m_updateTimer->stop();
+}
+
+
+void LaunchyWidget::trayNotify(const QString& infoMsg) {
+    if (m_trayIcon) {
+        m_trayIcon->showMessage(tr("Launchy"), infoMsg,
+                                QIcon(":/resources/launchy128.png"));
+    }
 }
 
 void LaunchyWidget::onHotkey() {
