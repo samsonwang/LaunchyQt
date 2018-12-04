@@ -42,6 +42,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginMsg.h"
 #include "UpdateChecker.h"
 
+#include "TestWidget.h"
+
 namespace launchy {
 
 // for qt flags
@@ -195,6 +197,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // start update checker
     UpdateChecker::instance().startup();
+
+    pluginpy::TestWidget::instance().initTestWidget();
 }
 
 LaunchyWidget::~LaunchyWidget() {
