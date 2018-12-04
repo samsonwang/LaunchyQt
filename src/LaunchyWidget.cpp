@@ -69,6 +69,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_alwaysShowLaunchy(false),
       m_dragging(false),
       m_menuOpen(false),
+      m_optionDialog(nullptr),
       m_optionsOpen(false) {
 
     g_mainWidget.reset(this);
@@ -194,7 +195,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 }
 
 LaunchyWidget::~LaunchyWidget() {
-
+    // maybe option dialog is destroyed before launchy destruction
+//     if (m_optionDialog) {
+//         delete m_optionDialog;
+//         m_optionDialog = nullptr;
+//     }
 }
 
 void LaunchyWidget::executeStartupCommand(int command) {
@@ -1193,14 +1198,13 @@ void LaunchyWidget::showOptionDialog() {
     if (!m_optionsOpen) {
         showLaunchy(true);
         m_optionsOpen = true;
-        OptionDialog options(NULL);
-        options.setObjectName("options");
-#ifdef Q_OS_WIN
-        // need to use this method in Windows to ensure that keyboard focus is set when
-        // being activated via a message from another instance of Launchy
-        // SetForegroundWindowEx((HWND)options.winId());
-#endif
-        options.exec();
+
+        if (!m_optionDialog) {
+            m_optionDialog = new OptionDialog(nullptr);
+            m_optionDialog->setObjectName("options");
+        }
+
+        m_optionDialog->exec();
 
         activateWindow();
         m_inputBox->setFocus();
@@ -1208,7 +1212,6 @@ void LaunchyWidget::showOptionDialog() {
         m_optionsOpen = false;
     }
 }
-
 
 void LaunchyWidget::setFadeLevel(double level) {
     level = qMin(level, 1.0);
@@ -1321,9 +1324,10 @@ void LaunchyWidget::createActions() {
     connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
 
     m_actRestart = new QAction(tr("Restart Launchy"), this);
-    connect(m_actRestart, &QAction::triggered, []() {
+    connect(m_actRestart, &QAction::triggered, [=]() {
         qInfo() << "Performing application reboot...";
         // restart:
+        //qApp->closeAllWindows();
         qApp->quit();
         QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
     });
