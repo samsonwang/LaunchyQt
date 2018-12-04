@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"
 #include "PluginMgr.h"
+#include "PluginInterface.h"
 
 static int add_five(int x) {
     return x+5;
@@ -33,7 +34,6 @@ PYBIND11_MODULE(launchy, m) {
     m.def("add_five", &add_five, "function which increase number by 5");
 
     m.def("hash", &exportpy::hash, "hash function from qt");
-    //m.def("registerPlugin", &exportpy::registerPlugin);
 
     m.def("registerPlugin", &exportpy::registerPlugin);
 
@@ -41,6 +41,9 @@ PYBIND11_MODULE(launchy, m) {
     m.def("getAppPath", &exportpy::getAppPath,
           "get launchy application path",
           py::arg("toNative") = true);
+
+    m.def("runProgram", &exportpy::runProgram,
+          "run program by launchy");
 
     // for testing
     m.def("objectReceiver", &exportpy::objectReceiver);
@@ -97,6 +100,13 @@ std::string getAppPath(bool toNative) {
         path = QDir::toNativeSeparators(path);
     }
     return path.toStdString();
+}
+
+void runProgram(const std::string& file, const std::string& args) {
+    QString fileQ = QString::fromStdString(file);
+    QString argsQ = QString::fromStdString(args);
+
+    launchy::runProgram(fileQ, argsQ);
 }
 
 void objectReceiver(py::object obj) {

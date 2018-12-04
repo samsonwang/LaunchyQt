@@ -26,6 +26,8 @@ namespace py = pybind11;
 
 namespace exportpy {
 
+class CatItem;
+
 void ExportInputData(const py::module& m);
 
 class InputData {
@@ -61,6 +63,10 @@ public:
 
     /** Get the text of the query segment */
     bool hasText() const;
+
+    /** Get a pointer to the best catalog match for this segment of the query */
+    CatItem getTopResult();
+        
 
 
 private:

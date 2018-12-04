@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ExportPyInputData.h"
 #include "InputData.h"
+#include "ExportPyCatItem.h"
 
 namespace py = pybind11;
 
@@ -60,6 +61,11 @@ bool InputData::hasText() const {
     return m_data->hasText();
 }
 
+CatItem InputData::getTopResult() {
+    launchy::CatItem& item = m_data->getTopResult();
+    return CatItem(item);
+}
+
 void ExportInputData(const py::module& m) {
 
     py::class_<exportpy::InputData>(m, "InputData")
@@ -69,7 +75,8 @@ void ExportInputData(const py::module& m) {
         .def("setID", &exportpy::InputData::setID)
         .def("getID", &exportpy::InputData::getID)
         .def("getText", &exportpy::InputData::getText)
-        .def("setText", &exportpy::InputData::setText);
+        .def("setText", &exportpy::InputData::setText)
+        .def("getTopResult", &exportpy::InputData::getTopResult);
 
 }
 
