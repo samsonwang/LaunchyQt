@@ -50,7 +50,7 @@ private:
     void addCatItem(QString text, QList<launchy::CatItem>* results, QString fullName, QString shortName, QString iconName);
     void updateUsage(launchy::CatItem& item);
     QString getIcon();
-    QString getIconPath() const;
+    const QString& getIconPath() const;
 
     //void getCatalog(QList<CatItem>* items);
 private:
@@ -60,5 +60,6 @@ private:
     const uint HASH_FILE;
     const uint HASH_DIR;
     const uint HASH_LINK;
+    const uint HASH_EXEC;
 };
 

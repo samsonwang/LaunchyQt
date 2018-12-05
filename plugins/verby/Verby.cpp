@@ -48,13 +48,14 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
         return;
     }
 
+    // If it's not an item from Launchy's built in catalog,
+    // i.e. a file or directory or something added 
+    // by a plugin, don't add verbs.
     if (inputData->first().getID() != 0
         && inputData->first().getID() != HASH_VERBY) {
         return;
     }
 
-    // If it's not an item from Launchy's built in catalog, i.e. a file or directory or something added 
-    // by a plugin, don't add verbs.
     QString path = inputData->first().getTopResult().fullPath;
     QFileInfo info(path);
     if (info.isSymLink()) {
@@ -63,13 +64,15 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
     else if (info.isDir()) {
         inputData->first().setLabel(HASH_DIR);
     }
+    else if (info.isExecutable()) {
+        inputData->first().setLabel(HASH_EXEC);
+    }
     else if (info.isFile()) {
         inputData->first().setLabel(HASH_FILE);
     }
-
 }
 
-QString Verby::getIconPath() const {
+const QString& Verby::getIconPath() const {
     return m_libPath;
 }
 
@@ -90,13 +93,13 @@ bool Verby::isMatch(const QString& text1, const QString& text2) {
 void Verby::addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName) {
     if (text.isEmpty() || isMatch(shortName, text)) {
         CatItem item = CatItem(fullName, shortName, HASH_VERBY, m_libPath + "/" + iconName);
-        item.usage = (*settings)->value("verby/" + shortName.replace(" ", ""), 0).toInt();
+        item.usage = (*settings)->value("Verby/" + shortName.replace(" ", ""), 0).toInt();
         results->push_back(item);
     }
 }
 
 void Verby::updateUsage(CatItem& item) {
-    (*settings)->setValue("verby/" + item.shortName.replace(" ", ""), item.usage + 1);
+    (*settings)->setValue("Verby/" + item.shortName.replace(" ", ""), item.usage + 1);
 }
 
 
@@ -109,14 +112,19 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     if (inputData->first().hasLabel(HASH_DIR)) {
         addCatItem(text, results, "Properties", "Directory properties", "verby_properties.png");
     }
+    else if (inputData->first().hasLabel(HASH_EXEC)) {
+        addCatItem(text, results, "Run as", "Run as admin", "verby_run.png");
+        addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
+        addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
+        addCatItem(text, results, "Properties", "File properties", "verby_properties.png");
+    }
     else if (inputData->first().hasLabel(HASH_FILE)) {
         addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
         addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
         addCatItem(text, results, "Properties", "File properties", "verby_properties.png");
     }
     else if (inputData->first().hasLabel(HASH_LINK)) {
-        // do not know what is the point for run as a different user, so this feature is disabled for now
-        // addCatItem(text, results, "Run as", "Run as a different user", "verby_run.png");
+        addCatItem(text, results, "Run as", "Run as admin", "verby_run.png");
         addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
         addCatItem(text, results, "Open shortcut folder", "Open shortcut folder", "verby_opencontainer.png");
         addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
@@ -171,7 +179,7 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
 #endif
     }
-    else if (verb == "Run as") {
+    else if (verb == "Run as admin") {
 #ifdef Q_OS_WIN
         SHELLEXECUTEINFO shellExecInfo;
 
@@ -183,8 +191,9 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         shellExecInfo.lpParameters = NULL;
         QDir dir(noun);
         QFileInfo info(noun);
-        if (!info.isDir() && info.isFile())
+        if (!info.isDir() && info.isFile()) {
             dir.cdUp();
+        }
         QString filePath = QDir::toNativeSeparators(dir.absolutePath());
         shellExecInfo.lpDirectory = (LPCTSTR)filePath.utf16();
         shellExecInfo.nShow = SW_NORMAL;
@@ -256,7 +265,8 @@ Verby::Verby()
       HASH_VERBY(qHash(QString("verby"))),
       HASH_DIR(qHash(QString("verbydirectory"))),
       HASH_FILE(qHash(QString("verbyfile"))),
-      HASH_LINK(qHash(QString("verbylink"))) {
+      HASH_LINK(qHash(QString("verbylink"))),
+      HASH_EXEC(qHash(QString("verbyexec"))) {
 }
 
 Verby::~Verby() {
