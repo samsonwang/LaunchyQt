@@ -56,6 +56,8 @@ private:
     // proxy
     void initProxyWidget();
     void saveProxySettings();
+    // about
+    void initAboutWidget();
 
     void addDirectory(const QString& directory, bool edit = false);
     void loadPluginDialog(QListWidgetItem* item);

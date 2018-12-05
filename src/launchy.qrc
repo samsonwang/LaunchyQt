@@ -1,7 +1,8 @@
 <RCC>
-    <qresource prefix="/" >
+    <qresource prefix="/">
         <file>resources/launchy128.png</file>
         <file>resources/launchy16.png</file>
         <file>resources/basicskin.qss</file>
+        <file>resources/builtWithQt.png</file>
     </qresource>
 </RCC>
