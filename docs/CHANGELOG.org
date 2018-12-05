@@ -1,6 +1,5 @@
 
 * x.x.x developing in progress
-- add "run as admin" in verby
 - remove old network proxy setting in option dialog
 - better python plugin support
 
@@ -9,6 +8,7 @@
 - use pip to manage python package
 - network proxy setting
 - update check and new version notify
+- add "run as admin" in verby
 
 * 3.0.4 （2018-11-30）
 - fix display problem in 4k hidpi (issue [[https://github.com/samsonwang/LaunchyQt/issues/2][#2]])
