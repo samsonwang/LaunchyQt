@@ -20,9 +20,7 @@
 #pragma once
 
 #include <QWidget>
-
-#include "PluginHandler.h"
-#include "Catalog.h"
+#include "CatalogItem.h"
 #include "IconExtractor.h"
 #include "InputData.h"
 #include "CommandHistory.h"

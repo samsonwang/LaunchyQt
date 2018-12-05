@@ -72,12 +72,6 @@ extern const int        OPSTION_FADEIN_DEFAULT;
 extern const char*      OPSTION_FADEOUT;
 extern const int        OPSTION_FADEOUT_DEFAULT;
 
-extern const char*      OPSTION_HOSTADDRESS;
-extern const char*      OPSTION_HOSTADDRESS_DEFAULT;
-
-extern const char*      OPSTION_HOSTPORT;
-extern const char*      OPSTION_HOSTPORT_DEFAULT;
-
 extern const char*      OPSTION_SKIN;
 extern const char*      OPSTION_SKIN_DEFAULT;
 

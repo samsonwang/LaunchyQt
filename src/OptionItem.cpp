@@ -72,12 +72,6 @@ const int       OPSTION_FADEIN_DEFAULT                         = 10;
 const char*     OPSTION_FADEOUT                                = "GenOps/fadeout";
 const int       OPSTION_FADEOUT_DEFAULT                        = 20;
 
-const char*     OPSTION_HOSTADDRESS                            = "WebProxy/hostAddress";
-const char*     OPSTION_HOSTADDRESS_DEFAULT                    = "";
-
-const char*     OPSTION_HOSTPORT                               = "WebProxy/port";
-const char*     OPSTION_HOSTPORT_DEFAULT                       = "";
-
 const char*     OPSTION_SKIN                                   = "GenOps/skin";
 const char*     OPSTION_SKIN_DEFAULT                           = "Default";
 
