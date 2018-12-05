@@ -717,6 +717,10 @@ void OptionDialog::initUpdateWidget() {
                                                           OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt());
     m_pUi->sbCheckUpdateInterval->setValue(g_settings->value(OPTION_UPDATE_CHECK_INTERVAL,
                                                              OPTION_UPDATE_CHECK_INTERVAL_DEFAULT).toInt());
+
+    connect(m_pUi->pbCheckForUpdates, &QPushButton::clicked, []() {
+        UpdateChecker::instance().manualCheck();
+    });
 }
 
 void OptionDialog::saveUpdateSettings() {

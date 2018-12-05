@@ -28,14 +28,15 @@ namespace launchy {
 
 UpdateChecker::UpdateChecker()
     : m_mgr(new QNetworkAccessManager(this)),
-      m_timerStartup(new QTimer(this)) {
+      m_timerStartup(new QTimer(this)),
+      m_manualCheck(false) {
 
     connect(m_mgr, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
 
     m_timerStartup->setSingleShot(true);
     connect(m_timerStartup, SIGNAL(timeout()),
-            this, SLOT(checkUpdate()));
+            this, SLOT(getVersionInfo()));
 }
 
 UpdateChecker& UpdateChecker::instance() {
@@ -86,7 +87,13 @@ void UpdateChecker::reloadConfig() {
     }
 }
 
-void UpdateChecker::checkUpdate() {
+void UpdateChecker::manualCheck() {
+    qDebug() << "UpdateChecker::manualCheck, doing manual check";
+    m_manualCheck = true;
+    getVersionInfo();
+}
+
+void UpdateChecker::getVersionInfo() {
     m_mgr->get(QNetworkRequest(QUrl("https://launchyqt.com/version.xml")));
     qDebug() << "UpdateChecker::checkUpdate, getting version info";
 }
@@ -121,7 +128,11 @@ void UpdateChecker::replyFinished(QNetworkReply* reply) {
     }
 
     if (lastestVersion > LAUNCHY_VERSION) {
-        g_mainWidget->trayNotify(tr("A new version of Launchy is available!"));
+        g_mainWidget->trayNotify(tr("A new version is available."));
+    }
+    else if (m_manualCheck) {
+        m_manualCheck = false;
+        g_mainWidget->trayNotify(tr("No update is available."));
     }
 
     // write to setting

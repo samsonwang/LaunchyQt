@@ -30,18 +30,20 @@ public:
     static UpdateChecker& instance();
     void startup();
     void reloadConfig();
+    void manualCheck();
 
 private:
     UpdateChecker();
     Q_DISABLE_COPY(UpdateChecker)
 
 private slots:
-    void checkUpdate();
+    void getVersionInfo();
     void replyFinished(QNetworkReply* reply);
 
 private:
     QNetworkAccessManager* m_mgr;
     QTimer* m_timerStartup;
+    bool m_manualCheck;
 };
 
 }
