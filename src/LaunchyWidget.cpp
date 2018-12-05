@@ -198,7 +198,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // start update checker
     UpdateChecker::instance().startup();
 
-    pluginpy::TestWidget::instance().initTestWidget();
+    //pluginpy::TestWidget::instance().initTestWidget();
 }
 
 LaunchyWidget::~LaunchyWidget() {

@@ -105,7 +105,8 @@ std::string getAppPath(bool toNative) {
 void runProgram(const std::string& file, const std::string& args) {
     QString fileQ = QString::fromStdString(file);
     QString argsQ = QString::fromStdString(args);
-
+    qDebug() << "exportpy::runProgram, file:" << file.c_str()
+        << "args:" << args.c_str();
     launchy::runProgram(fileQ, argsQ);
 }
 
