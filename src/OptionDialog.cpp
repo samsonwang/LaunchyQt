@@ -60,7 +60,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     setWindowFlags(windowsFlags);
 
     //restoreGeometry(s_windowGeometry);
-    //m_pUi->tabWidget->setCurrentIndex(s_currentTab);
+    m_pUi->tabWidget->setCurrentIndex(0);
 
     // Load General Options		
     m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
@@ -196,10 +196,7 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     initProxyWidget();
 
-    // About
-    m_pUi->aboutVer->setText(tr("This is Launchy %1").arg(LAUNCHY_VERSION_STRING));
-
-    //m_needRescan = false;
+    initAboutWidget();
 }
 
 
@@ -816,6 +813,12 @@ void OptionDialog::saveProxySettings() {
 
     QNetworkProxy::setApplicationProxy(proxy);
 
+}
+
+void OptionDialog::initAboutWidget() {
+    // About
+    m_pUi->aboutVer->setText(tr("Version %1").arg(LAUNCHY_VERSION_STRING));
+    m_pUi->aboutBit->setText(tr("(%1-bit)").arg(LAUNCHY_BIT_STRING));
 }
 
 void OptionDialog::addDirectory(const QString& directory, bool edit) {

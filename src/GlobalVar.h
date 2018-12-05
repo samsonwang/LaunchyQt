@@ -27,6 +27,7 @@ namespace launchy {
 
 extern const int LAUNCHY_VERSION;
 extern const char* LAUNCHY_VERSION_STRING;
+extern const char* LAUNCHY_BIT_STRING;
 
 extern const uint HASH_LAUNCHY;
 extern const uint HASH_HISTORY;
