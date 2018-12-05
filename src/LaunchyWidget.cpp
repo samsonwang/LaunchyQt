@@ -37,8 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationLabel.h"
 #include "CharListWidget.h"
 #include "CharLineEdit.h"
+#include "Catalog.h"
 #include "CatalogBuilder.h"
 #include "PluginInterface.h"
+#include "PluginHandler.h"
 #include "PluginMsg.h"
 #include "UpdateChecker.h"
 
@@ -1294,14 +1296,14 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
 
 void LaunchyWidget::loadOptions() {
     // If a network proxy server is specified, apply an application wide NetworkProxy setting
-    QString proxyHost = g_settings->value(OPSTION_HOSTADDRESS, OPSTION_HOSTADDRESS_DEFAULT).toString();
-    if (!proxyHost.isEmpty()) {
-        QNetworkProxy proxy;
-        proxy.setType((QNetworkProxy::ProxyType)g_settings->value("WebProxy/type", 0).toInt());
-        proxy.setHostName(proxyHost);
-        proxy.setPort((quint16)g_settings->value(OPSTION_HOSTPORT, OPSTION_HOSTPORT_DEFAULT).toInt());
-        QNetworkProxy::setApplicationProxy(proxy);
-    }
+//     QString proxyHost = g_settings->value(OPSTION_HOSTADDRESS, OPSTION_HOSTADDRESS_DEFAULT).toString();
+//     if (!proxyHost.isEmpty()) {
+//         QNetworkProxy proxy;
+//         proxy.setType((QNetworkProxy::ProxyType)g_settings->value("WebProxy/type", 0).toInt());
+//         proxy.setHostName(proxyHost);
+//         proxy.setPort((quint16)g_settings->value(OPSTION_HOSTPORT, OPSTION_HOSTPORT_DEFAULT).toInt());
+//         QNetworkProxy::setApplicationProxy(proxy);
+//     }
 }
 
 

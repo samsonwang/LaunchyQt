@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileBrowserDelegate.h"
 #include "SettingsManager.h"
 #include "Logger.h"
+#include "Catalog.h"
 #include "CatalogBuilder.h"
 #include "OptionItem.h"
 #include "UpdateChecker.h"
@@ -154,8 +155,8 @@ OptionDialog::OptionDialog(QWidget * parent)
     }
 
     // Load up web proxy settings
-    m_pUi->genProxyHostname->setText(g_settings->value(OPSTION_HOSTADDRESS).toString());
-    m_pUi->genProxyPort->setText(g_settings->value(OPSTION_HOSTPORT).toString());
+//     m_pUi->genProxyHostname->setText(g_settings->value(OPSTION_HOSTADDRESS).toString());
+//     m_pUi->genProxyPort->setText(g_settings->value(OPSTION_HOSTPORT).toString());
 
     // Load up the skins list
     QString skinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
@@ -264,8 +265,8 @@ void OptionDialog::accept() {
     g_settings->setValue(OPSTION_FADEIN, m_pUi->genFadeIn->value());
     g_settings->setValue(OPSTION_FADEOUT, m_pUi->genFadeOut->value());
 
-    g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
-    g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
+//     g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
+//     g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
 
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
