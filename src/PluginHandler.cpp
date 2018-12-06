@@ -128,9 +128,6 @@ void PluginHandler::loadPlugins() {
     }
     g_settings->endArray();
 
-    // init QSetting for python plugin
-    pluginpy::PluginLoader::initSettings(g_settings.get());
-
     foreach(QString directory, SettingsManager::instance().directory("plugins")) {
         // Load up the plugins in the plugins/ directory
         QDir pluginsDir(directory);
@@ -144,6 +141,9 @@ void PluginHandler::loadPlugins() {
             }
         }
     }
+
+    // init QSetting for python plugin
+    pluginpy::PluginLoader::initSettings(g_settings.get());
 }
 
 void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& pluginPath) {
