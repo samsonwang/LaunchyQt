@@ -47,8 +47,8 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     if (!m_pluginObject.contains(pluginId)) {
         py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
         pathObj.append(qPrintable(QDir::toNativeSeparators(pluginPath)));
-        py::object mod = py::module::import(qPrintable(pluginName));
-        py::object pluginClass = mod.attr("getPlugin")();
+        py::object module = py::module::import(qPrintable(pluginName));
+        py::object pluginClass = module.attr("getPlugin")();
 
         m_pluginObject.insert(pluginId, pluginClass());
     }
@@ -98,6 +98,7 @@ void PluginMgr::initSettings(QSettings* setting) {
 
         // run setQSetting from launchy_util
         py::object launchyUtilModule = py::module::import("launchy_util");
+        launchyUtilModule.attr("setSettingsObject")();
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
@@ -123,13 +124,13 @@ PluginMgr::PluginMgr() {
 
     try {
         // import pluginconf.py
-        py::module::import("pluginconf");
+        py::module::import("launchy_util");
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
-        qDebug() << "pluginpy::PluginMgr::PluginMgr, pluginconf module not imported," << errInfo;
+        qDebug() << "pluginpy::PluginMgr::PluginMgr, launchy_util module not imported," << errInfo;
     }
 
 }
