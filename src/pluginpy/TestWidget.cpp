@@ -45,7 +45,7 @@ void pluginpy::TestWidget::initTestWidget() {
         // run setQSetting from launchy_util
         py::object launchyUtilModule = py::module::import("launchy_test");
 
-        //m_testWidget->show();
+        m_testWidget->show();
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();

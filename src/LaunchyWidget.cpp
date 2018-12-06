@@ -199,8 +199,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // start update checker
     UpdateChecker::instance().startup();
-
-    //pluginpy::TestWidget::instance().initTestWidget();
 }
 
 LaunchyWidget::~LaunchyWidget() {
@@ -288,6 +286,16 @@ void LaunchyWidget::showTrayIcon() {
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     if (!m_trayIcon->contextMenu()) {
         QMenu* trayMenu = new QMenu(this);
+
+#if 1
+        QAction* actTest = new QAction(tr("Test Widget"), this);
+        connect(actTest, &QAction::triggered, []() {
+            pluginpy::TestWidget::instance().initTestWidget();
+        });
+        trayMenu->addAction(actTest);
+        trayMenu->addSeparator();
+#endif
+
         trayMenu->addAction(m_actShow);
         trayMenu->addAction(m_actRebuild);
         trayMenu->addAction(m_actOptions);
@@ -1338,7 +1346,7 @@ void LaunchyWidget::createActions() {
     m_actExit = new QAction(tr("Exit"), this);
     connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
 
-    m_actRestart = new QAction(tr("Restart Launchy"), this);
+    m_actRestart = new QAction(tr("Restart"), this);
     connect(m_actRestart, &QAction::triggered, [=]() {
         qInfo() << "Performing application reboot...";
         // restart:
