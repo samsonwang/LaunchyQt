@@ -17,9 +17,11 @@
 #   * First public release
 #
 #import rpdb2; rpdb2.start_embedded_debugger("password")
-print("diary")
-import launchy
+
+print("plugin PyDiryPy")
+
 import sys, os
+import launchy
 
 import glob
 from CaselessDict import CaselessDict
@@ -34,15 +36,15 @@ from PyDiry import PyDiryGui
 
 class PyDiry(launchy.Plugin):
     __version__ = "1.0"
-    #setting_dir = "PyDiry/dirs"
+    setting_dir = "PyDiryPy"
     #setting_dir = "py_directories/dirs"
-    setting_dir = "py_speedcommander/dirs"
+    #setting_dir = "py_speedcommander/dirs"
 
     def __init__(self):
         launchy.Plugin.__init__(self)
 
         self.hash = launchy.hash(self.getName())
-        self.labelHash = launchy.hash("pydiry")
+#        self.labelHash = launchy.hash("pydiry")
 
         self.dirs = CaselessDict()
         #self.icon = self.getIcon()
@@ -52,7 +54,7 @@ class PyDiry(launchy.Plugin):
         pass
 
     def getID(self):
-        return self.hash
+        return int(self.hash)
 
     def getName(self):
         return "PyDiry"
@@ -90,11 +92,17 @@ class PyDiry(launchy.Plugin):
         pathContents.sort()
 
         for itemPath in pathContents:
-            resultsList.append( launchy.CatItem(itemPath, self.__makeShortName(itemPath), self.getID(), itemPath ) )
+            resultsList.append( launchy.CatItem(itemPath,
+                                                self.__makeShortName(itemPath),
+                                                self.getID(),
+                                                itemPath ) )
 
     def getCatalog(self, resultsList):
         for name,path in self.dirs.items():
-            resultsList.push_back( launchy.CatItem( name + ".pydiry", name, self.getID(), self.getIcon() ) )
+            resultsList.push_back( launchy.CatItem( name + ".pydiry",
+                                                    name,
+                                                    self.getID(),
+                                                    self.getIcon() ) )
 
     def launchItem(self, inputDataList, catItemOrig):
         catItem = inputDataList[-1].getTopResult()
