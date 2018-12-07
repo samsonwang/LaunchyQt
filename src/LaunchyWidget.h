@@ -66,7 +66,7 @@ public:
     void setSkin(const QString& name);
     void loadOptions();
     int getHotkey() const;
-    void startUpdateTimer();
+    void startRebuildTimer();
     void trayNotify(const QString& infoMsg);
 
 public slots:
@@ -153,7 +153,7 @@ protected:
     QAction* m_actRestart;
     QAction* m_actExit;
 
-    QTimer* m_updateTimer;
+    QTimer* m_rebuildTimer;
     QTimer* m_dropTimer;
 
     IconExtractor m_iconExtractor;

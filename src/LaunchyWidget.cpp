@@ -69,7 +69,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_trayIcon(new QSystemTrayIcon(this)),
       m_fader(new Fader(this)),
       m_pHotKey(new QHotkey(this)),
-      m_updateTimer(new QTimer(this)),
+      m_rebuildTimer(new QTimer(this)),
       m_dropTimer(new QTimer(this)),
       m_alwaysShowLaunchy(false),
       m_dragging(false),
@@ -193,9 +193,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     m_dropTimer->setSingleShot(true);
     connect(m_dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
 
-    m_updateTimer->setSingleShot(true);
-    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
-    startUpdateTimer();
+    m_rebuildTimer->setSingleShot(true);
+    connect(m_rebuildTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
+    startRebuildTimer();
 
     // start update checker
     UpdateChecker::instance().startup();
@@ -973,12 +973,14 @@ void LaunchyWidget::saveSettings() {
     m_history.save(SettingsManager::instance().historyFilename());
 }
 
-void LaunchyWidget::startUpdateTimer() {
-    int time = g_settings->value(OPSTION_UPDATETIMER, OPSTION_UPDATETIMER_DEFAULT).toInt();
-    if (time > 0)
-        m_updateTimer->start(time * 60000);
-    else
-        m_updateTimer->stop();
+void LaunchyWidget::startRebuildTimer() {
+    int time = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
+    if (time > 0) {
+        m_rebuildTimer->start(time * 60000);
+    }
+    else {
+        m_rebuildTimer->stop();
+    }
 }
 
 
@@ -1211,13 +1213,13 @@ void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) 
 }
 
 void LaunchyWidget::buildCatalog() {
-    m_updateTimer->stop();
+    m_rebuildTimer->stop();
     saveSettings();
 
     // Use the catalog builder to refresh the catalog in a worker thread
     QMetaObject::invokeMethod(g_builder.data(), &CatalogBuilder::buildCatalog);
 
-    startUpdateTimer();
+    startRebuildTimer();
 }
 
 void LaunchyWidget::showOptionDialog() {

@@ -82,7 +82,7 @@ OptionDialog::OptionDialog(QWidget * parent)
     m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
     m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
 
-    int updateInterval = g_settings->value(OPSTION_UPDATETIMER, OPSTION_UPDATETIMER_DEFAULT).toInt();
+    int updateInterval = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
     connect(m_pUi->genUpdateCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoUpdateCheckChanged(int)));
     m_pUi->genUpdateMinutes->setValue(updateInterval);
     m_pUi->genUpdateCatalog->setChecked(updateInterval > 0);
@@ -254,7 +254,7 @@ void OptionDialog::accept() {
     g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
     g_settings->setValue(OPSTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
     g_settings->setValue(OPSTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
-    g_settings->setValue(OPSTION_UPDATETIMER, m_pUi->genUpdateCatalog->isChecked() ? m_pUi->genUpdateMinutes->value() : 0);
+    g_settings->setValue(OPSTION_REBUILDTIMER, m_pUi->genUpdateCatalog->isChecked() ? m_pUi->genUpdateMinutes->value() : 0);
     g_settings->setValue(OPSTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
     g_settings->setValue(OPSTION_NUMRESULT, m_pUi->genNumResults->value());
     g_settings->setValue(OPSTION_MAXITEMSINHISTORY, m_pUi->genNumHistory->value());
@@ -267,7 +267,7 @@ void OptionDialog::accept() {
 
     // Apply General Options
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
-    g_mainWidget->startUpdateTimer();
+    g_mainWidget->startRebuildTimer();
     g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
     g_mainWidget->loadOptions();
 

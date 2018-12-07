@@ -51,8 +51,8 @@ extern const bool       OPSTION_SHOWNETWORK_DEFAULT;
 extern const char*      OPSTION_AUTOSUGGESTDELAY;
 extern const int        OPSTION_AUTOSUGGESTDELAY_DEFAULT;
 
-extern const char*      OPSTION_UPDATETIMER;
-extern const int        OPSTION_UPDATETIMER_DEFAULT;
+extern const char*      OPSTION_REBUILDTIMER;
+extern const int        OPSTION_REBUILDTIMER_DEFAULT;
 
 extern const char*      OPSTION_NUMVIEWABLE;
 extern const int        OPSTION_NUMVIEWABLE_DEFAULT;
