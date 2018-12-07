@@ -51,8 +51,8 @@ const bool      OPSTION_SHOWNETWORK_DEFAULT                    = false;
 const char*     OPSTION_AUTOSUGGESTDELAY                       = "GenOps/autoSuggestDelay";
 const int       OPSTION_AUTOSUGGESTDELAY_DEFAULT               = 1000;
 
-const char*     OPSTION_REBUILDTIMER                            = "GenOps/rebuildTimer";
-const int       OPSTION_REBUILDTIMER_DEFAULT                    = 30;
+const char*     OPSTION_REBUILDTIMER                           = "GenOps/rebuildTimer";
+const int       OPSTION_REBUILDTIMER_DEFAULT                   = 30;
 
 const char*     OPSTION_NUMVIEWABLE                            = "GenOps/numviewable";
 const int       OPSTION_NUMVIEWABLE_DEFAULT                    = 4;
