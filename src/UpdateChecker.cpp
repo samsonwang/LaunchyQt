@@ -88,6 +88,9 @@ void UpdateChecker::reloadConfig() {
 }
 
 void UpdateChecker::manualCheck() {
+    if (m_manualCheck) {
+        return;
+    }
     qDebug() << "UpdateChecker::manualCheck, doing manual check";
     m_manualCheck = true;
     getVersionInfo();
