@@ -23,6 +23,8 @@ import math
 import re
 import launchy
 
+from launchy import CatItem as CatItem
+
 # Based on http://www.peterbe.com/plog/calculator-in-python-for-dummies
 class Calculator:
     whitelist = '|'.join(
@@ -48,7 +50,7 @@ class Calculator:
                 return group + '.0'
             return group
         expr = expr.replace('^','**')
-        expr = Calculator.integers_regex.sub(whole_number_to_float, expr)
+#        expr = Calculator.integers_regex.sub(whole_number_to_float, expr)
         if advanced:
             return safe_eval(expr, vars(math))
         else:
@@ -86,11 +88,86 @@ class CalcyPy(launchy.Plugin):
             return
 
         try:
-            result = Calculator.calc(text, advanced=True)
+            ret = Calculator.calc(text, advanced=True)
         except:
-            pass
+            ret = None
+
+        if isinstance(ret, int):
+            retInFloat = None
+
+            # hex
+            retInHex = '0x%x' % ret
+
+            # dec
+            retInDec = ret
+
+            # octal
+            retInOct = '0%o' % ret
+
+            # bin
+            retb = format(ret, '032b')
+            retInBin = ""
+            for i in range(len(retb)):
+                retInBin += retb[i] if (i % 4 or i == 0) else ("," + retb[i])
+
+            # size
+            retInSize = ""
+
+            size_giga_bytes = int(ret / (1024 ** 3)) if int(ret / (1024 ** 3)) else 0
+            ret -= size_giga_bytes * (1024 ** 3)
+            retInSize += "%s GB " % size_giga_bytes if size_giga_bytes else ""
+
+            size_mega_bytes = int(ret / (1024 * 1024)) if int(ret / (1024 * 1024)) else 0
+            ret -= size_mega_bytes * (1024 ** 2)
+            retInSize += "%s MB " % size_mega_bytes if size_mega_bytes else ""
+
+            size_kilo_bytes = int(ret / (1024)) if int(ret / (1024)) else 0
+            ret -= size_mega_bytes * (1024 ** 1)
+            retInSize += "%s KB " % size_kilo_bytes if size_kilo_bytes else ""
+
+            size_bytes = int(ret % (1024)) if int(ret % (1024)) else 0
+            retInSize += "%s B " % size_bytes if size_bytes else ""
+
+            if not retInSize:
+                retInSize = "0 B"
+
         else:
-            resultsList.append(launchy.CatItem(str(result)+".calcypy", str(result), self.getID(), self.getIcon() ) )
+             retInFloat = ret
+             retInHex = None
+             retInDec = None
+             retInOct = None
+             retInBin = None
+             retInSize = None
+
+        if retInFloat is not None:
+            resultsList.append(CatItem("float.calcypy",
+                                       "%s" % (retInFloat),
+                                       self.getID(), self.getIcon()))
+
+        if retInDec is not None:
+            resultsList.append(CatItem("dec.calcpy",
+                                       str(retInDec),
+                                       self.getID(), self.getIcon()))
+
+        if retInOct is not None:
+            resultsList.append(CatItem("oct.calcpy",
+                                       str(retInOct),
+                                       self.getID(), self.getIcon()))
+
+        if retInHex is not None:
+            resultsList.append(CatItem("hex.calcpy",
+                                       str(retInHex),
+                                       self.getID(), self.getIcon()))
+
+        if retInBin is not None:
+            resultsList.append(CatItem("bin.calcpy",
+                                       str(retInBin),
+                                       self.getID(), self.getIcon()))
+
+        if retInSize is not None:
+            resultsList.append(CatItem("size.calcpy",
+                                       "%s" % (retInSize),
+                                       self.getID(), self.getIcon()))
 
     def getCatalog(self, resultsList):
         pass
