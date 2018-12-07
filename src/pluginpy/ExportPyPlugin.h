@@ -44,6 +44,9 @@ public:
     virtual void launchyHide() = 0;
 };
 
+// do not throw std::runtime_error when function is not overrided
+#define PYBIND11_OVERLOAD_PURE_NOEXCEPT(ret_type, cname, fn, ...) \
+        PYBIND11_OVERLOAD_INT(ret_type, cname, #fn, __VA_ARGS__)
 
 class PluginHelper : public Plugin {
 public:
@@ -52,7 +55,7 @@ public:
 
     /* Trampoline (need one for each virtual function) */
     void init() override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,           /* Return type */
             Plugin,         /* Parent class */
             init            /* Name of function in C++ (must match Python name) */
@@ -77,7 +80,7 @@ public:
     }
 
     void setPath(const std::string& path) override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             setPath,
@@ -86,7 +89,7 @@ public:
     }
 
     void getLabels(const std::vector<InputData>& inputDataList) override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             getLabels,
@@ -96,7 +99,7 @@ public:
 
     void getResults(const std::vector<InputData>& inputDataList,
                     const CatItemList& resultsList) override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             getResults,
@@ -125,7 +128,7 @@ public:
 
     void launchItem(const std::vector<InputData>& inputDataList,
                     const CatItem& item) override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             launchItem,
@@ -143,14 +146,14 @@ public:
     }
 
     void* doDialog(void* parentWidget) override {
-        PyObject* pw = PyLong_FromVoidPtr(parentWidget);
-        auto pwo = py::handle(pw);
-        py::object result;
-
         pybind11::gil_scoped_acquire gil;
-        pybind11::function overload = pybind11::get_overload(static_cast<const Plugin *>(this), "doDialog");
+        pybind11::function overload = pybind11::get_overload(static_cast<const Plugin*>(this), "doDialog");
         if (overload) {
+            PyObject* pw = PyLong_FromVoidPtr(parentWidget);
+            auto pwo = py::handle(pw);
+            py::object result;
             auto o = overload(pwo);
+
             if (pybind11::detail::cast_is_temporary_value_reference<py::object>::value) {
                 static pybind11::detail::overload_caster_t<py::object> caster;
                 result = pybind11::detail::cast_ref<py::object>(std::move(o), caster);
@@ -158,29 +161,20 @@ public:
             else {
                 result = pybind11::detail::cast_safe<py::object>(std::move(o));
             }
-        }
-        
-        PyObject* resultPtr = result.ptr();
-        const bool isLong = PyObject_IsInstance(resultPtr, (PyObject*)&PyLong_Type);
-        if (isLong) {
-            return PyLong_AsVoidPtr(resultPtr);
-        }
-        else {
-            return NULL;
+
+            PyObject* resultPtr = result.ptr();
+            if (resultPtr
+                && PyObject_IsInstance(resultPtr, (PyObject*)&PyLong_Type)) {
+                return PyLong_AsVoidPtr(resultPtr);
+            }
         }
 
-        /*
-        PYBIND11_OVERLOAD_PURE(
-            void*,
-            Plugin,
-            doDialog,
-            parentWidget
-        );
-        */
+        return NULL;
     }
 
     void endDialog(bool accept) override {
-        PYBIND11_OVERLOAD_PURE(
+        //PYBIND11_OVERLOAD_PURE
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             endDialog,
@@ -189,7 +183,7 @@ public:
     }
 
     void launchyShow() override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             launchyShow
@@ -197,7 +191,7 @@ public:
     }
 
     void launchyHide() override {
-        PYBIND11_OVERLOAD_PURE(
+        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
             void,
             Plugin,
             launchyHide
