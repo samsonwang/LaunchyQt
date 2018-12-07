@@ -146,11 +146,12 @@ protected:
     QHotkey* m_pHotKey;
 
     QAction* m_actShow;
-    QAction* m_actRebuild;
     QAction* m_actReloadSkin;
+    QAction* m_actRebuild;
     QAction* m_actOptions;
-    QAction* m_actExit;
+    QAction* m_actCheckUpdate;
     QAction* m_actRestart;
+    QAction* m_actExit;
 
     QTimer* m_updateTimer;
     QTimer* m_dropTimer;

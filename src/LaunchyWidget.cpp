@@ -297,8 +297,11 @@ void LaunchyWidget::showTrayIcon() {
 #endif
 
         trayMenu->addAction(m_actShow);
+        trayMenu->addAction(m_actReloadSkin);
         trayMenu->addAction(m_actRebuild);
+        trayMenu->addSeparator();
         trayMenu->addAction(m_actOptions);
+        trayMenu->addAction(m_actCheckUpdate);
         trayMenu->addSeparator();
         trayMenu->addAction(m_actRestart);
         trayMenu->addAction(m_actExit);
@@ -1328,31 +1331,36 @@ void LaunchyWidget::createActions() {
     m_actShow = new QAction(tr("Show Launchy"), this);
     connect(m_actShow, SIGNAL(triggered()), this, SLOT(showLaunchy()));
 
-    m_actRebuild = new QAction(tr("Rebuild catalog"), this);
-    m_actRebuild->setShortcut(QKeySequence(Qt::Key_F5));
-    connect(m_actRebuild, SIGNAL(triggered()), this, SLOT(buildCatalog()));
-    addAction(m_actRebuild);
-
     m_actReloadSkin = new QAction(tr("Reload skin"), this);
     m_actReloadSkin->setShortcut(QKeySequence(Qt::Key_F5 | Qt::SHIFT));
     connect(m_actReloadSkin, SIGNAL(triggered()), this, SLOT(reloadSkin()));
     addAction(m_actReloadSkin);
+
+    m_actRebuild = new QAction(tr("Rebuild catalog"), this);
+    m_actRebuild->setShortcut(QKeySequence(Qt::Key_F5));
+    connect(m_actRebuild, SIGNAL(triggered()), this, SLOT(buildCatalog()));
+    addAction(m_actRebuild);
 
     m_actOptions = new QAction(tr("Options"), this);
     m_actOptions->setShortcut(QKeySequence(Qt::Key_Comma | Qt::CTRL));
     connect(m_actOptions, SIGNAL(triggered()), this, SLOT(showOptionDialog()));
     addAction(m_actOptions);
 
-    m_actExit = new QAction(tr("Exit"), this);
-    connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
+    m_actCheckUpdate = new QAction(tr("Check for updates"), this);
+    connect(m_actCheckUpdate, &QAction::triggered, []() {
+        UpdateChecker::instance().manualCheck();
+    });
 
     m_actRestart = new QAction(tr("Restart"), this);
-    connect(m_actRestart, &QAction::triggered, [=]() {
+    connect(m_actRestart, &QAction::triggered, []() {
         qInfo() << "Performing application reboot...";
         // restart:
         //qApp->closeAllWindows();
         qApp->quit();
         QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
     });
+
+    m_actExit = new QAction(tr("Exit"), this);
+    connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
 }
 }
