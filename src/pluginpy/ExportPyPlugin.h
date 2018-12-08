@@ -111,7 +111,8 @@ public:
     void getCatalog(const CatItemList& resultsList) override {
 
         //pybind11::gil_scoped_acquire gil;
-        pybind11::function overload = pybind11::get_overload(static_cast<const Plugin *>(this), "getCatalog");
+        py::function overload = py::get_overload(static_cast<const Plugin*>(this),
+                                                 "getCatalog");
         if (overload) {
             overload(resultsList);
         }
@@ -146,20 +147,21 @@ public:
     }
 
     void* doDialog(void* parentWidget) override {
-        pybind11::gil_scoped_acquire gil;
-        pybind11::function overload = pybind11::get_overload(static_cast<const Plugin*>(this), "doDialog");
+        py::gil_scoped_acquire gil;
+        py::function overload = py::get_overload(static_cast<const Plugin*>(this),
+                                                 "doDialog");
         if (overload) {
             PyObject* pw = PyLong_FromVoidPtr(parentWidget);
             auto pwo = py::handle(pw);
             py::object result;
             auto o = overload(pwo);
 
-            if (pybind11::detail::cast_is_temporary_value_reference<py::object>::value) {
-                static pybind11::detail::overload_caster_t<py::object> caster;
-                result = pybind11::detail::cast_ref<py::object>(std::move(o), caster);
+            if (py::detail::cast_is_temporary_value_reference<py::object>::value) {
+                static py::detail::overload_caster_t<py::object> caster;
+                result = py::detail::cast_ref<py::object>(std::move(o), caster);
             }
             else {
-                result = pybind11::detail::cast_safe<py::object>(std::move(o));
+                result = py::detail::cast_safe<py::object>(std::move(o));
             }
 
             PyObject* resultPtr = result.ptr();

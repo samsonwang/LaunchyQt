@@ -23,9 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace py = pybind11;
 
-//#include "ScriptPluginsSynchronizer.h"
-//#include "PythonUtils.h"
-
 namespace pluginpy {
 
 QMutex PluginWrapper::s_inPythonLock;
@@ -81,8 +78,6 @@ void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launc
 }
 
 void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
-    //return;
-
     exportpy::CatItemList resultList(catItem);
     m_plugin->getCatalog(resultList);
 }
@@ -103,14 +98,12 @@ bool PluginWrapper::hasDialog() {
 }
 
 void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
-    //return;
     //m_scriptPluginsSynchronizer.enteringDoDialog();
 
     void* result = m_plugin->doDialog((void*)parent);
 
     if (result) {
         *newDlg = static_cast<QWidget*>(result);
-        //*newDlg = NULL;
     }
     else {
         *newDlg = NULL;
@@ -118,10 +111,7 @@ void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
 }
 
 void PluginWrapper::endDialog(bool accept) {
-    //return;
-
     m_plugin->endDialog(accept);
-
     // m_scriptPluginsSynchronizer.finishedEndDialog();
 }
 
