@@ -48,7 +48,7 @@ const char*     OPTION_APPSTYLE_DEFAULT                        = "windowsvista";
 #elif defined(Q_OS_MAC)
 const char*     OPTION_APPSTYLE_DEFAULT                        = "macintosh";
 #elif defined(Q_OS_LINUX)
-const char*     OPTION_APPSTYLE_DEFAULT                        = "GTK";
+const char*     OPTION_APPSTYLE_DEFAULT                        = "gtk";
 #endif
 
 const char*     OPSTION_SHOWHIDDENFILES                        = "GenOps/showHiddenFiles";

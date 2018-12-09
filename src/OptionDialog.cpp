@@ -564,6 +564,11 @@ void OptionDialog::initGeneralWidget() {
     
     QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
 
+    QStringList styles = QStyleFactory::keys();
+    foreach (QString style, styles) {
+        m_pUi->cbAppStyle->addItem(style, style.toLower());
+    }
+    /*
     m_pUi->cbAppStyle->addItem(tr("Fusion"), "fusion");
 #if defined(Q_OS_WIN)
     m_pUi->cbAppStyle->addItem(tr("Windows"), "windows");
@@ -575,7 +580,7 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->cbAppStyle->addItem(tr("GTK"), "GTK");
     m_pUi->cbAppStyle->addItem(tr("Cleanlooks"), "cleanlooks");
 #endif
-
+*/
     int appStyleIndex = 0;
     int appStyleCount = m_pUi->cbAppStyle->count();
     for (int i = 0; i < appStyleCount; ++i) {
