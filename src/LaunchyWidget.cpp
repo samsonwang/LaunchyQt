@@ -140,8 +140,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
     // If this is the first time running or a new version, call updateVersion
-    if (g_settings->value(OPSTION_VERSION, OPSTION_VERSION_DEFAULT).toInt() != LAUNCHY_VERSION) {
-        updateVersion(g_settings->value(OPSTION_VERSION, OPSTION_VERSION_DEFAULT).toInt());
+    int version = g_settings->value(OPSTION_VERSION, OPSTION_VERSION_DEFAULT).toInt();
+    if (version != LAUNCHY_VERSION) {
+        updateVersion(version);
         command |= ShowLaunchy;
     }
 
@@ -170,9 +171,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         command |= Rescan;
     }
 
-    // Load the plugins
-    PluginHandler::instance().loadPlugins();
-
     // Load the history
     m_history.load(SettingsManager::instance().historyFilename());
 
@@ -182,8 +180,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // Move to saved position
     loadPosition(g_settings->value(OPSTION_POS, OPSTION_POS_DEFAULT).toPoint());
-
-    executeStartupCommand(command);
 
     connect(g_app.data(), &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
@@ -198,6 +194,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // start update checker
     UpdateChecker::instance().startup();
+
+    // Load the plugins
+    PluginHandler::instance().loadPlugins();
+
+    executeStartupCommand(command);
 }
 
 LaunchyWidget::~LaunchyWidget() {
