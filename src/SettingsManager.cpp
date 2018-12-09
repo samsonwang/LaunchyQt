@@ -63,6 +63,10 @@ void SettingsManager::load() {
     qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 
+    // set application style
+    QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
+    qApp->setStyle(QStyleFactory::create(appStyle));
+
     // load proxy
     QNetworkProxy::ProxyType proxyType
         = g_settings->value(OPTION_PROXY_TYPE,
@@ -74,7 +78,6 @@ void SettingsManager::load() {
                                            OPTION_PROXY_SERVER_PORT_DEFAULT).toString();
     bool requirePassword = g_settings->value(OPTION_PROXY_REQUIRE_PASSWORD,
                                              OPTION_PROXY_REQUIRE_PASSWORD_DEFAULT).toBool();
-
 
     QNetworkProxy proxy;
     proxy.setType(proxyType);
@@ -90,8 +93,6 @@ void SettingsManager::load() {
     }
 
     QNetworkProxy::setApplicationProxy(proxy);
-
-
 }
 
 bool SettingsManager::isPortable() const {
@@ -101,7 +102,6 @@ bool SettingsManager::isPortable() const {
 QList<QString> SettingsManager::directory(QString name) const {
     return m_dirs[name];
 }
-
 
 QString SettingsManager::catalogFilename() const {
     return configDirectory(m_portable) + dbName;

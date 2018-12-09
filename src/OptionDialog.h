@@ -44,6 +44,12 @@ protected:
     virtual void showEvent(QShowEvent* event);
 
 private:
+    // general
+    void initGeneralWidget();
+    void saveGeneralSettings();
+    // skin
+    void initSkinWidget();
+    void saveSkinSettings();
     // catalog
     void initCatalogWidget();
     void saveCatalogSettings();
@@ -64,9 +70,9 @@ private:
     // void connectCatalogBuilderEvents();
 
 private slots:
-    void logLevelChanged(int index);
-    void autoUpdateCheckChanged(int state);
     void tabChanged(int tab);
+    // general
+    void onAppStyleChanged(int index);
     // skins
     void skinChanged(const QString& newSkin);
     // catalog
@@ -91,6 +97,9 @@ private slots:
     // proxy
     void onProxyTypeChanged(int index);
     void onProxyRequiresPasswordToggled(bool checked);
+    // system
+    void autoRebuildCheckChanged(int state);
+    void logLevelChanged(int index);
 
 private:
     Ui::OptionDialog* m_pUi;
@@ -103,6 +112,8 @@ private:
     QList<int> iMetaKeys;
     QList<int> iActionKeys;
     QList<Directory> m_memDirs;
+
+    bool m_showLaunchy;
 
     //QList<QPair<QString, uint>> pluginNames;
     //QVBoxLayout* pluginLayout;

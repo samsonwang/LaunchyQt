@@ -44,8 +44,6 @@ AppBase::AppBase(int& argc, char** argv)
     setApplicationName("LaunchyQt");
     setOrganizationName("LaunchyQt");
     setOrganizationDomain("launchyqt.com");
-    setStyle(QStyleFactory::create("Fusion"));
-
 
 }
 
