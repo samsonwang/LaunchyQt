@@ -829,11 +829,25 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
             <property name="spacing">
-             <number>2</number>
+             <number>1</number>
             </property>
            </widget>
           </item>
@@ -965,11 +979,16 @@
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="launchy::DropListWidget" name="catDirectories">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
               <property name="spacing">
-               <number>2</number>
+               <number>1</number>
               </property>
              </widget>
             </item>
@@ -1112,11 +1131,16 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
             <property name="spacing">
-             <number>2</number>
+             <number>1</number>
             </property>
            </widget>
           </item>
@@ -1212,6 +1236,11 @@
          <layout class="QVBoxLayout">
           <item>
            <widget class="QListWidget" name="plugList">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1222,7 +1251,7 @@
              <number>0</number>
             </property>
             <property name="spacing">
-             <number>2</number>
+             <number>1</number>
             </property>
             <property name="selectionRectVisible">
              <bool>false</bool>
