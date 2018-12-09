@@ -43,7 +43,13 @@ const char*     OPSTION_DRAGMODE                               = "GenOps/dragmod
 const bool      OPSTION_DRAGMODE_DEFAULT                       = false;
 
 const char*     OPTION_APPSTYLE                                = "GenOps/appStyle";
-const char*     OPTION_APPSTYLE_DEFAULT                        = "Native";
+#if defined(Q_OS_WIN)
+const char*     OPTION_APPSTYLE_DEFAULT                        = "windowsvista";
+#elif defined(Q_OS_MAC)
+const char*     OPTION_APPSTYLE_DEFAULT                        = "macintosh";
+#elif defined(Q_OS_LINUX)
+const char*     OPTION_APPSTYLE_DEFAULT                        = "GTK";
+#endif
 
 const char*     OPSTION_SHOWHIDDENFILES                        = "GenOps/showHiddenFiles";
 const bool      OPSTION_SHOWHIDDENFILES_DEFAULT                = false;
