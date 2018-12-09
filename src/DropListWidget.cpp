@@ -31,15 +31,16 @@ DropListWidget::~DropListWidget() {
 
 void DropListWidget::dragEnterEvent(QDragEnterEvent *event) {
     emit dragEnter(event);
+    event->acceptProposedAction();
 }
-
 
 void DropListWidget::dragMoveEvent(QDragMoveEvent *event) {
     emit dragMove(event);
+    event->acceptProposedAction();
 }
-
 
 void DropListWidget::dropEvent(QDropEvent *event) {
     emit drop(event);
+    event->acceptProposedAction();
 }
 }
