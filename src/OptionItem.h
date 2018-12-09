@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace launchy {
 
+// general
 extern const char*      OPSTION_ALWAYSSHOW;
 extern const bool       OPSTION_ALWAYSSHOW_DEFAULT;
 
@@ -41,6 +42,9 @@ extern const int        OPSTION_ALWAYSCENTER_DEFAULT;
 
 extern const char*      OPSTION_DRAGMODE;
 extern const bool       OPSTION_DRAGMODE_DEFAULT;
+
+extern const char*      OPTION_APPSTYLE;
+extern const char*      OPTION_APPSTYLE_DEFAULT;
 
 extern const char*      OPSTION_SHOWHIDDENFILES;
 extern const bool       OPSTION_SHOWHIDDENFILES_DEFAULT;

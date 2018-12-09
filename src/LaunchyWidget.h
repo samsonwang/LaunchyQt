@@ -64,7 +64,6 @@ public:
     bool setAlwaysShow(bool alwaysShow);
     bool setAlwaysTop(bool alwaysTop);
     void setSkin(const QString& name);
-    void loadOptions();
     int getHotkey() const;
     void startRebuildTimer();
     void trayNotify(const QString& infoMsg);

@@ -61,132 +61,11 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     //restoreGeometry(s_windowGeometry);
     m_pUi->tabWidget->setCurrentIndex(0);
-
-    // Load General Options		
-    m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
-    m_pUi->genAlwaysTop->setChecked(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
-    m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
-    m_pUi->genHideFocus->setChecked(g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
-    m_pUi->genDecorateText->setChecked(g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool());
-
-    int center = g_settings->value(OPSTION_ALWAYSCENTER, OPSTION_ALWAYSCENTER_DEFAULT).toInt();
-    m_pUi->genHCenter->setChecked((center & 1) != 0);
-    m_pUi->genVCenter->setChecked((center & 2) != 0);
-
-    m_pUi->genShiftDrag->setChecked(g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool());
-    m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
-    connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
-
-    m_pUi->genShowHidden->setChecked(g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool());
-    m_pUi->genShowNetwork->setChecked(g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool());
-    m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
-    m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
-
-    int updateInterval = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
-    connect(m_pUi->genUpdateCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoUpdateCheckChanged(int)));
-    m_pUi->genUpdateMinutes->setValue(updateInterval);
-    m_pUi->genUpdateCatalog->setChecked(updateInterval > 0);
-    m_pUi->genMaxViewable->setValue(g_settings->value(OPSTION_NUMVIEWABLE, OPSTION_NUMVIEWABLE_DEFAULT).toInt());
-    m_pUi->genNumResults->setValue(g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt());
-    m_pUi->genNumHistory->setValue(g_settings->value(OPSTION_MAXITEMSINHISTORY, OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt());
-    m_pUi->genOpaqueness->setValue(g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt());
-    m_pUi->genFadeIn->setValue(g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt());
-    m_pUi->genFadeOut->setValue(g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt());
-    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
-
-#ifdef Q_OS_MAC
-    metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
-        << QString("Command+Alt") << QString("Command+Shift") << QString("Command+Control");
-#else
-    metaKeys << QString("") << QString("Alt") << QString("Control") << QString("Shift") << QString("Win")
-        << QString("Ctrl+Alt") << QString("Ctrl+Shift") << QString("Ctrl+Win");
-#endif
-    iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier
-        << (Qt::ControlModifier | Qt::AltModifier) << (Qt::ControlModifier | Qt::ShiftModifier)
-        << (Qt::ControlModifier | Qt::MetaModifier);
-
-    actionKeys << QString("Space") << QString("Tab") << QString("Caps Lock") << QString("Backspace")
-        << QString("Enter") << QString("Esc") << QString("Insert") << QString("Delete") << QString("Home")
-        << QString("End") << QString("Page Up") << QString("Page Down") << QString("Print") << QString("Scroll Lock")
-        << QString("Pause") << QString("Num Lock")
-        << tr("Up") << tr("Down") << tr("Left") << tr("Right")
-        << QString("F1") << QString("F2") << QString("F3") << QString("F4") << QString("F5")
-        << QString("F6") << QString("F7") << QString("F8") << QString("F9") << QString("F10")
-        << QString("F11") << QString("F12") << QString("F13") << QString("F14") << QString("F15");
-
-    iActionKeys << Qt::Key_Space << Qt::Key_Tab << Qt::Key_CapsLock << Qt::Key_Backspace << Qt::Key_Enter << Qt::Key_Escape <<
-        Qt::Key_Insert << Qt::Key_Delete << Qt::Key_Home << Qt::Key_End << Qt::Key_PageUp << Qt::Key_PageDown <<
-        Qt::Key_Print << Qt::Key_ScrollLock << Qt::Key_Pause << Qt::Key_NumLock <<
-        Qt::Key_Up << Qt::Key_Down << Qt::Key_Left << Qt::Key_Right <<
-        Qt::Key_F1 << Qt::Key_F2 << Qt::Key_F3 << Qt::Key_F4 << Qt::Key_F5 << Qt::Key_F6 << Qt::Key_F7 << Qt::Key_F8 <<
-        Qt::Key_F9 << Qt::Key_F10 << Qt::Key_F11 << Qt::Key_F12 << Qt::Key_F13 << Qt::Key_F14 << Qt::Key_F15;
-
-    for (int i = '0'; i <= '9'; ++i) {
-        actionKeys << QString(QChar(i));
-        iActionKeys << i;
-    }
-
-    for (int i = 'A'; i <= 'Z'; ++i) {
-        actionKeys << QString(QChar(i));
-        iActionKeys << i;
-    }
-
-    actionKeys << "`" << "-" << "=" << "[" << "]" <<
-        ";" << "'" << "#" << "\\" << "," << "." << "/";
-
-    iActionKeys << '`' << '-' << '=' << '[' << ']' <<
-        ';' << '\'' << '#' << '\\' << ',' << '.' << '/';
-
-    // Find the current hotkey
-    int hotkey = g_mainWidget->getHotkey();
-    int meta = hotkey & (Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
-    hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
-
-    for (int i = 0; i < metaKeys.count(); ++i) {
-        m_pUi->genModifierBox->addItem(metaKeys[i]);
-        if (iMetaKeys[i] == meta)
-            m_pUi->genModifierBox->setCurrentIndex(i);
-    }
-
-    for (int i = 0; i < actionKeys.count(); ++i) {
-        m_pUi->genKeyBox->addItem(actionKeys[i]);
-        if (iActionKeys[i] == hotkey)
-            m_pUi->genKeyBox->setCurrentIndex(i);
-    }
-
-    // Load up web proxy settings
-//     m_pUi->genProxyHostname->setText(g_settings->value(OPSTION_HOSTADDRESS).toString());
-//     m_pUi->genProxyPort->setText(g_settings->value(OPSTION_HOSTPORT).toString());
-
-    // Load up the skins list
-    QString skinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
-
-    int skinRow = 0;
-    QHash<QString, bool> knownSkins;
-    foreach(QString szDir, SettingsManager::instance().directory("skins")) {
-        QDir dir(szDir);
-        QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-
-        foreach(QString d, dirs) {
-            if (knownSkins.contains(d))
-                continue;
-            knownSkins[d] = true;
-
-            QFile f(dir.absolutePath() + "/" + d + "/style.qss");
-            // Only look for 2.0+ skins
-            if (!f.exists())
-                continue;
-
-            QListWidgetItem* item = new QListWidgetItem(d);
-            m_pUi->skinList->addItem(item);
-
-            if (skinName.compare(d, Qt::CaseInsensitive) == 0)
-                skinRow = m_pUi->skinList->count() - 1;
-        }
-    }
-    m_pUi->skinList->setCurrentRow(skinRow);
-
     connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+
+    initGeneralWidget();
+
+    initSkinWidget();
 
     initCatalogWidget();
 
@@ -231,45 +110,9 @@ void OptionDialog::accept() {
         return;
     }
 
-    // See if the new hotkey works, if not we're not leaving the dialog.
-    QKeySequence hotkey(iMetaKeys[m_pUi->genModifierBox->currentIndex()] + iActionKeys[m_pUi->genKeyBox->currentIndex()]);
-    if (!g_mainWidget->setHotkey(hotkey)) {
-        QMessageBox::warning(this, tr("Launchy"), 
-                             tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
-        return;
-    }
+    saveGeneralSettings();
 
-    g_settings->setValue(OPSTION_HOTKEY, hotkey.count() > 0 ? hotkey[0] : OPSTION_HOTKEY_DEFAULT);
-
-    // Save General Options
-//	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
-    g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
-    g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
-    g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
-    g_settings->setValue(OPSTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
-    g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
-    g_settings->setValue(OPSTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
-    g_settings->setValue(OPSTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
-    g_settings->setValue(OPSTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
-    g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
-    g_settings->setValue(OPSTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
-    g_settings->setValue(OPSTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
-    g_settings->setValue(OPSTION_REBUILDTIMER, m_pUi->genUpdateCatalog->isChecked() ? m_pUi->genUpdateMinutes->value() : 0);
-    g_settings->setValue(OPSTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
-    g_settings->setValue(OPSTION_NUMRESULT, m_pUi->genNumResults->value());
-    g_settings->setValue(OPSTION_MAXITEMSINHISTORY, m_pUi->genNumHistory->value());
-    g_settings->setValue(OPSTION_OPAQUENESS, m_pUi->genOpaqueness->value());
-    g_settings->setValue(OPSTION_FADEIN, m_pUi->genFadeIn->value());
-    g_settings->setValue(OPSTION_FADEOUT, m_pUi->genFadeOut->value());
-
-//     g_settings->setValue(OPSTION_HOSTADDRESS, m_pUi->genProxyHostname->text());
-//     g_settings->setValue(OPSTION_HOSTPORT, m_pUi->genProxyPort->text());
-
-    // Apply General Options
-    SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
-    g_mainWidget->startRebuildTimer();
-    g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
-    g_mainWidget->loadOptions();
+    saveSkinSettings();
 
     saveCatalogSettings();
 
@@ -283,26 +126,11 @@ void OptionDialog::accept() {
 
     QDialog::accept();
 
-    // Now save the options that require launchy to be shown or redrawed
-    bool show = g_mainWidget->setAlwaysShow(m_pUi->genAlwaysShow->isChecked());
-    show |= g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
-
-    g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
-
-    // Apply Skin Options
-    QString prevSkinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
-    QString currentSkinName = m_pUi->skinList->currentItem()->text();
-    if (m_pUi->skinList->currentRow() >= 0 && currentSkinName != prevSkinName) {
-        g_settings->setValue(OPSTION_SKIN, currentSkinName);
-        g_mainWidget->setSkin(currentSkinName);
-        show |= true;
-    }
-
     if (m_needRescan) {
         g_mainWidget->buildCatalog();
     }
 
-    if (show) {
+    if (m_showLaunchy) {
         g_mainWidget->showLaunchy();
     }
 }
@@ -345,12 +173,18 @@ void OptionDialog::tabChanged(int tab) {
     }
 }
 
-void OptionDialog::autoUpdateCheckChanged(int state) {
-    m_pUi->genUpdateMinutes->setEnabled(state > 0);
-    if (m_pUi->genUpdateMinutes->value() <= 0)
-        m_pUi->genUpdateMinutes->setValue(10);
+
+void OptionDialog::onAppStyleChanged(int index) {
+    QString appStyle = m_pUi->cbAppStyle->itemData(index).toString();
+    qApp->setStyle(QStyleFactory::create(appStyle));
 }
 
+void OptionDialog::autoRebuildCheckChanged(int state) {
+    m_pUi->genRebuildMinutes->setEnabled(state > 0);
+    if (m_pUi->genRebuildMinutes->value() <= 0) {
+        m_pUi->genRebuildMinutes->setValue(OPSTION_REBUILDTIMER_DEFAULT);
+    }
+}
 
 void OptionDialog::skinChanged(const QString& newSkin)
 {
@@ -632,6 +466,217 @@ void OptionDialog::catDirMinusClicked(bool c) {
 void OptionDialog::catDirPlusClicked(bool c) {
     Q_UNUSED(c)
     addDirectory("", true);
+}
+
+
+void OptionDialog::initGeneralWidget() {
+    // Load General Options
+    m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
+    m_pUi->genAlwaysTop->setChecked(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
+    m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
+    m_pUi->genHideFocus->setChecked(g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
+    m_pUi->genDecorateText->setChecked(g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool());
+
+    int center = g_settings->value(OPSTION_ALWAYSCENTER, OPSTION_ALWAYSCENTER_DEFAULT).toInt();
+    m_pUi->genHCenter->setChecked((center & 1) != 0);
+    m_pUi->genVCenter->setChecked((center & 2) != 0);
+
+    m_pUi->genShiftDrag->setChecked(g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool());
+    m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
+    connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
+
+    m_pUi->genShowHidden->setChecked(g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool());
+    m_pUi->genShowNetwork->setChecked(g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool());
+    m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
+    m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
+
+    int updateInterval = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
+    connect(m_pUi->genRebuildCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoRebuildCheckChanged(int)));
+    m_pUi->genRebuildMinutes->setValue(updateInterval);
+    m_pUi->genRebuildCatalog->setChecked(updateInterval > 0);
+    m_pUi->genMaxViewable->setValue(g_settings->value(OPSTION_NUMVIEWABLE, OPSTION_NUMVIEWABLE_DEFAULT).toInt());
+    m_pUi->genNumResults->setValue(g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt());
+    m_pUi->genNumHistory->setValue(g_settings->value(OPSTION_MAXITEMSINHISTORY, OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt());
+    m_pUi->genOpaqueness->setValue(g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt());
+    m_pUi->genFadeIn->setValue(g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt());
+    m_pUi->genFadeOut->setValue(g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt());
+    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
+
+#ifdef Q_OS_MAC
+    metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
+        << QString("Command+Alt") << QString("Command+Shift") << QString("Command+Control");
+#else
+    metaKeys << QString("") << QString("Alt") << QString("Control") << QString("Shift") << QString("Win")
+        << QString("Ctrl+Alt") << QString("Ctrl+Shift") << QString("Ctrl+Win");
+#endif
+    iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier
+        << (Qt::ControlModifier | Qt::AltModifier) << (Qt::ControlModifier | Qt::ShiftModifier)
+        << (Qt::ControlModifier | Qt::MetaModifier);
+
+    actionKeys << QString("Space") << QString("Tab") << QString("Caps Lock") << QString("Backspace")
+        << QString("Enter") << QString("Esc") << QString("Insert") << QString("Delete") << QString("Home")
+        << QString("End") << QString("Page Up") << QString("Page Down") << QString("Print") << QString("Scroll Lock")
+        << QString("Pause") << QString("Num Lock")
+        << tr("Up") << tr("Down") << tr("Left") << tr("Right")
+        << QString("F1") << QString("F2") << QString("F3") << QString("F4") << QString("F5")
+        << QString("F6") << QString("F7") << QString("F8") << QString("F9") << QString("F10")
+        << QString("F11") << QString("F12") << QString("F13") << QString("F14") << QString("F15");
+
+    iActionKeys << Qt::Key_Space << Qt::Key_Tab << Qt::Key_CapsLock << Qt::Key_Backspace << Qt::Key_Enter << Qt::Key_Escape <<
+        Qt::Key_Insert << Qt::Key_Delete << Qt::Key_Home << Qt::Key_End << Qt::Key_PageUp << Qt::Key_PageDown <<
+        Qt::Key_Print << Qt::Key_ScrollLock << Qt::Key_Pause << Qt::Key_NumLock <<
+        Qt::Key_Up << Qt::Key_Down << Qt::Key_Left << Qt::Key_Right <<
+        Qt::Key_F1 << Qt::Key_F2 << Qt::Key_F3 << Qt::Key_F4 << Qt::Key_F5 << Qt::Key_F6 << Qt::Key_F7 << Qt::Key_F8 <<
+        Qt::Key_F9 << Qt::Key_F10 << Qt::Key_F11 << Qt::Key_F12 << Qt::Key_F13 << Qt::Key_F14 << Qt::Key_F15;
+
+    for (int i = '0'; i <= '9'; ++i) {
+        actionKeys << QString(QChar(i));
+        iActionKeys << i;
+    }
+
+    for (int i = 'A'; i <= 'Z'; ++i) {
+        actionKeys << QString(QChar(i));
+        iActionKeys << i;
+    }
+
+    actionKeys << "`" << "-" << "=" << "[" << "]"
+        << ";" << "'" << "#" << "\\" << "," << "." << "/";
+
+    iActionKeys << '`' << '-' << '=' << '[' << ']'
+        << ';' << '\'' << '#' << '\\' << ',' << '.' << '/';
+
+    // Find the current hotkey
+    int hotkey = g_mainWidget->getHotkey();
+    int meta = hotkey & (Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
+    hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
+
+    for (int i = 0; i < metaKeys.count(); ++i) {
+        m_pUi->genModifierBox->addItem(metaKeys[i]);
+        if (iMetaKeys[i] == meta)
+            m_pUi->genModifierBox->setCurrentIndex(i);
+    }
+
+    for (int i = 0; i < actionKeys.count(); ++i) {
+        m_pUi->genKeyBox->addItem(actionKeys[i]);
+        if (iActionKeys[i] == hotkey)
+            m_pUi->genKeyBox->setCurrentIndex(i);
+    }
+    
+    QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
+
+    m_pUi->cbAppStyle->addItem(tr("Fusion"), "fusion");
+#if defined(Q_OS_WIN)
+    m_pUi->cbAppStyle->addItem(tr("Windows"), "windows");
+    m_pUi->cbAppStyle->addItem(tr("WindowsVista"), "windowsvista");
+#elif defined(Q_OS_MAC)
+    m_pUi->cbAppStyle->addItem(tr("Maciontosh"), "maciontosh");
+#elif defined(Q_OS_LINUX)
+    m_pUi->cbAppStyle->addItem(tr("Plastique"), "plastique");
+    m_pUi->cbAppStyle->addItem(tr("GTK"), "GTK");
+    m_pUi->cbAppStyle->addItem(tr("Cleanlooks"), "cleanlooks");
+#endif
+
+    int appStyleIndex = 0;
+    int appStyleCount = m_pUi->cbAppStyle->count();
+    for (int i = 0; i < appStyleCount; ++i) {
+        if (m_pUi->cbAppStyle->itemData(i).toString() == appStyle) {
+            appStyleIndex = i;
+            break;
+        }
+    }
+
+    m_pUi->cbAppStyle->setCurrentIndex(appStyleIndex);
+
+    connect(m_pUi->cbAppStyle, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(onAppStyleChanged(int)));
+}
+
+void OptionDialog::saveGeneralSettings() {
+    // See if the new hotkey works, if not we're not leaving the dialog.
+    QKeySequence hotkey(iMetaKeys[m_pUi->genModifierBox->currentIndex()] + iActionKeys[m_pUi->genKeyBox->currentIndex()]);
+    if (!g_mainWidget->setHotkey(hotkey)) {
+        QMessageBox::warning(this, tr("Launchy"),
+                             tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
+        return;
+    }
+
+    g_settings->setValue(OPSTION_HOTKEY, hotkey.count() > 0 ? hotkey[0] : OPSTION_HOTKEY_DEFAULT);
+
+    // Save General Options
+    //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
+    g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
+    g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
+    g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
+    g_settings->setValue(OPSTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
+    g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
+    g_settings->setValue(OPSTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
+    g_settings->setValue(OPSTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
+    g_settings->setValue(OPSTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
+    g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
+    g_settings->setValue(OPSTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
+    g_settings->setValue(OPSTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
+    g_settings->setValue(OPSTION_REBUILDTIMER, m_pUi->genRebuildCatalog->isChecked() ? m_pUi->genRebuildMinutes->value() : 0);
+    g_settings->setValue(OPSTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
+    g_settings->setValue(OPSTION_NUMRESULT, m_pUi->genNumResults->value());
+    g_settings->setValue(OPSTION_MAXITEMSINHISTORY, m_pUi->genNumHistory->value());
+    g_settings->setValue(OPSTION_OPAQUENESS, m_pUi->genOpaqueness->value());
+    g_settings->setValue(OPSTION_FADEIN, m_pUi->genFadeIn->value());
+    g_settings->setValue(OPSTION_FADEOUT, m_pUi->genFadeOut->value());
+
+    // Apply General Options
+    SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
+    g_mainWidget->startRebuildTimer();
+    g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
+
+    QString appStyle = m_pUi->cbAppStyle->currentData().toString();
+    g_settings->setValue(OPTION_APPSTYLE, appStyle);
+
+    // Now save the options that require launchy to be shown or redrawed
+    m_showLaunchy = g_mainWidget->setAlwaysShow(m_pUi->genAlwaysShow->isChecked());
+    m_showLaunchy |= g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
+
+    g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
+}
+
+void OptionDialog::initSkinWidget() {
+    // Load up the skins list
+    QString skinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
+
+    int skinRow = 0;
+    QHash<QString, bool> knownSkins;
+    foreach(QString szDir, SettingsManager::instance().directory("skins")) {
+        QDir dir(szDir);
+        QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+
+        foreach(QString d, dirs) {
+            if (knownSkins.contains(d))
+                continue;
+            knownSkins[d] = true;
+
+            QFile f(dir.absolutePath() + "/" + d + "/style.qss");
+            // Only look for 2.0+ skins
+            if (!f.exists())
+                continue;
+
+            QListWidgetItem* item = new QListWidgetItem(d);
+            m_pUi->skinList->addItem(item);
+
+            if (skinName.compare(d, Qt::CaseInsensitive) == 0)
+                skinRow = m_pUi->skinList->count() - 1;
+        }
+    }
+    m_pUi->skinList->setCurrentRow(skinRow);
+}
+
+void OptionDialog::saveSkinSettings() {
+    // Apply Skin Options
+    QString prevSkinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
+    QString currentSkinName = m_pUi->skinList->currentItem()->text();
+    if (m_pUi->skinList->currentRow() >= 0 && currentSkinName != prevSkinName) {
+        g_settings->setValue(OPSTION_SKIN, currentSkinName);
+        g_mainWidget->setSkin(currentSkinName);
+        m_showLaunchy |= true;
+    }
 }
 
 void OptionDialog::initCatalogWidget() {

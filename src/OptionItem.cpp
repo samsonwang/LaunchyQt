@@ -42,6 +42,9 @@ const int       OPSTION_ALWAYSCENTER_DEFAULT                   = 3;
 const char*     OPSTION_DRAGMODE                               = "GenOps/dragmode";
 const bool      OPSTION_DRAGMODE_DEFAULT                       = false;
 
+const char*     OPTION_APPSTYLE                                = "GenOps/appStyle";
+const char*     OPTION_APPSTYLE_DEFAULT                        = "Native";
+
 const char*     OPSTION_SHOWHIDDENFILES                        = "GenOps/showHiddenFiles";
 const bool      OPSTION_SHOWHIDDENFILES_DEFAULT                = false;
 

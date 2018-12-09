@@ -123,12 +123,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_alternativeList, SIGNAL(focusOut()), this, SLOT(onAlternativeListFocusOut()));
 
     m_optionButton->setObjectName("opsButton");
-    m_optionButton->setToolTip(tr("Launchy Options"));
+    m_optionButton->setToolTip(tr("Options"));
     m_optionButton->setGeometry(QRect());
     connect(m_optionButton, SIGNAL(clicked()), this, SLOT(showOptionDialog()));
 
     m_closeButton->setObjectName("closeButton");
-    m_closeButton->setToolTip(tr("Close Launchy"));
+    m_closeButton->setToolTip(tr("Close"));
     m_closeButton->setGeometry(QRect());
     connect(m_closeButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 
@@ -146,8 +146,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Set the general options
-    if (setAlwaysShow(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool()))
+    if (setAlwaysShow(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool())) {
         command |= ShowLaunchy;
+    }
     setAlwaysTop(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
 
     // Set the hotkey
@@ -181,8 +182,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // Move to saved position
     loadPosition(g_settings->value(OPSTION_POS, OPSTION_POS_DEFAULT).toPoint());
-
-    loadOptions();
 
     executeStartupCommand(command);
 
@@ -1305,20 +1304,6 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
     // let the plugins know
     PluginHandler::instance().hideLaunchy();
 }
-
-
-void LaunchyWidget::loadOptions() {
-    // If a network proxy server is specified, apply an application wide NetworkProxy setting
-//     QString proxyHost = g_settings->value(OPSTION_HOSTADDRESS, OPSTION_HOSTADDRESS_DEFAULT).toString();
-//     if (!proxyHost.isEmpty()) {
-//         QNetworkProxy proxy;
-//         proxy.setType((QNetworkProxy::ProxyType)g_settings->value("WebProxy/type", 0).toInt());
-//         proxy.setHostName(proxyHost);
-//         proxy.setPort((quint16)g_settings->value(OPSTION_HOSTPORT, OPSTION_HOSTPORT_DEFAULT).toInt());
-//         QNetworkProxy::setApplicationProxy(proxy);
-//     }
-}
-
 
 int LaunchyWidget::getHotkey() const {
     int hotkey = g_settings->value(OPSTION_HOTKEY, -1).toInt();
