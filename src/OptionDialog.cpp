@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CatalogBuilder.h"
 #include "OptionItem.h"
 #include "UpdateChecker.h"
+#include "FileBrowserDelegate.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
@@ -48,7 +49,7 @@ using ::operator|;
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
-      m_directoryItemDelegate(this, FileBrowser::Directory),
+      m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)),
       m_currentPlugin(-1),
       m_needRescan(false) {
 
@@ -468,7 +469,6 @@ void OptionDialog::catDirPlusClicked(bool c) {
     addDirectory("", true);
 }
 
-
 void OptionDialog::initGeneralWidget() {
     // Load General Options
     m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
@@ -686,12 +686,23 @@ void OptionDialog::saveSkinSettings() {
 
 void OptionDialog::initCatalogWidget() {
     // Load the directories and types
-    m_pUi->catDirectories->setItemDelegate(&m_directoryItemDelegate);
+    m_pUi->catDirectories->setItemDelegate(m_directoryItemDelegate);
+
+    m_memDirs = SettingsManager::instance().readCatalogDirectories();
+    for (int i = 0; i < m_memDirs.count(); ++i) {
+        QListWidgetItem* item = new QListWidgetItem(m_memDirs[i].name, m_pUi->catDirectories);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        m_pUi->catDirectories->addItem(item);
+    }
+
+    m_pUi->catDirectories->setCurrentRow(-1);
 
     connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)), this, SLOT(dirRowChanged(int)));
     connect(m_pUi->catDirectories, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(catDirDragEnter(QDragEnterEvent*)));
     connect(m_pUi->catDirectories, SIGNAL(drop(QDropEvent*)), this, SLOT(catDirDrop(QDropEvent*)));
     connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catDirItemChanged(QListWidgetItem*)));
+    //connect(m_pUi->catDirectories, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onCatDirItemActivated(QListWidgetItem*)));
+
     connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)), this, SLOT(catDirPlusClicked(bool)));
     connect(m_pUi->catDirMinus, SIGNAL(clicked(bool)), this, SLOT(catDirMinusClicked(bool)));
     connect(m_pUi->catTypes, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catTypesItemChanged(QListWidgetItem*)));
@@ -701,27 +712,16 @@ void OptionDialog::initCatalogWidget() {
     connect(m_pUi->catCheckBinaries, SIGNAL(stateChanged(int)), this, SLOT(catTypesExeChanged(int)));
     connect(m_pUi->catDepth, SIGNAL(valueChanged(int)), this, SLOT(catDepthChanged(int)));
     connect(m_pUi->catRescan, SIGNAL(clicked(bool)), this, SLOT(catRescanClicked(bool)));
-    m_pUi->catProgress->setVisible(false);
-
-    m_memDirs = SettingsManager::instance().readCatalogDirectories();
-    for (int i = 0; i < m_memDirs.count(); ++i) {
-        m_pUi->catDirectories->addItem(m_memDirs[i].name);
-        QListWidgetItem* it = m_pUi->catDirectories->item(i);
-        it->setFlags(it->flags() | Qt::ItemIsEditable);
-    }
-
-    if (m_pUi->catDirectories->count() > 0) {
-        m_pUi->catDirectories->setCurrentRow(0);
-    }
 
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
+    m_pUi->catProgress->setVisible(false);
     connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
     connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     if (g_builder->isRunning()) {
         catalogProgressUpdated(g_builder->getProgress());
     }
-    m_pUi->catDirectories->installEventFilter(this);
+    //m_pUi->catDirectories->installEventFilter(this);
 }
 
 void OptionDialog::saveCatalogSettings() {

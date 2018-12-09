@@ -20,13 +20,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QDialog>
-#include "FileBrowserDelegate.h"
 #include "Directory.h"
 class QListWidgetItem;
 class QVBoxLayout;
 namespace Ui { class OptionDialog; }
 
 namespace launchy {
+class FileBrowserDelegate;
+
 class OptionDialog : public QDialog {
     Q_OBJECT
 public:
@@ -104,7 +105,7 @@ private slots:
 private:
     Ui::OptionDialog* m_pUi;
 
-    FileBrowserDelegate m_directoryItemDelegate;
+    FileBrowserDelegate* m_directoryItemDelegate;
     int m_currentPlugin;
     bool m_needRescan;
     QStringList metaKeys;
