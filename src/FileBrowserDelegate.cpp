@@ -23,36 +23,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace launchy {
 FileBrowserDelegate::FileBrowserDelegate(QObject *parent, FileBrowser::BrowseType browseType)
     : QStyledItemDelegate(parent),
-      browseType(browseType) {
+      m_browseType(browseType) {
 }
 
-QWidget* FileBrowserDelegate::createEditor(QWidget *parent,
-                                           const QStyleOptionViewItem & /*option*/,
-                                           const QModelIndex & /*index*/) const {
-    FileBrowser *editor = new FileBrowser(parent);
-    editor->setBrowseType(browseType);
+QWidget* FileBrowserDelegate::createEditor(QWidget* parent,
+                                           const QStyleOptionViewItem& /*option*/,
+                                           const QModelIndex& /*index*/) const {
+    FileBrowser* editor = new FileBrowser(parent);
+    editor->setBrowseType(m_browseType);
     return editor;
 }
 
-void FileBrowserDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+void FileBrowserDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
     QString value = index.model()->data(index, Qt::EditRole).toString();
 
-    FileBrowser *edit = static_cast<FileBrowser*>(editor);
+    FileBrowser* edit = static_cast<FileBrowser*>(editor);
     edit->setFilename(value);
 }
 
-void FileBrowserDelegate::setModelData(QWidget *editor,
-                                       QAbstractItemModel *model,
-                                       const QModelIndex &index) const {
-    FileBrowser *edit = static_cast<FileBrowser*>(editor);
+void FileBrowserDelegate::setModelData(QWidget* editor,
+                                       QAbstractItemModel* model,
+                                       const QModelIndex& index) const {
+    FileBrowser* edit = static_cast<FileBrowser*>(editor);
     QString value = edit->getFilename();
 
     model->setData(index, value, Qt::EditRole);
 }
 
-void FileBrowserDelegate::updateEditorGeometry(QWidget *editor,
+void FileBrowserDelegate::updateEditorGeometry(QWidget* editor,
                                                const QStyleOptionViewItem& option,
-                                               const QModelIndex & /*index*/) const {
+                                               const QModelIndex& /*index*/) const {
 	editor->setGeometry(option.rect);
 }
 
