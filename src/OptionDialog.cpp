@@ -880,8 +880,7 @@ void OptionDialog::addDirectory(const QString& directory, bool edit) {
     QListWidgetItem* item = new QListWidgetItem(nativeDir, m_pUi->catDirectories);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     m_pUi->catDirectories->setCurrentItem(item);
-    if (edit)
-    {
+    if (edit) {
         m_pUi->catDirectories->editItem(item);
     }
 
