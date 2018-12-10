@@ -76,6 +76,8 @@ OptionDialog::OptionDialog(QWidget * parent)
 
     initProxyWidget();
 
+    initSystemWidget();
+
     initAboutWidget();
 }
 
@@ -122,6 +124,8 @@ void OptionDialog::accept() {
     saveUpdateSettings();
 
     saveProxySettings();
+
+    saveSystemSettings();
 
     g_settings->sync();
 
@@ -275,7 +279,6 @@ void OptionDialog::pluginChanged(int row) {
 
     // Open the new plugin dialog
     m_currentPlugin = row;
-    //s_currentPlugin = row;
     if (row >= 0) {
         loadPluginDialog(m_pUi->plugList->item(row));
     }
@@ -358,7 +361,6 @@ void OptionDialog::catalogProgressUpdated(int value) {
     m_pUi->catRescan->setEnabled(false);
 }
 
-
 void OptionDialog::catalogBuilt() {
     m_pUi->catProgress->setVisible(false);
     m_pUi->catRescan->setEnabled(true);
@@ -378,9 +380,8 @@ void OptionDialog::catRescanClicked(bool val) {
 }
 
 
-void OptionDialog::catTypesDirChanged(int state)
-{
-    state = state; // Compiler warning
+void OptionDialog::catTypesDirChanged(int state) {
+    Q_UNUSED(state)
     int row = m_pUi->catDirectories->currentRow();
     if (row == -1)
         return;
@@ -418,7 +419,6 @@ void OptionDialog::catDirDragEnter(QDragEnterEvent *event) {
         event->acceptProposedAction();
 }
 
-
 void OptionDialog::catDirDrop(QDropEvent *event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData && mimeData->hasUrls()) {
@@ -447,7 +447,6 @@ void OptionDialog::dirRowChanged(int row) {
     m_needRescan = true;
 }
 
-
 void OptionDialog::catDirMinusClicked(bool c) {
     Q_UNUSED(c)
     int dirRow = m_pUi->catDirectories->currentRow();
@@ -473,7 +472,6 @@ void OptionDialog::initGeneralWidget() {
     // Load General Options
     m_pUi->genAlwaysShow->setChecked(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool());
     m_pUi->genAlwaysTop->setChecked(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
-    m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
     m_pUi->genHideFocus->setChecked(g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
     m_pUi->genDecorateText->setChecked(g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool());
 
@@ -482,18 +480,10 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genVCenter->setChecked((center & 2) != 0);
 
     m_pUi->genShiftDrag->setChecked(g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool());
-    m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
-    connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
 
-    m_pUi->genShowHidden->setChecked(g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool());
-    m_pUi->genShowNetwork->setChecked(g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool());
     m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
     m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
 
-    int updateInterval = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
-    connect(m_pUi->genRebuildCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoRebuildCheckChanged(int)));
-    m_pUi->genRebuildMinutes->setValue(updateInterval);
-    m_pUi->genRebuildCatalog->setChecked(updateInterval > 0);
     m_pUi->genMaxViewable->setValue(g_settings->value(OPSTION_NUMVIEWABLE, OPSTION_NUMVIEWABLE_DEFAULT).toInt());
     m_pUi->genNumResults->setValue(g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt());
     m_pUi->genNumHistory->setValue(g_settings->value(OPSTION_MAXITEMSINHISTORY, OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt());
@@ -611,16 +601,15 @@ void OptionDialog::saveGeneralSettings() {
     //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
     g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
     g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
-    g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
+    
     g_settings->setValue(OPSTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
     g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
     g_settings->setValue(OPSTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
     g_settings->setValue(OPSTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
-    g_settings->setValue(OPSTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
-    g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
+
     g_settings->setValue(OPSTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
     g_settings->setValue(OPSTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
-    g_settings->setValue(OPSTION_REBUILDTIMER, m_pUi->genRebuildCatalog->isChecked() ? m_pUi->genRebuildMinutes->value() : 0);
+
     g_settings->setValue(OPSTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
     g_settings->setValue(OPSTION_NUMRESULT, m_pUi->genNumResults->value());
     g_settings->setValue(OPSTION_MAXITEMSINHISTORY, m_pUi->genNumHistory->value());
@@ -629,7 +618,6 @@ void OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPSTION_FADEOUT, m_pUi->genFadeOut->value());
 
     // Apply General Options
-    SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
     g_mainWidget->startRebuildTimer();
     g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
 
@@ -865,6 +853,32 @@ void OptionDialog::saveProxySettings() {
 
 }
 
+void OptionDialog::initSystemWidget() {
+    int rebuildInterval = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
+    m_pUi->genRebuildMinutes->setValue(rebuildInterval);
+    m_pUi->genRebuildCatalog->setChecked(rebuildInterval > 0);
+    connect(m_pUi->genRebuildCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoRebuildCheckChanged(int)));
+
+    m_pUi->genShowHidden->setChecked(g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool());
+    m_pUi->genShowNetwork->setChecked(g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool());
+
+    m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
+
+    m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
+    connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
+}
+
+void OptionDialog::saveSystemSettings() {
+    g_settings->setValue(OPSTION_REBUILDTIMER,
+                         m_pUi->genRebuildCatalog->isChecked() ? m_pUi->genRebuildMinutes->value() : 0);
+
+    g_settings->setValue(OPSTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
+    g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
+    SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
+
+    g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
+}
+
 void OptionDialog::initAboutWidget() {
     // About
     m_pUi->aboutVer->setText(tr("Version %1").arg(LAUNCHY_VERSION_STRING));
@@ -880,8 +894,7 @@ void OptionDialog::addDirectory(const QString& directory, bool edit) {
     QListWidgetItem* item = new QListWidgetItem(nativeDir, m_pUi->catDirectories);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     m_pUi->catDirectories->setCurrentItem(item);
-    if (edit)
-    {
+    if (edit) {
         m_pUi->catDirectories->editItem(item);
     }
 

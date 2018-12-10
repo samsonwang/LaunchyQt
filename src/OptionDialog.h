@@ -63,6 +63,9 @@ private:
     // proxy
     void initProxyWidget();
     void saveProxySettings();
+    // system
+    void initSystemWidget();
+    void saveSystemSettings();
     // about
     void initAboutWidget();
 

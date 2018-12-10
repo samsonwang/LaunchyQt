@@ -105,8 +105,9 @@ void FileSearch::search(const QString& searchText,
         filePart = filePart.toLower();
 #endif
 
-        if (g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool())
+        if (g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool()) {
             filters |= QDir::Hidden;
+        }
 
         itemList = dir.entryList(filters, QDir::DirsLast | QDir::IgnoreCase | QDir::LocaleAware);
     }
