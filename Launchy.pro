@@ -5,6 +5,7 @@ SUBDIRS = plugins/calcy \
           plugins/weby \
           plugins/verby \
           src/lib \
+          src/pluginpy \
           src
 
 win32 {

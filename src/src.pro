@@ -7,7 +7,7 @@ CONFIG += debug_and_release
 
 QT += network widgets
 
-PRECOMPILED_HEADER = precompiled.h
+PRECOMPILED_HEADER = Precompiled.h
 CONFIG += precompile_header
 
 INCLUDEPATH += ../deps ./lib ./pluginpy
@@ -34,7 +34,8 @@ SOURCES = main.cpp \
     SettingsManager.cpp \
     Logger.cpp \
     OptionItem.cpp \
-    Directory.cpp
+    Directory.cpp \
+    UpdateChecker.cpp
 HEADERS = AppBase.h \
     GlobalVar.h \
     LaunchyWidget.h \
@@ -58,7 +59,9 @@ HEADERS = AppBase.h \
     SettingsManager.h \
     Logger.h \
     OptionItem.h \
-    Directory.h
+    Directory.h \
+    UpdateChecker.h
+
 FORMS = OptionDialog.ui
 
 include(../deps/SingleApplication/singleapplication.pri)
@@ -67,7 +70,7 @@ include(../deps/QHotkey/QHotkey.pri)
 
 win32:CONFIG(release, debug|release): LIBS += $$OUT_PWD/lib/release/Launchy.lib
 else:win32:CONFIG(debug, debug|release): LIBS += $$OUT_PWD/lib/debug/Launchy.lib
-else:unix: LIBS += -L$$OUT_PWD/src/lib/ lib/liblaunchy.so
+else:unix: LIBS += -L$$OUT_PWD/src/lib/ lib/liblaunchy.so pluginpy/libpluginpy.so
 
 INCLUDEPATH += $$PWD/src/lib
 DEPENDPATH += $$PWD/src/lib
