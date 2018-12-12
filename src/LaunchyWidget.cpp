@@ -287,7 +287,7 @@ void LaunchyWidget::showTrayIcon() {
     if (!m_trayIcon->contextMenu()) {
         QMenu* trayMenu = new QMenu(this);
 
-#if 1
+#if 0
         QAction* actTest = new QAction(tr("Test Widget"), this);
         connect(actTest, &QAction::triggered, []() {
             pluginpy::TestWidget::instance().initTestWidget();
