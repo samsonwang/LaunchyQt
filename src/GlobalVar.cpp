@@ -45,8 +45,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 
-const int LAUNCHY_VERSION = 304;
-const char* LAUNCHY_VERSION_STRING = "3.0.4";
+const int LAUNCHY_VERSION = 305;
+const char* LAUNCHY_VERSION_STRING = "3.0.5";
 
 #if defined(ENVIRONMENT64)
 const char* LAUNCHY_BIT_STRING = "64";
