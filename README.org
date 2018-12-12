@@ -11,18 +11,19 @@ I have been using Launchy for years, and found that this project has not been up
 
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
 
-Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/blob/master/docs/CHANGELOG.org][here]] .
+Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/blob/dev/docs/CHANGELOG.org][here]] .
 
 ** Latest release
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
 
-*3.0.4* Changes:
-- fix display problem in 4k hidpi (issue [[https://github.com/samsonwang/LaunchyQt/issues/2][#2]])
-- in portable mode, put ini file in config folder, I think it is more tidy this way
-- fix a bug in input text parsing
-- add "restart launchy" to tray menu
-- add python plugin configuration file "pluginconf.py" in "launchy/python", this file is optional and loaded before all python plugins
-- new plugin in python, WebSearchPy, it is ported from [[https://github.com/j5shi/Thruster][Thruster]]
+*3.0.5* Changes:
+- bug fix: launchy may crash on restart while option dialaog is open
+- use pip to manage python package
+- network proxy setting
+- update check and new version notify
+- add "run as admin" in verby
+- new plugin PyDiryPy, it is ported from [[https://github.com/kshahar/pylaunchy][pylaunchy]]
+
 
 ** Credits
 - [[https://sourceforge.net/projects/launchy][Launchy]]                                - GPLv2
