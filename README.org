@@ -34,6 +34,7 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - [[https://github.com/pybind/pybind11][pybind11]]                               - [[https://github.com/pybind/pybind11/blob/master/LICENSE][LICENSE]]
 - [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
 - WebSearchPy (from [[https://github.com/j5shi/Thruster][Thruster]])            - GPLv2
+- PyDiryPy (from [[https://github.com/kshahar/pylaunchy][pylaunchy]])              - GPLv2
 
 
 ** Thanks
