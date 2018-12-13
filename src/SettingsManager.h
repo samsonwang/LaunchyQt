@@ -30,29 +30,29 @@ public:
     static SettingsManager& instance();
 
 public:
-	void load();
+    void load();
 
-	bool isPortable() const;
-	QList<QString> directory(QString name) const;
-	QString catalogFilename() const;
-	QString historyFilename() const;
-	QString skinPath(const QString& skinName) const;
-	void setPortable(bool makePortable);
-	void removeAll();
-	void setProfileName(const QString& name);
-	QList<Directory> readCatalogDirectories();
-	void writeCatalogDirectories(QList<Directory>& directories);
+    bool isPortable() const;
+    QList<QString> directory(QString name) const;
+    QString catalogFilename() const;
+    QString historyFilename() const;
+    QString skinPath(const QString& skinName) const;
+    void setPortable(bool makePortable);
+    void removeAll();
+    void setProfileName(const QString& name);
+    QList<Directory> readCatalogDirectories();
+    void writeCatalogDirectories(QList<Directory>& directories);
 
 private:
     SettingsManager();
     Q_DISABLE_COPY(SettingsManager)
 
 private:
-	QString configDirectory(bool portable) const;
+    QString configDirectory(bool portable) const;
 
 private:
-	bool m_portable;
-	QString m_profileName;
-	QHash<QString, QList<QString>> m_dirs;
+    bool m_portable;
+    QString m_profileName;
+    QHash<QString, QList<QString>> m_dirs;
 };
 }
