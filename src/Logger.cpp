@@ -26,7 +26,7 @@ void Logger::setLogLevel(int index) {
         setLogLevel(QtDebugMsg);
         break;
     default:
-        setLogLevel(QtSystemMsg);
+        setLogLevel(QtWarningMsg);
         break;
     }
 }
