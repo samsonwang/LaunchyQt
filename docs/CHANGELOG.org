@@ -1,6 +1,10 @@
 
 * x.x.x developing in progress
+- port to linux
 - better python plugin support
+
+* 3.0.6 (coming soon)
+-
 
 * 3.0.5 (2018-12-12)
 - bug fix: launchy may crash on restart while option dialaog is open
