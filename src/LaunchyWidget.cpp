@@ -803,7 +803,7 @@ void LaunchyWidget::searchOnInput() {
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
-        qSort(m_searchResult.begin(), m_searchResult.end(), CatLessNoPtr);
+        qSort(m_searchResult.begin(), m_searchResult.end(), CatLessRef);
         g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
         // Finally, if the search text looks like a file or directory name,

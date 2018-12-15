@@ -29,11 +29,11 @@ namespace launchy {
 // Catalog provides methods to search and manage the indexed items
 class Catalog {
 public:
-    Catalog() : m_timestamp(0) {}
-    virtual ~Catalog() {}
+    Catalog();
+    virtual ~Catalog();
     bool load(const QString& filename);
     bool save(const QString& filename);
-    void incrementTimestamp() { ++m_timestamp; }
+    void incrementTimestamp();
     void searchCatalogs(const QString&, QList<CatItem>&);
     void promoteRecentlyUsedItems(const QString& text, QList<CatItem> & list);
 
@@ -60,14 +60,8 @@ protected:
 // CatalogItem is used internally to store additional
 class CatalogItem : public CatItem {
 public:
-    CatalogItem()
-        : m_timestamp(0) {
-    }
-
-    CatalogItem(const CatItem& item, int time)
-        : CatItem(item),
-          m_timestamp(time) {
-    }
+    CatalogItem();
+    CatalogItem(const CatItem& item, int time);
 
     int m_timestamp;
 };
@@ -96,7 +90,7 @@ private:
     QVector<CatalogItem> m_catalogItems;
 };
 
-bool CatLess(CatItem* left, CatItem* right);
-bool CatLessNoPtr(CatItem& a, CatItem& b);
+bool CatLessPtr(CatItem* left, CatItem* right);
+bool CatLessRef(CatItem& left, CatItem& right);
 
 }

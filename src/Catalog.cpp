@@ -23,11 +23,21 @@
 #include "OptionItem.h"
 
 namespace launchy {
+
+Catalog::Catalog()
+    : m_timestamp(0) {
+
+}
+
+Catalog::~Catalog() {
+
+}
+
 // Load the catalog from the specified filename
 bool Catalog::load(const QString& filename) {
     QFile inFile(filename);
     if (!inFile.open(QIODevice::ReadOnly)) {
-        qWarning("Could not open catalog file for reading");
+        qWarning("Catalog::load, Could not open catalog file for reading");
         return false;
     }
 
@@ -67,13 +77,17 @@ bool Catalog::save(const QString& filename) {
     // Compress and write the catalog to the specified file
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning("Could not open catalog file for writing");
+        qWarning("Catalog::save, Could not open catalog file for writing");
         return false;
     }
     file.write(qCompress(ba));
     return true;
 }
 
+
+void Catalog::incrementTimestamp() {
+    ++m_timestamp;
+}
 
 // Return true if the specified catalog item matches the specified string
 bool Catalog::matches(CatItem* item, const QString& match) {
@@ -102,7 +116,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     QList<CatItem*> catMatches = search(text);
     qDebug() << "Catalog::searchCatalogs, search matched count:" << catMatches.count();
     // Now prioritize the catalog items
-    qSort(catMatches.begin(), catMatches.end(), CatLess);
+    qSort(catMatches.begin(), catMatches.end(), CatLessPtr);
 
     // Check for history matches
     QString location = "History/" + text;
@@ -223,22 +237,19 @@ void SlowCatalog::addItem(const CatItem& item) {
 
     if (!replaced) {
         // If no match found, append the item to the catalog
-        qDebug() << "Adding" << item.fullPath;
+        qDebug() << "SlowCatalog::addItem, Adding" << item.fullPath;
         m_catalogItems.push_back(CatalogItem(item, m_timestamp));
     }
 }
 
 
-void SlowCatalog::purgeOldItems()
-{
+void SlowCatalog::purgeOldItems() {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
 
-    for (int i = m_catalogItems.size() - 1; i >= 0; --i)
-    {
-        if (m_catalogItems.at(i).m_timestamp < m_timestamp)
-        {
-            qDebug() << "Removing" << m_catalogItems.at(i).fullPath;
+    for (int i = m_catalogItems.size() - 1; i >= 0; --i) {
+        if (m_catalogItems.at(i).m_timestamp < m_timestamp) {
+            qDebug() << "SlowCatalog::purgeOldItems, Removing" << m_catalogItems.at(i).fullPath;
             m_catalogItems.remove(i);
         }
     }
@@ -303,8 +314,8 @@ QList<CatItem*> SlowCatalog::search(const QString& searchText) {
     return result;
 }
 
-bool CatLessNoPtr(CatItem& a, CatItem& b) {
-    bool less = CatLess(&a, &b);
+bool CatLessRef(CatItem& a, CatItem& b) {
+    bool less = CatLessPtr(&a, &b);
     /*	if (less)
     qDebug() << a.lowName << "(" << a.usage << ") < " << b.lowName << " (" << b.usage << ")";
     else
@@ -313,7 +324,7 @@ bool CatLessNoPtr(CatItem& a, CatItem& b) {
     return less;
 }
 
-bool CatLess(CatItem* a, CatItem* b) {
+bool CatLessPtr(CatItem* a, CatItem* b) {
     // Items with negative usage are lowest priority
     if (a->usage < 0 && b->usage >= 0)
         return false;
@@ -386,4 +397,16 @@ bool CatLess(CatItem* a, CatItem* b) {
     // Absolute tiebreaker to prevent loops
     return a->fullPath < b->fullPath;
 }
+
+CatalogItem::CatalogItem()
+    : m_timestamp(0) {
+
+}
+
+CatalogItem::CatalogItem(const CatItem& item, int time)
+    : CatItem(item),
+      m_timestamp(time) {
+
+}
+
 }
