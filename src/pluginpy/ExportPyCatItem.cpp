@@ -36,7 +36,6 @@ CatItem::CatItem(const std::string& full,
 
 CatItem::CatItem(const launchy::CatItem& item)
     : m_data(item) {
-
 }
 
 const launchy::CatItem& CatItem::getData() const {

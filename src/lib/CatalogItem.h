@@ -59,7 +59,7 @@ public:
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
     \param shortN The abbreviated name for the entry
-    \param i_d Your plugin id (0 for Launchy itself)
+    \param id Your plugin id (0 for Launchy itself)
     \param iconPath The path to the icon for this entry
     \warning It is usually a good idea to append ".your_plugin_name" to the end of the full parameter
     so that there are not multiple items in the index with the same full path.
@@ -71,6 +71,10 @@ public:
 
     friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
     friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
+
+private:
+    /** Convert short name to search name */
+    static QString convertSearchName(const QString& shortName);
 };
 
 }

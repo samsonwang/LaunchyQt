@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "InputData.h"
+#include <QDataStream>
+
 namespace launchy {
 const QSet<uint>& InputData::getLabels() const {
     return m_labels;
