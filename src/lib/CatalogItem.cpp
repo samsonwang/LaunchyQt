@@ -115,7 +115,7 @@ QString CatItem::convertSearchName(const QString& shortName) {
         ushort code = result[i].unicode();
 
         // zhCN simplified Chinese (pin yin)
-        if (code >= zhCN_min && code <=zhCN_max) {
+        if (code >= zhCN_min && code <= zhCN_max) {
             result[i] = zhCN_table[code - zhCN_min];
         }
 
