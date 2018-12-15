@@ -551,7 +551,7 @@ void OptionDialog::initGeneralWidget() {
         if (iActionKeys[i] == hotkey)
             m_pUi->genKeyBox->setCurrentIndex(i);
     }
-    
+
     QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
 
     QStringList styles = QStyleFactory::keys();
@@ -601,7 +601,7 @@ void OptionDialog::saveGeneralSettings() {
     //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
     g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
     g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
-    
+
     g_settings->setValue(OPSTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
     g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
     g_settings->setValue(OPSTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
@@ -764,7 +764,7 @@ void OptionDialog::saveUpdateSettings() {
     g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP, m_pUi->gbCheckUpdate->isChecked());
     g_settings->setValue(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY, m_pUi->sbCheckUpdateDelay->value());
     g_settings->setValue(OPTION_UPDATE_CHECK_INTERVAL, m_pUi->sbCheckUpdateInterval->value());
-    
+
     UpdateChecker::instance().reloadConfig();
 }
 
@@ -813,7 +813,7 @@ void OptionDialog::initProxyWidget() {
 
     m_pUi->leProxyServerName->setText(g_settings->value(OPTION_PROXY_SERVER_NAME,
                                                         OPTION_PROXY_SERVER_NAME_DEFAULT).toString());
-    
+
     m_pUi->leProxyServerPort->setText(g_settings->value(OPTION_PROXY_SERVER_PORT,
                                                         OPTION_PROXY_SERVER_PORT_DEFAULT).toString());
 

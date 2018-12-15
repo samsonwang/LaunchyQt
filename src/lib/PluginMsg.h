@@ -27,10 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
 	\brief This message asks the Plugin for its ID Number.
 
-	 Launchy needs an unsigned int identification value for each loaded plugin.  You supply your own here. 
+	 Launchy needs an unsigned int identification value for each loaded plugin.  You supply your own here.
 	Typically, this is the result of hashing a string, as shown in the example below.
 	\param wParam (uint*) That stores the resulting ID number.
-	\warning Because we're hashing strings to integers.. it is theoretically possible that two plugin names will collide to the same plugin id.  
+	\warning Because we're hashing strings to integers.. it is theoretically possible that two plugin names will collide to the same plugin id.
 
 	\verbatim
 	int WebyPlugin::msg(int msgId, void* wParam, void* lParam)
@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -52,7 +52,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /**
 	\brief This message asks the plugin if it would like to apply a label to the current search query.
-	
+
 	 It is sometimes useful to label user queries with plugin-defined tags.  For instance, the weby plugin
 		will tag input that contains "www" or ".com" or ".net" with the hash value of the string "HASH_WEBSITE".  Then,
 		other plugins that see the query can know that the current search is for a website.\n\n
@@ -77,9 +77,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 		if (text.contains("http://", Qt::CaseInsensitive))
 			id->last().setLabel(HASH_WEBSITE);
-		else if (text.contains("https://", Qt::CaseInsensitive)) 
+		else if (text.contains("https://", Qt::CaseInsensitive))
 			id->last().setLabel(HASH_WEBSITE);
-		else if (text.contains(".com", Qt::CaseInsensitive)) 
+		else if (text.contains(".com", Qt::CaseInsensitive))
 			id->last().setLabel(HASH_WEBSITE);
 		else if (text.contains(".net", Qt::CaseInsensitive))
 			id->last().setLabel(HASH_WEBSITE);
@@ -99,7 +99,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -111,7 +111,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
 	\brief Asks the plugin for any results to a query
 
-	 If your plugin returns catalog results on the fly to a query 
+	 If your plugin returns catalog results on the fly to a query
 		(e.g. a website query for weby or a calculator result), then this is the place to do so.
 		The existing results are stored in the list of CatItem's (short for Catalog Items) passed in as
 		lParam and you can append your own results to it.
@@ -128,7 +128,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 			// This is a website, create an entry for it
 			results->push_front(CatItem(text + ".weby", text, HASH_WEBY, getIcon()));
 		}
-		
+
 		// Is this query of form:  website <tab> search_term?
 		if (id->count() > 1 && id->first().getTopResult().id == HASH_WEBY) {
 			QString & text = id->last().getText();
@@ -147,7 +147,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -156,7 +156,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /**
 	\brief Asks the plugin for a static catalog to be added to the primary catalog
-	 Some plugins will add permanent entries to Launchy's primary catalog (until the catalog is rebuilt).  
+	 Some plugins will add permanent entries to Launchy's primary catalog (until the catalog is rebuilt).
 	For instance, weby adds firefox bookmarks into the primary catalog.  This is the function in which that is done.
 	\param wParam (QList<CatItem>*): The catalog that you append your new entries to (these will be copied over to the primary catalog)
 	\verbatim
@@ -184,7 +184,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -234,7 +234,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 			}
 
 			if (!found) {
-				file = item->shortName;	
+				file = item->shortName;
 				if (!file.contains("http://")) {
 					file = "http://" + file;
 				}
@@ -254,7 +254,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -284,7 +284,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -312,7 +312,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 			handled = true;
 			break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -344,7 +344,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				doDialog((QWidget*) wParam, (QWidget**) lParam);
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -375,7 +375,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				handled = true;
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -394,9 +394,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 			gui->writeOptions();
 			init();
 		}
-		if (gui != NULL) 
+		if (gui != NULL)
 			delete gui;
-		
+
 		gui = NULL;
 	}
 
@@ -409,7 +409,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 				endDialog((bool) wParam);
 				break;
 		}
-		
+
 		return handled;
 	}
 	\endverbatim
@@ -437,29 +437,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
    \brief This message informs Launchy of what directory the plugin was loaded from.
    This can be helpful in determining where the icon should be loaded from.
-   
+
    \param wParam QString path
 */
 #define MSG_PATH 12
-   
+
 
 /**
    \brief This message asks the plugin to load any of its own plugins and to return them.  This is for language binding plugins such as for python plugins.
-   
+
    \param wParam QList<PluginInfo>*: The plugins controlled by the plugin
    \param lParam NULL
-*/   
+*/
 #define MSG_LOAD_PLUGINS 100
 
 /**
    \brief This message asks the plugin to unload a plugin.
-   
+
    \param wParam uint: The plugin ID
    \param lParam NULL
-*/   
+*/
 #define MSG_UNLOAD_PLUGIN 101
 
-   
+
 
 
 #define MSG_CONTROL_OPTIONS 500

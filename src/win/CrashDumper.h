@@ -39,4 +39,3 @@ private:
     static MINIDUMPWRITEDUMP m_dumpFunction;
     static TCHAR* m_appName;
 };
-

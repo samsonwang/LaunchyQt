@@ -24,5 +24,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern const ushort zhCN_min;
 extern const ushort zhCN_max;
 extern const char*  zhCN_table;
-
-

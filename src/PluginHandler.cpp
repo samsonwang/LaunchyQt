@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LIB_EXT ".dll"
 #elif defined(Q_OS_LINUX) || defined(Q_OS_MAC)
 #define LIB_EXT ".so"
-#endif 
+#endif
 
 namespace launchy {
 

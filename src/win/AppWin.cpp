@@ -145,7 +145,7 @@ QList<Directory> AppWin::getDefaultCatalogDirectories() {
     dir3.types << "*.vbs";
     dir3.indexDirs = false;
     list.append(dir3);
-    
+
     /*
     Directory dir4;
     dir4.name = "%appdata%\\Microsoft\\Internet Explorer\\Quick Launch";
