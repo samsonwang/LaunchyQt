@@ -50,9 +50,12 @@ void CatalogBuilder::buildCatalog() {
     m_currentItem = 0;
 
     while (m_currentItem < memDirs.count()) {
-        QString cur = g_app->expandEnvironmentVars(memDirs[m_currentItem].name);
-        indexDirectory(cur, memDirs[m_currentItem].types, memDirs[m_currentItem].indexDirs,
-                       memDirs[m_currentItem].indexExe, memDirs[m_currentItem].depth);
+        QString currentDir = g_app->expandEnvironmentVars(memDirs[m_currentItem].name);
+        indexDirectory(currentDir,
+                       memDirs[m_currentItem].types,
+                       memDirs[m_currentItem].indexDirs,
+                       memDirs[m_currentItem].indexExe,
+                       memDirs[m_currentItem].depth);
         progressStep(m_currentItem);
     }
 
@@ -71,9 +74,9 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                                     bool fbin,
                                     int depth) {
     QString dir = QDir::toNativeSeparators(directory);
-    QDir qd(dir);
-    dir = qd.absolutePath();
-    QStringList dirs = qd.entryList(QDir::AllDirs);
+    QDir qDir(dir);
+    dir = qDir.absolutePath();
+    QStringList dirs = qDir.entryList(QDir::Dirs|QDir::NoDotAndDotDot);
 
     if (depth > 0) {
         for (int i = 0; i < dirs.count(); ++i) {
@@ -110,7 +113,8 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         // Grab any shortcut directories
         // This is to work around a QT weirdness that treats shortcuts to directories as actual directories
         for (int i = 0; i < dirs.count(); ++i) {
-            if (!dirs[i].startsWith(".") && dirs[i].endsWith(".lnk", Qt::CaseInsensitive)) {
+            if (!dirs[i].startsWith(".")
+                && dirs[i].endsWith(".lnk", Qt::CaseInsensitive)) {
                 if (!m_indexed.contains(dir + "/" + dirs[i])) {
                     CatItem item(dir + "/" + dirs[i], true);
                     g_catalog->addItem(item);
@@ -121,7 +125,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
     }
 
     if (fbin) {
-        QStringList bins = qd.entryList(QDir::Files | QDir::Executable);
+        QStringList bins = qDir.entryList(QDir::Files | QDir::Executable);
         for (int i = 0; i < bins.count(); ++i) {
             if (!m_indexed.contains(dir + "/" + bins[i])) {
                 CatItem item(dir + "/" + bins[i]);
@@ -132,10 +136,11 @@ void CatalogBuilder::indexDirectory(const QString& directory,
     }
 
     // Don't want a null file filter, that matches everything..
-    if (filters.count() == 0)
+    if (filters.empty()) {
         return;
+    }
 
-    QStringList files = qd.entryList(filters, QDir::Files | QDir::System, QDir::Unsorted);
+    QStringList files = qDir.entryList(filters, QDir::Files | QDir::System, QDir::Unsorted);
     for (int i = 0; i < files.count(); ++i) {
         if (!m_indexed.contains(dir + "/" + files[i])) {
             CatItem item(dir + "/" + files[i]);

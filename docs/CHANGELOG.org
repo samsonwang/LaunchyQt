@@ -1,5 +1,6 @@
 
 * x.x.x developing in progress
+- pinyin support
 - port to linux
 - better python plugin support
 

@@ -20,8 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QString>
-#include <QDataStream>
 #include "LaunchyLib.h"
+
+class QDataStream;
 
 /**
 \brief CatItem (Catalog Item) stores a single item in the index
@@ -34,8 +35,10 @@ public:
     QString fullPath;
     /** The abbreviated name of the indexed item */
     QString shortName;
-    /** The lowercase name of the indexed item */
-    QString lowName;
+    /** The transformed name of the indexed item,
+        prepared to search and match non-English name,
+        it is shortName in lower by default*/
+    QString searchName;
     /** A path to an icon for the item */
     QString iconPath;
     /** How many times this item has been called by the user */
@@ -51,7 +54,7 @@ public:
 
     CatItem(const QString& full, const QString& shortN);
 
-    CatItem(const QString& full, const QString& shortN, uint i);
+    CatItem(const QString& full, const QString& shortN, uint id);
 
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
@@ -61,7 +64,7 @@ public:
     \warning It is usually a good idea to append ".your_plugin_name" to the end of the full parameter
     so that there are not multiple items in the index with the same full path.
     */
-    CatItem(const QString& full, const QString& shortN, uint i, const QString& iconPath);
+    CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath);
 
     bool operator==(const CatItem& other) const;
     bool operator!=(const CatItem& other) const;

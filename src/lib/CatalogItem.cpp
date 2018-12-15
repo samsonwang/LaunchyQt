@@ -17,8 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #include "CatalogItem.h"
+#include <QDataStream>
+
 namespace launchy {
 CatItem::CatItem()
     : usage(0),
@@ -38,11 +39,12 @@ CatItem::CatItem(const QString& full, bool isDir)
     }
     else {
         shortName = fullPath.mid(last+1);
-        if (!isDir)
+        if (!isDir) {
             shortName = shortName.mid(0, shortName.lastIndexOf("."));
+        }
     }
 
-    lowName = shortName.toLower();
+    searchName = shortName.toLower();
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN)
@@ -51,26 +53,26 @@ CatItem::CatItem(const QString& full, const QString& shortN)
       usage(0),
       data(NULL),
       pluginId(0) {
-    lowName = shortName.toLower();
+    searchName = shortName.toLower();
 }
 
-CatItem::CatItem(const QString& full, const QString& shortN, uint i)
+CatItem::CatItem(const QString& full, const QString& shortN, uint id)
     : fullPath(full),
       shortName(shortN),
       usage(0),
       data(NULL),
-      pluginId(i) {
-    lowName = shortName.toLower();
+      pluginId(id) {
+    searchName = shortName.toLower();
 }
 
-CatItem::CatItem(const QString& full, const QString& shortN, uint i, const QString& iconPath)
+CatItem::CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath)
     : fullPath(full),
       shortName(shortN),
       iconPath(iconPath),
       usage(0),
       data(NULL),
-      pluginId(i) {
-    lowName = shortName.toLower();
+      pluginId(id) {
+    searchName = shortName.toLower();
 }
 
 bool CatItem::operator!=(const CatItem& other) const {
@@ -84,7 +86,7 @@ bool CatItem::operator==(const CatItem& other) const {
 QDataStream& operator<<(QDataStream& out, const CatItem &item) {
     out << item.fullPath;
     out << item.shortName;
-    out << item.lowName;
+    out << item.searchName;
     out << item.iconPath;
     out << item.usage;
     out << item.pluginId;
@@ -94,7 +96,7 @@ QDataStream& operator<<(QDataStream& out, const CatItem &item) {
 QDataStream& operator>>(QDataStream& in, CatItem &item) {
     in >> item.fullPath;
     in >> item.shortName;
-    in >> item.lowName;
+    in >> item.searchName;
     in >> item.iconPath;
     in >> item.usage;
     in >> item.pluginId;

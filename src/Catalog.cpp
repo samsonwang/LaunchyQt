@@ -94,7 +94,7 @@ bool Catalog::matches(CatItem* item, const QString& match) {
     int matchLength = match.count();
     int curChar = 0;
 
-    foreach(QChar c, item->lowName) {
+    foreach(QChar c, item->searchName) {
         if (c == match[curChar]) {
             ++curChar;
             if (curChar >= matchLength) {
@@ -124,7 +124,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     hist = g_settings->value(location).toStringList();
     if (hist.count() == 2) {
         for (int i = 0; i < catMatches.count(); i++) {
-            if (catMatches[i]->lowName == hist[0]
+            if (catMatches[i]->searchName == hist[0]
                 && catMatches[i]->fullPath == hist[1]) {
                 CatItem* tmp = catMatches[i];
                 catMatches.removeAt(i);
@@ -148,7 +148,7 @@ void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem> & lis
     hist = g_settings->value(location, hist).toStringList();
     if (hist.count() == 2) {
         for (int i = 0; i < list.count(); i++) {
-            if (list[i].lowName == hist[0]
+            if (list[i].searchName == hist[0]
                 && list[i].fullPath == hist[1]) {
                 CatItem tmp = list[i];
                 list.removeAt(i);
@@ -331,8 +331,8 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     if (b->usage < 0 && a->usage >= 0)
         return true;
 
-    bool localEqual = a->lowName == g_searchText;
-    bool otherEqual = b->lowName == g_searchText;
+    bool localEqual = a->searchName == g_searchText;
+    bool otherEqual = b->searchName == g_searchText;
 
     // Exact match between search text and item name has higest priority
     if (localEqual && !otherEqual)
@@ -340,8 +340,8 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     if (!localEqual && otherEqual)
         return false;
 
-    int localFind = a->lowName.indexOf(g_searchText);
-    int otherFind = b->lowName.indexOf(g_searchText);
+    int localFind = a->searchName.indexOf(g_searchText);
+    int otherFind = b->searchName.indexOf(g_searchText);
 
     if (g_searchText.count() == 1) {
         // Match at the start
@@ -385,8 +385,8 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
             return false;
     }
 
-    int localLen = a->lowName.count();
-    int otherLen = b->lowName.count();
+    int localLen = a->searchName.count();
+    int otherLen = b->searchName.count();
 
     // Favour shorter item names
     if (localLen < otherLen)
