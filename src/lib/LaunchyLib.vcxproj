@@ -274,6 +274,7 @@ exit 0</Command>
     <ClCompile Include="InputData.cpp" />
     <ClCompile Include="PluginInfo.cpp" />
     <ClCompile Include="PluginInterface.cpp" />
+    <ClCompile Include="UnicodeTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CatalogItem.h" />
@@ -282,6 +283,7 @@ exit 0</Command>
     <ClInclude Include="PluginInfo.h" />
     <ClInclude Include="PluginInterface.h" />
     <ClInclude Include="PluginMsg.h" />
+    <ClInclude Include="UnicodeTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
