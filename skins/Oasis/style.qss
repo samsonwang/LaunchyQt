@@ -1,0 +1,43 @@
+#launchy {
+}
+
+#input {
+  font: 16px Microsoft YaHei, Sans, Verdana, Arial;
+  border-width: 0px;
+  background-color: rgba(0,244,120,0%);
+  border-style: solid;
+  color: #838383;
+  qproperty-alignment: AlignLeft;
+  qproperty-geometry: rect(90 112 330 42);
+}
+
+#output {
+  font: 18px Microsoft YaHei, Sans, Verdana, Arial;
+  border-width: 0px;
+  background-color: rgba(0,244,120,0%);
+  border-style: solid;
+  color: #838383;
+  qproperty-alignment: AlignLeft;
+  qproperty-geometry: rect(220 65 280 60);
+}
+
+#outputIcon {
+  qproperty-geometry: rect(170 55 42 42);
+}
+
+#alternatives {
+  font: 15px Microsoft YaHei, Sans, Verdana, Arial;
+  background-color: white;
+  color: #838383;
+  border-style: solid;
+  border-width: 0px;
+  padding: 0px 0px 0px 1px;
+  alternate-background-color: #eeeeee;
+  selection-background-color: #0b9163;
+  qproperty-geometry: rect(73 155 320 10);
+}
+
+#alternativesPath {
+  font: 15px Microsoft YaHei, Sans, Verdana, Arial;
+  color: #B3B3B3;
+}

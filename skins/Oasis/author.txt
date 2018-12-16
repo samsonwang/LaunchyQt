@@ -1,0 +1,5 @@
+Oasis Skin for LaunchyQt
+Author: Samson Wang
+Inspired by Gaia09
+
+Date: 2018/11/16
