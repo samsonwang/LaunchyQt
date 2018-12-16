@@ -2,7 +2,7 @@
 }
 
 #input {
-  font: 14px Sans, Verdana, Arial;
+  font: 14px Microsoft YaHei, Sans, Verdana, Arial;
   border-width: 0px;
   border-bottom: 1px;
   border-color: grey;
@@ -12,8 +12,9 @@
   qproperty-alignment: AlignLeft;
   qproperty-geometry: rect(40 20 150 24);
 }
+
 #output {
-  font: 14px Sans, Verdana, Arial;
+  font: 14px Microsoft YaHei, Sans, Verdana, Arial;
   border-width: 0px;
   background-color: rgba(0,0,0,0%);
   border-style: solid;
@@ -42,7 +43,7 @@
 }
 
 #alternatives {
-  font: 12px Sans, Verdana, Arial;
+  font: 12px Microsoft YaHei, Sans, Verdana, Arial;
   color: white;
   background-color: rgb(60,60,60);
   alternate-background-color: rgb(80,80,80);
