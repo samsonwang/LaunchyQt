@@ -18,12 +18,12 @@
 */
 
 #include "Precompiled.h"
-#include "platform_unix.h"
+#include "AppLinux.h"
+#include <X11/X.h>
+#include <X11/Xlib.h>
 #include <QtGui>
 #include <QApplication>
 #include <QX11Info>
-#include <X11/X.h>
-#include <X11/Xlib.h>
 #include <QFileIconProvider>
 #include "AppBase.h"
 #include "Catalog.h"
@@ -31,9 +31,9 @@
 
 namespace launchy {
 
-AppUnix::AppUnix(int& argc, char** argv)
+AppLinux::AppLinux(int& argc, char** argv)
     : AppBase(argc, argv) {
-    m_iconProvider = new UnixIconProvider();
+    m_iconProvider = new IconProviderLinux();
 }
 
 /*
@@ -47,16 +47,16 @@ AppUnix::AppUnix(int& argc, char** argv)
 return app;
 }
 */
-AppUnix::~AppUnix() {
+AppLinux::~AppLinux() {
     // GlobalShortcutManager::clear();
     // delete icons;
 }
 
-void AppUnix::setPreferredIconSize(int size) {
+void AppLinux::setPreferredIconSize(int size) {
     size = size; return;
 }
 
-QList<Directory> AppUnix::getDefaultCatalogDirectories() {
+QList<Directory> AppLinux::getDefaultCatalogDirectories() {
     QList<Directory> list;
     const char *dirs[] = {"/usr/share/applications/",
                           "/usr/local/share/applications/",
@@ -75,7 +75,7 @@ QList<Directory> AppUnix::getDefaultCatalogDirectories() {
 }
 
 
-QHash<QString, QList<QString> > AppUnix::getDirectories() {
+QHash<QString, QList<QString> > AppLinux::getDirectories() {
     QHash<QString, QList<QString> > out;
     QDir d;
     d.mkdir(QDir::homePath() + "/.launchy");
@@ -116,12 +116,24 @@ alpha.reset( new AlphaBorder(w, ImageName) );
 return true;
 }
 */
-bool AppUnix::supportsAlphaBorder() const {
+QString AppLinux::GetSettingsDirectory() {
+    return "";
+}
+
+void AppLinux::AddToNotificationArea() {
+
+}
+
+void AppLinux::RemoveFromNotificationArea() {
+
+}
+
+bool AppLinux::supportsAlphaBorder() const {
     return QX11Info::isCompositingManagerRunning();
 }
 
 
-void AppUnix::alterItem(CatItem* item) {
+void AppLinux::alterItem(CatItem* item) {
     if (!item->fullPath.endsWith(".desktop", Qt::CaseInsensitive))
         return;
 
@@ -148,7 +160,7 @@ void AppUnix::alterItem(CatItem* item) {
     }
     if (name.size() >= item->shortName.size() - 8) {
         item->shortName = name;
-        item->lowName = item->shortName.toLower();
+        item->searchName = item->shortName.toLower();
     }
 
     // Don't index desktop items wthout icons
@@ -196,7 +208,7 @@ void AppUnix::alterItem(CatItem* item) {
 //    shared_ptr<UnixIconProvider> u((UnixIconProvider*) icons.get());
 
     //icon = u->getDesktopIcon(file.fileName(), icon);
-    icon = ((UnixIconProvider*)m_iconProvider)->getDesktopIcon(file.fileName(), icon);
+    icon = ((IconProviderLinux*)m_iconProvider)->getDesktopIcon(file.fileName(), icon);
 
     QFileInfo inf(icon);
     if (!inf.exists()) {
@@ -210,9 +222,7 @@ void AppUnix::alterItem(CatItem* item) {
     return;
 }
 
-
-QString AppUnix::expandEnvironmentVars(QString txt)
-{
+QString AppLinux::expandEnvironmentVars(QString txt) {
 	QStringList list = QProcess::systemEnvironment();
 	txt.replace('~', "$HOME$");
 	QString delim("$");
@@ -248,7 +258,7 @@ QString AppUnix::expandEnvironmentVars(QString txt)
 
 // Create the application object
 QApplication* createApplication(int& argc, char** argv) {
-    return new AppUnix(argc, argv);
+    return new AppLinux(argc, argv);
 }
 
 // Create the main widget for the application

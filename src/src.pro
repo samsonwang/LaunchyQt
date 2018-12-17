@@ -79,10 +79,10 @@ DEPENDPATH += $$PWD/src/lib
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
-    SOURCES += linux/platform_unix.cpp \
-               linux/platform_unix_util.cpp
-    HEADERS += linux/platform_unix.h \
-               linux/platform_unix_util.h
+    SOURCES += linux/AppLinux.cpp \
+               linux/IconProviderLinux.cpp
+    HEADERS += linux/AppLinux.h \
+               linux/IconProviderLinux.h
     #LIBS    += -Llib -lLaunchy
     PREFIX   = /usr
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \

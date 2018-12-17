@@ -11,14 +11,16 @@ QT += core
 SOURCES += CatalogItem.cpp \
            InputData.cpp \
            PluginInterface.cpp \
-           PluginInfo.cpp
+           PluginInfo.cpp \
+           UnicodeTable.cpp
 
 HEADERS += CatalogItem.h \
            InputData.h \
            LaunchyLib.h \
            PluginInterface.h \
            PluginMsg.h \
-           PluginInfo.h
+           PluginInfo.h \
+           UnicodeTable.h
 
 DEFINES += LAUNCHY_LIB
 
