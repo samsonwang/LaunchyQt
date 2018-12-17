@@ -22,14 +22,12 @@ LanchyQt offers more as follows:
 - Python package management with pip, more easy to install 3rd-party package.
 
 
-** Latest release
-[[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/release/samsonwang/LaunchyQt.svg]]
+** Latest release [[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/release/samsonwang/LaunchyQt.svg]]
 
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
 
 
 ** Credits
-#+BEGIN_QUOTE
 - [[https://sourceforge.net/projects/launchy][Launchy]]                                - GPLv2
 - [[https://github.com/mitei/qglobalshortcut][qglobalshortcut (Qhotkey)]]              - N/A
 - [[https://github.com/itay-grudev/SingleApplication][singleapplication]]                      - MIT
@@ -40,7 +38,7 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
 - WebSearchPy (from [[https://github.com/j5shi/Thruster][Thruster]])            - GPLv2
 - PyDiryPy (from [[https://github.com/kshahar/pylaunchy][pylaunchy]])              - GPLv2
-#+END_QUOTE
+
 
 
 ** Thanks
