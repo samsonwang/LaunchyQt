@@ -2,6 +2,7 @@
 #include "QHotkeyP.h"
 #include <QMultiHash>
 #include <QCoreApplication>
+#include <QDebug>
 
 QScopedPointer<QHotkeyPrivate::EventFilter> QHotkeyPrivate::s_eventFilter;
 QMultiHash<quint32, QHotkey*> QHotkeyPrivate::s_hotKeys;
@@ -75,14 +76,18 @@ const QKeySequence& QHotkeyPrivate::keySeq() const {
 }
 
 void QHotkeyPrivate::setKeySeq(const QKeySequence& keySeq) {
+    qDebug() << "QHotkeyPrivate::setKeySeq, keySeq:" << keySeq;
     if (!m_keySeq.isEmpty()) {
         unsetKey();
     }
 
     quint32 keyId = calcHotkeyId(keySeq);
+    qDebug() << "QHotkeyPrivate::setKeySeq, keyId:" << keyId;
     if (s_hotKeys.count(keyId) == 0) {
         quint32 keycode = toNativeKeycode(getKey(keySeq));
+        qDebug() << "QHotkeyPrivate::setKeySeq, keyCode:" << keycode;
         quint32 mods = toNativeModifiers(getModifiers(keySeq));
+        qDebug() << "QHotkeyPrivate::setKeySeq, mods:" << mods;
         if (!registerKey(keycode, mods, keyId)) {
             // register fail
             return;

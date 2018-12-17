@@ -10,15 +10,16 @@ SOURCES += $$PWD/QHotkey.cpp \
 #INCLUDEPATH += $$PWD
 
 win32 {
-    SOURCES += $$PWD/QHotkeyWin.cpp
+    SOURCES    += $$PWD/QHotkeyWin.cpp
+    QT         += winextras
     #msvc:LIBS += Advapi32.lib
-    #gcc:LIBS += -ladvapi32
-    QT += winextras
+    #gcc:LIBS  += -ladvapi32
 }
 
 unix:!macx {
-    SOURCES += $$PWD/QHotkeyX11.cpp
-    QT += x11extras
-    LIBS += -lX11 -lxcb
+    SOURCES   += $$PWD/QHotkeyX11.cpp
+    QT        += x11extras
+    CONFIG    += link_pkgconfig
+    PKGCONFIG += x11
+    LIBS      += -lX11 -lxcb
 }
-
