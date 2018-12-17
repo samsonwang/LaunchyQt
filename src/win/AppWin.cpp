@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "AppWin.h"
 #include "UtilWin.h"
 #include "LaunchyWidget.h"
@@ -36,6 +36,7 @@ public:
         commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
     }
 
+protected:
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) {
         MSG* msg = (MSG*)message;
         switch (msg->message) {
@@ -90,10 +91,12 @@ AppWin::AppWin(int& argc, char** argv)
 }
 
 AppWin::~AppWin() {
-    if (localMutex)
+    if (localMutex) {
         CloseHandle(localMutex);
-    if (globalMutex)
+    }
+    if (globalMutex) {
         CloseHandle(globalMutex);
+    }
     if (m_crashDumper) {
         delete m_crashDumper;
         m_crashDumper = nullptr;

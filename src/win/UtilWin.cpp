@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "UtilWin.h"
 #include "AppWin.h"
 #include "GlobalVar.h"
@@ -72,24 +72,20 @@ void UpdateEnvironment() {
     CloseHandle(accessToken);
 }
 
-
 QString GetShellDirectory(int type) {
     wchar_t buffer[_MAX_PATH];
     SHGetFolderPath(NULL, type, NULL, 0, buffer);
     return QString::fromWCharArray(buffer);
 }
 
-bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t* domain)
-{
+bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t* domain) {
     SERVER_INFO_100* serverInfo = 0;
     DWORD read, totalOnNetwork;
 
     NET_API_STATUS result = NetServerEnum(NULL, 100, (BYTE**)&serverInfo, MAX_PREFERRED_LENGTH,
                                           &read, &totalOnNetwork, serverType, domain, 0);
-    if (result == NERR_Success)
-    {
-        for (DWORD i = 0; i < read; ++i)
-        {
+    if (result == NERR_Success) {
+        for (DWORD i = 0; i < read; ++i) {
             QString name = QString::fromUtf16((ushort*)serverInfo[i].sv100_name);
             items.push_back(name);
         }
@@ -101,8 +97,7 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
     // ERROR_NO_BROWSER_SERVERS_FOUND: "No browser servers found."
     // ERROR_MORE_DATA: "More entries are available with subsequent calls."
 
-    if (serverInfo)
-    {
+    if (serverInfo) {
         NetApiBufferFree((void*)serverInfo);
     }
 

@@ -931,7 +931,6 @@ void LaunchyWidget::updateVersion(int oldVersion) {
     }
 
     if (oldVersion < LAUNCHY_VERSION) {
-//        g_settings->setValue("donateTime", QDateTime::currentDateTime().addDays(21));
         g_settings->setValue(OPSTION_VERSION, LAUNCHY_VERSION);
     }
 }
