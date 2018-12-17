@@ -21,8 +21,8 @@ If you want any new feature, feel free to raise an [[https://github.com/samsonwa
 Compared to the old one, LanchyQt offers more as follows:
 - High DPI support for 2K and 4K display.
 - Locale language support, such as simplified Chinese pinyin.
-- Built-in python support, develop plugins in pyton painlessly.
-- Python package management with pip, more easy to install 3rd-party package.
+- Built-in python support, develop plugins in python painlessly.
+- Python package management with pip, more easy to install 3rd-party packages.
 
 
 ** Latest release
@@ -40,7 +40,6 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
 - WebSearchPy (from [[https://github.com/j5shi/Thruster][Thruster]])            - GPLv2
 - PyDiryPy (from [[https://github.com/kshahar/pylaunchy][pylaunchy]])              - GPLv2
-
 
 
 ** Thanks
