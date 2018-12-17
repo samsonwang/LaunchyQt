@@ -11,21 +11,25 @@ I have been using Launchy for years, and found that this project has not been up
 
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
 
-Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/blob/dev/docs/CHANGELOG.org][here]] .
+Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/projects/1][here]] .
+
+
+** Improvemenets
+LanchyQt offers more as follows:
+- High DPI support for 2K and 4K display.
+- Locale language support, such as simplified Chinese pinyin.
+- Built-in python support, develop plugins in pyton painlessly.
+- Python package management with pip, more easy to install 3rd-party package.
+
 
 ** Latest release
-Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
+[[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/release/samsonwang/LaunchyQt.svg]]
 
-*3.0.5* Changes:
-- bug fix: launchy may crash on restart while option dialaog is open
-- use pip to manage python package
-- network proxy setting
-- update check and new version notify
-- add "run as admin" in verby
-- new plugin PyDiryPy, it is ported from [[https://github.com/kshahar/pylaunchy][pylaunchy]]
+Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
 
 
 ** Credits
+#+BEGIN_QUOTE
 - [[https://sourceforge.net/projects/launchy][Launchy]]                                - GPLv2
 - [[https://github.com/mitei/qglobalshortcut][qglobalshortcut (Qhotkey)]]              - N/A
 - [[https://github.com/itay-grudev/SingleApplication][singleapplication]]                      - MIT
@@ -36,6 +40,7 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 - [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
 - WebSearchPy (from [[https://github.com/j5shi/Thruster][Thruster]])            - GPLv2
 - PyDiryPy (from [[https://github.com/kshahar/pylaunchy][pylaunchy]])              - GPLv2
+#+END_QUOTE
 
 
 ** Thanks
