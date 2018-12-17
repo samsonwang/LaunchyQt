@@ -25,13 +25,14 @@ def redirectOutput():
             try:
                 self.file.flush()
                 return getattr(self.terminal, attr)
-            except Exception:
-                pass
-                #print ( sys.stderr, inst)
+            except Exception as err:
+                print("launchy_util, FlashedFile.__getattr__,", err)
+
     # Redirect stdout and stderr
     sys.stdout = FlushedFile(os.path.join(launchy.getAppPath(), 'python', 'stdout.log'))
     sys.stderr = FlushedFile(os.path.join(launchy.getAppPath(), 'python', 'stderr.log'))
-    print("pluginpy is up and running")
+    print("launchy_util, redirect output finished")
+
 
 def setSettingsObject():
     print("launchy_util, setSettingsObject called")
@@ -39,37 +40,31 @@ def setSettingsObject():
     try:
         # Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
         from PyQt5 import QtCore
-        from sip import wrapinstance, unwrapinstance
-        from PyQt5.QtWidgets import QApplication, QWidget
-        print("QApplication:", QApplication)
-        print("QWidget:", QWidget)
-        print("QtCore:", QtCore)
+        from sip import wrapinstance
         print("launchy:", dir(launchy))
         launchy.settings = wrapinstance(launchy.__settings, QtCore.QSettings)
-        print(launchy.settings)
-#        launchy.settings.setValue("Test/testSetting", 2345)
+        print("launchy.settings:", launchy.settings)
     except ImportError as err:
-        print("ImportError,", err)
+        print("launchy_util, setSettingsObject, ImportError,", err)
     except NameError:
-        print("NameError, Could not find __settings object")
+        print("launchy_util, setSettingsObject, NameError, Could not find __settings object")
     except Exception as err:
-        print("Exception,", err)
+        print("launchy_util, setSettingsObject, Exception,", err)
 
 
 def loadPluginConf():
     try:
-        import pluginconf
+        from pluginconf import loadConf
+        loadConf()
     except Exception as err:
-        print("loadPluginconf,", err)
+        print("launchy_util, loadPluginconf,", err)
+
 
 def launchy_util():
     redirectOutput()
     loadPluginConf()
-#    setSettingsObject()
-    print("launchy_util")
-    print("sys.path:", sys.path)
-    print("env.path:", os.environ.get('PATH', ''))
-
+    print("launchy_util, sys.path:", sys.path)
+    print("launchy_util, env.path:", os.environ.get('PATH', ''))
 
 try:
     launchy_util()
