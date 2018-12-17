@@ -12,17 +12,19 @@ I have been using Launchy for years, and found that this project has not been up
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
 
 Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/projects/1][here]] .
+If you want any new feature, feel free to raise an [[https://github.com/samsonwang/LaunchyQt/issues][issue]] for it, feature request is welcomed.
 
 
 ** Improvemenets
-LanchyQt offers more as follows:
+Compared to the old one, LanchyQt offers more as follows:
 - High DPI support for 2K and 4K display.
 - Locale language support, such as simplified Chinese pinyin.
 - Built-in python support, develop plugins in pyton painlessly.
 - Python package management with pip, more easy to install 3rd-party package.
 
 
-** Latest release [[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/release/samsonwang/LaunchyQt.svg]]
+** Latest release
+The lastest version: [[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/release/samsonwang/LaunchyQt.svg]] .
 
 Checkout detailed info and download latest binary at [[https://github.com/samsonwang/LaunchyQt/releases][github release page]] or [[https://sourceforge.net/projects/launchyqt/files/][sourceforge release page]].
 
