@@ -42,15 +42,14 @@ namespace launchy {
 // check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
 
-// QByteArray OptionDialog::s_windowGeometry;
-// int OptionDialog::s_currentTab;
-//int OptionDialog::s_currentPlugin;
+QByteArray OptionDialog::s_lastWindowGeometry;
+int OptionDialog::s_lastTab = 0;
+int OptionDialog::s_lastPlugin = 0;
 
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
       m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)),
-      m_currentPlugin(-1),
       m_needRescan(false) {
 
     m_pUi->setupUi(this);
@@ -60,8 +59,8 @@ OptionDialog::OptionDialog(QWidget * parent)
     windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint;
     setWindowFlags(windowsFlags);
 
-    //restoreGeometry(s_windowGeometry);
-    m_pUi->tabWidget->setCurrentIndex(0);
+    restoreGeometry(s_lastWindowGeometry);
+    m_pUi->tabWidget->setCurrentIndex(s_lastTab);
     connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
     initGeneralWidget();
@@ -81,15 +80,14 @@ OptionDialog::OptionDialog(QWidget * parent)
     initAboutWidget();
 }
 
-
 OptionDialog::~OptionDialog() {
     if (g_builder != NULL) {
         disconnect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
         disconnect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     }
 
-//     s_currentTab = m_pUi->tabWidget->currentIndex();
-//     s_windowGeometry = saveGeometry();
+    s_lastTab = m_pUi->tabWidget->currentIndex();
+    s_lastWindowGeometry = saveGeometry();
 
     delete m_pUi;
     m_pUi = nullptr;
@@ -142,8 +140,8 @@ void OptionDialog::accept() {
 
 
 void OptionDialog::reject() {
-    if (m_currentPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
+    if (s_lastPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), false);
     }
 
@@ -152,14 +150,15 @@ void OptionDialog::reject() {
 
 void OptionDialog::showEvent(QShowEvent* event) {
 
-    if (m_currentPlugin < 0 && m_pUi->plugList->count() > 0) {
+    if (s_lastPlugin < 0 && m_pUi->plugList->count() > 0) {
         m_pUi->plugList->setCurrentRow(0);
     }
 
-    if (m_currentPlugin >= 0
-        && m_currentPlugin < m_pUi->plugList->count()) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
+    if (s_lastPlugin >= 0
+        && s_lastPlugin < m_pUi->plugList->count()) {
+        QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         loadPluginDialog(item);
+        m_pUi->plugList->setCurrentRow(s_lastPlugin);
     }
 
     QDialog::showEvent(event);
@@ -191,16 +190,16 @@ void OptionDialog::autoRebuildCheckChanged(int state) {
     }
 }
 
-void OptionDialog::skinChanged(const QString& newSkin)
-{
-    if (newSkin.count() == 0)
+void OptionDialog::skinChanged(const QString& newSkin) {
+    if (newSkin.isEmpty()) {
         return;
+    }
 
     // Find the skin with this name
     QString directory = SettingsManager::instance().skinPath(newSkin);
 
     // Load up the author file
-    if (directory.length() == 0) {
+    if (directory.isEmpty()) {
         m_pUi->authorInfo->setText("");
         return;
     }
@@ -272,13 +271,13 @@ void OptionDialog::pluginChanged(int row) {
     }
 
     // Close any current plugin dialogs
-    if (m_currentPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
+    if (s_lastPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
     // Open the new plugin dialog
-    m_currentPlugin = row;
+    s_lastPlugin = row;
     if (row >= 0) {
         loadPluginDialog(m_pUi->plugList->item(row));
     }
@@ -305,8 +304,8 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     }
 
     // Close any current plugin dialogs
-    if (m_currentPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
+    if (s_lastPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 
@@ -490,20 +489,21 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genOpaqueness->setValue(g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt());
     m_pUi->genFadeIn->setValue(g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt());
     m_pUi->genFadeOut->setValue(g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt());
+
     connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
 
 #ifdef Q_OS_MAC
-    metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
+    m_metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
         << QString("Command+Alt") << QString("Command+Shift") << QString("Command+Control");
 #else
-    metaKeys << QString("") << QString("Alt") << QString("Control") << QString("Shift") << QString("Win")
+    m_metaKeys << QString("") << QString("Alt") << QString("Control") << QString("Shift") << QString("Win")
         << QString("Ctrl+Alt") << QString("Ctrl+Shift") << QString("Ctrl+Win");
 #endif
-    iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier
+    m_iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier
         << (Qt::ControlModifier | Qt::AltModifier) << (Qt::ControlModifier | Qt::ShiftModifier)
         << (Qt::ControlModifier | Qt::MetaModifier);
 
-    actionKeys << QString("Space") << QString("Tab") << QString("Caps Lock") << QString("Backspace")
+    m_actionKeys << QString("Space") << QString("Tab") << QString("Caps Lock") << QString("Backspace")
         << QString("Enter") << QString("Esc") << QString("Insert") << QString("Delete") << QString("Home")
         << QString("End") << QString("Page Up") << QString("Page Down") << QString("Print") << QString("Scroll Lock")
         << QString("Pause") << QString("Num Lock")
@@ -512,7 +512,7 @@ void OptionDialog::initGeneralWidget() {
         << QString("F6") << QString("F7") << QString("F8") << QString("F9") << QString("F10")
         << QString("F11") << QString("F12") << QString("F13") << QString("F14") << QString("F15");
 
-    iActionKeys << Qt::Key_Space << Qt::Key_Tab << Qt::Key_CapsLock << Qt::Key_Backspace << Qt::Key_Enter << Qt::Key_Escape <<
+    m_iActionKeys << Qt::Key_Space << Qt::Key_Tab << Qt::Key_CapsLock << Qt::Key_Backspace << Qt::Key_Enter << Qt::Key_Escape <<
         Qt::Key_Insert << Qt::Key_Delete << Qt::Key_Home << Qt::Key_End << Qt::Key_PageUp << Qt::Key_PageDown <<
         Qt::Key_Print << Qt::Key_ScrollLock << Qt::Key_Pause << Qt::Key_NumLock <<
         Qt::Key_Up << Qt::Key_Down << Qt::Key_Left << Qt::Key_Right <<
@@ -520,19 +520,19 @@ void OptionDialog::initGeneralWidget() {
         Qt::Key_F9 << Qt::Key_F10 << Qt::Key_F11 << Qt::Key_F12 << Qt::Key_F13 << Qt::Key_F14 << Qt::Key_F15;
 
     for (int i = '0'; i <= '9'; ++i) {
-        actionKeys << QString(QChar(i));
-        iActionKeys << i;
+        m_actionKeys << QString(QChar(i));
+        m_iActionKeys << i;
     }
 
     for (int i = 'A'; i <= 'Z'; ++i) {
-        actionKeys << QString(QChar(i));
-        iActionKeys << i;
+        m_actionKeys << QString(QChar(i));
+        m_iActionKeys << i;
     }
 
-    actionKeys << "`" << "-" << "=" << "[" << "]"
+    m_actionKeys << "`" << "-" << "=" << "[" << "]"
         << ";" << "'" << "#" << "\\" << "," << "." << "/";
 
-    iActionKeys << '`' << '-' << '=' << '[' << ']'
+    m_iActionKeys << '`' << '-' << '=' << '[' << ']'
         << ';' << '\'' << '#' << '\\' << ',' << '.' << '/';
 
     // Find the current hotkey
@@ -540,15 +540,15 @@ void OptionDialog::initGeneralWidget() {
     int meta = hotkey & (Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
     hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
 
-    for (int i = 0; i < metaKeys.count(); ++i) {
-        m_pUi->genModifierBox->addItem(metaKeys[i]);
-        if (iMetaKeys[i] == meta)
+    for (int i = 0; i < m_metaKeys.count(); ++i) {
+        m_pUi->genModifierBox->addItem(m_metaKeys[i]);
+        if (m_iMetaKeys[i] == meta)
             m_pUi->genModifierBox->setCurrentIndex(i);
     }
 
-    for (int i = 0; i < actionKeys.count(); ++i) {
-        m_pUi->genKeyBox->addItem(actionKeys[i]);
-        if (iActionKeys[i] == hotkey)
+    for (int i = 0; i < m_actionKeys.count(); ++i) {
+        m_pUi->genKeyBox->addItem(m_actionKeys[i]);
+        if (m_iActionKeys[i] == hotkey)
             m_pUi->genKeyBox->setCurrentIndex(i);
     }
 
@@ -588,7 +588,7 @@ void OptionDialog::initGeneralWidget() {
 
 void OptionDialog::saveGeneralSettings() {
     // See if the new hotkey works, if not we're not leaving the dialog.
-    QKeySequence hotkey(iMetaKeys[m_pUi->genModifierBox->currentIndex()] + iActionKeys[m_pUi->genKeyBox->currentIndex()]);
+    QKeySequence hotkey(m_iMetaKeys[m_pUi->genModifierBox->currentIndex()] + m_iActionKeys[m_pUi->genKeyBox->currentIndex()]);
     if (!g_mainWidget->setHotkey(hotkey)) {
         QMessageBox::warning(this, tr("Launchy"),
                              tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
@@ -739,8 +739,8 @@ void OptionDialog::initPluginsWidget() {
 }
 
 void OptionDialog::savePluginsSettings() {
-    if (m_currentPlugin >= 0) {
-        QListWidgetItem* item = m_pUi->plugList->item(m_currentPlugin);
+    if (s_lastPlugin >= 0) {
+        QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
 }

@@ -1232,6 +1232,8 @@ void LaunchyWidget::showOptionDialog() {
         }
 
         m_optionDialog->exec();
+        delete m_optionDialog;
+        m_optionDialog = nullptr;
 
         activateWindow();
         m_inputBox->setFocus();
