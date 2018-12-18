@@ -1,5 +1,6 @@
 
 #include "QHotKeyP.h"
+#include <Winuser.h>
 
 QHotkeyPrivate::NativeKeyMap QHotkeyPrivate::s_keyMap[] = {
     {Qt::Key_Escape,      VK_ESCAPE},
@@ -146,9 +147,9 @@ int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
     return key | mod;
 }
 
-bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
-                                                    void *message,
-                                                    long *result) {
+bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
+                                                    void* message,
+                                                    long* result) {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
 

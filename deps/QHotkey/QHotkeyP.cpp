@@ -37,8 +37,7 @@ void QHotkeyPrivate::unsetKey() {
 }
 
 bool QHotkeyPrivate::activateHotKey(int keyId) {
-    qDebug() << "QHotkeyPrivate::activateHotKey,"
-        << "keyId:" << keyId;
+    qDebug() << "QHotkeyPrivate::activateHotKey, keyId:" << keyId;
     if (s_hotKeys.contains(keyId)) {
         foreach(QHotkey* s, s_hotKeys.values(keyId)) {
             s->activated();
@@ -82,12 +81,11 @@ void QHotkeyPrivate::setKeySeq(const QKeySequence& keySeq) {
     }
 
     quint32 keyId = calcHotkeyId(keySeq);
-    qDebug() << "QHotkeyPrivate::setKeySeq, keyId:" << keyId;
     if (s_hotKeys.count(keyId) == 0) {
         quint32 keycode = toNativeKeycode(getKey(keySeq));
-        qDebug() << "QHotkeyPrivate::setKeySeq, keyCode:" << keycode;
         quint32 mods = toNativeModifiers(getModifiers(keySeq));
-        qDebug() << "QHotkeyPrivate::setKeySeq, mods:" << mods;
+        qDebug() << "QHotkeyPrivate::setKeySeq, keyCode:" << keycode
+            << "mods:" << mods << "keyId:" << keyId;
         if (!registerKey(keycode, mods, keyId)) {
             // register fail
             return;
@@ -117,7 +115,7 @@ quint32 QHotkeyPrivate::toNativeKeycode(Qt::Key key) {
 
 quint32 QHotkeyPrivate::toNativeModifiers(Qt::KeyboardModifiers mod) {
     quint32 modNative = 0;
-    for (int i = 0; s_modMap[i].qtMod != Qt::KeyboardModifierMask; ++i) {
+    for (size_t i = 0; s_modMap[i].qtMod != Qt::KeyboardModifierMask; ++i) {
         if (s_modMap[i].qtMod & mod) {
             modNative |= s_modMap[i].nativeMod;
         }
