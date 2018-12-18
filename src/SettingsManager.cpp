@@ -132,7 +132,8 @@ void SettingsManager::setPortable(bool makePortable) {
         return;
     }
 
-    qInfo("Converting to %s mode", makePortable ? "portable" : "installed");
+    qInfo("SettingsManager::setPortable, Converting to %s mode",
+          makePortable ? "portable" : "installed");
 
     // Destroy the QSettings object first so it writes every changes to disk
     g_settings.reset(nullptr);
@@ -152,6 +153,14 @@ void SettingsManager::setPortable(bool makePortable) {
         QFile::remove(oldIniName);
         QFile::remove(oldDbName);
         QFile::remove(oldHistoryName);
+
+        if (!makePortable) {
+            // if converting to installed mode,
+            // try to remove portable mode config directory if it is empty.
+            // !! This may be dangerous for the old directory could contain other files.
+            // !! MUST be careful when deleting files and directories.
+            QDir(oldDir).rmdir(".");
+        }
     }
     else {
         qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
@@ -165,7 +174,6 @@ void SettingsManager::setPortable(bool makePortable) {
 
     load();
 }
-
 
 // Delete all settings files in both installed and portable directories
 void SettingsManager::removeAll() {

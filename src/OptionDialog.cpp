@@ -651,7 +651,7 @@ void OptionDialog::initSkinWidget() {
             if (!f.exists())
                 continue;
 
-            QListWidgetItem* item = new QListWidgetItem(d);
+            QListWidgetItem* item = new QListWidgetItem(d, m_pUi->skinList);
             m_pUi->skinList->addItem(item);
 
             if (skinName.compare(d, Qt::CaseInsensitive) == 0)
