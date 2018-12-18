@@ -33,6 +33,10 @@ Calcy::Calcy() {
 }
 
 Calcy::~Calcy() {
+    if (m_gui) {
+        delete m_gui;
+        m_gui = nullptr;
+    }
 }
 
 void Calcy::init() {
@@ -57,8 +61,9 @@ void Calcy::getName(QString* str) {
 }
 
 void Calcy::getLabels(QList<launchy::InputData>* inputList) {
-    if (inputList->count() > 1)
+    if (inputList->count() > 1) {
         return;
+    }
 
     QString text = inputList->last().getText();
     text.replace(" ", "");
@@ -160,10 +165,12 @@ void Calcy::setPath(const QString* path) {
 void Calcy::doDialog(QWidget* parent, QWidget** newDlg) {
     if (!m_gui.isNull()) {
         m_gui->close();
+        delete m_gui;
+        m_gui = nullptr;
     }
 
-    m_gui.reset(new Gui(parent));
-    *newDlg = m_gui.get();
+    m_gui = new Gui(parent);
+    *newDlg = m_gui.data();
     init();
 }
 
@@ -172,7 +179,9 @@ void Calcy::endDialog(bool accept) {
         m_gui->writeOptions();
         init();
     }
-    m_gui.reset();
+    m_gui->close();
+    delete m_gui;
+    m_gui = nullptr;
 }
 
 int Calcy::msg(int msgId, void* wParam, void* lParam) {

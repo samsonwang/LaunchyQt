@@ -50,7 +50,7 @@ private:
     uint HASH_CALCY;
     QString m_libPath;
     QRegExp m_reg;
-    QScopedPointer<Gui> m_gui;
+    QPointer<Gui> m_gui;
 };
 
 extern Calcy* g_plugin;
