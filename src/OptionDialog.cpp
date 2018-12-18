@@ -39,12 +39,12 @@ Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
 namespace launchy {
 
 // for qt flags
-// check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
+// https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
 
 QByteArray OptionDialog::s_lastWindowGeometry;
-int OptionDialog::s_lastTab = 0;
-int OptionDialog::s_lastPlugin = 0;
+int OptionDialog::s_lastTab = -1;
+int OptionDialog::s_lastPlugin = -1;
 
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
