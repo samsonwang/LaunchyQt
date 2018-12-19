@@ -29,7 +29,7 @@ class CatalogBuilder : public QObject, public INotifyProgressStep {
     Q_OBJECT
 public:
     static CatalogBuilder* instance();
-    static void cleanUp();
+    static void cleanup();
     static Catalog* getCatalog();
 
     int getProgress() const;

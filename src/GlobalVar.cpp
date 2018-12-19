@@ -66,14 +66,11 @@ QString g_searchText;
 
 void cleanUpGlobalVar() {
 
-    CatalogBuilder::cleanUp();
-    LaunchyWidget::cleanUp();
-
-    if (g_app) {
-        delete g_app;
-    }
-
+    CatalogBuilder::cleanup();
+    LaunchyWidget::cleanup();
+    AppBase::cleanup();
     g_settings.clear();
+
     qInfo("cleanUpGlobalVar, cleanup finished");
 }
 

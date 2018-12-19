@@ -35,6 +35,7 @@ class AppBase : public SingleApplication {
 public:
     AppBase(int& argc, char** argv);
     virtual ~AppBase();
+    static void cleanup();
 
     QIcon icon(const QFileInfo& info);
     QIcon icon(QFileIconProvider::IconType type);
@@ -61,4 +62,3 @@ AppBase* createApplication(int& argc, char** argv);
 #define g_app static_cast<launchy::AppBase*>(qApp)
 
 }
-

@@ -167,7 +167,7 @@ CatalogBuilder::~CatalogBuilder() {
         m_thread->deleteLater();
         m_thread = nullptr;
     }
-    
+
     if (m_catalog) {
         delete m_catalog;
         m_catalog = nullptr;
@@ -181,7 +181,7 @@ CatalogBuilder* CatalogBuilder::instance() {
     return s_instance;
 }
 
-void CatalogBuilder::cleanUp() {
+void CatalogBuilder::cleanup() {
     if (s_instance) {
         delete s_instance;
         s_instance = nullptr;

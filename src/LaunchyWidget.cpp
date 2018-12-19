@@ -220,7 +220,7 @@ LaunchyWidget* LaunchyWidget::instance() {
     return s_instance;
 }
 
-void LaunchyWidget::cleanUp() {
+void LaunchyWidget::cleanup() {
     if (s_instance) {
         delete s_instance;
         s_instance = nullptr;

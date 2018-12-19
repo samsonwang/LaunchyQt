@@ -52,6 +52,12 @@ AppBase::~AppBase() {
     }
 }
 
+void AppBase::cleanup() {
+    if (g_app) {
+        delete g_app;
+    }
+};
+
 QIcon AppBase::icon(const QFileInfo& info) {
     return m_iconProvider->icon(info);
 }

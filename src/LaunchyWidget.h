@@ -57,7 +57,7 @@ public:
     LaunchyWidget(CommandFlags command);
     virtual ~LaunchyWidget();
     static LaunchyWidget* instance();
-    static void cleanUp();
+    static void cleanup();
 
 public:
     void executeStartupCommand(int command);
