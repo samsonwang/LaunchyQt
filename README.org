@@ -12,7 +12,7 @@ I have been using Launchy for years, and found that this project has not been up
 
 *I need feedback, and you can help by reporting bugs and giving suggestions.*
 
-Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/projects/1][here]] , last commit dev(devlop) branch [[https://github.com/samsonwang/LaunchyQt/tree/dev][file:https://img.shields.io/github/last-commit/samson/LaunchyQt/dev.svg]] .
+Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt/projects/1][here]] , last commit on dev(devlop) branch [[https://github.com/samsonwang/LaunchyQt/tree/dev][file:https://img.shields.io/github/last-commit/samsonwang/LaunchyQt/dev.svg]] .
 
 If you want any new feature, feel free to raise an [[https://github.com/samsonwang/LaunchyQt/issues][issue]] for it, feature request is welcome.
 
