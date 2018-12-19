@@ -10,6 +10,7 @@ QT += core
 
 SOURCES += CatalogItem.cpp \
            InputData.cpp \
+           LaunchyLib.cpp \
            PluginInterface.cpp \
            PluginInfo.cpp \
            UnicodeTable.cpp

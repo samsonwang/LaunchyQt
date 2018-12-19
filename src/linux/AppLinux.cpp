@@ -257,7 +257,7 @@ QString AppLinux::expandEnvironmentVars(QString txt) {
 }
 
 // Create the application object
-QApplication* createApplication(int& argc, char** argv) {
+AppBase* createApplication(int& argc, char** argv) {
     return new AppLinux(argc, argv);
 }
 
