@@ -93,13 +93,13 @@ bool Verby::isMatch(const QString& text1, const QString& text2) {
 void Verby::addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName) {
     if (text.isEmpty() || isMatch(shortName, text)) {
         CatItem item = CatItem(fullName, shortName, HASH_VERBY, m_libPath + "/" + iconName);
-        item.usage = (*settings)->value("Verby/" + shortName.replace(" ", ""), 0).toInt();
+        item.usage = launchy::g_settings->value("Verby/" + shortName.replace(" ", ""), 0).toInt();
         results->push_back(item);
     }
 }
 
 void Verby::updateUsage(CatItem& item) {
-    (*settings)->setValue("Verby/" + item.shortName.replace(" ", ""), item.usage + 1);
+    launchy::g_settings->setValue("Verby/" + item.shortName.replace(" ", ""), item.usage + 1);
 }
 
 

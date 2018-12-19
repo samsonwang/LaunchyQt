@@ -203,7 +203,7 @@ bool AppWin::getComputers(QStringList& computers) const {
 }
 
 // Create the application object
-QApplication* createApplication(int& argc, char** argv) {
+AppBase* createApplication(int& argc, char** argv) {
     return new AppWin(argc, argv);
 }
 }

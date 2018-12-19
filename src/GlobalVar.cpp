@@ -18,11 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "GlobalVar.h"
-#include <QSettings>
 #include "AppBase.h"
 #include "LaunchyWidget.h"
-#include "Catalog.h"
 #include "CatalogBuilder.h"
+#include "LaunchyLib.h"
 
 // Check windows
 #if _WIN32 || _WIN64
@@ -63,11 +62,19 @@ const uint LABEL_FILE = 0;
 const uint LABEL_AUTOSUGGEST = 1;
 const uint LABEL_HISTORY = 2;
 
-QScopedPointer<AppBase> g_app;
-QScopedPointer<LaunchyWidget> g_mainWidget;
-QScopedPointer<QSettings> g_settings;
-QScopedPointer<Catalog> g_catalog;
-QScopedPointer<CatalogBuilder> g_builder;
 QString g_searchText;
+
+void cleanUpGlobalVar() {
+
+    CatalogBuilder::cleanUp();
+    LaunchyWidget::cleanUp();
+
+    if (g_app) {
+        delete g_app;
+    }
+
+    g_settings.clear();
+    qInfo("cleanUpGlobalVar, cleanup finished");
+}
 
 }

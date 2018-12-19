@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "GlobalVar.h"
 #include "AppBase.h"
-#include "LaunchyWidget.h"
 #include "SettingsManager.h"
+#include "LaunchyWidget.h"
 #include "Logger.h"
+#include "GlobalVar.h"
 
 int main(int argc, char* argv[]) {
 
@@ -75,12 +75,22 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (!allowMultipleInstances && launchy::g_app->isAlreadyRunning()) {
-        launchy::g_app->sendInstanceCommand(command);
-        exit(1);
+    if (!allowMultipleInstances && g_app->isAlreadyRunning()) {
+        g_app->sendInstanceCommand(command);
+        qInfo("second instance, app about to exit");
+        exit(0);
     }
 
     launchy::createLaunchyWidget(command);
 
-    qApp->exec();
+    int exitCode = qApp->exec();
+
+    launchy::cleanUpGlobalVar();
+
+    if (exitCode == launchy::Restart) {
+        qInfo() << "app restarted" << args;
+        QString program = args[0];
+        args.pop_front();
+        QProcess::startDetached(program, args);
+    }
 }

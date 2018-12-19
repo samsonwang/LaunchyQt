@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QPluginLoader>
 #include "PluginInterface.h"
 #include "PluginMsg.h"
-#include "GlobalVar.h"
 #include "Catalog.h"
 #include "SettingsManager.h"
 #include "PluginLoader.h"
@@ -129,7 +128,7 @@ void PluginHandler::loadPlugins() {
     g_settings->endArray();
 
     // init QSetting for python plugin
-    pluginpy::PluginLoader::initSettings(g_settings.get());
+    pluginpy::PluginLoader::initSettings(g_settings.data());
 
     foreach(QString directory, SettingsManager::instance().directory("plugins")) {
         // Load up the plugins in the plugins/ directory
@@ -191,8 +190,6 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
         return;
     }
     qDebug() << "Plugin loaded:" << pluginFullPath;
-
-    plugin->settings = &g_settings;
 
     PluginInfo info;
     info.obj = plugin;

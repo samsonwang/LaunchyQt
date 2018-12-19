@@ -20,19 +20,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QtGui>
 #include "gui.h"
 #include "calcy.h"
-
+#include "LaunchyLib.h"
 
 Gui::Gui(QWidget* parent)
     : QWidget(parent) {
     setupUi(this);
-    QSettings* settings = g_plugin->settings->data();
-    if (settings == NULL)
-        return;
 
-    txtRounding->setValue(settings->value("calcy/outputRounding", 10).toInt());
-    chkDigitGrouping->setChecked(settings->value("calcy/outputGroupSeparator", true).toBool());
-    chkCopyToClipboard->setChecked(settings->value("calcy/copyToClipboard", true).toBool());
-    chkComma->setChecked(settings->value("calcy/useCommaForDecimal", false).toBool());
+    if (launchy::g_settings.isNull()) {
+        return;
+    }
+
+    txtRounding->setValue(launchy::g_settings->value("calcy/outputRounding", 10).toInt());
+    chkDigitGrouping->setChecked(launchy::g_settings->value("calcy/outputGroupSeparator", true).toBool());
+    chkCopyToClipboard->setChecked(launchy::g_settings->value("calcy/copyToClipboard", true).toBool());
+    chkComma->setChecked(launchy::g_settings->value("calcy/useCommaForDecimal", false).toBool());
 }
 
 
@@ -41,12 +42,12 @@ Gui::~Gui() {
 }
 
 void Gui::writeOptions() {
-	QSettings* settings = g_plugin->settings->data();
-	if (settings == NULL)
-		return;
+    if (launchy::g_settings.isNull()) {
+        return;
+    }
 
-	settings->setValue("calcy/outputRounding", txtRounding->value());
-	settings->setValue("calcy/outputGroupSeparator", chkDigitGrouping->isChecked());
-	settings->setValue("calcy/copyToClipboard", chkCopyToClipboard->isChecked());
-	settings->setValue("calcy/useCommaForDecimal", chkComma->isChecked());
+    launchy::g_settings->setValue("calcy/outputRounding", txtRounding->value());
+    launchy::g_settings->setValue("calcy/outputGroupSeparator", chkDigitGrouping->isChecked());
+    launchy::g_settings->setValue("calcy/copyToClipboard", chkCopyToClipboard->isChecked());
+    launchy::g_settings->setValue("calcy/useCommaForDecimal", chkComma->isChecked());
 }

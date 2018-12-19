@@ -81,9 +81,9 @@ OptionDialog::OptionDialog(QWidget * parent)
 }
 
 OptionDialog::~OptionDialog() {
-    if (g_builder != NULL) {
-        disconnect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-        disconnect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    if (g_builder) {
+        disconnect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+        disconnect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     }
 
     s_lastTab = m_pUi->tabWidget->currentIndex();
@@ -490,7 +490,7 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genFadeIn->setValue(g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt());
     m_pUi->genFadeOut->setValue(g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt());
 
-    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget.data(), SLOT(setOpaqueness(int)));
+    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
 
 #ifdef Q_OS_MAC
     m_metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
@@ -704,8 +704,8 @@ void OptionDialog::initCatalogWidget() {
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
     m_pUi->catProgress->setVisible(false);
-    connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+    connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
     if (g_builder->isRunning()) {
         catalogProgressUpdated(g_builder->getProgress());
     }

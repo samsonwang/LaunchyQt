@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Precompiled.h"
 #include "Fader.h"
-#include "GlobalVar.h"
+#include "LaunchyLib.h"
 #include "OptionItem.h"
 
 namespace launchy {

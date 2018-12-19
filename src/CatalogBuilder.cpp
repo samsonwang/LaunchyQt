@@ -20,7 +20,6 @@
 #include "CatalogBuilder.h"
 #include <QThread>
 #include "Catalog.h"
-#include "GlobalVar.h"
 #include "AppBase.h"
 #include "Directory.h"
 #include "SettingsManager.h"
@@ -29,10 +28,13 @@
 #define CATALOG_PROGRESS_MAX 100
 
 namespace launchy {
+
+CatalogBuilder* CatalogBuilder::s_instance = nullptr;
+
 CatalogBuilder::CatalogBuilder()
-    : m_thread(new QThread),
+    : m_catalog(new SlowCatalog),
+      m_thread(new QThread),
       m_progress(CATALOG_PROGRESS_MAX) {
-    g_catalog.reset(new SlowCatalog);
     moveToThread(m_thread);
     m_thread->start(QThread::IdlePriority);
 }
@@ -40,7 +42,7 @@ CatalogBuilder::CatalogBuilder()
 void CatalogBuilder::buildCatalog() {
     m_progress = CATALOG_PROGRESS_MIN;
     emit catalogIncrement(m_progress);
-    g_catalog->incrementTimestamp();
+    m_catalog->incrementTimestamp();
     m_indexed.clear();
 
     PluginHandler& pluginHandler = PluginHandler::instance();
@@ -60,9 +62,9 @@ void CatalogBuilder::buildCatalog() {
     }
 
     // Don't call the pluginhandler to request catalog because we need to track progress
-    pluginHandler.getCatalogs(g_catalog.data(), this);
+    pluginHandler.getCatalogs(m_catalog, this);
 
-    g_catalog->purgeOldItems();
+    m_catalog->purgeOldItems();
     m_indexed.clear();
     m_progress = CATALOG_PROGRESS_MAX;
     emit catalogFinished();
@@ -104,7 +106,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                 bool isShortcut = dirs[i].endsWith(".lnk", Qt::CaseInsensitive);
 
                 CatItem item(dir + "/" + dirs[i], !isShortcut);
-                g_catalog->addItem(item);
+                m_catalog->addItem(item);
                 m_indexed.insert(dir + "/" + dirs[i]);
             }
         }
@@ -117,7 +119,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                 && dirs[i].endsWith(".lnk", Qt::CaseInsensitive)) {
                 if (!m_indexed.contains(dir + "/" + dirs[i])) {
                     CatItem item(dir + "/" + dirs[i], true);
-                    g_catalog->addItem(item);
+                    m_catalog->addItem(item);
                     m_indexed.insert(dir + "/" + dirs[i]);
                 }
             }
@@ -129,7 +131,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         for (int i = 0; i < bins.count(); ++i) {
             if (!m_indexed.contains(dir + "/" + bins[i])) {
                 CatItem item(dir + "/" + bins[i]);
-                g_catalog->addItem(item);
+                m_catalog->addItem(item);
                 m_indexed.insert(dir + "/" + bins[i]);
             }
         }
@@ -149,7 +151,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
             if (item.fullPath.endsWith(".desktop") && item.iconPath == "")
                 continue;
 #endif
-            g_catalog->addItem(item);
+            m_catalog->addItem(item);
 
             m_indexed.insert(dir + "/" + files[i]);
         }
@@ -157,9 +159,37 @@ void CatalogBuilder::indexDirectory(const QString& directory,
 }
 
 CatalogBuilder::~CatalogBuilder() {
+    s_instance = nullptr;
     qDebug() << "CatalogBuilder::~CatalogBuilder, exit thread";
-    m_thread->exit();
-    m_thread->deleteLater();
+    if (m_thread) {
+        m_thread->exit();
+        m_thread->wait();
+        m_thread->deleteLater();
+        m_thread = nullptr;
+    }
+    
+    if (m_catalog) {
+        delete m_catalog;
+        m_catalog = nullptr;
+    }
+}
+
+CatalogBuilder* CatalogBuilder::instance() {
+    if (!s_instance) {
+        s_instance = new CatalogBuilder;
+    }
+    return s_instance;
+}
+
+void CatalogBuilder::cleanUp() {
+    if (s_instance) {
+        delete s_instance;
+        s_instance = nullptr;
+    }
+}
+
+struct Catalog* CatalogBuilder::getCatalog() {
+    return instance()->m_catalog;
 }
 
 int CatalogBuilder::getProgress() const {

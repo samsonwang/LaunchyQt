@@ -56,6 +56,9 @@ protected:
     QFileIconProvider* m_iconProvider;
 };
 
-QApplication* createApplication(int& argc, char** argv);
+AppBase* createApplication(int& argc, char** argv);
+
+#define g_app static_cast<launchy::AppBase*>(qApp)
 
 }
+

@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "CharListWidget.h"
-#include "GlobalVar.h"
 #include "IconDelegate.h"
 #include "OptionItem.h"
+#include "LaunchyLib.h"
 
 namespace launchy {
 CharListWidget::CharListWidget(QWidget* parent)

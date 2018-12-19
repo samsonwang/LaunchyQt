@@ -272,6 +272,7 @@ exit 0</Command>
   <ItemGroup>
     <ClCompile Include="CatalogItem.cpp" />
     <ClCompile Include="InputData.cpp" />
+    <ClCompile Include="LaunchyLib.cpp" />
     <ClCompile Include="PluginInfo.cpp" />
     <ClCompile Include="PluginInterface.cpp" />
     <ClCompile Include="UnicodeTable.cpp" />

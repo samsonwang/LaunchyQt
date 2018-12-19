@@ -22,12 +22,15 @@
 #include <QObject>
 #include "PluginHandler.h"
 class QThread;
+
 namespace launchy {
+
 class CatalogBuilder : public QObject, public INotifyProgressStep {
     Q_OBJECT
 public:
-    CatalogBuilder();
-    virtual ~CatalogBuilder();
+    static CatalogBuilder* instance();
+    static void cleanUp();
+    static Catalog* getCatalog();
 
     int getProgress() const;
     int isRunning() const;
@@ -43,11 +46,24 @@ signals:
 private:
     void indexDirectory(const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
+private:
+    CatalogBuilder();
+    Q_DISABLE_COPY(CatalogBuilder)
+    virtual ~CatalogBuilder();
+
+private:
+    Catalog* m_catalog;
     QThread* m_thread;
 
     QSet<QString> m_indexed;
     int m_progress;
     int m_currentItem;
     int m_totalItems;
+
+private:
+    static CatalogBuilder* s_instance;
 };
+
+#define g_builder launchy::CatalogBuilder::instance()
+#define g_catalog launchy::CatalogBuilder::instance()->getCatalog()
 }

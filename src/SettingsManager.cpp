@@ -136,7 +136,7 @@ void SettingsManager::setPortable(bool makePortable) {
           makePortable ? "portable" : "installed");
 
     // Destroy the QSettings object first so it writes every changes to disk
-    g_settings.reset(nullptr);
+    g_settings.clear();
 
     QString oldDir = configDirectory(m_portable);
     QString oldIniName = oldDir + iniName;
@@ -165,7 +165,7 @@ void SettingsManager::setPortable(bool makePortable) {
     else {
         qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
         if (makePortable) {
-            QMessageBox::warning(g_mainWidget.data(), QObject::tr("Launchy"),
+            QMessageBox::warning(g_mainWidget, QObject::tr("Launchy"),
                                  QObject::tr("Could not convert to portable mode."
                                              " Please check you have write access to the %1 directory.")
                                  .arg(newDir));

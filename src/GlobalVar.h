@@ -19,9 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QScopedPointer>
 #include <QString>
-class QSettings;
 
 namespace launchy {
 
@@ -36,16 +34,8 @@ extern const uint LABEL_FILE;
 extern const uint LABEL_AUTOSUGGEST;
 extern const uint LABEL_HISTORY;
 
-class AppBase;
-class LaunchyWidget;
-class Catalog;
-class CatalogBuilder;
-
-extern QScopedPointer<AppBase> g_app;
-extern QScopedPointer<LaunchyWidget> g_mainWidget;
-extern QScopedPointer<QSettings> g_settings;
-extern QScopedPointer<Catalog> g_catalog;
-extern QScopedPointer<CatalogBuilder> g_builder;
 extern QString g_searchText;
+
+void cleanUpGlobalVar();
 
 }

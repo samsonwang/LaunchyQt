@@ -56,6 +56,8 @@ class LaunchyWidget : public QWidget {
 public:
     LaunchyWidget(CommandFlags command);
     virtual ~LaunchyWidget();
+    static LaunchyWidget* instance();
+    static void cleanUp();
 
 public:
     void executeStartupCommand(int command);
@@ -169,7 +171,13 @@ protected:
 
     OptionDialog* m_optionDialog;
     bool m_optionsOpen;
+
+private:
+    static LaunchyWidget* s_instance;
 };
 
 LaunchyWidget* createLaunchyWidget(CommandFlags command);
+
+#define g_mainWidget launchy::LaunchyWidget::instance()
+
 }

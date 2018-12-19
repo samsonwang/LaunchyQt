@@ -1,5 +1,7 @@
 
 #pragma once
+#include <QSharedPointer>
+#include <QSettings>
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4251)
@@ -10,3 +12,9 @@
 #else
 #define LAUNCHY_EXPORT Q_DECL_IMPORT
 #endif
+
+namespace launchy {
+
+LAUNCHY_EXPORT extern QSharedPointer<QSettings> g_settings;
+
+}

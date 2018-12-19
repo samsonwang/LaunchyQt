@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QSystemTrayIcon>
 #include <QPushButton>
 #include "QHotkey/QHotkey.h"
-#include "IconDelegate.h"
 #include "GlobalVar.h"
+#include "IconDelegate.h"
 #include "OptionDialog.h"
 #include "OptionItem.h"
 #include "FileSearch.h"
@@ -51,6 +51,8 @@ namespace launchy {
 // for qt flags
 // check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
+
+LaunchyWidget* LaunchyWidget::s_instance;
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
@@ -77,7 +79,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_optionDialog(nullptr),
       m_optionsOpen(false) {
 
-    g_mainWidget.reset(this);
+    if (s_instance) {
+        qFatal("LaunchyWidget::LaunchyWidget, only allow singal instance");
+    }
+    s_instance = this;
+
     g_searchText.clear();
 
     setObjectName("launchy");
@@ -163,9 +169,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Load the catalog
-    g_builder.reset(new CatalogBuilder);
-    connect(g_builder.data(), SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder.data(), SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
+    connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
 
     if (!g_catalog->load(SettingsManager::instance().catalogFilename())) {
         command |= Rescan;
@@ -181,7 +186,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // Move to saved position
     loadPosition(g_settings->value(OPSTION_POS, OPSTION_POS_DEFAULT).toPoint());
 
-    connect(g_app.data(), &SingleApplication::instanceStarted,
+    connect(g_app, &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
 
     // Set the timers
@@ -202,11 +207,24 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 }
 
 LaunchyWidget::~LaunchyWidget() {
-    // maybe option dialog is destroyed before launchy destruction
-//     if (m_optionDialog) {
-//         delete m_optionDialog;
-//         m_optionDialog = nullptr;
-//     }
+    s_instance = nullptr;
+    m_trayIcon->hide();
+    if (m_optionDialog) {
+        m_optionDialog->close();
+        delete m_optionDialog;
+        m_optionDialog = nullptr;
+    }
+}
+
+LaunchyWidget* LaunchyWidget::instance() {
+    return s_instance;
+}
+
+void LaunchyWidget::cleanUp() {
+    if (s_instance) {
+        delete s_instance;
+        s_instance = nullptr;
+    }
 }
 
 void LaunchyWidget::executeStartupCommand(int command) {
@@ -744,7 +762,7 @@ void LaunchyWidget::doEnter() {
         hideLaunchy();
     }
     else {
-        qDebug("Nothing to launch");
+        qDebug("LaunchyWidget::doEnter, Nothing to launch");
     }
 }
 
@@ -770,9 +788,6 @@ void LaunchyWidget::processKey() {
 }
 
 void LaunchyWidget::searchOnInput() {
-    if (g_catalog.isNull())
-        return;
-
     QString searchText = m_inputData.count() > 0 ? m_inputData.last().getText() : "";
     QString searchTextLower = searchText.toLower();
     g_searchText = searchTextLower;
@@ -1042,6 +1057,7 @@ void LaunchyWidget::reloadSkin() {
 }
 
 void LaunchyWidget::exit() {
+    m_trayIcon->hide();
     m_fader->stop();
     saveSettings();
     qApp->quit();
@@ -1216,7 +1232,7 @@ void LaunchyWidget::buildCatalog() {
     saveSettings();
 
     // Use the catalog builder to refresh the catalog in a worker thread
-    QMetaObject::invokeMethod(g_builder.data(), &CatalogBuilder::buildCatalog);
+    QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
 
     startRebuildTimer();
 }
@@ -1341,12 +1357,13 @@ void LaunchyWidget::createActions() {
     });
 
     m_actRestart = new QAction(tr("Restart"), this);
-    connect(m_actRestart, &QAction::triggered, []() {
-        qInfo() << "Performing application reboot...";
+    connect(m_actRestart, &QAction::triggered, [=]() {
+        qInfo() << "Performing application restart...";
         // restart:
         //qApp->closeAllWindows();
-        qApp->quit();
-        QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+        m_trayIcon->hide();
+        qApp->exit(Restart);
+        qInfo() << "Finish application restart...";
     });
 
     m_actExit = new QAction(tr("Exit"), this);

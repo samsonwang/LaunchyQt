@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppBase.h"
 #include "Directory.h"
 #include "CatalogItem.h"
-#include "GlobalVar.h"
 
 namespace launchy {
 
@@ -39,7 +38,6 @@ static auto HIDPI = []() {
 AppBase::AppBase(int& argc, char** argv)
     : SingleApplication(argc, argv, false, Mode::User),
       m_iconProvider(nullptr) {
-    g_app.reset(this);
     setQuitOnLastWindowClosed(false);
     setApplicationName("LaunchyQt");
     setOrganizationName("LaunchyQt");
