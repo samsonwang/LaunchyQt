@@ -151,13 +151,13 @@ int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
     return key | (mod << 16);
 }
 
-bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray &eventType,
-                                                    void *message,
-                                                    long *result) {
+bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
+                                                    void* message,
+                                                    long* result) {
     Q_UNUSED(eventType);
     Q_UNUSED(result);
 
-    xcb_key_press_event_t *keyEvent = 0;
+    xcb_key_press_event_t* keyEvent = 0;
 
     //So we check that it was xcb event
     if (eventType == "xcb_generic_event_t") {
