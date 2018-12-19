@@ -25,6 +25,11 @@ HEADERS += CatalogItem.h \
 
 DEFINES += LAUNCHY_LIB
 
+if(!debug_and_release|build_pass) {
+    CONFIG(debug, debug|release):DESTDIR = ../../debug/
+    CONFIG(release, debug|release):DESTDIR = ../../release/
+}
+
 win32 {
    LIBS += user32.lib \
            shell32.lib

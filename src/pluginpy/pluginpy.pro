@@ -35,6 +35,10 @@ HEADERS += ExportPy.h \
 
 DEFINES += PLUGINPY_LIB
 
+if(!debug_and_release|build_pass) {
+    CONFIG(debug, debug|release):DESTDIR = ../../debug/
+    CONFIG(release, debug|release):DESTDIR = ../../release/
+}
 
 unix:!macx {
 #python3-config
