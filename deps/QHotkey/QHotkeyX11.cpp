@@ -1,15 +1,11 @@
 
 #include "QHotkeyP.h"
+#include <QVector>
+#include <QDebug>
 #include <QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <xcb/xcb.h>
-
-
-static Display* s_display = nullptr;
-static Window s_window;
-static int s_keycode;
-static unsigned int s_modifier;
 
 static QVector<quint32> maskModifiers() {
     return QVector<quint32>() << 0 << Mod2Mask << LockMask << (Mod2Mask | LockMask);
@@ -157,34 +153,37 @@ bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
     Q_UNUSED(eventType);
     Q_UNUSED(result);
 
-    xcb_key_press_event_t* keyEvent = 0;
+    xcb_key_press_event_t* keyEvent = nullptr;
 
     //So we check that it was xcb event
     if (eventType == "xcb_generic_event_t") {
         // cast message xcb event
         xcb_generic_event_t *event = static_cast<xcb_generic_event_t *>(message);
-
         // check that a keystroke occurred
         if ((event->response_type & 127) == XCB_KEY_PRESS){
-
             // If so, then cast message keypress event
             keyEvent = static_cast<xcb_key_press_event_t *>(message);
+        }
+    }
 
-            qDebug() << "QHotkeyPrivate::EventFilter::nativeEventFilter, keyEvent received,"
-                     << "keyEvent->detail:" << keyEvent->detail
-                     << "keyEvent->state:" << keyEvent->state;
+    if (keyEvent) {
 
-            quint32 keycode = XKeycodeToKeysym(s_display, keyEvent->detail,
-                                               keyEvent->state & ShiftMask ? 0 : 1);
-            quint32 mods = keyEvent->state & (ShiftMask|ControlMask|Mod1Mask|Mod3Mask);
+        qDebug() << "QHotkeyPrivate::EventFilter::nativeEventFilter, keyEvent received,"
+                 << "keyEvent->detail:" << keyEvent->detail
+                 << "keyEvent->state:" << keyEvent->state;
 
-            int keyId = calcHotkeyId(keycode, mods);
+        quint32 keycode = XKeycodeToKeysym(QX11Info::display(),
+                                           keyEvent->detail,
+                                           keyEvent->state & ShiftMask ? 0 : 1);
+        quint32 mods = keyEvent->state & (ShiftMask|ControlMask|Mod1Mask|Mod3Mask);
 
-            qDebug() << "QHotkeyPrivate::EventFilter::nativeEventFilter, keyEvent received,"
-                     << "keycode:" << keycode << "state:" << mods << "keyId:" << keyId;
+        int keyId = calcHotkeyId(keycode, mods);
 
-            return activateHotKey(keyId);
-/*
+        qDebug() << "QHotkeyPrivate::EventFilter::nativeEventFilter, keyEvent received,"
+                 << "keycode:" << keycode << "state:" << mods << "keyId:" << keyId;
+
+        return activateHotKey(keyId);
+        /*
             // Next, check whether it is necessary to hotkeys event
             foreach (quint32 maskMods, maskModifiers()) {
                 if((keyEvent->state == (s_modifier | maskMods ))
@@ -195,22 +194,9 @@ bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
                 }
             }
             */
-        }
+
     }
     return false;
-
-    /*
-      xcb_generic_event_t* e = static_cast<xcb_generic_event_t*>(message);
-      if ((e->response_type & ~0x80) == XCB_KEY_PRESS) {
-      xcb_key_press_event_t* ke = (xcb_key_press_event_t*)e;
-      //xcb_get_keyboard_mapping_reply_t rep;
-      //sxcb_keysym_t* k = xcb_get_keyboard_mapping_keysyms(&rep);
-      quint32 keycode = ke->detail;
-      quint32 mods = ke->state & (ShiftMask|ControlMask|Mod1Mask|Mod3Mask);
-      return activateHotKey(calcHotkeyId(keycode, mods));
-      }
-      return false;
-    */
 }
 
 bool QHotkeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
@@ -219,39 +205,32 @@ bool QHotkeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
     qDebug() << "QHotkeyPrivate::registerKey, key:" << key
                 << ", mod:" << mod << ", keyId:" << keyId;
 
-    if (!s_display) {
-        s_display = QX11Info::display();
-        qDebug() << "QHotkeyPrivate::registerKey, s_display:" << s_display;
-        s_window = DefaultRootWindow(s_display);
-        qDebug() << "QHotkeyPrivate::registerKey, s_window:" << s_window;
-    }
-
     // get the key code of KeySym identify and connect to the X11 server
-    s_keycode = XKeysymToKeycode(s_display, key);
-    s_modifier = mod; //
+    KeyCode code = XKeysymToKeycode(QX11Info::display(), key);
 
-    qDebug() << "QHotkeyPrivate::registerKey, s_keycode:" << s_keycode
+    qDebug() << "QHotkeyPrivate::registerKey, s_keycode:" << code
              << "s_modifier:" << mod;
 
     /* Now we go through all the possible combinations in view of Num Lock and Caps Lock, setting hotkeys
      * */
     foreach (quint32 maskMods, maskModifiers()) {
-        XGrabKey(s_display,         // specify the connection to the X11
-                 s_keycode ,          // keycode
-                 s_modifier | maskMods,   // modifier with all the masks
-                 s_window,             // grabing window
+        XGrabKey(QX11Info::display(),         // specify the connection to the X11
+                 code ,          // keycode
+                 mod | maskMods,   // modifier with all the masks
+                 QX11Info::appRootWindow(),             // grabing window
                  True,              // It is the owner of the application event. in this example it is not essential.
                  GrabModeAsync,     // Be sure to asynchronous processing mode, otherwise, risk of freeze system
                  GrabModeAsync);
     }
-
-    //    xGrabkey(QX11Info::connection(), 1, QX11Info::appRootWindow(),
-    //               mod, key, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
     return true;
 }
 
 void QHotkeyPrivate::unregisterKey(quint32 key, quint32 mod, int keyId) {
     Q_UNUSED(keyId)
-    xcb_ungrab_key(QX11Info::connection(), key,
-                   QX11Info::appRootWindow(), mod);
+    foreach (quint32 maskMods, maskModifiers()) {
+        XUngrabKey(QX11Info::display(),
+                   key,
+                   mod | maskMods,
+                   QX11Info::appRootWindow());
+    }
 }
