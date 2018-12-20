@@ -85,10 +85,8 @@ const char*     OPSTION_HOTKEY                                 = "GenOps/hotkey"
 const int       OPSTION_HOTKEY_DEFAULT                         = -1;
 
 const char*     OPSTION_HOTKEYMOD                              = "GenOps/hotkeyModifier";
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
 const int       OPSTION_HOTKEYMOD_DEFAULT                      = Qt::AltModifier;
-#elif defined(Q_OS_LINUX)
-const int       OPSTION_HOTKEYMOD_DEFAULT                      = Qt::ControlModifier;
 #elif defined(Q_OS_MAC)
 const int       OPSTION_HOTKEYMOD_DEFAULT                      = Qt::MetaModifier;
 #endif
