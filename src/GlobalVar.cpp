@@ -64,14 +64,14 @@ const uint LABEL_HISTORY = 2;
 
 QString g_searchText;
 
-void cleanUpGlobalVar() {
+void cleanupGlobalVar() {
 
     CatalogBuilder::cleanup();
     LaunchyWidget::cleanup();
     AppBase::cleanup();
     g_settings.clear();
 
-    qInfo("cleanUpGlobalVar, cleanup finished");
+    qInfo("cleanupGlobalVar, cleanup finished");
 }
 
 }

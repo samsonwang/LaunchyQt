@@ -36,6 +36,6 @@ extern const uint LABEL_HISTORY;
 
 extern QString g_searchText;
 
-void cleanUpGlobalVar();
+void cleanupGlobalVar();
 
 }

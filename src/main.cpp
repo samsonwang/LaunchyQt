@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 
     int exitCode = qApp->exec();
 
-    launchy::cleanUpGlobalVar();
+    launchy::cleanupGlobalVar();
 
     if (exitCode == launchy::Restart) {
         qInfo() << "app restarted" << args;
