@@ -1285,7 +1285,7 @@ void LaunchyWidget::setFadeLevel(double level) {
 
 
 void LaunchyWidget::showLaunchy(bool noFade) {
-    // shouldDonate();
+
     hideAlternativeList();
 
     loadPosition(pos());

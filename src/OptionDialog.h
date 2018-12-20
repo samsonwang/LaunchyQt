@@ -116,7 +116,6 @@ private:
     QList<Directory> m_memDirs;
 
     bool m_needRescan;
-    bool m_showLaunchy;
 
     //QList<QPair<QString, uint>> pluginNames;
     //QVBoxLayout* pluginLayout;

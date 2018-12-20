@@ -133,9 +133,7 @@ void OptionDialog::accept() {
         g_mainWidget->buildCatalog();
     }
 
-    if (m_showLaunchy) {
-        g_mainWidget->showLaunchy();
-    }
+    g_mainWidget->showLaunchy();
 }
 
 
@@ -146,6 +144,7 @@ void OptionDialog::reject() {
     }
 
     QDialog::reject();
+    g_mainWidget->showLaunchy();
 }
 
 void OptionDialog::showEvent(QShowEvent* event) {
@@ -625,8 +624,8 @@ void OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPTION_APPSTYLE, appStyle);
 
     // Now save the options that require launchy to be shown or redrawed
-    m_showLaunchy = g_mainWidget->setAlwaysShow(m_pUi->genAlwaysShow->isChecked());
-    m_showLaunchy |= g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
+    g_mainWidget->setAlwaysShow(m_pUi->genAlwaysShow->isChecked());
+    g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
 
     g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
 }
@@ -668,7 +667,6 @@ void OptionDialog::saveSkinSettings() {
     if (m_pUi->skinList->currentRow() >= 0 && currentSkinName != prevSkinName) {
         g_settings->setValue(OPSTION_SKIN, currentSkinName);
         g_mainWidget->setSkin(currentSkinName);
-        m_showLaunchy |= true;
     }
 }
 
