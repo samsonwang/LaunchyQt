@@ -259,11 +259,7 @@ void LaunchyWidget::executeStartupCommand(int command) {
 void LaunchyWidget::showEvent(QShowEvent* event) {
     if (m_skinChanged) {
         // output icon may changed with skin
-        int maxIconSize = m_outputIcon->width();
-        maxIconSize = qMax(maxIconSize, m_outputIcon->height());
-        qDebug() << "LaunchyWidget::showEvent, output icon size:" << maxIconSize;
-        g_app->setPreferredIconSize(maxIconSize);
-        m_alternativeList->setIconSize(maxIconSize);
+        updateOutputSize();
         m_skinChanged = false;
     }
     QWidget::showEvent(event);
@@ -877,10 +873,19 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
 
 void LaunchyWidget::startDropTimer() {
     int delay = g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt();
-    if (delay > 0)
+    if (delay > 0) {
         m_dropTimer->start(delay);
-    else
+    }
+    else {
         dropTimeout();
+    }
+}
+
+void LaunchyWidget::updateOutputSize() {
+    int maxIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
+    qDebug() << "LaunchyWidget::showEvent, output icon size:" << maxIconSize;
+    g_app->setPreferredIconSize(maxIconSize);
+    m_alternativeList->setIconSize(maxIconSize);
 }
 
 void LaunchyWidget::dropTimeout() {
@@ -1168,6 +1173,9 @@ void LaunchyWidget::applySkin(const QString& name) {
         m_frameGraphic.swap(frame);
         resize(m_frameGraphic.size());
     }
+
+    // output size may change when skin change
+    updateOutputSize();
 
     // separator may change when skin change
     InputDataList::setSeparator(m_inputBox->separatorText());
