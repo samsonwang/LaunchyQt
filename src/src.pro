@@ -68,13 +68,8 @@ include(../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../deps/QHotkey/QHotkey.pri)
 
-win32:CONFIG(release, debug|release): LIBS += $$OUT_PWD/lib/release/Launchy.lib
-else:win32:CONFIG(debug, debug|release): LIBS += $$OUT_PWD/lib/debug/Launchy.lib
-else:unix: LIBS += -L$$OUT_PWD/src/lib/ lib/liblaunchy.so pluginpy/libpluginpy.so
-
 INCLUDEPATH += $$PWD/src/lib
 DEPENDPATH += $$PWD/src/lib
-
 
 unix:!macx {
     QT += x11extras
@@ -83,15 +78,16 @@ unix:!macx {
                linux/IconProviderLinux.cpp
     HEADERS += linux/AppLinux.h \
                linux/IconProviderLinux.h
-    #LIBS    += -Llib -lLaunchy
+    #if(!debug_and_release|build_pass) {
+    #}
+    CONFIG(debug, debug|release):DESTDIR = ../debug/
+    CONFIG(release, debug|release):DESTDIR = ../release/
+    LIBS += -L$$OUT_PWD/src/lib/ $$DESTDIR/liblaunchy.so $$DESTDIR/libpluginpy.so
+
     PREFIX   = /usr
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
         PLUGINS_PATH=\\\"$$PREFIX/lib/launchy/plugins/\\\" \
         PLATFORMS_PATH=\\\"$$PREFIX/lib/launchy/\\\"
-    if(!debug_and_release|build_pass) {
-        CONFIG(debug, debug|release):DESTDIR = ../debug/
-        CONFIG(release, debug|release):DESTDIR = ../release/
-    }
     target.path   = $$PREFIX/bin/
     skins.path    = $$PREFIX/share/launchy/skins/
     skins.files   = ../skins/*
@@ -135,6 +131,9 @@ win32 {
         CONFIG(debug, debug|release):DESTDIR = ../debug/
         CONFIG(release, debug|release):DESTDIR = ../release/
     }
+    CONFIG(release, debug|release): LIBS += $$OUT_PWD/lib/release/Launchy.lib
+    CONFIG(debug, debug|release): LIBS += $$OUT_PWD/lib/debug/Launchy.lib
+
     QMAKE_CXXFLAGS_RELEASE += /Zi
     QMAKE_LFLAGS_RELEASE += /DEBUG
 }

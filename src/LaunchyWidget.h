@@ -181,6 +181,8 @@ private:
     static LaunchyWidget* s_instance;
 };
 
+void createLaunchyWidget(CommandFlags command);
+
 #define g_mainWidget launchy::LaunchyWidget::instance()
 
 }

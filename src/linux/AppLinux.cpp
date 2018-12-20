@@ -262,8 +262,10 @@ AppBase* createApplication(int& argc, char** argv) {
 }
 
 // Create the main widget for the application
-LaunchyWidget* createLaunchyWidget(CommandFlags command) {
-    return new LaunchyWidget(command);
+void createLaunchyWidget(CommandFlags command) {
+    if (!LaunchyWidget::s_instance) {
+        LaunchyWidget::s_instance = new LaunchyWidget(command);
+    }
 }
 
 }
