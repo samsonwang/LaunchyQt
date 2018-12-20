@@ -30,7 +30,8 @@ namespace launchy {
 // Override the main widget to handle incoming system messages. We could have done this in the QApplication
 // event handler, but then we'd have to filter out the duplicates for messages like WM_SETTINGCHANGE.
 class LaunchyWidgetWin : public LaunchyWidget {
-public:
+protected:
+    friend void createLaunchyWidget(CommandFlags command);
     LaunchyWidgetWin(CommandFlags command)
         : LaunchyWidget(command) {
         commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
@@ -74,8 +75,10 @@ private:
 };
 
 // Create the main widget for the application
-LaunchyWidget* createLaunchyWidget(CommandFlags command) {
-    return new LaunchyWidgetWin(command);
+void createLaunchyWidget(CommandFlags command) {
+    if (!LaunchyWidget::s_instance) {
+        LaunchyWidget::s_instance = new LaunchyWidgetWin(command);
+    }
 }
 
 AppWin::AppWin(int& argc, char** argv)

@@ -53,11 +53,12 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(CommandFlags)
 
 class LaunchyWidget : public QWidget {
     Q_OBJECT
+    Q_DISABLE_COPY(LaunchyWidget)
 public:
-    LaunchyWidget(CommandFlags command);
-    virtual ~LaunchyWidget();
     static LaunchyWidget* instance();
+    friend void createLaunchyWidget(CommandFlags command);
     static void cleanup();
+    virtual ~LaunchyWidget();
 
 public:
     void executeStartupCommand(int command);
@@ -131,6 +132,9 @@ protected slots:
     void onSecondInstance();
 
 protected:
+    LaunchyWidget(CommandFlags command);
+
+protected:
     QString m_currentSkin;
     bool m_skinChanged;
 
@@ -176,8 +180,6 @@ protected:
 private:
     static LaunchyWidget* s_instance;
 };
-
-LaunchyWidget* createLaunchyWidget(CommandFlags command);
 
 #define g_mainWidget launchy::LaunchyWidget::instance()
 
