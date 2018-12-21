@@ -88,7 +88,7 @@ class WebSearchUi(QWidget):
         settings.beginWriteArray(self.settingName)
         for i in range(0, table.rowCount()):
             settings.setArrayIndex(i)
-            settings.setValue("key", QVariant(table.item(i,0).text()))
+            settings.setValue("key", QVariant(table.item(i,0).text().lower()))
             settings.setValue("name", QVariant(table.item(i,1).text()))
             settings.setValue("url", QVariant(table.item(i,2).text()))
         settings.endArray()
