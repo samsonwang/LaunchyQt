@@ -1082,8 +1082,10 @@ void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
     qDebug() << "LaunchyWidget::onInputBoxInputMethod";
     QString commitStr = event->commitString();
     if (!commitStr.isEmpty()) {
-        qDebug() << "LaunchyWidget::onInputBoxInputMethod, commitString:" << commitStr;
-        m_inputData.parse(commitStr);
+        qDebug() << "LaunchyWidget::onInputBoxInputMethod,"
+            << ", commit string:" << commitStr
+            << ", inputbox text:" << m_inputBox->text();
+        m_inputData.parse(m_inputBox->text());
         searchOnInput();
         updateOutputBox();
     }
