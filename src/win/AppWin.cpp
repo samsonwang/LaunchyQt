@@ -106,10 +106,6 @@ AppWin::~AppWin() {
     }
 }
 
-void AppWin::setPreferredIconSize(int size) {
-    ((IconProviderWin*)m_iconProvider)->setPreferredIconSize(size);
-}
-
 QHash<QString, QList<QString> > AppWin::getDirectories() {
     QHash<QString, QList<QString> > out;
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "Launchy", "Launchy");
@@ -207,6 +203,9 @@ bool AppWin::getComputers(QStringList& computers) const {
 
 // Create the application object
 AppBase* createApplication(int& argc, char** argv) {
+    if (qApp) {
+        return g_app;
+    }
     return new AppWin(argc, argv);
 }
 }

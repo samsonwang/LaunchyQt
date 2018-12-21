@@ -435,6 +435,7 @@ exit 0</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="IconProviderBase.cpp" />
     <ClCompile Include="InputDataList.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
@@ -528,6 +529,7 @@ exit 0</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="AnimationLabel.h" />
+    <ClInclude Include="IconProviderBase.h" />
     <ClInclude Include="InputDataList.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="OptionItem.h" />

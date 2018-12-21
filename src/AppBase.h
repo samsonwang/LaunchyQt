@@ -22,14 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QList>
 #include <QHash>
 #include <QString>
-#include <QFileInfo>
-#include <QFileIconProvider>
 #include <SingleApplication/singleapplication.h>
 #include "Directory.h"
+class QFileInfo;
 
 namespace launchy {
 
 class CatItem;
+class IconProviderBase;
 
 class AppBase : public SingleApplication {
 public:
@@ -39,7 +39,7 @@ public:
 
     QIcon icon(const QFileInfo& info);
     QIcon icon(QFileIconProvider::IconType type);
-    virtual void setPreferredIconSize(int size) = 0;
+    void setPreferredIconSize(int size);
 
     virtual QList<Directory> getDefaultCatalogDirectories() = 0;
     virtual bool isAlreadyRunning() const;
@@ -54,7 +54,7 @@ public:
     virtual bool getComputers(QStringList& computers) const;
 
 protected:
-    QFileIconProvider* m_iconProvider;
+    IconProviderBase* m_iconProvider;
 };
 
 AppBase* createApplication(int& argc, char** argv);

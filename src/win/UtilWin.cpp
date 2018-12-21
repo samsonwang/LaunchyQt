@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppWin.h"
 #include "GlobalVar.h"
 
+namespace launchy {
+
 // Replace this process' environment with the current system environment
 void UpdateEnvironment() {
     // Fetch the current environment for the user
@@ -116,4 +118,6 @@ void SetForegroundWindowEx(HWND hWnd) {
 
     // Detach the attached thread
     AttachThreadInput(foreGroundID, currentID, FALSE);
+}
+
 }

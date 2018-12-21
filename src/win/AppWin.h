@@ -28,7 +28,6 @@ public:
     AppWin(int& argc, char** argv);
     virtual ~AppWin();
 
-    virtual void setPreferredIconSize(int size);
     virtual QHash<QString, QList<QString>> getDirectories();
     virtual QList<Directory> getDefaultCatalogDirectories();
     virtual QString expandEnvironmentVars(QString);

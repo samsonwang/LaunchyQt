@@ -18,8 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "AppBase.h"
+#include <QFileInfo>
 #include "Directory.h"
 #include "CatalogItem.h"
+#include "IconProviderBase.h"
 
 namespace launchy {
 
@@ -59,11 +61,23 @@ void AppBase::cleanup() {
 };
 
 QIcon AppBase::icon(const QFileInfo& info) {
-    return m_iconProvider->icon(info);
+    if (m_iconProvider) {
+        return m_iconProvider->icon(info);
+    }
+    return QIcon();
 }
 
 QIcon AppBase::icon(QFileIconProvider::IconType type) {
-    return m_iconProvider->icon(type);
+    if (m_iconProvider) {
+        return m_iconProvider->icon(type);
+    }
+    return QIcon();
+}
+
+void AppBase::setPreferredIconSize(int size) {
+    if (m_iconProvider) {
+        m_iconProvider->setPreferredIconSize(size);
+    }
 }
 
 bool AppBase::isAlreadyRunning() const {

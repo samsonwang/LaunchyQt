@@ -19,19 +19,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QFileIconProvider>
+#include "IconProviderBase.h"
 
-class IconProviderWin : public QFileIconProvider {
+namespace launchy {
+
+class IconProviderWin : public IconProviderBase {
 public:
-	IconProviderWin();
-	virtual ~IconProviderWin();
+    IconProviderWin();
+    virtual ~IconProviderWin();
 
-	virtual QIcon icon(const QFileInfo& info) const;
-	void setPreferredIconSize(int size);
+    virtual QIcon icon(const QFileInfo& info) const;
 
 private:
-	bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
-	bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;
-
-	int m_preferredSize;
+    bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
+    bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;
 };
+
+}
+

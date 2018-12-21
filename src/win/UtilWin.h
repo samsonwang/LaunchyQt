@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+namespace launchy {
+
 void UpdateEnvironment();
 
 QString GetShellDirectory(int type);
@@ -27,3 +29,4 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 
 void SetForegroundWindowEx(HWND hWnd);
 
+}

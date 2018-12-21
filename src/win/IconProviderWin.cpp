@@ -51,28 +51,10 @@ public:
 #endif
 
 
-//HRESULT(WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx *, REFIID, void **) = NULL;
-
-IconProviderWin::IconProviderWin()
-    : m_preferredSize(32) {
-//     // Load Vista/7 specific API pointers
-//     HMODULE hLib = GetModuleHandleW(L"shell32");
-//     if (hLib) {
-//         (FARPROC&)fnSHCreateItemFromParsingName = GetProcAddress(hLib, "SHCreateItemFromParsingName");
-//     }
-}
-
-IconProviderWin::~IconProviderWin() {
-
-}
-
-void IconProviderWin::setPreferredIconSize(int size) {
-    m_preferredSize = size;
-}
-
+namespace launchy {
 
 // This also exists in plugin_interface, need to remove both if I make a 64 build
-QString wicon_aliasTo64(QString path) {
+static QString wicon_aliasTo64(QString path) {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QString pf32 = env.value("PROGRAMFILES");
     QString pf64 = env.value("PROGRAMW6432");
@@ -97,6 +79,22 @@ QString wicon_aliasTo64(QString path) {
     }
     return path;
 }
+
+IconProviderWin::IconProviderWin() {
+//     // Load Vista/7 specific API pointers
+//     HMODULE hLib = GetModuleHandleW(L"shell32");
+//     if (hLib) {
+//         (FARPROC&)fnSHCreateItemFromParsingName = GetProcAddress(hLib, "SHCreateItemFromParsingName");
+//     }
+}
+
+IconProviderWin::~IconProviderWin() {
+
+}
+
+// void IconProviderWin::setPreferredIconSize(int size) {
+//     m_preferredSize = size;
+// }
 
 QIcon IconProviderWin::icon(const QFileInfo& info) const {
     QIcon retIcon;
@@ -221,4 +219,6 @@ bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& ic
     }
     CoUninitialize();
     return hResult == S_OK;
+}
+
 }
