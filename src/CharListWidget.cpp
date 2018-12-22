@@ -29,7 +29,7 @@ CharListWidget::CharListWidget(QWidget* parent)
       m_defaultListDelegate(itemDelegate()),
       m_alternativePath(new QLabel(this)) {
 #ifdef Q_OS_LINUX
-    setWindowFlags(windowFlags() | Qt::Tool | Qt::SplashScreen);
+    setWindowFlags(Qt::Dialog | Qt::ToolTip);
 #else
     setWindowFlags(Qt::Window | Qt::Tool | Qt::FramelessWindowHint);
 #endif

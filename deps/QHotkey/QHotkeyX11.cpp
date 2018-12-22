@@ -183,18 +183,6 @@ bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
                  << "keycode:" << keycode << "state:" << mods << "keyId:" << keyId;
 
         return activateHotKey(keyId);
-        /*
-            // Next, check whether it is necessary to hotkeys event
-            foreach (quint32 maskMods, maskModifiers()) {
-                if((keyEvent->state == (s_modifier | maskMods ))
-                   &&  keyEvent->detail == s_keycode){
-                    //emit activated();   // and send a signal
-                    activateHotKey(786511);
-                    return true;
-                }
-            }
-            */
-
     }
     return false;
 }
