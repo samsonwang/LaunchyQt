@@ -43,7 +43,7 @@ namespace launchy {
 using ::operator|;
 
 QByteArray OptionDialog::s_lastWindowGeometry;
-int OptionDialog::s_lastTab = -1;
+int OptionDialog::s_lastTab = 0;
 int OptionDialog::s_lastPlugin = -1;
 
 OptionDialog::OptionDialog(QWidget * parent)

@@ -21,6 +21,7 @@ SOURCES = main.cpp \
     PluginHandler.cpp \
     IconDelegate.cpp \
     IconExtractor.cpp \
+    IconProviderBase.cpp \
     FileBrowserDelegate.cpp \
     FileBrowser.cpp \
     DropListWidget.cpp \
@@ -45,6 +46,7 @@ HEADERS = AppBase.h \
     OptionDialog.h \
     IconDelegate.h \
     IconExtractor.h \
+    IconProviderBase.h \
     FileBrowserDelegate.h \
     FileBrowser.h \
     DropListWidget.h \

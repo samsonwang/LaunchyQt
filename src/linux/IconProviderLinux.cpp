@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QProcess>
 
+namespace launchy {
+
 IconProviderLinux::IconProviderLinux() {
     foreach(QString line, QProcess::systemEnvironment()) {
         if (!line.startsWith("XDG_DATA_DIRS", Qt::CaseInsensitive))
@@ -177,4 +179,6 @@ QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString IconName)
     }
 
     return iconPath;
+}
+
 }

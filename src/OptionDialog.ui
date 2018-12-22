@@ -51,7 +51,7 @@
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="General">
       <attribute name="title">
@@ -1789,9 +1789,9 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>220</y>
+         <y>200</y>
          <width>261</width>
-         <height>81</height>
+         <height>131</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1986,8 +1986,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_22">
        <property name="geometry">
         <rect>
-         <x>400</x>
-         <y>300</y>
+         <x>390</x>
+         <y>290</y>
          <width>271</width>
          <height>31</height>
         </rect>

@@ -79,11 +79,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_optionDialog(nullptr),
       m_optionsOpen(false) {
 
-//     if (s_instance) {
-//         qFatal("LaunchyWidget::LaunchyWidget, only allow singal instance");
-//     }
-//     s_instance = this;
-
     g_searchText.clear();
 
     setObjectName("launchy");

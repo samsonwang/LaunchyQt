@@ -2,13 +2,15 @@
 
 #pragma once
 
-#include <QFileIconProvider>
 #include <QIcon>
 #include <QString>
 #include <QHash>
+#include "IconProviderBase.h"
 class QFileInfo;
 
-class IconProviderLinux : public QFileIconProvider {
+namespace launchy {
+
+class IconProviderLinux : public IconProviderBase {
 public:
     IconProviderLinux();
     virtual ~IconProviderLinux();
@@ -22,3 +24,5 @@ private:
     QHash<QString, QString> icon2path;
     QStringList xdgDataDirs;
 };
+
+}
