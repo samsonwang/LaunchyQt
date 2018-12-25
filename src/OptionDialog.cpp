@@ -430,19 +430,29 @@ void OptionDialog::catDirDrop(QDropEvent *event) {
 }
 
 void OptionDialog::dirRowChanged(int row) {
-    if (row == -1)
+    if (row == -1) {
         return;
+    }
 
+    m_pUi->catTypes->blockSignals(true);
     m_pUi->catTypes->clear();
     foreach(QString str, m_memDirs[row].types) {
         QListWidgetItem* item = new QListWidgetItem(str, m_pUi->catTypes);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
     }
-    m_pUi->catCheckDirs->setChecked(m_memDirs[row].indexDirs);
-    m_pUi->catCheckBinaries->setChecked(m_memDirs[row].indexExe);
-    m_pUi->catDepth->setValue(m_memDirs[row].depth);
+    m_pUi->catTypes->blockSignals(false);
 
-    ++g_needRebuildCatalog;
+    m_pUi->catCheckDirs->blockSignals(true);
+    m_pUi->catCheckDirs->setChecked(m_memDirs[row].indexDirs);
+    m_pUi->catCheckDirs->blockSignals(false);
+
+    m_pUi->catCheckBinaries->blockSignals(true);
+    m_pUi->catCheckBinaries->setChecked(m_memDirs[row].indexExe);
+    m_pUi->catCheckBinaries->blockSignals(false);
+
+    m_pUi->catDepth->blockSignals(true);
+    m_pUi->catDepth->setValue(m_memDirs[row].depth);
+    m_pUi->catDepth->blockSignals(false);
 }
 
 void OptionDialog::catDirMinusClicked(bool c) {
