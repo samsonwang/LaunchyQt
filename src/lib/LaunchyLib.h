@@ -1,7 +1,9 @@
 
 #pragma once
+
 #include <QSharedPointer>
 #include <QSettings>
+#include <QAtomicInt>
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4251)
@@ -16,5 +18,6 @@
 namespace launchy {
 
 LAUNCHY_EXPORT extern QSharedPointer<QSettings> g_settings;
+LAUNCHY_EXPORT extern QAtomicInt g_needRebuildCatalog;
 
 }

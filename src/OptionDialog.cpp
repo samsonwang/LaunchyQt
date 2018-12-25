@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "OptionItem.h"
 #include "UpdateChecker.h"
 #include "FileBrowserDelegate.h"
+#include "LaunchyLib.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
@@ -49,8 +50,9 @@ int OptionDialog::s_lastPlugin = -1;
 OptionDialog::OptionDialog(QWidget * parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
-      m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)),
-      m_needRescan(false) {
+      m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)) {
+
+    g_needRebuildCatalog.storeRelease(0);
 
     m_pUi->setupUi(this);
 
@@ -129,7 +131,7 @@ void OptionDialog::accept() {
 
     QDialog::accept();
 
-    if (m_needRescan) {
+    if (g_needRebuildCatalog.fetchAndStoreRelaxed(0) > 0) {
         g_mainWidget->buildCatalog();
     }
 
@@ -164,16 +166,15 @@ void OptionDialog::showEvent(QShowEvent* event) {
 }
 
 void OptionDialog::tabChanged(int tab) {
-    Q_UNUSED(tab)
     // Redraw the current skin (necessary because of dialog resizing issues)
-    if (m_pUi->tabWidget->currentWidget()->objectName() == "Skins") {
+    if (m_pUi->tabWidget->widget(tab)->objectName() == "Skins") {
         skinChanged(m_pUi->skinList->currentItem()->text());
     }
-    else if (m_pUi->tabWidget->currentWidget()->objectName() == "Plugins") {
-        // We've currently no way of checking if a plugin requires a catalog rescan
-        // so assume that we need one if the user has viewed the plugins tab
-        m_needRescan = true;
-    }
+//     else if (m_pUi->tabWidget->currentWidget()->objectName() == "Plugins") {
+//         // We've currently no way of checking if a plugin requires a catalog rescan
+//         // so assume that we need one if the user has viewed the plugins tab
+//         ++g_needRebuildCatalog;
+//     }
 }
 
 
@@ -258,7 +259,6 @@ void OptionDialog::skinChanged(const QString& newSkin) {
         m_pUi->skinPreview->clear();
     }
 }
-
 
 void OptionDialog::pluginChanged(int row) {
     m_pUi->plugBox->setTitle(tr("Plugin options"));
@@ -372,7 +372,7 @@ void OptionDialog::catRescanClicked(bool val) {
     // Apply Directory Options
     SettingsManager::instance().writeCatalogDirectories(m_memDirs);
 
-    m_needRescan = false;
+    g_needRebuildCatalog.storeRelease(0);
     m_pUi->catRescan->setEnabled(false);
     g_mainWidget->buildCatalog();
 }
@@ -385,7 +385,7 @@ void OptionDialog::catTypesDirChanged(int state) {
         return;
     m_memDirs[row].indexDirs = m_pUi->catCheckDirs->isChecked();
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 void OptionDialog::catTypesExeChanged(int state) {
@@ -395,7 +395,7 @@ void OptionDialog::catTypesExeChanged(int state) {
         return;
     m_memDirs[row].indexExe = m_pUi->catCheckBinaries->isChecked();
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 void OptionDialog::catDirItemChanged(QListWidgetItem* item) {
@@ -407,7 +407,7 @@ void OptionDialog::catDirItemChanged(QListWidgetItem* item) {
 
     m_memDirs[row].name = item->text();
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 
@@ -442,7 +442,7 @@ void OptionDialog::dirRowChanged(int row) {
     m_pUi->catCheckBinaries->setChecked(m_memDirs[row].indexExe);
     m_pUi->catDepth->setValue(m_memDirs[row].depth);
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 void OptionDialog::catDirMinusClicked(bool c) {
@@ -896,7 +896,7 @@ void OptionDialog::addDirectory(const QString& directory, bool edit) {
         m_pUi->catDirectories->editItem(item);
     }
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 
@@ -912,7 +912,7 @@ void OptionDialog::catTypesItemChanged(QListWidgetItem* item) {
 
     m_memDirs[row].types[typesRow] = m_pUi->catTypes->item(typesRow)->text();
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 
@@ -928,7 +928,7 @@ void OptionDialog::catTypesPlusClicked(bool c) {
     m_pUi->catTypes->setCurrentItem(item);
     m_pUi->catTypes->editItem(item);
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 void OptionDialog::catTypesMinusClicked(bool c) {
@@ -948,15 +948,16 @@ void OptionDialog::catTypesMinusClicked(bool c) {
         && m_pUi->catTypes->count() > 0)
         m_pUi->catTypes->setCurrentRow(m_pUi->catTypes->count() - 1);
 
-    m_needRescan = true;
+    ++g_needRebuildCatalog;
 }
 
 void OptionDialog::catDepthChanged(int d) {
     int row = m_pUi->catDirectories->currentRow();
-    if (row != -1)
-        m_memDirs[row].depth = d;
-
-    m_needRescan = true;
+    if (row == -1) {
+        return;
+    }
+    m_memDirs[row].depth = d;
+    ++g_needRebuildCatalog;
 }
 
 }

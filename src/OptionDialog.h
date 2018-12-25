@@ -115,8 +115,6 @@ private:
     QList<int> m_iActionKeys;
     QList<Directory> m_memDirs;
 
-    bool m_needRescan;
-
     //QList<QPair<QString, uint>> pluginNames;
     //QVBoxLayout* pluginLayout;
     //QString lastDir;

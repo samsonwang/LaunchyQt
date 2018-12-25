@@ -20,4 +20,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace launchy {
 LAUNCHY_EXPORT QSharedPointer<QSettings> g_settings;
+LAUNCHY_EXPORT QAtomicInt g_needRebuildCatalog;
 }
