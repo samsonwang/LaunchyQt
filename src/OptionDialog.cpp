@@ -458,6 +458,9 @@ void OptionDialog::dirRowChanged(int row) {
 void OptionDialog::catDirMinusClicked(bool c) {
     Q_UNUSED(c)
     int dirRow = m_pUi->catDirectories->currentRow();
+    if (dirRow == -1) {
+        return;
+    }
 
     delete m_pUi->catDirectories->takeItem(dirRow);
     m_pUi->catTypes->clear();
@@ -467,7 +470,6 @@ void OptionDialog::catDirMinusClicked(bool c) {
     if (dirRow >= m_pUi->catDirectories->count()
         && m_pUi->catDirectories->count() > 0) {
         m_pUi->catDirectories->setCurrentRow(m_pUi->catDirectories->count() - 1);
-        dirRowChanged(m_pUi->catDirectories->count() - 1);
     }
 }
 
