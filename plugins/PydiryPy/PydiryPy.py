@@ -12,18 +12,11 @@
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-#
-# Version 1.0:
-#   * First public release
-#
-#import rpdb2; rpdb2.start_embedded_debugger("password")
-
-print("plugin PyDiryPy")
 
 import sys, os
+import glob
 import launchy
 
-import glob
 from CaselessDict import CaselessDict
 from future_ntpath import expandvars
 
@@ -33,31 +26,23 @@ from sip import wrapinstance, unwrapinstance
 
 from PyDiry import PyDiryGui
 
-
 class PyDiry(launchy.Plugin):
     __version__ = "1.0"
     setting_dir = "PyDiryPy"
-    #setting_dir = "py_directories/dirs"
-    #setting_dir = "py_speedcommander/dirs"
 
     def __init__(self):
         launchy.Plugin.__init__(self)
-
         self.hash = launchy.hash(self.getName())
-#        self.labelHash = launchy.hash("pydiry")
-
         self.dirs = CaselessDict()
-        #self.icon = self.getIcon()
 
     def init(self):
         self.__readConfig()
-        pass
 
     def getID(self):
         return int(self.hash)
 
     def getName(self):
-        return "PyDiry"
+        return "PyDiryPy"
 
     def setPath(self, path):
         self.path = path
@@ -69,9 +54,7 @@ class PyDiry(launchy.Plugin):
         pass
 
     def getResults(self, inputDataList, resultsList):
-        inputs = len(inputDataList)
-
-        if inputs != 2:
+        if len(inputDataList) != 2:
             return
 
         firstText = inputDataList[0].getText()
@@ -111,8 +94,6 @@ class PyDiry(launchy.Plugin):
             try:
                 path = self.dirs[catItem.shortName]
                 launchy.runProgram(path, "")
-                #import os,win32api
-                #win32api.ShellExecute(0, '', os.path.join(working,"programs/nsis/~~~/makensisw.exe"), path, '', 1)# 前台打开
             except:
                 pass
         else:
@@ -142,20 +123,6 @@ class PyDiry(launchy.Plugin):
 
     def __readConfig(self):
         settings = launchy.settings
-
-        # Test if the settings file has PyDiry configuration
-#        version = settings.value("PyDiry/version", QVariant("0.0")).toString()
-#        print_debug("PyDiry version: " + version)
-#        if version == "0.0":
-#            settings.beginWriteArray(self.setting_dir)
-#            settings.setArrayIndex(0)
-#            settings.setValue("name", QVariant("My Documents"))
-#            settings.setValue("path", QVariant("%USERPROFILE%\\My Documents"))
-#            settings.endArray()
-#
-#        # Set our version
-#        settings.setValue("PyDiry/version", QVariant(self.__version__))
-
         self.dirs.clear()
 
         # Read directories from the settings file
@@ -172,12 +139,6 @@ class PyDiry(launchy.Plugin):
             return os.path.split(itemPath)[1]
         except:
             return itemPath
-
-    def launchyShow(self):
-        pass
-
-    def launchyHide(self):
-        pass
 
 def getPlugin():
     return PyDiry
