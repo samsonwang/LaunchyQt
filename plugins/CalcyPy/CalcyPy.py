@@ -23,7 +23,7 @@ import math
 import re
 import launchy
 
-from launchy import CatItem as CatItem
+from launchy import CatItem
 
 # Based on http://www.peterbe.com/plog/calculator-in-python-for-dummies
 class Calculator:
@@ -50,7 +50,7 @@ class Calculator:
                 return group + '.0'
             return group
         expr = expr.replace('^','**')
-#        expr = Calculator.integers_regex.sub(whole_number_to_float, expr)
+
         if advanced:
             return safe_eval(expr, vars(math))
         else:
@@ -169,23 +169,9 @@ class CalcyPy(launchy.Plugin):
                                        "%s" % (retInSize),
                                        self.getID(), self.getIcon()))
 
-    def getCatalog(self, resultsList):
+    def launchItem(self, inputDataList, catItem):
         pass
 
-    def launchItem(self, inputDataList, catItemOrig):
-        pass
-
-    def launchyShow(self):
-        pass
-
-    def launchyHide(self):
-        pass
-
-    def doDialog(self, parent):
-        pass
-
-    def endDialog(self, accept):
-        pass
 
 def getPlugin():
     return CalcyPy
