@@ -15,19 +15,27 @@ class DemoPy(launchy.Plugin):
         return int(self.hash)
 
     def getName(self):
+        # change it to your own plugin name
         return "DemoPy"
 
     def setPath(self, path):
         self.path = path
 
     def getIcon(self):
+        # change to your own plugin icon
         return self.path + "/demopy.png"
 
     def getLabels(self, inputDataList):
-        inputDataList[-1].setLabel(self.hash)
-        pass
+        # you can get inputData here,
+        # if your plugin wants to deal with this inputData,
+        # set last inputData label to your plugin hash
+        condition = True
+        if condition == True:
+            inputDataList[-1].setLabel(self.hash)
+
 
     def getResults(self, inputDataList, resultsList):
+        # add items that shows in suggestion list
         if not inputDataList[-1].hasLabel(self.hash):
             return
         resultsList.append(CatItem("demopy.demopy",
@@ -36,9 +44,10 @@ class DemoPy(launchy.Plugin):
                                    self.getIcon()))
 
     def getCatalog(self, resultsList):
+        # add your own catalog
         pass
 
-    def launchItem(self, inputDataList, catItemOrig):
+    def launchItem(self, inputDataList, catItem):
         pass
 
     def launchyShow(self):
