@@ -53,9 +53,10 @@ class WebSearchPy(launchy.Plugin):
                                 self.getIcon()))
 
     def launchItem(self, inputDataList, catItem):
-        key = inputDataList[0].getText()
-        query = inputDataList[-1].getText()
-        webbrowser.open(self.getUrl(key, query))
+        if len(inputDataList) == 2:
+            key = inputDataList[0].getText()
+            query = inputDataList[-1].getText()
+            webbrowser.open(self.getUrl(key, query))
         return True
 
     def doDialog(self, parentWidgetPtr):
