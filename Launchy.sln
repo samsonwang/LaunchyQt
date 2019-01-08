@@ -2,11 +2,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calcy", "plugins\calcy\calcy.vcxproj", "{88EE52DD-589D-3ABD-9EE1-1883731E4943}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Verby", "plugins\verby\verby.vcxproj", "{423E9997-610F-3946-A755-069D2F49A77A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
@@ -38,14 +33,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Debug|x64.ActiveCfg = Debug|x64
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Debug|x64.Build.0 = Debug|x64
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Debug|x86.ActiveCfg = Debug|Win32
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Debug|x86.Build.0 = Debug|Win32
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Release|x64.ActiveCfg = Release|x64
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Release|x64.Build.0 = Release|x64
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Release|x86.ActiveCfg = Release|Win32
-		{88EE52DD-589D-3ABD-9EE1-1883731E4943}.Release|x86.Build.0 = Release|Win32
 		{423E9997-610F-3946-A755-069D2F49A77A}.Debug|x64.ActiveCfg = Debug|x64
 		{423E9997-610F-3946-A755-069D2F49A77A}.Debug|x64.Build.0 = Debug|x64
 		{423E9997-610F-3946-A755-069D2F49A77A}.Debug|x86.ActiveCfg = Debug|Win32

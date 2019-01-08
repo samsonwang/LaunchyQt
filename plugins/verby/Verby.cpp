@@ -90,9 +90,10 @@ bool Verby::isMatch(const QString& text1, const QString& text2) {
     return false;
 }
 
-void Verby::addCatItem(QString text, QList<CatItem>* results, QString fullName, QString shortName, QString iconName) {
+void Verby::addCatItem(QString text, QList<CatItem>* results,
+                       QString fullName, QString shortName, QString iconName) {
     if (text.isEmpty() || isMatch(shortName, text)) {
-        CatItem item = CatItem(fullName, shortName, HASH_VERBY, m_libPath + "/" + iconName);
+        CatItem item(fullName, shortName, HASH_VERBY, m_libPath + "/" + iconName);
         item.usage = launchy::g_settings->value("Verby/" + shortName.replace(" ", ""), 0).toInt();
         results->push_back(item);
     }
