@@ -1910,7 +1910,7 @@ p, li { white-space: pre-wrap; }
         </size>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/blob/master/docs/CHANGELOG.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github changelog&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::RichText</enum>
