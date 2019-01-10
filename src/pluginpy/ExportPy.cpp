@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ExportPyCatItem.h"
 #include "PluginMgr.h"
 #include "PluginInterface.h"
+#include "LaunchyLib.h"
 
 static int add_five(int x) {
     return x+5;
@@ -45,17 +46,15 @@ PYBIND11_MODULE(launchy, m) {
     m.def("runProgram", &exportpy::runProgram,
           "run program by launchy");
 
+    m.def("setNeedRebuildCatalog", &exportpy::setNeedRebuildCatalog,
+          "set need rebuild catalog after settings changed");
+
     // for testing
     m.def("objectReceiver", &exportpy::objectReceiver);
 
     exportpy::ExportPlugin(m);
     exportpy::ExportCatItem(m);
     exportpy::ExportInputData(m);
-
-    //python_export::export_QString();
-    //python_export::export_pylaunchy();
-    //python_export::export_catalog();
-    //python_export::export_ScriptPlugin();
 }
 
 namespace exportpy {
@@ -108,6 +107,10 @@ void runProgram(const std::string& file, const std::string& args) {
     qDebug() << "exportpy::runProgram, file:" << file.c_str()
         << "args:" << args.c_str();
     launchy::runProgram(fileQ, argsQ);
+}
+
+void setNeedRebuildCatalog() {
+    ++launchy::g_needRebuildCatalog;
 }
 
 void objectReceiver(py::object obj) {

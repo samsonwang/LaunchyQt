@@ -33,6 +33,8 @@ std::string getAppPath(bool toNative = true);
 
 void runProgram(const std::string& file, const std::string& args);
 
+void setNeedRebuildCatalog();
+
 // for debu and test use
 void objectReceiver(py::object obj);
 }
