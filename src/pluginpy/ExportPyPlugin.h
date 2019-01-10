@@ -59,7 +59,6 @@ public:
             void,           /* Return type */
             Plugin,         /* Parent class */
             init            /* Name of function in C++ (must match Python name) */
-                            //n_times       /* Argument(s) */
         );
     }
 
