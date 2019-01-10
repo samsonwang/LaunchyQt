@@ -78,7 +78,7 @@ class PyDiry(launchy.Plugin):
             resultsList.append( launchy.CatItem(itemPath,
                                                 self.__makeShortName(itemPath),
                                                 self.getID(),
-                                                itemPath ) )
+                                                itemPath) )
 
     def getCatalog(self, resultsList):
         for name,path in self.dirs.items():
@@ -100,11 +100,7 @@ class PyDiry(launchy.Plugin):
             # Launchy a file or directory
             launchy.runProgram(catItem.fullPath(), "" )
 
-    def hasDialog(self):
-        return True
-
     def doDialog(self, parentWidgetPtr):
-        print(parentWidgetPtr)
         parentWidget = wrapinstance(parentWidgetPtr, QtWidgets.QWidget)
 
         self.widget = PyDiryGui.PyDiryUi(parentWidget, self.setting_dir)
