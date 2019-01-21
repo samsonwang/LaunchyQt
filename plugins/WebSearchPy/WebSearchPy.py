@@ -56,7 +56,9 @@ class WebSearchPy(launchy.Plugin):
         if len(inputDataList) == 2:
             key = inputDataList[0].getText()
             query = inputDataList[-1].getText()
-            webbrowser.open(self.getUrl(key, query))
+            url = self.getUrl(key, query)
+            print('WebSerach, launchyItem:', key, query, url)
+            webbrowser.open(url)
         return True
 
     def doDialog(self, parentWidgetPtr):
