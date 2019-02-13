@@ -166,8 +166,8 @@ void SettingsManager::setPortable(bool makePortable) {
         qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
         if (makePortable) {
             QMessageBox::warning(g_mainWidget, QObject::tr("Launchy"),
-                                 QObject::tr("Could not convert to portable mode."
-                                             " Please check you have write access to the %1 directory.")
+                                 QObject::tr("Could not convert to portable mode, "
+                                             "Please check the write access to the %1 directory.")
                                  .arg(newDir));
         }
     }

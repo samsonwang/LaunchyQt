@@ -363,7 +363,7 @@ void OptionDialog::catalogBuilt() {
     m_pUi->catProgress->setVisible(false);
     m_pUi->catRescan->setEnabled(true);
 
-    m_pUi->catSize->setText(tr("Index has %n items", "", g_catalog->count()));
+    m_pUi->catSize->setText(tr("Index has %n item(s)", "", g_catalog->count()));
     m_pUi->catSize->setVisible(true);
 }
 

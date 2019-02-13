@@ -1843,7 +1843,7 @@ p, li { white-space: pre-wrap; }
         </font>
        </property>
        <property name="text">
-        <string>Ver</string>
+        <string notr="true">Ver</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1942,7 +1942,7 @@ p, li { white-space: pre-wrap; }
         </font>
        </property>
        <property name="text">
-        <string>LaunchyQt</string>
+        <string notr="true">LaunchyQt</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1961,7 +1961,7 @@ p, li { white-space: pre-wrap; }
         </rect>
        </property>
        <property name="text">
-        <string>(xx-bit)</string>
+        <string notr="true">(xx-bit)</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_2">

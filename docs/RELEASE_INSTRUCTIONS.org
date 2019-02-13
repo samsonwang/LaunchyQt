@@ -3,9 +3,10 @@ here are the procedures to release a new version, in case of I forget something 
 
 1. update version number in source code
 2. update README and CHANGELOG
-3. commit all changes in source code
-4. build binary
-5. test
-6. clean temporary file
-7. pack files(including binary, skin, qt library, utilities folder, vcredist library, python library) to zip and 7z
-8. draft release on github
+3. update translation files
+4. commit all changes in source code
+5. build binary
+6. test
+7. clean temporary file
+8. pack files(including binary, skin, qt library, utilities folder, vcredist library, python library) to zip and 7z
+9. draft release on github
