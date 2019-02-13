@@ -1125,7 +1125,7 @@ void LaunchyWidget::applySkin(const QString& name) {
     QString strStyleSheet(fileStyle.readAll());
     // transform stylesheet for external resources
     strStyleSheet.replace("url(", "url("+skinPath);
-    this->setStyleSheet(strStyleSheet);
+    qApp->setStyleSheet(strStyleSheet);
 
     bool validFrame = false;
     QPixmap frame;
@@ -1249,7 +1249,6 @@ void LaunchyWidget::showOptionDialog() {
 
         if (!m_optionDialog) {
             m_optionDialog = new OptionDialog(nullptr);
-            m_optionDialog->setObjectName("options");
         }
 
         m_optionDialog->exec();

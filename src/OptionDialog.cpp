@@ -47,11 +47,12 @@ QByteArray OptionDialog::s_lastWindowGeometry;
 int OptionDialog::s_lastTab = 0;
 int OptionDialog::s_lastPlugin = -1;
 
-OptionDialog::OptionDialog(QWidget * parent)
+OptionDialog::OptionDialog(QWidget* parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
       m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)) {
 
+    setObjectName("options");
     g_needRebuildCatalog.storeRelease(0);
 
     m_pUi->setupUi(this);
