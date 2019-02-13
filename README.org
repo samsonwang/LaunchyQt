@@ -16,8 +16,6 @@ Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt
 
 If you want any new feature, feel free to raise an [[https://github.com/samsonwang/LaunchyQt/issues][issue]] for it, feature request is welcome.
 
-Join discuss on gitter [[https://gitter.im/LaunchyQt/community][file:https://img.shields.io/gitter/room/LaunchyQt/community.svg]] .
-
 ** Improvemenets
 Compared to the old one, LanchyQt offers more as follows:
 - High DPI support for 2K and 4K display.
