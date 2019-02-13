@@ -17,9 +17,9 @@ Checkout what feature is in develop at [[https://github.com/samsonwang/LaunchyQt
 If you want any new feature, feel free to raise an [[https://github.com/samsonwang/LaunchyQt/issues][issue]] for it, feature request is welcome.
 
 ** Improvemenets
-Compared to the old one, LanchyQt offers more as follows:
+Compared to the old one, LaunchyQt offers more as follows:
 - High DPI support for 2K and 4K display.
-- Locale language support, such as simplified Chinese pinyin.
+- Locale language indexing support, such as simplified Chinese pinyin.
 - Built-in python support, develop plugins in python painlessly.
 - Python package management with pip, more easy to install 3rd-party packages.
 
