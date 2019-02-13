@@ -83,9 +83,9 @@ void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
 }
 
 void PluginWrapper::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item) {
+    Q_UNUSED(item)
     std::vector<exportpy::InputData> inputDataList;
     for (auto it = inputData->begin(); it != inputData->end(); ++it) {
-        //inputDataList.push_back(exportpy::InputData(&(*it)));
         inputDataList.emplace_back(&(*it));
     }
 

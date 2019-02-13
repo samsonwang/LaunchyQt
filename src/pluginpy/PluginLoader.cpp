@@ -31,6 +31,7 @@ PluginLoader::PluginLoader(const QString& pluginName, const QString& pluginPath)
 }
 
 void PluginLoader::setFileName(const QString& fileName) {
+    Q_UNUSED(fileName)
     // split fileName to pluginName and pluginPath
     // m_fileName = fileName;
 }

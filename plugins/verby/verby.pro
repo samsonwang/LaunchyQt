@@ -1,27 +1,35 @@
 TEMPLATE = lib
+QT += widgets
 CONFIG += plugin \
-    release
-VPATH += ../../src/
-INCLUDEPATH += ../../src/
-PRECOMPILED_HEADER = precompiled.h
-UI_DIR = ../../plugins/Verby/
+          release
+#VPATH += ../../src/
+INCLUDEPATH += ../../src \
+               ../../src/lib
+#UI_DIR = ../../plugins/verby/
 FORMS = dlg.ui
-HEADERS = plugin_interface.h \
-    gui.h \
-    Verby.h \
-    precompiled.h
-SOURCES = plugin_interface.cpp \
-    gui.cpp \
-    Verby.cpp
-TARGET = verby
-win32 { 
-    CONFIG -= embed_manifest_dll
-	LIBS += user32.lib shell32.lib
-	QMAKE_CXXFLAGS_RELEASE += /Zi
-	QMAKE_LFLAGS_RELEASE += /DEBUG
+
+HEADERS = gui.h \
+          Verby.h
+
+SOURCES = gui.cpp \
+          Verby.cpp
+
+PRECOMPILED_HEADER = precompiled.h
+
+TARGET = Verby
+
+CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins/$$TARGET
+CONFIG(release, debug|release):DESTDIR = ../../release/plugins/$$TARGET
+
+win32 {
+#    CONFIG -= embed_manifest_dll
+    LIBS += user32.lib \
+            shell32.lib \
+            $$DESTDIR/../../Launchy.lib
+    #QMAKE_CXXFLAGS_RELEASE += /Zi
+    #QMAKE_LFLAGS_RELEASE += /DEBUG
 }
-if(!debug_and_release|build_pass):CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins
-if(!debug_and_release|build_pass):CONFIG(release, debug|release):DESTDIR = ../../release/plugins
+
 unix:!macx {
     PREFIX = /usr
     target.path = $$PREFIX/lib/launchy/plugins/

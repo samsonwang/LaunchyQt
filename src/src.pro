@@ -73,6 +73,9 @@ include(../deps/QHotkey/QHotkey.pri)
 INCLUDEPATH += $$PWD/src/lib
 DEPENDPATH += $$PWD/src/lib
 
+CONFIG(debug, debug|release):DESTDIR = ../debug/
+CONFIG(release, debug|release):DESTDIR = ../release/
+
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
@@ -80,10 +83,6 @@ unix:!macx {
                linux/IconProviderLinux.cpp
     HEADERS += linux/AppLinux.h \
                linux/IconProviderLinux.h
-    #if(!debug_and_release|build_pass) {
-    #}
-    CONFIG(debug, debug|release):DESTDIR = ../debug/
-    CONFIG(release, debug|release):DESTDIR = ../release/
     LIBS += -L$$OUT_PWD/src/lib/ $$DESTDIR/liblaunchy.so $$DESTDIR/libpluginpy.so
 
     PREFIX   = /usr
@@ -124,17 +123,13 @@ win32 {
                comctl32.lib \
                advapi32.lib \
                userenv.lib \
-               netapi32.lib
+               netapi32.lib \
+               $$DESTDIR/Launchy.lib \
+               $$DESTDIR/PluginPy.lib
     DEFINES += VC_EXTRALEAN \
                WIN32 \
                _UNICODE \
-               UNICODE
-    if(!debug_and_release|build_pass) {
-        CONFIG(debug, debug|release):DESTDIR = ../debug/
-        CONFIG(release, debug|release):DESTDIR = ../release/
-    }
-    CONFIG(release, debug|release): LIBS += $$OUT_PWD/lib/release/Launchy.lib
-    CONFIG(debug, debug|release): LIBS += $$OUT_PWD/lib/debug/Launchy.lib
+               UNICODE \
 
     QMAKE_CXXFLAGS_RELEASE += /Zi
     QMAKE_LFLAGS_RELEASE += /DEBUG

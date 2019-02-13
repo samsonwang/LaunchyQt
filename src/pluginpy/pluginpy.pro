@@ -13,7 +13,6 @@ CONFIG += precompile_header
 
 INCLUDEPATH += ../../deps \
                ../lib
-               #/usr/include/python3.6
 
 SOURCES += ExportPy.cpp \
            ExportPyCatItem.cpp \
@@ -35,10 +34,8 @@ HEADERS += ExportPy.h \
 
 DEFINES += PLUGINPY_LIB
 
-if(!debug_and_release|build_pass) {
-    CONFIG(debug, debug|release):DESTDIR = ../../debug/
-    CONFIG(release, debug|release):DESTDIR = ../../release/
-}
+CONFIG(debug, debug|release):DESTDIR = ../../debug/
+CONFIG(release, debug|release):DESTDIR = ../../release/
 
 unix:!macx {
 #python3-config
@@ -47,6 +44,10 @@ LIBS += -lpython3.6m -lpthread -ldl  -lutil -lm
 }
 
 win32 {
-   LIBS += user32.lib \
-           shell32.lib
+    INCLUDEPATH += $$(PYTHONPATH)/include
+    LIBS += user32.lib \
+            shell32.lib \
+            $$(PYTHONPATH)/libs/python3.lib \
+            $$(PYTHONPATH)/libs/python36.lib \
+            $$DESTDIR/Launchy.lib
 }

@@ -5,12 +5,13 @@ SUBDIRS = src/lib \
 
 
 win32 {
-SUBDIRS += plugins/calcy \
-           plugins/verby \
+SUBDIRS += plugins/verby \
            plugins/tasky
 
-#          plugins/controly \
+#           plugins/calcy \
+#           plugins/controly \
 #           plugins/weby \
 #           plugins/runner \
 #           plugins/gcalc \
+
 }
