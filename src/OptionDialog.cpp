@@ -66,6 +66,10 @@ OptionDialog::OptionDialog(QWidget* parent)
     m_pUi->tabWidget->setCurrentIndex(s_lastTab);
     connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
+    // nasty work around to fix qt translation file
+    m_pUi->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Ok"));
+    m_pUi->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+
     initGeneralWidget();
 
     initSkinWidget();

@@ -157,7 +157,7 @@ void SettingsManager::setPortable(bool makePortable) {
         if (!makePortable) {
             // if converting to installed mode,
             // try to remove portable mode config directory if it is empty.
-            // !! This may be dangerous for the old directory could contain other files.
+            // !! This may be dangerous if the old directory could contain other files.
             // !! MUST be careful when deleting files and directories.
             QDir(oldDir).rmdir(".");
         }
@@ -165,9 +165,10 @@ void SettingsManager::setPortable(bool makePortable) {
     else {
         qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
         if (makePortable) {
-            QMessageBox::warning(g_mainWidget, QObject::tr("Launchy"),
-                                 QObject::tr("Could not convert to portable mode, "
-                                             "Please check the write access to the %1 directory.")
+            QMessageBox::warning(g_mainWidget, QString("Launchy"),
+                                 qApp->translate("launchy::OptionDialog",
+                                                 "Could not convert to portable mode, "
+                                                 "Please check the write access to the %1 directory.")
                                  .arg(newDir));
         }
     }

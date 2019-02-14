@@ -66,6 +66,8 @@ HEADERS = AppBase.h \
 
 FORMS = OptionDialog.ui
 
+RESOURCES += launchy.qrc
+
 include(../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../deps/QHotkey/QHotkey.pri)
@@ -75,6 +77,9 @@ DEPENDPATH += $$PWD/src/lib
 
 CONFIG(debug, debug|release):DESTDIR = ../debug/
 CONFIG(release, debug|release):DESTDIR = ../release/
+
+OBJECTS_DIR = build
+MOC_DIR = GeneratedFiles
 
 unix:!macx {
     QT += x11extras
@@ -175,16 +180,12 @@ macx {
         translations \
         dmg
 }
-TRANSLATIONS = \
-    ../translations/launchy_zh.ts \
-    ../translations/launchy_zh_TW.ts \
-    ../translations/launchy_fr.ts \
-    ../translations/launchy_nl.ts \
-    ../translations/launchy_zh.ts \
-    ../translations/launchy_es.ts \
-    ../translations/launchy_de.ts \
-    ../translations/launchy_ja.ts \
-    ../translations/launchy_rus.ts
-OBJECTS_DIR = build
-MOC_DIR = GeneratedFiles
-RESOURCES += launchy.qrc
+
+TRANSLATIONS = ../translations/launchy_zh_CN.ts \
+               ../translations/launchy_zh_TW.ts \
+               ../translations/launchy_fr.ts \
+               ../translations/launchy_nl.ts \
+               ../translations/launchy_es.ts \
+               ../translations/launchy_de.ts \
+               ../translations/launchy_ja.ts \
+               ../translations/launchy_rus.ts
