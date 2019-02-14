@@ -99,3 +99,7 @@ QScrollBar#altScroll::add-line:vertical {
   subcontrol-origin: margin;
   image: url(scrollDown.png);
 }
+
+#options * {
+  font-family: Microsoft YaHei, Verdana;
+}
