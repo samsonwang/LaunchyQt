@@ -8,5 +8,5 @@ here are the procedures to release a new version, in case of I forget something 
 5. build binary
 6. test
 7. clean temporary file
-8. pack files(including binary, skin, qt library, utilities folder, vcredist library, python library) to zip and 7z
+8. pack files(including binary, skin, qt library, utilities folder, vcredist library, python library, ssl library) to zip and 7z
 9. draft release on github
