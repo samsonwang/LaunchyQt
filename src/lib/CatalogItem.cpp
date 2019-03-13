@@ -46,7 +46,8 @@ CatItem::CatItem(const QString& full, bool isDir)
         }
     }
 
-    searchName = convertSearchName(shortName);
+    searchName[LOWER] = shortName.toLower();
+    searchName[TRANS] = convertSearchName(searchName[0]);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN)
@@ -56,7 +57,8 @@ CatItem::CatItem(const QString& full, const QString& shortN)
       data(NULL),
       pluginId(0) {
 
-    searchName = convertSearchName(shortName);
+    searchName[LOWER] = shortName.toLower();
+    searchName[TRANS] = convertSearchName(searchName[0]);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN, uint id)
@@ -66,7 +68,8 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint id)
       data(NULL),
       pluginId(id) {
 
-    searchName = convertSearchName(shortName);
+    searchName[LOWER] = shortName.toLower();
+    searchName[TRANS] = convertSearchName(searchName[0]);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath)
@@ -77,7 +80,8 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint id, const QStr
       data(NULL),
       pluginId(id) {
 
-    searchName = convertSearchName(shortName);
+    searchName[LOWER] = shortName.toLower();
+    searchName[TRANS] = convertSearchName(searchName[0]);
 }
 
 bool CatItem::operator!=(const CatItem& other) const {
@@ -91,7 +95,8 @@ bool CatItem::operator==(const CatItem& other) const {
 QDataStream& operator<<(QDataStream& out, const CatItem &item) {
     out << item.fullPath;
     out << item.shortName;
-    out << item.searchName;
+    out << item.searchName[CatItem::LOWER];
+    out << item.searchName[CatItem::TRANS];
     out << item.iconPath;
     out << item.usage;
     out << item.pluginId;
@@ -101,7 +106,8 @@ QDataStream& operator<<(QDataStream& out, const CatItem &item) {
 QDataStream& operator>>(QDataStream& in, CatItem &item) {
     in >> item.fullPath;
     in >> item.shortName;
-    in >> item.searchName;
+    in >> item.searchName[CatItem::LOWER];
+    in >> item.searchName[CatItem::TRANS];
     in >> item.iconPath;
     in >> item.usage;
     in >> item.pluginId;

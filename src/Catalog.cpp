@@ -94,7 +94,16 @@ bool Catalog::matches(CatItem* item, const QString& match) {
     int matchLength = match.count();
     int curChar = 0;
 
-    foreach(QChar c, item->searchName) {
+    foreach(QChar c, item->searchName[CatItem::LOWER]) {
+        if (c == match[curChar]) {
+            ++curChar;
+            if (curChar >= matchLength) {
+                return true;
+            }
+        }
+    }
+
+    foreach(QChar c, item->searchName[CatItem::TRANS]) {
         if (c == match[curChar]) {
             ++curChar;
             if (curChar >= matchLength) {
@@ -331,8 +340,11 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     if (b->usage < 0 && a->usage >= 0)
         return true;
 
-    bool localEqual = a->searchName == g_searchText;
-    bool otherEqual = b->searchName == g_searchText;
+    bool localEqual = (a->searchName[CatItem::LOWER] == g_searchText
+        || a->searchName[CatItem::TRANS] == g_searchText);
+
+    bool otherEqual = (b->searchName[CatItem::LOWER] == g_searchText
+        || b->searchName[CatItem::TRANS] == g_searchText);
 
     // Exact match between search text and item name has higest priority
     if (localEqual && !otherEqual)
@@ -340,8 +352,10 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     if (!localEqual && otherEqual)
         return false;
 
-    int localFind = a->searchName.indexOf(g_searchText);
-    int otherFind = b->searchName.indexOf(g_searchText);
+    int localFind = std::min(a->searchName[CatItem::LOWER].indexOf(g_searchText),
+                             a->searchName[CatItem::TRANS].indexOf(g_searchText));
+    int otherFind = std::min(b->searchName[CatItem::LOWER].indexOf(g_searchText),
+                             b->searchName[CatItem::TRANS].indexOf(g_searchText));
 
     if (g_searchText.count() == 1) {
         // Match at the start
@@ -385,8 +399,8 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
             return false;
     }
 
-    int localLen = a->searchName.count();
-    int otherLen = b->searchName.count();
+    int localLen = a->shortName.count();
+    int otherLen = b->shortName.count();
 
     // Favour shorter item names
     if (localLen < otherLen)

@@ -515,12 +515,12 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
     else if (event->key() == Qt::Key_Return
              || event->key() == Qt::Key_Enter
              || event->key() == Qt::Key_Tab) {
-        if (m_searchResult.count() > 0) {
+        if (!m_searchResult.isEmpty()) {
             int row = m_alternativeList->currentRow();
             if (row > -1) {
                 QString location = "History/" + m_inputBox->text();
                 QStringList hist;
-                hist << m_searchResult[row].searchName << m_searchResult[row].fullPath;
+                hist << m_searchResult[row].shortName << m_searchResult[row].fullPath;
                 g_settings->setValue(location, hist);
 
                 if (row > 0)

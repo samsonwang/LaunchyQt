@@ -31,14 +31,22 @@ namespace launchy {
 
 class LAUNCHY_EXPORT CatItem {
 public:
+    enum SearchNameType {
+        LOWER = 0,
+        TRANS,
+        CAPACITY
+    };
+
+public:
     /** The full path of the indexed item */
     QString fullPath;
-    /** The abbreviated name of the indexed item */
+    /** The abbreviated name of the indexed item
+        It is a name without path and suffix */
     QString shortName;
     /** The transformed name of the indexed item,
-        prepared to search and match non-English name,
-        it is shortName in lower by default*/
-    QString searchName;
+        searchName[LOWER] is the lower form of shortName
+        searchName[TRANS] is prepared to search and match non-English letters */
+    QString searchName[CAPACITY];
     /** A path to an icon for the item */
     QString iconPath;
     /** How many times this item has been called by the user */
