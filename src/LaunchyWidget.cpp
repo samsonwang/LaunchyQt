@@ -174,8 +174,11 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // Load the history
     m_history.load(SettingsManager::instance().historyFilename());
 
-    // Load the skin
-    //setStyleSheet(":/resources/basicskin.qss");
+    // Load fail-safe basic skin
+    QFile basicSkinFile(":/resources/basicskin.qss");
+    basicSkinFile.open(QFile::ReadOnly);
+    qApp->setStyleSheet(basicSkinFile.readAll());
+    // Load skin
     applySkin(g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString());
 
     // Move to saved position
@@ -1155,7 +1158,7 @@ void LaunchyWidget::applySkin(const QString& name) {
             QPixmap mask;
             if (mask.load(skinPath + "mask_nc.png")) {
                 // For some reason, w/ compiz setmask won't work
-                // for rectangular areas.  This is due to compiz and
+                // for rectangular areas. This is due to compiz and
                 // XShapeCombineMask
                 setMask(mask);
             }
@@ -1169,6 +1172,9 @@ void LaunchyWidget::applySkin(const QString& name) {
     if (validFrame) {
         m_frameGraphic.swap(frame);
         resize(m_frameGraphic.size());
+    }
+    else {
+        m_frameGraphic.fill(Qt::transparent);
     }
 
     // output size may change when skin change

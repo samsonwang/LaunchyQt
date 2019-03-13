@@ -107,7 +107,10 @@ void OptionDialog::setVisible(bool visible) {
     if (visible) {
         connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
                 this, SLOT(skinChanged(const QString)));
-        skinChanged(m_pUi->skinList->currentItem()->text());
+
+        if (QListWidgetItem* pItem = m_pUi->skinList->currentItem()) {
+            skinChanged(pItem->text());
+        }
     }
 }
 
@@ -173,7 +176,9 @@ void OptionDialog::showEvent(QShowEvent* event) {
 void OptionDialog::tabChanged(int tab) {
     // Redraw the current skin (necessary because of dialog resizing issues)
     if (m_pUi->tabWidget->widget(tab)->objectName() == "Skins") {
-        skinChanged(m_pUi->skinList->currentItem()->text());
+        if (QListWidgetItem* pItem = m_pUi->skinList->currentItem()) {
+            skinChanged(pItem->text());
+        }
     }
 //     else if (m_pUi->tabWidget->currentWidget()->objectName() == "Plugins") {
 //         // We've currently no way of checking if a plugin requires a catalog rescan
@@ -679,9 +684,14 @@ void OptionDialog::initSkinWidget() {
 
 void OptionDialog::saveSkinSettings() {
     // Apply Skin Options
+    QListWidgetItem* pCurrentItem = m_pUi->skinList->currentItem();
+    if (!pCurrentItem) {
+        return;
+    }
+
+    QString currentSkinName = pCurrentItem->text();
     QString prevSkinName = g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString();
-    QString currentSkinName = m_pUi->skinList->currentItem()->text();
-    if (m_pUi->skinList->currentRow() >= 0 && currentSkinName != prevSkinName) {
+    if (currentSkinName != prevSkinName) {
         g_settings->setValue(OPSTION_SKIN, currentSkinName);
         g_mainWidget->setSkin(currentSkinName);
     }
