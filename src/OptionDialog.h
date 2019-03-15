@@ -104,6 +104,7 @@ private slots:
     // system
     void autoRebuildCheckChanged(int state);
     void logLevelChanged(int index);
+    void languageChanged(int index);
 
 private:
     Ui::OptionDialog* m_pUi;

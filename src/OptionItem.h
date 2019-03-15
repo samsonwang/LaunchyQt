@@ -28,9 +28,6 @@ extern const bool       OPSTION_ALWAYSSHOW_DEFAULT;
 extern const char*      OPSTION_ALWAYSTOP;
 extern const bool       OPSTION_ALWAYSTOP_DEFAULT;
 
-extern const char*      OPSTION_LOGLEVEL;
-extern const int        OPSTION_LOGLEVEL_DEFAULT;
-
 extern const char*      OPSTION_DECORATETEXT;
 extern const bool       OPSTION_DECORATETEXT_DEFAULT;
 
@@ -46,17 +43,8 @@ extern const bool       OPSTION_DRAGMODE_DEFAULT;
 extern const char*      OPTION_APPSTYLE;
 extern const char*      OPTION_APPSTYLE_DEFAULT;
 
-extern const char*      OPSTION_SHOWHIDDENFILES;
-extern const bool       OPSTION_SHOWHIDDENFILES_DEFAULT;
-
-extern const char*      OPSTION_SHOWNETWORK;
-extern const bool       OPSTION_SHOWNETWORK_DEFAULT;
-
 extern const char*      OPSTION_AUTOSUGGESTDELAY;
 extern const int        OPSTION_AUTOSUGGESTDELAY_DEFAULT;
-
-extern const char*      OPSTION_REBUILDTIMER;
-extern const int        OPSTION_REBUILDTIMER_DEFAULT;
 
 extern const char*      OPSTION_NUMVIEWABLE;
 extern const int        OPSTION_NUMVIEWABLE_DEFAULT;
@@ -129,4 +117,19 @@ extern const char*      OPTION_PROXY_USERNAME_DEFAULT;
 extern const char*      OPTION_PROXY_PASSWORD;
 extern const char*      OPTION_PROXY_PASSWORD_DEFAULT;
 
+// system
+extern const char*      OPTION_REBUILDTIMER;
+extern const int        OPTION_REBUILDTIMER_DEFAULT;
+
+extern const char*      OPTION_SHOWHIDDENFILES;
+extern const bool       OPTION_SHOWHIDDENFILES_DEFAULT;
+
+extern const char*      OPTION_SHOWNETWORK;
+extern const bool       OPTION_SHOWNETWORK_DEFAULT;
+
+extern const char*      OPTION_LOGLEVEL;
+extern const int        OPTION_LOGLEVEL_DEFAULT;
+
+extern const char*      OPTION_LANGUAGE;
+extern const char*      OPTION_LANGUAGE_DEFAULT;
 }

@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UpdateChecker.h"
 #include "FileBrowserDelegate.h"
 #include "LaunchyLib.h"
+#include "TranslationManager.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
@@ -196,7 +197,7 @@ void OptionDialog::onAppStyleChanged(int index) {
 void OptionDialog::autoRebuildCheckChanged(int state) {
     m_pUi->genRebuildMinutes->setEnabled(state > 0);
     if (m_pUi->genRebuildMinutes->value() <= 0) {
-        m_pUi->genRebuildMinutes->setValue(OPSTION_REBUILDTIMER_DEFAULT);
+        m_pUi->genRebuildMinutes->setValue(OPTION_REBUILDTIMER_DEFAULT);
     }
 }
 
@@ -345,6 +346,14 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
 
 void OptionDialog::logLevelChanged(int index) {
     Logger::setLogLevel(index);
+}
+
+
+void OptionDialog::languageChanged(int index) {
+    QString lang = m_pUi->cbLanguage->itemData(index).toString();
+    qDebug() << "OptionDialog::languageChanged, lang =" << lang;
+    TranslationManager::instance().setLocale(lang);
+    m_pUi->retranslateUi(this);
 }
 
 void OptionDialog::onProxyTypeChanged(int index) {
@@ -879,29 +888,58 @@ void OptionDialog::saveProxySettings() {
 }
 
 void OptionDialog::initSystemWidget() {
-    int rebuildInterval = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
+    int rebuildInterval = g_settings->value(OPTION_REBUILDTIMER, OPTION_REBUILDTIMER_DEFAULT).toInt();
     m_pUi->genRebuildMinutes->setValue(rebuildInterval);
     m_pUi->genRebuildCatalog->setChecked(rebuildInterval > 0);
     connect(m_pUi->genRebuildCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoRebuildCheckChanged(int)));
 
-    m_pUi->genShowHidden->setChecked(g_settings->value(OPSTION_SHOWHIDDENFILES, OPSTION_SHOWHIDDENFILES_DEFAULT).toBool());
-    m_pUi->genShowNetwork->setChecked(g_settings->value(OPSTION_SHOWNETWORK, OPSTION_SHOWNETWORK_DEFAULT).toBool());
+    m_pUi->genShowHidden->setChecked(g_settings->value(OPTION_SHOWHIDDENFILES, OPTION_SHOWHIDDENFILES_DEFAULT).toBool());
+    m_pUi->genShowNetwork->setChecked(g_settings->value(OPTION_SHOWNETWORK, OPTION_SHOWNETWORK_DEFAULT).toBool());
 
     m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
 
-    m_pUi->genLog->setCurrentIndex(g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt());
-    connect(m_pUi->genLog, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
+    m_pUi->cbLogLevel->setCurrentIndex(g_settings->value(OPTION_LOGLEVEL, OPTION_LOGLEVEL_DEFAULT).toInt());
+    connect(m_pUi->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
+
+    // language
+    QLocale locSet;
+    QString lang = g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();
+    if (lang.isEmpty()) {
+        locSet = TranslationManager::instance().getLocale();
+    }
+    else {
+        locSet = QLocale(lang);
+    }
+
+    m_pUi->cbLanguage->addItem(tr("English"), QString("en")); // English is default
+    int indexLang = 0;
+    // load language from directory
+    QList<QLocale> locales = TranslationManager::instance().getAllLocales();
+    for (int i = 0; i < locales.size(); ++i) {
+        const QLocale& loc = locales.at(i);
+        m_pUi->cbLanguage->addItem(loc.nativeLanguageName(), loc.name());
+        if (loc == locSet) {
+            indexLang = i + 1;
+        }
+    }
+
+    // set combo box language from setting file
+    m_pUi->cbLanguage->setCurrentIndex(indexLang);
+
+    // connect(m_pUi->cbLanguage, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
 }
 
 void OptionDialog::saveSystemSettings() {
-    g_settings->setValue(OPSTION_REBUILDTIMER,
+    g_settings->setValue(OPTION_REBUILDTIMER,
                          m_pUi->genRebuildCatalog->isChecked() ? m_pUi->genRebuildMinutes->value() : 0);
 
-    g_settings->setValue(OPSTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
-    g_settings->setValue(OPSTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
+    g_settings->setValue(OPTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
+    g_settings->setValue(OPTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
     SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
 
-    g_settings->setValue(OPSTION_LOGLEVEL, m_pUi->genLog->currentIndex());
+    g_settings->setValue(OPTION_LOGLEVEL, m_pUi->cbLogLevel->currentIndex());
+
+    g_settings->setValue(OPTION_LANGUAGE, m_pUi->cbLanguage->currentData().toString());
 }
 
 void OptionDialog::initAboutWidget() {

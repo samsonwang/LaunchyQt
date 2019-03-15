@@ -437,6 +437,7 @@ exit 0</Command>
     </ClCompile>
     <ClCompile Include="IconProviderBase.cpp" />
     <ClCompile Include="InputDataList.cpp" />
+    <ClCompile Include="TranslationManager.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OptionItem.cpp" />
@@ -531,6 +532,7 @@ exit 0</Command>
     <ClInclude Include="AnimationLabel.h" />
     <ClInclude Include="IconProviderBase.h" />
     <ClInclude Include="InputDataList.h" />
+    <ClInclude Include="TranslationManager.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="OptionItem.h" />
     <CustomBuild Include="UpdateChecker.h">

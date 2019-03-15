@@ -27,8 +27,8 @@ const bool      OPSTION_ALWAYSSHOW_DEFAULT                     = false;
 const char*     OPSTION_ALWAYSTOP                              = "GenOps/alwaystop";
 const bool      OPSTION_ALWAYSTOP_DEFAULT                      = false;
 
-const char*     OPSTION_LOGLEVEL                               = "GenOps/logLevel";
-const int       OPSTION_LOGLEVEL_DEFAULT                       = 2;
+const char*     OPTION_LOGLEVEL                               = "GenOps/logLevel";
+const int       OPTION_LOGLEVEL_DEFAULT                       = 2;
 
 const char*     OPSTION_DECORATETEXT                           = "GenOps/decoratetext";
 const bool      OPSTION_DECORATETEXT_DEFAULT                   = false;
@@ -45,17 +45,17 @@ const bool      OPSTION_DRAGMODE_DEFAULT                       = false;
 const char*     OPTION_APPSTYLE                                = "GenOps/appStyle";
 const char*     OPTION_APPSTYLE_DEFAULT                        = "fusion";
 
-const char*     OPSTION_SHOWHIDDENFILES                        = "GenOps/showHiddenFiles";
-const bool      OPSTION_SHOWHIDDENFILES_DEFAULT                = false;
+const char*     OPTION_SHOWHIDDENFILES                        = "GenOps/showHiddenFiles";
+const bool      OPTION_SHOWHIDDENFILES_DEFAULT                = false;
 
-const char*     OPSTION_SHOWNETWORK                            = "GenOps/showNetwork";
-const bool      OPSTION_SHOWNETWORK_DEFAULT                    = false;
+const char*     OPTION_SHOWNETWORK                            = "GenOps/showNetwork";
+const bool      OPTION_SHOWNETWORK_DEFAULT                    = false;
 
 const char*     OPSTION_AUTOSUGGESTDELAY                       = "GenOps/autoSuggestDelay";
 const int       OPSTION_AUTOSUGGESTDELAY_DEFAULT               = 1000;
 
-const char*     OPSTION_REBUILDTIMER                           = "GenOps/rebuildTimer";
-const int       OPSTION_REBUILDTIMER_DEFAULT                   = 30;
+const char*     OPTION_REBUILDTIMER                           = "GenOps/rebuildTimer";
+const int       OPTION_REBUILDTIMER_DEFAULT                   = 30;
 
 const char*     OPSTION_NUMVIEWABLE                            = "GenOps/numviewable";
 const int       OPSTION_NUMVIEWABLE_DEFAULT                    = 4;
@@ -131,5 +131,9 @@ const char*     OPTION_PROXY_USERNAME_DEFAULT                  = "";
 
 const char*     OPTION_PROXY_PASSWORD                          = "Proxy/password";
 const char*     OPTION_PROXY_PASSWORD_DEFAULT                  = "";
+
+// System
+const char*     OPTION_LANGUAGE                                = "System/Language";
+const char*     OPTION_LANGUAGE_DEFAULT                        = "";
 
 }

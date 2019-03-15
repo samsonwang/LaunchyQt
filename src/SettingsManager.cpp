@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppBase.h"
 #include "Logger.h"
 #include "OptionItem.h"
+#include "TranslationManager.h"
 
 static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";
@@ -43,6 +44,8 @@ SettingsManager& SettingsManager::instance() {
 }
 
 void SettingsManager::load() {
+    Q_ASSERT(g_app);
+
     // Load settings
     m_dirs = g_app->getDirectories();
     m_portable = QFile::exists(m_dirs["portableConfig"][0] + iniName);
@@ -55,7 +58,7 @@ void SettingsManager::load() {
         writeCatalogDirectories(directories);
     }
 
-    int logLevel = g_settings->value(OPSTION_LOGLEVEL, OPSTION_LOGLEVEL_DEFAULT).toInt();
+    int logLevel = g_settings->value(OPTION_LOGLEVEL, OPTION_LOGLEVEL_DEFAULT).toInt();
     Logger::setLogLevel(logLevel);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
@@ -93,6 +96,15 @@ void SettingsManager::load() {
     }
 
     QNetworkProxy::setApplicationProxy(proxy);
+
+    // load language translation
+    QString lang = g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();
+    if (lang.isEmpty()) {
+        TranslationManager::instance().setLocale(QLocale::system());
+    }
+    else {
+        TranslationManager::instance().setLocale(lang);
+    }
 }
 
 bool SettingsManager::isPortable() const {

@@ -991,7 +991,7 @@ void LaunchyWidget::saveSettings() {
 }
 
 void LaunchyWidget::startRebuildTimer() {
-    int time = g_settings->value(OPSTION_REBUILDTIMER, OPSTION_REBUILDTIMER_DEFAULT).toInt();
+    int time = g_settings->value(OPTION_REBUILDTIMER, OPTION_REBUILDTIMER_DEFAULT).toInt();
     if (time > 0) {
         m_rebuildTimer->start(time * 60000);
     }

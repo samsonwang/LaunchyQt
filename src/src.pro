@@ -188,4 +188,4 @@ TRANSLATIONS = ../translations/launchy_zh_CN.ts \
                ../translations/launchy_es.ts \
                ../translations/launchy_de.ts \
                ../translations/launchy_ja.ts \
-               ../translations/launchy_rus.ts
+               ../translations/launchy_ru.ts

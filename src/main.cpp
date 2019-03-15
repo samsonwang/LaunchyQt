@@ -30,26 +30,6 @@ int main(int argc, char* argv[]) {
     // Load settings
     launchy::SettingsManager::instance().load();
 
-    QString localName = QLocale().name();
-
-    QTranslator translatorQt;
-    QTranslator translatorLaunchy;
-
-    if (translatorLaunchy.load(QLocale(),
-                               QString("launchy"),
-                               QString("_"),
-                               QString("translations"))) {
-
-        qApp->installTranslator(&translatorLaunchy);
-
-        if (translatorQt.load(QLocale(),
-                              QString("qt"),
-                              QString("_"),
-                              QString("translations"))) {
-            qApp->installTranslator(&translatorQt);
-        }
-    }
-
     // improve code below with QCommandlinePareser
     QStringList args = qApp->arguments();
     launchy::CommandFlags command = launchy::Default;
