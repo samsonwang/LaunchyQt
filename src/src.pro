@@ -183,9 +183,9 @@ macx {
 
 TRANSLATIONS = ../translations/launchy_zh_CN.ts \
                ../translations/launchy_zh_TW.ts \
-               ../translations/launchy_fr.ts \
-               ../translations/launchy_nl.ts \
-               ../translations/launchy_es.ts \
-               ../translations/launchy_de.ts \
-               ../translations/launchy_ja.ts \
-               ../translations/launchy_ru.ts
+               ../translations/launchy_fr_FR.ts \
+               ../translations/launchy_nl_NL.ts \
+               ../translations/launchy_es_ES.ts \
+               ../translations/launchy_de_DE.ts \
+               ../translations/launchy_ja_JP.ts \
+               ../translations/launchy_ru_RU.ts

@@ -36,6 +36,7 @@ public:
 
 public:
     virtual void setVisible(bool visible);
+    void retranslateUi();
 
 public slots:
     virtual void accept();
@@ -43,6 +44,7 @@ public slots:
 
 protected:
     virtual void showEvent(QShowEvent* event);
+    virtual void changeEvent(QEvent *event);
 
 private:
     // general

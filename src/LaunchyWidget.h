@@ -67,6 +67,7 @@ public:
     int getHotkey() const;
     void startRebuildTimer();
     void trayNotify(const QString& infoMsg);
+    void retranslateUI();
 
 public slots:
     void showLaunchy(bool noFade = false);

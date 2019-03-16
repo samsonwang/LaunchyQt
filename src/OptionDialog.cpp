@@ -101,7 +101,6 @@ OptionDialog::~OptionDialog() {
     m_pUi = nullptr;
 }
 
-
 void OptionDialog::setVisible(bool visible) {
     QDialog::setVisible(visible);
 
@@ -115,6 +114,14 @@ void OptionDialog::setVisible(bool visible) {
     }
 }
 
+void OptionDialog::retranslateUi() {
+    m_pUi->retranslateUi(this);
+    // do not work
+    m_pUi->buttonBox->button(QDialogButtonBox::Ok)->setText(
+        QApplication::translate("OptionDialog", "Ok", nullptr));
+    m_pUi->buttonBox->button(QDialogButtonBox::Cancel)->setText(
+        QApplication::translate("OptionDialog", "Cancel", nullptr));
+}
 
 void OptionDialog::accept() {
     if (g_settings.isNull()) {
@@ -172,6 +179,18 @@ void OptionDialog::showEvent(QShowEvent* event) {
     }
 
     QDialog::showEvent(event);
+}
+
+void OptionDialog::changeEvent(QEvent *event) {
+
+    if (event->type() == QEvent::LanguageChange) {
+        // retranslate designer form (single inheritance approach)
+        //m_pUi->retranslateUi(this);
+        retranslateUi();
+    }
+
+    // remember to call base class implementation
+    QDialog::changeEvent(event);
 }
 
 void OptionDialog::tabChanged(int tab) {
@@ -348,12 +367,11 @@ void OptionDialog::logLevelChanged(int index) {
     Logger::setLogLevel(index);
 }
 
-
 void OptionDialog::languageChanged(int index) {
     QString lang = m_pUi->cbLanguage->itemData(index).toString();
     qDebug() << "OptionDialog::languageChanged, lang =" << lang;
     TranslationManager::instance().setLocale(lang);
-    m_pUi->retranslateUi(this);
+    //retranslateUi();
 }
 
 void OptionDialog::onProxyTypeChanged(int index) {
@@ -902,13 +920,9 @@ void OptionDialog::initSystemWidget() {
     connect(m_pUi->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
 
     // language
-    QLocale locSet;
     QString lang = g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();
     if (lang.isEmpty()) {
-        locSet = TranslationManager::instance().getLocale();
-    }
-    else {
-        locSet = QLocale(lang);
+        lang = TranslationManager::instance().getLocale().name();
     }
 
     m_pUi->cbLanguage->addItem(tr("English"), QString("en")); // English is default
@@ -918,7 +932,8 @@ void OptionDialog::initSystemWidget() {
     for (int i = 0; i < locales.size(); ++i) {
         const QLocale& loc = locales.at(i);
         m_pUi->cbLanguage->addItem(loc.nativeLanguageName(), loc.name());
-        if (loc == locSet) {
+//        QString nm = loc.name();
+        if (lang == loc.name()) {
             indexLang = i + 1;
         }
     }
@@ -926,7 +941,7 @@ void OptionDialog::initSystemWidget() {
     // set combo box language from setting file
     m_pUi->cbLanguage->setCurrentIndex(indexLang);
 
-    // connect(m_pUi->cbLanguage, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
+    connect(m_pUi->cbLanguage, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
 }
 
 void OptionDialog::saveSystemSettings() {

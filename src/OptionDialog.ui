@@ -2055,9 +2055,6 @@ p, li { white-space: pre-wrap; }
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="locale">
-      <locale language="C" country="AnyCountry"/>
-     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
