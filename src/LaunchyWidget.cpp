@@ -879,6 +879,23 @@ void LaunchyWidget::startDropTimer() {
     }
 }
 
+void LaunchyWidget::retranslateUi() {
+    m_actShow->setText(tr("Show Launchy"));
+    m_actReloadSkin->setText(tr("Reload skin"));
+    m_actRebuild->setText(tr("Rebuild catalog"));
+    m_actOptions->setText(tr("Options"));
+    m_actCheckUpdate->setText(tr("Check for updates"));
+    m_actRestart->setText(tr("Restart"));
+    m_actExit->setText(tr("Exit"));
+    
+    m_optionButton->setToolTip(tr("Options"));
+    m_closeButton->setToolTip(tr("Close"));
+
+    m_trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
+                           .arg(LAUNCHY_VERSION_STRING)
+                           .arg(m_pHotKey->keySeq().toString()));
+}
+
 void LaunchyWidget::updateOutputSize() {
     int maxIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
     qDebug() << "LaunchyWidget::showEvent, output icon size:" << maxIconSize;
@@ -1223,6 +1240,16 @@ void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event) {
     m_menuOpen = true;
     menu.exec(event->globalPos());
     m_menuOpen = false;
+}
+
+void LaunchyWidget::changeEvent(QEvent* event) {
+    if (event->type() == QEvent::LanguageChange) {
+        // retranslate designer form (single inheritance approach)
+        retranslateUi();
+    }
+
+    // remember to call base class implementation
+    QWidget::changeEvent(event);
 }
 
 void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {

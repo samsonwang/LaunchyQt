@@ -316,57 +316,74 @@
         <translation>系统选项</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1626"/>
+        <location filename="../src/OptionDialog.ui" line="1686"/>
         <source>Logging level</source>
         <translation>日志级别</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1659"/>
+        <location filename="../src/OptionDialog.ui" line="1719"/>
         <source>Off</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1664"/>
+        <location filename="../src/OptionDialog.ui" line="1724"/>
         <source>Debug</source>
         <translation>调试</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1669"/>
+        <location filename="../src/OptionDialog.ui" line="1729"/>
         <source>Normal</source>
-        <translation>正常</translation>
+        <translation>普通</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1679"/>
+        <location filename="../src/OptionDialog.ui" line="2074"/>
+        <location filename="../src/OptionDialog.cpp" line="131"/>
+        <source>Ok</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="2081"/>
+        <location filename="../src/OptionDialog.cpp" line="132"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="1674"/>
         <source>Portable mode (USB stick)</source>
         <translation>便携模式（U盘）</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1686"/>
+        <location filename="../src/OptionDialog.ui" line="1660"/>
         <source>Show hidden files in browse mode</source>
         <translation>显示隐藏文件</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1695"/>
+        <location filename="../src/OptionDialog.ui" line="1611"/>
         <source>Auto rescan catalog every</source>
         <translation>自动更新索引</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1726"/>
+        <location filename="../src/OptionDialog.ui" line="1642"/>
         <source> min</source>
         <translation> 分钟</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1744"/>
+        <location filename="../src/OptionDialog.ui" line="1667"/>
         <source>Show network in browse mode</source>
         <translation>显示共享网络中的计算机</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1781"/>
+        <location filename="../src/OptionDialog.ui" line="1741"/>
+        <source>Language</source>
+        <translation>语言</translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="1809"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1833"/>
+        <location filename="../src/OptionDialog.ui" line="1861"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -378,7 +395,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1906"/>
+        <location filename="../src/OptionDialog.ui" line="1934"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -388,25 +405,14 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1936"/>
+        <location filename="../src/OptionDialog.ui" line="1964"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2019"/>
+        <location filename="../src/OptionDialog.ui" line="2047"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <source>Launchy</source>
-        <translation type="vanished">Launchy</translation>
-    </message>
-    <message>
-        <source>Could not convert to portable mode, Please check the write access to the %1 directory.</source>
-        <translation type="vanished">转换为便携模式失败，请检查%1目录的写入权限。</translation>
     </message>
 </context>
 <context>
@@ -414,13 +420,13 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/LaunchyWidget.cpp" line="85"/>
         <location filename="../src/LaunchyWidget.cpp" line="160"/>
-        <location filename="../src/LaunchyWidget.cpp" line="1003"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1006"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
         <location filename="../src/LaunchyWidget.cpp" line="127"/>
-        <location filename="../src/LaunchyWidget.cpp" line="1353"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1359"/>
         <source>Options</source>
         <translation>首选项</translation>
     </message>
@@ -435,49 +441,49 @@ p, li { white-space: pre-wrap; }
         <translation>热键 %1 已经被占用，请选择其他的热键。</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="285"/>
+        <location filename="../src/LaunchyWidget.cpp" line="288"/>
         <source>Launchy %1
 press %2 to activate</source>
         <translation>Launchy %1
 按 %2 显示主窗口</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="300"/>
+        <location filename="../src/LaunchyWidget.cpp" line="303"/>
         <source>Test Widget</source>
         <translation>测试界面</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1095"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1098"/>
         <source>Launchy is already running!</source>
         <translation>Launchy 已经在运行了！</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1340"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1346"/>
         <source>Show Launchy</source>
         <translation>显示主窗口</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1343"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1349"/>
         <source>Reload skin</source>
         <translation>刷新皮肤</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1348"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1354"/>
         <source>Rebuild catalog</source>
         <translation>更新索引</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1358"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1364"/>
         <source>Check for updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1363"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1369"/>
         <source>Restart</source>
         <translation>重新启动</translation>
     </message>
     <message>
-        <location filename="../src/LaunchyWidget.cpp" line="1373"/>
+        <location filename="../src/LaunchyWidget.cpp" line="1379"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
@@ -485,59 +491,59 @@ press %2 to activate</source>
 <context>
     <name>launchy::OptionDialog</name>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="70"/>
+        <location filename="../src/OptionDialog.cpp" line="125"/>
         <source>Ok</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="71"/>
+        <location filename="../src/OptionDialog.cpp" line="126"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="269"/>
+        <location filename="../src/OptionDialog.cpp" line="302"/>
         <source>Plugin options</source>
         <translation>插件选项</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/OptionDialog.cpp" line="371"/>
+        <location filename="../src/OptionDialog.cpp" line="409"/>
         <source>Index has %n item(s)</source>
         <translation>
             <numerusform>共有%n条记录</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="526"/>
+        <location filename="../src/OptionDialog.cpp" line="564"/>
         <source>Up</source>
         <translation>上</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="526"/>
+        <location filename="../src/OptionDialog.cpp" line="564"/>
         <source>Down</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="526"/>
+        <location filename="../src/OptionDialog.cpp" line="564"/>
         <source>Left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="526"/>
+        <location filename="../src/OptionDialog.cpp" line="564"/>
         <source>Right</source>
         <translation>右</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="609"/>
+        <location filename="../src/OptionDialog.cpp" line="647"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="610"/>
+        <location filename="../src/OptionDialog.cpp" line="648"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>热键 %1 已经被占用，请选择其他的热键。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/OptionDialog.cpp" line="719"/>
+        <location filename="../src/OptionDialog.cpp" line="762"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
@@ -545,37 +551,37 @@ press %2 to activate</source>
         </translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="788"/>
+        <location filename="../src/OptionDialog.cpp" line="831"/>
         <source>No Proxy</source>
         <translation>无代理</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="789"/>
+        <location filename="../src/OptionDialog.cpp" line="832"/>
         <source>System Proxy</source>
         <translation>系统代理</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="790"/>
+        <location filename="../src/OptionDialog.cpp" line="833"/>
         <source>HTTP</source>
         <translation>HTTP</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="791"/>
+        <location filename="../src/OptionDialog.cpp" line="834"/>
         <source>SOCKS5</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="899"/>
+        <location filename="../src/OptionDialog.cpp" line="967"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.cpp" line="900"/>
+        <location filename="../src/OptionDialog.cpp" line="968"/>
         <source>(%1-bit)</source>
         <translation>(%1位)</translation>
     </message>
     <message>
-        <location filename="../src/SettingsManager.cpp" line="170"/>
+        <location filename="../src/SettingsManager.cpp" line="181"/>
         <source>Could not convert to portable mode, Please check the write access to the %1 directory.</source>
         <translation>转换为便携模式失败，请检查%1目录的写入权限。</translation>
     </message>

@@ -621,6 +621,9 @@
                 <pointsize>9</pointsize>
                </font>
               </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
               <property name="suffix">
                <string> ms</string>
               </property>
@@ -659,6 +662,9 @@
                 <height>22</height>
                </size>
               </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
               <property name="minimum">
                <number>1</number>
               </property>
@@ -694,6 +700,9 @@
                 <height>22</height>
                </size>
               </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
               <property name="minimum">
                <number>1</number>
               </property>
@@ -728,6 +737,9 @@
                 <width>0</width>
                 <height>22</height>
                </size>
+              </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
               </property>
               <property name="maximum">
                <number>999</number>
@@ -1010,6 +1022,9 @@ p, li { white-space: pre-wrap; }
                 <pointsize>10</pointsize>
                </font>
               </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
@@ -1162,6 +1177,9 @@ p, li { white-space: pre-wrap; }
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="contextMenuPolicy">
+             <enum>Qt::NoContextMenu</enum>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1228,6 +1246,9 @@ p, li { white-space: pre-wrap; }
             </item>
             <item>
              <widget class="QSpinBox" name="catDepth">
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
               <property name="maximum">
                <number>100000</number>
               </property>
@@ -1339,6 +1360,9 @@ p, li { white-space: pre-wrap; }
                   <height>0</height>
                  </size>
                 </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
+                </property>
                 <property name="suffix">
                  <string> s</string>
                 </property>
@@ -1370,6 +1394,9 @@ p, li { white-space: pre-wrap; }
                   <width>60</width>
                   <height>0</height>
                  </size>
+                </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
                 </property>
                 <property name="suffix">
                  <string> h</string>
@@ -1444,6 +1471,9 @@ p, li { white-space: pre-wrap; }
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
+                </property>
                </widget>
               </item>
               <item>
@@ -1463,6 +1493,9 @@ p, li { white-space: pre-wrap; }
                   <width>80</width>
                   <height>16777215</height>
                  </size>
+                </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
                 </property>
                </widget>
               </item>
@@ -1491,6 +1524,9 @@ p, li { white-space: pre-wrap; }
                <widget class="QLineEdit" name="leProxyUsername">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
                 </property>
                </widget>
               </item>
@@ -1522,6 +1558,9 @@ p, li { white-space: pre-wrap; }
                <widget class="QLineEdit" name="leProxyPassword">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
                 </property>
                </widget>
               </item>
@@ -1634,6 +1673,9 @@ p, li { white-space: pre-wrap; }
                 <width>95</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
               </property>
               <property name="accelerated">
                <bool>true</bool>
@@ -2054,14 +2096,35 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_18">
+     <item>
+      <spacer name="horizontalSpacer_11">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pbOk">
+       <property name="text">
+        <string>Ok</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pbCancel">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -2102,45 +2165,11 @@ p, li { white-space: pre-wrap; }
   <tabstop>catDepth</tabstop>
   <tabstop>catRescan</tabstop>
   <tabstop>plugList</tabstop>
-  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
   <include location="launchy.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>OptionDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>531</x>
-     <y>564</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>OptionDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>531</x>
-     <y>564</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <designerdata>
   <property name="gridDeltaX">
    <number>10</number>

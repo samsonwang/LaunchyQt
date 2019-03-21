@@ -66,10 +66,8 @@ OptionDialog::OptionDialog(QWidget* parent)
     restoreGeometry(s_lastWindowGeometry);
     m_pUi->tabWidget->setCurrentIndex(s_lastTab);
     connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
-
-    // nasty work around to fix qt translation file
-    m_pUi->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Ok"));
-    m_pUi->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    connect(m_pUi->pbOk, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(m_pUi->pbCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
     initGeneralWidget();
 
@@ -116,11 +114,6 @@ void OptionDialog::setVisible(bool visible) {
 
 void OptionDialog::retranslateUi() {
     m_pUi->retranslateUi(this);
-    // do not work
-    m_pUi->buttonBox->button(QDialogButtonBox::Ok)->setText(
-        QApplication::translate("OptionDialog", "Ok", nullptr));
-    m_pUi->buttonBox->button(QDialogButtonBox::Cancel)->setText(
-        QApplication::translate("OptionDialog", "Cancel", nullptr));
 }
 
 void OptionDialog::accept() {
@@ -185,7 +178,6 @@ void OptionDialog::changeEvent(QEvent *event) {
 
     if (event->type() == QEvent::LanguageChange) {
         // retranslate designer form (single inheritance approach)
-        //m_pUi->retranslateUi(this);
         retranslateUi();
     }
 
@@ -362,16 +354,16 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     }
 }
 
-
 void OptionDialog::logLevelChanged(int index) {
     Logger::setLogLevel(index);
 }
 
 void OptionDialog::languageChanged(int index) {
-    QString lang = m_pUi->cbLanguage->itemData(index).toString();
-    qDebug() << "OptionDialog::languageChanged, lang =" << lang;
-    TranslationManager::instance().setLocale(lang);
-    //retranslateUi();
+    QString loc = m_pUi->cbLanguage->itemData(index).toString();
+    g_settings->setValue(OPTION_LANGUAGE, loc);
+
+    qDebug() << "OptionDialog::languageChanged, loc =" << loc;
+    TranslationManager::instance().setLocale(loc);
 }
 
 void OptionDialog::onProxyTypeChanged(int index) {
@@ -920,19 +912,21 @@ void OptionDialog::initSystemWidget() {
     connect(m_pUi->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
 
     // language
-    QString lang = g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();
+    QString lang = TranslationManager::instance().getLocale().name();
+    /*
+    g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();
     if (lang.isEmpty()) {
         lang = TranslationManager::instance().getLocale().name();
     }
+    */
 
-    m_pUi->cbLanguage->addItem(tr("English"), QString("en")); // English is default
+    m_pUi->cbLanguage->addItem(QString("English"), QString("en_US")); // English is default
     int indexLang = 0;
     // load language from directory
     QList<QLocale> locales = TranslationManager::instance().getAllLocales();
     for (int i = 0; i < locales.size(); ++i) {
         const QLocale& loc = locales.at(i);
         m_pUi->cbLanguage->addItem(loc.nativeLanguageName(), loc.name());
-//        QString nm = loc.name();
         if (lang == loc.name()) {
             indexLang = i + 1;
         }

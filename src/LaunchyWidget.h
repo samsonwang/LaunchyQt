@@ -67,7 +67,6 @@ public:
     int getHotkey() const;
     void startRebuildTimer();
     void trayNotify(const QString& infoMsg);
-    void retranslateUI();
 
 public slots:
     void showLaunchy(bool noFade = false);
@@ -86,6 +85,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
     virtual void contextMenuEvent(QContextMenuEvent* event);
+    virtual void changeEvent(QEvent* event);
 
 protected:
     void saveSettings();
@@ -108,6 +108,7 @@ protected:
     void processKey();
     void launchItem(CatItem& item);
     void startDropTimer();
+    void retranslateUi();
 
 protected slots:
     void showOptionDialog();

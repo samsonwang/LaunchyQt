@@ -29,6 +29,7 @@ CharLineEdit::CharLineEdit(QWidget* parent)
 #ifdef Q_OS_MAC
     QMacStyle::setFocusRectPolicy(this, QMacStyle::FocusDisabled);
 #endif
+    setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 void CharLineEdit::processKey(QKeyEvent* event) {

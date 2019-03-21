@@ -27,15 +27,18 @@ TranslationManager& TranslationManager::instance() {
 
 void TranslationManager::setLocale(const QLocale& loc) {
     qInfo() << "LanguageManager::setLang, set language to" << loc;
+    m_loc = loc;
 
-    if (m_translatorLaunchy.load(loc,
+    if (m_loc == QLocale("en_US")) {
+        qApp->removeTranslator(&m_translatorLaunchy);
+        qApp->removeTranslator(&m_translatorQt);
+    }
+    else if (m_translatorLaunchy.load(loc,
                                  QString("launchy"),
                                  QString("_"),
                                  QString("translations"))) {
 
         qApp->installTranslator(&m_translatorLaunchy);
-
-        m_loc = loc;
 
         if (m_translatorQt.load(loc,
                                 QString("qt"),
