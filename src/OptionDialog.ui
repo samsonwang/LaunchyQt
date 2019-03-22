@@ -526,7 +526,7 @@
              <widget class="QComboBox" name="genCondensed">
               <property name="minimumSize">
                <size>
-                <width>0</width>
+                <width>100</width>
                 <height>22</height>
                </size>
               </property>
@@ -783,7 +783,20 @@
              </spacer>
             </item>
             <item>
-             <widget class="QComboBox" name="cbAppStyle"/>
+             <widget class="QComboBox" name="cbAppStyle">
+              <property name="minimumSize">
+               <size>
+                <width>85</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>22</height>
+               </size>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -1050,6 +1063,19 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <widget class="QPushButton" name="catDirPlus">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>+</string>
                 </property>
@@ -1057,6 +1083,20 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <widget class="QPushButton" name="catDirMinus">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                  <kerning>true</kerning>
+                 </font>
+                </property>
                 <property name="text">
                  <string>-</string>
                 </property>
@@ -1198,6 +1238,12 @@ p, li { white-space: pre-wrap; }
                 <height>13123213</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>+</string>
               </property>
@@ -1210,6 +1256,12 @@ p, li { white-space: pre-wrap; }
                 <width>16777215</width>
                 <height>13123123</height>
                </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
               </property>
               <property name="text">
                <string>-</string>
@@ -1333,7 +1385,7 @@ p, li { white-space: pre-wrap; }
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="0,3">
+        <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="2,3">
          <item>
           <widget class="QGroupBox" name="gbCheckUpdate">
            <property name="title">
@@ -1657,20 +1709,20 @@ p, li { white-space: pre-wrap; }
             <item>
              <widget class="QSpinBox" name="genRebuildMinutes">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="minimumSize">
                <size>
-                <width>0</width>
+                <width>80</width>
                 <height>22</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>95</width>
+                <width>80</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -1746,7 +1798,7 @@ p, li { white-space: pre-wrap; }
              <widget class="QComboBox" name="cbLogLevel">
               <property name="minimumSize">
                <size>
-                <width>0</width>
+                <width>80</width>
                 <height>22</height>
                </size>
               </property>
@@ -1801,7 +1853,7 @@ p, li { white-space: pre-wrap; }
              <widget class="QComboBox" name="cbLanguage">
               <property name="minimumSize">
                <size>
-                <width>0</width>
+                <width>80</width>
                 <height>22</height>
                </size>
               </property>
