@@ -147,132 +147,132 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1332"/>
+        <location filename="../src/OptionDialog.ui" line="1384"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1340"/>
+        <location filename="../src/OptionDialog.ui" line="1392"/>
         <source>Check for updates on startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1351"/>
+        <location filename="../src/OptionDialog.ui" line="1403"/>
         <source>Delay:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1367"/>
+        <location filename="../src/OptionDialog.ui" line="1419"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1383"/>
+        <location filename="../src/OptionDialog.ui" line="1435"/>
         <source>Every:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1402"/>
+        <location filename="../src/OptionDialog.ui" line="1454"/>
         <source> h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1423"/>
+        <location filename="../src/OptionDialog.ui" line="1475"/>
         <source>Proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1429"/>
+        <location filename="../src/OptionDialog.ui" line="1481"/>
         <source>Proxy type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1463"/>
+        <location filename="../src/OptionDialog.ui" line="1515"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1482"/>
+        <location filename="../src/OptionDialog.ui" line="1534"/>
         <source>:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1510"/>
+        <location filename="../src/OptionDialog.ui" line="1562"/>
         <source>Proxy server requires password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1517"/>
+        <location filename="../src/OptionDialog.ui" line="1569"/>
         <source>Username:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1551"/>
+        <location filename="../src/OptionDialog.ui" line="1603"/>
         <source>Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1598"/>
+        <location filename="../src/OptionDialog.ui" line="1650"/>
         <source>Check for updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1621"/>
+        <location filename="../src/OptionDialog.ui" line="1673"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1642"/>
+        <location filename="../src/OptionDialog.ui" line="1694"/>
         <source>System Options</source>
         <translation type="unfinished">システム・オプション</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1650"/>
+        <location filename="../src/OptionDialog.ui" line="1702"/>
         <source>Auto rescan catalog every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1702"/>
+        <location filename="../src/OptionDialog.ui" line="1754"/>
         <source>Show hidden files in browse mode</source>
         <translation type="unfinished">ブラウズ・モードで隠しファイルも表示する</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1684"/>
+        <location filename="../src/OptionDialog.ui" line="1736"/>
         <source> min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1709"/>
+        <location filename="../src/OptionDialog.ui" line="1761"/>
         <source>Show network in browse mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1716"/>
+        <location filename="../src/OptionDialog.ui" line="1768"/>
         <source>Portable mode (USB stick)</source>
         <translation type="unfinished">ポータブル・モード(USBメモリ)</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1728"/>
+        <location filename="../src/OptionDialog.ui" line="1780"/>
         <source>Logging level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1761"/>
+        <location filename="../src/OptionDialog.ui" line="1813"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1766"/>
+        <location filename="../src/OptionDialog.ui" line="1818"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1771"/>
+        <location filename="../src/OptionDialog.ui" line="1823"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="810"/>
+        <location filename="../src/OptionDialog.ui" line="823"/>
         <source>Skins</source>
         <translation type="unfinished">スキン</translation>
     </message>
@@ -302,99 +302,99 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="831"/>
+        <location filename="../src/OptionDialog.ui" line="844"/>
         <source>Select a skin</source>
         <translation type="unfinished">スキンを選んで下さい</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="902"/>
+        <location filename="../src/OptionDialog.ui" line="915"/>
         <source>Author information</source>
         <translation type="unfinished">作者の情報</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="961"/>
+        <location filename="../src/OptionDialog.ui" line="974"/>
         <source>Skin preview</source>
         <translation type="unfinished">プレビュー</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1004"/>
+        <location filename="../src/OptionDialog.ui" line="1017"/>
         <source>Catalog</source>
         <translation type="unfinished">カタログ</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1012"/>
+        <location filename="../src/OptionDialog.ui" line="1025"/>
         <source>Directories</source>
         <translation type="unfinished">ディレクトリ</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1054"/>
-        <location filename="../src/OptionDialog.ui" line="1202"/>
+        <location filename="../src/OptionDialog.ui" line="1080"/>
+        <location filename="../src/OptionDialog.ui" line="1248"/>
         <source>+</source>
         <translation type="unfinished">+</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1061"/>
-        <location filename="../src/OptionDialog.ui" line="1215"/>
+        <location filename="../src/OptionDialog.ui" line="1101"/>
+        <location filename="../src/OptionDialog.ui" line="1267"/>
         <source>-</source>
         <translation type="unfinished">-</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1100"/>
+        <location filename="../src/OptionDialog.ui" line="1140"/>
         <source>Rescan Catalog</source>
         <translation type="unfinished">カタログを再スキャン</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1132"/>
+        <location filename="../src/OptionDialog.ui" line="1172"/>
         <source>Indexing 0 items</source>
         <translation type="unfinished">0 項目をインデックス化しています</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1158"/>
+        <location filename="../src/OptionDialog.ui" line="1198"/>
         <source>File Types</source>
         <translation type="unfinished">ファイルの種類</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1224"/>
+        <location filename="../src/OptionDialog.ui" line="1276"/>
         <source>Include executables</source>
         <translation type="unfinished">実行可能ﾌｧｲﾙも含む</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1231"/>
+        <location filename="../src/OptionDialog.ui" line="1283"/>
         <source>Include directories</source>
         <translation type="unfinished">ディレクトリも含む</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1240"/>
+        <location filename="../src/OptionDialog.ui" line="1292"/>
         <source>Depth:</source>
         <translation type="unfinished">階層指定:</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1269"/>
+        <location filename="../src/OptionDialog.ui" line="1321"/>
         <source>Plugins</source>
         <translation type="unfinished">プラグイン</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1281"/>
+        <location filename="../src/OptionDialog.ui" line="1333"/>
         <source>Available plugins</source>
         <translation type="unfinished">利用可能なプラグイン</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1320"/>
+        <location filename="../src/OptionDialog.ui" line="1372"/>
         <source>Plugin options</source>
         <translation type="unfinished">プラグイン・オプション</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1783"/>
+        <location filename="../src/OptionDialog.ui" line="1835"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1851"/>
+        <location filename="../src/OptionDialog.ui" line="1903"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1903"/>
+        <location filename="../src/OptionDialog.ui" line="1955"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -406,7 +406,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1976"/>
+        <location filename="../src/OptionDialog.ui" line="2028"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -416,22 +416,22 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2006"/>
+        <location filename="../src/OptionDialog.ui" line="2058"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2089"/>
+        <location filename="../src/OptionDialog.ui" line="2141"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2116"/>
+        <location filename="../src/OptionDialog.ui" line="2168"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2123"/>
+        <location filename="../src/OptionDialog.ui" line="2175"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>

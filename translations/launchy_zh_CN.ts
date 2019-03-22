@@ -6,12 +6,12 @@
     <message>
         <location filename="../src/OptionDialog.ui" line="42"/>
         <source>Launchy options</source>
-        <translation>Launchy首选项</translation>
+        <translation>Launchy选项</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="58"/>
         <source>General</source>
-        <translation>常规</translation>
+        <translation>一般</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="73"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../src/OptionDialog.ui" line="138"/>
         <source>Always center</source>
-        <translation>主界位置</translation>
+        <translation>主界面位置</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="154"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../src/OptionDialog.ui" line="298"/>
         <source>Visual Effects</source>
-        <translation>特效</translation>
+        <translation>视觉特效</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="316"/>
@@ -76,12 +76,12 @@
     <message>
         <location filename="../src/OptionDialog.ui" line="357"/>
         <source>Fade in time</source>
-        <translation>渐显时间</translation>
+        <translation>淡入时间</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="392"/>
         <source>Fade out time</source>
-        <translation>渐隐时间</translation>
+        <translation>淡出时间</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="439"/>
@@ -149,239 +149,239 @@
         <translation>程序界面风格</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="810"/>
+        <location filename="../src/OptionDialog.ui" line="823"/>
         <source>Skins</source>
         <translation>皮肤</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="831"/>
+        <location filename="../src/OptionDialog.ui" line="844"/>
         <source>Select a skin</source>
         <translation>皮肤选择</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="902"/>
+        <location filename="../src/OptionDialog.ui" line="915"/>
         <source>Author information</source>
         <translation>作者信息</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="961"/>
+        <location filename="../src/OptionDialog.ui" line="974"/>
         <source>Skin preview</source>
         <translation>预览</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1004"/>
+        <location filename="../src/OptionDialog.ui" line="1017"/>
         <source>Catalog</source>
         <translation>索引</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1012"/>
+        <location filename="../src/OptionDialog.ui" line="1025"/>
         <source>Directories</source>
         <translation>目录</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1054"/>
-        <location filename="../src/OptionDialog.ui" line="1202"/>
+        <location filename="../src/OptionDialog.ui" line="1080"/>
+        <location filename="../src/OptionDialog.ui" line="1248"/>
         <source>+</source>
         <translation>+</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1061"/>
-        <location filename="../src/OptionDialog.ui" line="1215"/>
+        <location filename="../src/OptionDialog.ui" line="1101"/>
+        <location filename="../src/OptionDialog.ui" line="1267"/>
         <source>-</source>
         <translation>-</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1100"/>
+        <location filename="../src/OptionDialog.ui" line="1140"/>
         <source>Rescan Catalog</source>
-        <translation>更新索引</translation>
+        <translation>重新扫描索引</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1132"/>
+        <location filename="../src/OptionDialog.ui" line="1172"/>
         <source>Indexing 0 items</source>
-        <translation>共有0个条目</translation>
+        <translation>共有 0 个条目</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1158"/>
+        <location filename="../src/OptionDialog.ui" line="1198"/>
         <source>File Types</source>
         <translation>文件类型</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1224"/>
+        <location filename="../src/OptionDialog.ui" line="1276"/>
         <source>Include executables</source>
         <translation>包含可执行文件</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1231"/>
+        <location filename="../src/OptionDialog.ui" line="1283"/>
         <source>Include directories</source>
         <translation>包含目录</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1240"/>
+        <location filename="../src/OptionDialog.ui" line="1292"/>
         <source>Depth:</source>
         <translation>深度:</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1269"/>
+        <location filename="../src/OptionDialog.ui" line="1321"/>
         <source>Plugins</source>
         <translation>插件</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1281"/>
+        <location filename="../src/OptionDialog.ui" line="1333"/>
         <source>Available plugins</source>
         <translation>可用插件</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1320"/>
+        <location filename="../src/OptionDialog.ui" line="1372"/>
         <source>Plugin options</source>
         <translation>插件选项</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1332"/>
+        <location filename="../src/OptionDialog.ui" line="1384"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1340"/>
+        <location filename="../src/OptionDialog.ui" line="1392"/>
         <source>Check for updates on startup</source>
         <translation>启动时检查更新</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1351"/>
+        <location filename="../src/OptionDialog.ui" line="1403"/>
         <source>Delay:</source>
         <translation>延迟：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1367"/>
+        <location filename="../src/OptionDialog.ui" line="1419"/>
         <source> s</source>
         <translation> 秒</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1383"/>
+        <location filename="../src/OptionDialog.ui" line="1435"/>
         <source>Every:</source>
         <translation>间隔：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1402"/>
+        <location filename="../src/OptionDialog.ui" line="1454"/>
         <source> h</source>
         <translation> 小时</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1423"/>
+        <location filename="../src/OptionDialog.ui" line="1475"/>
         <source>Proxy</source>
         <translation>代理</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1429"/>
+        <location filename="../src/OptionDialog.ui" line="1481"/>
         <source>Proxy type:</source>
         <translation>代理类型：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1463"/>
+        <location filename="../src/OptionDialog.ui" line="1515"/>
         <source>Server:</source>
         <translation>服务器：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1482"/>
+        <location filename="../src/OptionDialog.ui" line="1534"/>
         <source>:</source>
         <translation>：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1510"/>
+        <location filename="../src/OptionDialog.ui" line="1562"/>
         <source>Proxy server requires password</source>
         <translation>代理需要密码</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1517"/>
+        <location filename="../src/OptionDialog.ui" line="1569"/>
         <source>Username:</source>
         <translation>用户名：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1551"/>
+        <location filename="../src/OptionDialog.ui" line="1603"/>
         <source>Password:</source>
         <translation>密码：</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1598"/>
+        <location filename="../src/OptionDialog.ui" line="1650"/>
         <source>Check for updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1621"/>
+        <location filename="../src/OptionDialog.ui" line="1673"/>
         <source>System</source>
         <translation>系统</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1642"/>
+        <location filename="../src/OptionDialog.ui" line="1694"/>
         <source>System Options</source>
         <translation>系统选项</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1728"/>
+        <location filename="../src/OptionDialog.ui" line="1780"/>
         <source>Logging level</source>
         <translation>日志级别</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1761"/>
+        <location filename="../src/OptionDialog.ui" line="1813"/>
         <source>Off</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1766"/>
+        <location filename="../src/OptionDialog.ui" line="1818"/>
         <source>Debug</source>
         <translation>调试</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1771"/>
+        <location filename="../src/OptionDialog.ui" line="1823"/>
         <source>Normal</source>
         <translation>普通</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2116"/>
+        <location filename="../src/OptionDialog.ui" line="2168"/>
         <source>Ok</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2123"/>
+        <location filename="../src/OptionDialog.ui" line="2175"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1716"/>
+        <location filename="../src/OptionDialog.ui" line="1768"/>
         <source>Portable mode (USB stick)</source>
-        <translation>便携模式（U盘）</translation>
+        <translation>便携模式（可以放在U盘中随身携带）</translation>
+    </message>
+    <message>
+        <location filename="../src/OptionDialog.ui" line="1754"/>
+        <source>Show hidden files in browse mode</source>
+        <translation>在浏览模式下显示隐藏的文件</translation>
     </message>
     <message>
         <location filename="../src/OptionDialog.ui" line="1702"/>
-        <source>Show hidden files in browse mode</source>
-        <translation>显示隐藏文件</translation>
-    </message>
-    <message>
-        <location filename="../src/OptionDialog.ui" line="1650"/>
         <source>Auto rescan catalog every</source>
         <translation>自动更新索引</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1684"/>
+        <location filename="../src/OptionDialog.ui" line="1736"/>
         <source> min</source>
         <translation> 分钟</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1709"/>
+        <location filename="../src/OptionDialog.ui" line="1761"/>
         <source>Show network in browse mode</source>
         <translation>显示共享网络中的计算机</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1783"/>
+        <location filename="../src/OptionDialog.ui" line="1835"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1851"/>
+        <location filename="../src/OptionDialog.ui" line="1903"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1903"/>
+        <location filename="../src/OptionDialog.ui" line="1955"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -393,7 +393,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="1976"/>
+        <location filename="../src/OptionDialog.ui" line="2028"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -403,12 +403,12 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2006"/>
+        <location filename="../src/OptionDialog.ui" line="2058"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/OptionDialog.ui" line="2089"/>
+        <location filename="../src/OptionDialog.ui" line="2141"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
@@ -428,7 +428,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/LaunchyWidget.cpp" line="891"/>
         <location filename="../src/LaunchyWidget.cpp" line="1386"/>
         <source>Options</source>
-        <translation>首选项</translation>
+        <translation>选项</translation>
     </message>
     <message>
         <location filename="../src/LaunchyWidget.cpp" line="132"/>
@@ -507,7 +507,7 @@ press %2 to activate</source>
         <location filename="../src/OptionDialog.cpp" line="395"/>
         <source>Index has %n item(s)</source>
         <translation>
-            <numerusform>共有%n条记录</numerusform>
+            <numerusform>共有 %n 条记录</numerusform>
         </translation>
     </message>
     <message>
@@ -545,7 +545,7 @@ press %2 to activate</source>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
-            <numerusform>共有%n条记录</numerusform>
+            <numerusform>共有 %n 条记录</numerusform>
         </translation>
     </message>
     <message>
@@ -576,7 +576,7 @@ press %2 to activate</source>
     <message>
         <location filename="../src/OptionDialog.cpp" line="957"/>
         <source>(%1-bit)</source>
-        <translation>(%1位)</translation>
+        <translation>（%1位）</translation>
     </message>
     <message>
         <location filename="../src/SettingsManager.cpp" line="181"/>
