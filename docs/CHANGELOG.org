@@ -1,4 +1,13 @@
 
+
+* 3.0.7 (2019-03-22)
+- multi-language support
+- translation for Chinese simplified and Chinese traditional
+- scrollable skin author information widget
+- load fail safe basic skin when there is no skin available
+- pack addtional ssl library in release, for https connection purpose
+- fix bug #7, fail to search Chinese names
+
 * 3.0.6 (2019-01-17)
 - configurable websites for WebSearchPy
 - avoid unnecessary catalog rebuids
@@ -16,7 +25,7 @@
 - add "run as admin" in verby
 - new plugin PyDiryPy, it is ported from [[https://github.com/kshahar/pylaunchy][pylaunchy]]
 
-* 3.0.4 （2018-11-30）
+* 3.0.4 (2018-11-30)
 - fix display problem in 4k hidpi (issue [[https://github.com/samsonwang/LaunchyQt/issues/2][#2]])
 - in portable mode, put ini file in config folder, I think it is more tidy this way
 - fix a bug in input text parsing
