@@ -290,7 +290,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TranslationManager.cpp">
-      <Filter>Generated Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -349,7 +349,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TranslationManager.h">
-      <Filter>Generated Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -406,6 +406,18 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\basicskin.qss">
+      <Filter>Resource Files</Filter>
+    </None>
+    <CustomBuild Include="launchy.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <None Include="resources\launchy128.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\launchy16.png">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="..\translations\launchy_de.ts">
       <Filter>Translation Files</Filter>
     </None>
@@ -421,28 +433,14 @@
     <None Include="..\translations\launchy_nl.ts">
       <Filter>Translation Files</Filter>
     </None>
-    <None Include="..\translations\launchy_rus.ts">
+    <None Include="..\translations\launchy_ru.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+    <None Include="..\translations\launchy_zh_CN.ts">
       <Filter>Translation Files</Filter>
     </None>
     <None Include="..\translations\launchy_zh_TW.ts">
       <Filter>Translation Files</Filter>
-    </None>
-    <None Include="..\translations\launchy_zh.ts">
-      <Filter>Translation Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="resources\basicskin.qss">
-      <Filter>Resource Files</Filter>
-    </None>
-    <CustomBuild Include="launchy.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <None Include="resources\launchy128.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\launchy16.png">
-      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

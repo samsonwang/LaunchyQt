@@ -920,7 +920,7 @@ void OptionDialog::initSystemWidget() {
     }
     */
 
-    m_pUi->cbLanguage->addItem(QString("English"), QString("en_US")); // English is default
+    m_pUi->cbLanguage->addItem(QString("English"), QString("en")); // English is default
     int indexLang = 0;
     // load language from directory
     QList<QLocale> locales = TranslationManager::instance().getAllLocales();

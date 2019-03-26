@@ -925,16 +925,6 @@ echo #include "Precompiled.h"&gt;&gt;Precompiled.h.cpp</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\translations\launchy_de.ts" />
-    <None Include="..\translations\launchy_es.ts" />
-    <None Include="..\translations\launchy_fr.ts" />
-    <None Include="..\translations\launchy_ja.ts" />
-    <None Include="..\translations\launchy_nl.ts" />
-    <None Include="..\translations\launchy_rus.ts" />
-    <None Include="..\translations\launchy_zh.ts" />
-    <None Include="..\translations\launchy_zh_TW.ts" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="OptionDialog.ui">
       <FileType>Document</FileType>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
@@ -956,6 +946,14 @@ echo #include "Precompiled.h"&gt;&gt;Precompiled.h.cpp</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\translations\launchy_de.ts" />
+    <None Include="..\translations\launchy_es.ts" />
+    <None Include="..\translations\launchy_fr.ts" />
+    <None Include="..\translations\launchy_ja.ts" />
+    <None Include="..\translations\launchy_nl.ts" />
+    <None Include="..\translations\launchy_ru.ts" />
+    <None Include="..\translations\launchy_zh_CN.ts" />
+    <None Include="..\translations\launchy_zh_TW.ts" />
     <None Include="resources\basicskin.qss">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

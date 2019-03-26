@@ -29,7 +29,7 @@ void TranslationManager::setLocale(const QLocale& loc) {
     qInfo() << "LanguageManager::setLang, set language to" << loc;
     m_loc = loc;
 
-    if (m_loc == QLocale("en_US")) {
+    if (m_loc == QLocale("en")) {
         qApp->removeTranslator(&m_translatorLaunchy);
         qApp->removeTranslator(&m_translatorQt);
     }
