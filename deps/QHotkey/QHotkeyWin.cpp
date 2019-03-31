@@ -143,6 +143,34 @@ QHotkeyPrivate::NativeModMap QHotkeyPrivate::s_modMap[] = {
     {Qt::KeyboardModifierMask, 0}
 };
 
+static HHOOK s_keyboardHook = NULL;
+static UINT s_mod = NULL;
+static UINT s_key = NULL;
+
+LRESULT CALLBACK KeyboardHookProc(INT nCode, WPARAM wParam, LPARAM lParam) {
+    // By returning a non-zero value from the hook procedure, the
+    // message does not get passed to the target window
+    switch (nCode) {
+    case HC_ACTION:
+        {
+            KBDLLHOOKSTRUCT* event = (KBDLLHOOKSTRUCT*)lParam;
+            if ((event->flags & LLKHF_UP) == 0 && event->vkCode == s_key) {
+                if ((((s_mod & MOD_CONTROL) != 0) == (GetAsyncKeyState(VK_CONTROL) >> ((sizeof(SHORT) * 8) - 1)))
+                    && (((s_mod & MOD_SHIFT) != 0) == (GetAsyncKeyState(VK_SHIFT) >> ((sizeof(SHORT) * 8) - 1)))
+                    && (((s_mod & MOD_ALT) != 0) == (GetAsyncKeyState(VK_MENU) >> ((sizeof(SHORT) * 8) - 1)))
+                    && (((s_mod & MOD_WIN) != 0) == (GetAsyncKeyState(VK_LWIN) >> ((sizeof(SHORT) * 8) - 1)))
+                    && (((s_mod & MOD_WIN) != 0) == (GetAsyncKeyState(VK_RWIN) >> ((sizeof(SHORT) * 8) - 1)))) {
+                    PostMessage(NULL, WM_USER, s_key, 0);
+                    qDebug() << "KeyboardHookProc, send WM_USER";
+                    return 1;
+                }
+            }
+        }
+    }
+    return CallNextHookEx(s_keyboardHook, nCode, wParam, lParam);
+}
+
+
 int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
     return key | mod;
 }
@@ -150,11 +178,11 @@ int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
 bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
                                                     void* message,
                                                     long* result) {
-    Q_UNUSED(eventType)
-    Q_UNUSED(result)
+    Q_UNUSED(eventType);
+    Q_UNUSED(result);
 
     MSG* msg = static_cast<MSG*>(message);
-    if (msg->message == WM_HOTKEY) {
+    if (msg->message == WM_HOTKEY || msg->message == WM_USER) {
         int id = static_cast<int>(msg->wParam);
         activateHotKey(id);
         return true;
@@ -165,12 +193,51 @@ bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
 bool QHotkeyPrivate::registerKey(quint32 key, quint32 mod, int keyId) {
     qDebug() << "QHotkeyPrivate::registerKey,"
         << "keyid:" << keyId << "mod:" << mod << "key:" << key;
+
+    s_mod = mod;
+    s_key = key;
+
+    switch (key) {
+    case VK_CAPITAL:
+    case VK_SCROLL:
+        if (!s_keyboardHook) {
+            // Turn off capslock or scroll lock if they're on and we're not already
+            // hooked. Nobody wants capslock turned on permanently do they?
+            if (GetKeyState(VK_CAPITAL) == 1) {
+                keybd_event(VK_CAPITAL, 0, 0, 0);
+                keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
+            }
+        }
+    case VK_NUMLOCK:
+        if (!s_keyboardHook) {
+            s_keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProc, NULL, NULL);
+        }
+        return true;
+        break;
+
+    default:
+        if (s_keyboardHook) {
+            UnhookWindowsHookEx(s_keyboardHook);
+            s_keyboardHook = NULL;
+            s_mod = NULL;
+            s_key = NULL;
+        }
+        break;
+    }
+
     return RegisterHotKey(NULL, keyId, mod, key) == TRUE;
 }
 
 void QHotkeyPrivate::unregisterKey(quint32 key, quint32 mod, int keyId) {
-    Q_UNUSED(key)
-    Q_UNUSED(mod)
+    Q_UNUSED(key);
+    Q_UNUSED(mod);
+
+    if (s_keyboardHook) {
+        UnhookWindowsHookEx(s_keyboardHook);
+        s_keyboardHook = NULL;
+        s_mod = NULL;
+        s_key = NULL;
+    }
 
     UnregisterHotKey(NULL, keyId);
 }
