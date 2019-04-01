@@ -38,7 +38,7 @@ Gui::Gui(QWidget* parent)
     // Read in the array of programs from options
     m_dlg->table->setSortingEnabled(false);
     // m_dlg->table->setItemDelegateForColumn(1, &delegate);
-    int count = launchy::g_settings->beginReadArray("runner/cmds");
+    int count = launchy::g_settings->beginReadArray(RUNNER_COMMANDS);
     m_dlg->table->setRowCount(count);
 
     for (int i = 0; i < count; ++i) {
@@ -46,21 +46,20 @@ Gui::Gui(QWidget* parent)
         m_dlg->table->setItem(i, 0, new QTableWidgetItem(launchy::g_settings->value("name").toString()));
         m_dlg->table->setItem(i, 1, new QTableWidgetItem(launchy::g_settings->value("file").toString()));
         m_dlg->table->setItem(i, 2, new QTableWidgetItem(launchy::g_settings->value("args").toString()));
-        m_dlg->table->verticalHeader()->resizeSection(i, m_dlg->table->verticalHeader()->fontMetrics().height() + ROW_PADDING);
+        //m_dlg->table->verticalHeader()->resizeSection(i, m_dlg->table->verticalHeader()->fontMetrics().height() + ROW_PADDING);
     }
     launchy::g_settings->endArray();
     m_dlg->table->setSortingEnabled(true);
 
-    connect(m_dlg->table, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(dragEnter(QDragEnterEvent*)));
-    connect(m_dlg->table, SIGNAL(drop(QDropEvent*)), this, SLOT(drop(QDropEvent*)));
+    //connect(m_dlg->table, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(dragEnter(QDragEnterEvent*)));
+    //connect(m_dlg->table, SIGNAL(drop(QDropEvent*)), this, SLOT(drop(QDropEvent*)));
+    connect(m_dlg->table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(tableItemChanged(QTableWidgetItem*)));
+
     connect(m_dlg->tableNew, SIGNAL(clicked(bool)), this, SLOT(createRow(void)));
     connect(m_dlg->tableRemove, SIGNAL(clicked(bool)), this, SLOT(removeRow(void)));
-    connect(m_dlg->table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(tableItemChanged(QTableWidgetItem*)));
 }
 
-
 Gui::~Gui() {
-    //this->hide();
     if (m_dlg) {
         delete m_dlg;
         m_dlg = nullptr;
@@ -72,7 +71,7 @@ void Gui::writeOptions() {
         return;
     }
 
-    launchy::g_settings->beginWriteArray("runner/cmds");
+    launchy::g_settings->beginWriteArray(RUNNER_COMMANDS);
     for (int i = 0; i < m_dlg->table->rowCount(); ++i) {
         if (m_dlg->table->item(i, 0) == NULL || m_dlg->table->item(i, 1) == NULL) continue;
         if (m_dlg->table->item(i, 0)->text() == "" || m_dlg->table->item(i, 1)->text() == "") continue;
@@ -116,10 +115,11 @@ void Gui::removeRow() {
 }
 
 void Gui::tableItemChanged(QTableWidgetItem* pItem) {
+    Q_UNUSED(pItem)
     ++launchy::g_needRebuildCatalog;
 }
 
-void Gui::dragEnter(QDragEnterEvent *event) {
+void Gui::dragEnter(QDragEnterEvent* event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData && mimeData->hasUrls()) {
         event->acceptProposedAction();
@@ -152,5 +152,5 @@ void Gui::appendRow(const QString& name, const QString& file, const QString& arg
     m_dlg->table->setItem(row, 0, new QTableWidgetItem(name));
     m_dlg->table->setItem(row, 1, new QTableWidgetItem(file));
     m_dlg->table->setItem(row, 2, new QTableWidgetItem(args));
-    m_dlg->table->verticalHeader()->resizeSection(row, m_dlg->table->verticalHeader()->fontMetrics().height() + ROW_PADDING);
+    //m_dlg->table->verticalHeader()->resizeSection(row, m_dlg->table->verticalHeader()->fontMetrics().height() + ROW_PADDING);
 }

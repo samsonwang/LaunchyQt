@@ -25,8 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CatalogItem.h"
 #include "InputData.h"
 
-#include "gui.h"
 #include "globals.h"
+
+class Gui;
 
 class Runner : public QObject, public launchy::PluginInterface {
     Q_OBJECT

@@ -21,14 +21,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Runner.h"
 #include "gui.h"
 #include "PluginMsg.h"
+#include "gui.h"
 
 using namespace launchy;
 
 void Runner::init() {
     m_cmds.clear();
 
-    if (g_settings->value("runner/version", 0.0).toDouble() == 0.0) {
-        g_settings->beginWriteArray("runner/cmds");
+    if (g_settings->value(RUNNER_VERSION, "").toString().isEmpty()) {
+        g_settings->beginWriteArray(RUNNER_COMMANDS);
         g_settings->setArrayIndex(0);
 #ifdef Q_OS_WIN
         g_settings->setValue("name", "cmd");
@@ -48,10 +49,10 @@ void Runner::init() {
         */
         g_settings->endArray();
     }
-    g_settings->setValue("runner/version", 2.0);
+    g_settings->setValue(RUNNER_VERSION, "2.0");
 
     // Read in the array of commands
-    int count = g_settings->beginReadArray("runner/cmds");
+    int count = g_settings->beginReadArray(RUNNER_COMMANDS);
     for (int i = 0; i < count; ++i) {
         g_settings->setArrayIndex(i);
         runnerCmd cmd;
@@ -168,14 +169,13 @@ void Runner::setPath(const QString* path) {
     qDebug() << "Runner::setPath, m_libPath:" << m_libPath;
 }
 
-
-Runner::Runner() {
+Runner::Runner()
+    : HASH_RUNNER(qHash("Runner")) {
     m_gui.reset();
-    HASH_RUNNER = qHash(QString("runner"));
 }
 
 Runner::~Runner() {
-
+    m_gui.reset();
 }
 
 int Runner::msg(int msgId, void* wParam, void* lParam) {

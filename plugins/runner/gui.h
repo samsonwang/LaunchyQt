@@ -21,17 +21,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GUI_H
 
 //#include "FileBrowserDelegate.h"
-//#include <QSettings>
 
 #include <QWidget>
 
 namespace Ui { class Dlg; }
 
-class Gui : public QWidget{
+class Gui : public QWidget {
     Q_OBJECT
 public:
     Gui(QWidget* parent);
     virtual ~Gui();
+
+public:
     void writeOptions();
 
 private slots:
@@ -46,7 +47,6 @@ private:
 
 private:
     Ui::Dlg* m_dlg;
-    //QSettings* settings;
     //FileBrowserDelegate delegate;
 };
 
