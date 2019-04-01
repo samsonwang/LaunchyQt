@@ -150,26 +150,28 @@ static UINT s_key = NULL;
 LRESULT CALLBACK KeyboardHookProc(INT nCode, WPARAM wParam, LPARAM lParam) {
     // By returning a non-zero value from the hook procedure, the
     // message does not get passed to the target window
-    switch (nCode) {
-    case HC_ACTION:
-        {
-            KBDLLHOOKSTRUCT* event = (KBDLLHOOKSTRUCT*)lParam;
-            if ((event->flags & LLKHF_UP) == 0 && event->vkCode == s_key) {
-                if ((((s_mod & MOD_CONTROL) != 0) == (GetAsyncKeyState(VK_CONTROL) >> ((sizeof(SHORT) * 8) - 1)))
-                    && (((s_mod & MOD_SHIFT) != 0) == (GetAsyncKeyState(VK_SHIFT) >> ((sizeof(SHORT) * 8) - 1)))
-                    && (((s_mod & MOD_ALT) != 0) == (GetAsyncKeyState(VK_MENU) >> ((sizeof(SHORT) * 8) - 1)))
-                    && (((s_mod & MOD_WIN) != 0) == (GetAsyncKeyState(VK_LWIN) >> ((sizeof(SHORT) * 8) - 1)))
-                    && (((s_mod & MOD_WIN) != 0) == (GetAsyncKeyState(VK_RWIN) >> ((sizeof(SHORT) * 8) - 1)))) {
-                    PostMessage(NULL, WM_USER, s_key, 0);
-                    qDebug() << "KeyboardHookProc, send WM_USER";
-                    return 1;
-                }
+    if (HC_ACTION == nCode) {
+        KBDLLHOOKSTRUCT* event = (KBDLLHOOKSTRUCT*)lParam;
+        if ((event->flags & LLKHF_UP) == 0 && event->vkCode == s_key) {
+            SHORT sHighBit = SHORT(1 << (sizeof(SHORT)*8 - 1));
+            bool bCtrl = ((s_mod & MOD_CONTROL) != 0) == ((GetAsyncKeyState(VK_CONTROL) & sHighBit) != 0);
+            bool bShift = ((s_mod & MOD_SHIFT) != 0) == ((GetAsyncKeyState(VK_SHIFT) & sHighBit) != 0);
+            bool bAlt = ((s_mod & MOD_ALT) != 0) == ((GetAsyncKeyState(VK_MENU) & sHighBit) != 0);
+            bool bLWin = ((s_mod & MOD_WIN) != 0) == ((GetAsyncKeyState(VK_LWIN) & sHighBit) != 0);
+            bool bRWin = ((s_mod & MOD_WIN) != 0) == ((GetAsyncKeyState(VK_RWIN) & sHighBit) != 0);
+
+            qDebug() << "KeyboardHookProc, s_mod state:"
+                << bCtrl << bShift << bAlt << bLWin << bRWin;
+
+            if (bCtrl && bShift && bAlt && bLWin && bRWin) {
+                PostMessage(NULL, WM_USER, s_key | s_mod, 0);
+                qDebug() << "KeyboardHookProc, send WM_USER";
+                return 1;
             }
         }
     }
     return CallNextHookEx(s_keyboardHook, nCode, wParam, lParam);
 }
-
 
 int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
     return key | mod;
