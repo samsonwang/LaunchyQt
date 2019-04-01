@@ -42,4 +42,4 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 
 
 ** Thanks
-Thank you all for helping me in launchy development, here is the [[https://github.com/samsonwang/LaunchyQt/blob/master/docs/THANKS.org][full context]] .
+Thank you all for helping me in launchy development, here is the [[https://github.com/samsonwang/LaunchyQt/blob/master/docs/THANKS.org][full content]] .
