@@ -47,35 +47,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\DropTableWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\FileBrowser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\FileBrowserDelegate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gui.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\plugin_interface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="runner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_DropTableWidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_DropTableWidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_FileBrowserDelegate.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_FileBrowserDelegate.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_gui.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -83,42 +56,27 @@
     <ClCompile Include="Release\moc_gui.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_FileBrowser.cpp">
+    <ClCompile Include="Debug\moc_Runner.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_FileBrowser.cpp">
+    <ClCompile Include="Release\moc_Runner.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_runner.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_runner.cpp">
-      <Filter>Generated Files\Release</Filter>
+    <ClCompile Include="Runner.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\common\DropTableWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\common\FileBrowser.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\common\FileBrowserDelegate.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <CustomBuild Include="gui.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="..\..\src\plugin_interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="precompiled.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="runner.h">
+    <CustomBuild Include="Runner.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

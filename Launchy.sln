@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tasky", "plugins\tasky\task
 		{FF18DE83-EB0D-3E94-BD4A-BE1521741FDB} = {FF18DE83-EB0D-3E94-BD4A-BE1521741FDB}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runner", "plugins\runner\runner.vcxproj", "{71CC8773-3693-3FC8-B5E5-065B5E3C8345}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -73,6 +75,12 @@ Global
 		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Release|x64.Build.0 = Release|x64
 		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Release|x86.ActiveCfg = Release|Win32
 		{6755D6C5-564F-4C1E-9D6C-DE6666767368}.Release|x86.Build.0 = Release|Win32
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Debug|x64.ActiveCfg = Debug|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Debug|x64.Build.0 = Debug|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Debug|x86.ActiveCfg = Debug|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Release|x64.ActiveCfg = Release|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Release|x64.Build.0 = Release|x64
+		{71CC8773-3693-3FC8-B5E5-065B5E3C8345}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

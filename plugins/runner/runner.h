@@ -17,48 +17,50 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef runner_H
-#define runner_H
+#ifndef RUNNER_H
+#define RUNNER_H
+
+#include <QList>
+#include "PluginInterface.h"
+#include "CatalogItem.h"
+#include "InputData.h"
 
 #include "gui.h"
 #include "globals.h"
-#include "plugin_interface.h"
-#include <boost/shared_ptr.hpp>
 
-class RunnerPlugin : public QObject, public PluginInterface
-{
-	Q_OBJECT
-	Q_INTERFACES(PluginInterface)
+class Runner : public QObject, public launchy::PluginInterface {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
+    Q_INTERFACES(launchy::PluginInterface)
 
 public:
-	RunnerPlugin()
-	{
-		gui.reset();
-		HASH_runner = qHash(QString("runner"));
-	}
-	~RunnerPlugin() {}
-	
-	int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
+    Runner();
+    virtual ~Runner();
+
+    virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
 private:
-	void setPath(QString * path);
-	void getID(uint*);
-	void getName(QString*);
-	void getCatalog(QList<CatItem>* items);
-	void getResults(QList<InputData>* inputData, QList<CatItem>* results);
-	void launchItem(QList<InputData>* inputData, CatItem* item);
-	void doDialog(QWidget* parent, QWidget**);
+    void getID(uint* id);
+    void getName(QString* name);
+    void init();
+
+	void setPath(const QString* path);
+	
+	void getCatalog(QList<launchy::CatItem>* items);
+	void getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results);
+	void launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item);
+	void doDialog(QWidget* parent, QWidget** dialog);
 	void endDialog(bool accept);
-	void init();
+
 	QString getIcon();
 	QString getIcon(QString file);
 
+private:
 	uint HASH_WEBSITE;
-	uint HASH_runner;
+	uint HASH_RUNNER;
 	QList<runnerCmd> cmds;
 	QString libPath;
-    boost::shared_ptr<Gui> gui;
+    QSharedPointer<Gui> gui;
 };
 
-
-#endif
+#endif // RUNNER_H

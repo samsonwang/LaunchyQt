@@ -24,21 +24,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma warning(push,3)
 #endif
 
-#include <QtGui>
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
 #include <stdlib.h>
-// #include <boost/shared_ptr.hpp>
 
-// using namespace boost;
+#include <QtGlobal>
 
-
+#include <QtGui>
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // PRECOMPILED_H

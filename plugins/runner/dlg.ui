@@ -18,7 +18,7 @@
   </property>
   <layout class="QVBoxLayout">
    <item>
-    <widget class="DropTableWidget" name="table">
+    <widget class="QTableWidget" name="table">
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
@@ -147,13 +147,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>DropTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header>DropTableWidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
