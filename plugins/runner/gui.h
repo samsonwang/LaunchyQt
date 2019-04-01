@@ -35,8 +35,9 @@ public:
     void writeOptions();
 
 private slots:
-    void newRow();
-    void remRow();
+    void createRow();
+    void removeRow();
+    void tableItemChanged(QTableWidgetItem* pItem);
     void dragEnter(QDragEnterEvent *event);
     void drop(QDropEvent *event);
 

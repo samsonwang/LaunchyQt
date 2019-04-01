@@ -44,23 +44,24 @@ private:
     void getName(QString* name);
     void init();
 
-	void setPath(const QString* path);
-	
-	void getCatalog(QList<launchy::CatItem>* items);
-	void getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results);
-	void launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item);
-	void doDialog(QWidget* parent, QWidget** dialog);
-	void endDialog(bool accept);
+    void setPath(const QString* path);
 
-	QString getIcon();
-	QString getIcon(QString file);
+    void getCatalog(QList<launchy::CatItem>* items);
+    void getResults(QList<launchy::InputData>* inputData,
+                    QList<launchy::CatItem>* results);
+    void launchItem(QList<launchy::InputData>* inputData,
+                    launchy::CatItem* item);
+    void doDialog(QWidget* parent, QWidget** dialog);
+    void endDialog(bool accept);
+
+    QString getIcon() const;
+    QString getIcon(QString file) const;
 
 private:
-	uint HASH_WEBSITE;
-	uint HASH_RUNNER;
-	QList<runnerCmd> cmds;
-	QString libPath;
-    QSharedPointer<Gui> gui;
+    uint HASH_RUNNER;
+    QList<runnerCmd> m_cmds;
+    QString m_libPath;
+    QSharedPointer<Gui> m_gui;
 };
 
 #endif // RUNNER_H

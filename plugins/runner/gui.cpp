@@ -33,7 +33,7 @@ Gui::Gui(QWidget* parent)
     m_dlg->setupUi(this);
 
     // Stretch the centre column of the table
-//    m_dlg->table->horizontalHeader()->setResizeMode(1, QHeaderView::Stretch); //  column 1
+    m_dlg->table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 
     // Read in the array of programs from options
     m_dlg->table->setSortingEnabled(false);
@@ -53,8 +53,9 @@ Gui::Gui(QWidget* parent)
 
     connect(m_dlg->table, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(dragEnter(QDragEnterEvent*)));
     connect(m_dlg->table, SIGNAL(drop(QDropEvent*)), this, SLOT(drop(QDropEvent*)));
-    connect(m_dlg->tableNew, SIGNAL(clicked(bool)), this, SLOT(newRow(void)));
-    connect(m_dlg->tableRemove, SIGNAL(clicked(bool)), this, SLOT(remRow(void)));
+    connect(m_dlg->tableNew, SIGNAL(clicked(bool)), this, SLOT(createRow(void)));
+    connect(m_dlg->tableRemove, SIGNAL(clicked(bool)), this, SLOT(removeRow(void)));
+    connect(m_dlg->table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(tableItemChanged(QTableWidgetItem*)));
 }
 
 
@@ -67,8 +68,9 @@ Gui::~Gui() {
 }
 
 void Gui::writeOptions() {
-    if (launchy::g_settings == NULL)
+    if (launchy::g_settings == NULL) {
         return;
+    }
 
     launchy::g_settings->beginWriteArray("runner/cmds");
     for (int i = 0; i < m_dlg->table->rowCount(); ++i) {
@@ -77,26 +79,31 @@ void Gui::writeOptions() {
         launchy::g_settings->setArrayIndex(i);
         launchy::g_settings->setValue("name", m_dlg->table->item(i, 0)->text());
         launchy::g_settings->setValue("file", m_dlg->table->item(i, 1)->text());
-        if (m_dlg->table->item(i, 2) == NULL)
+        if (m_dlg->table->item(i, 2) == NULL) {
             launchy::g_settings->setValue("args", "");
-        else
+        }
+        else {
             launchy::g_settings->setValue("args", m_dlg->table->item(i, 2)->text());
+        }
     }
     launchy::g_settings->endArray();
 }
 
-void Gui::newRow()
-{
+void Gui::createRow() {
     bool sort = m_dlg->table->isSortingEnabled();
-    if (sort)
+    if (sort) {
         m_dlg->table->setSortingEnabled(false);
+    }
+
     appendRow(QString(), QString(), QString());
     m_dlg->table->setCurrentCell(m_dlg->table->rowCount()-1, 0);
     m_dlg->table->editItem(m_dlg->table->currentItem());
     m_dlg->table->setSortingEnabled(sort);
+
+    ++launchy::g_needRebuildCatalog;
 }
 
-void Gui::remRow() {
+void Gui::removeRow() {
     int row = m_dlg->table->currentRow();
     if (row != -1) {
         m_dlg->table->removeRow(row);
@@ -104,17 +111,22 @@ void Gui::remRow() {
             row = m_dlg->table->rowCount() - 1;
         m_dlg->table->setCurrentCell(row, m_dlg->table->currentColumn());
     }
+
+    ++launchy::g_needRebuildCatalog;
 }
 
-void Gui::dragEnter(QDragEnterEvent *event)
-{
+void Gui::tableItemChanged(QTableWidgetItem* pItem) {
+    ++launchy::g_needRebuildCatalog;
+}
+
+void Gui::dragEnter(QDragEnterEvent *event) {
     const QMimeData* mimeData = event->mimeData();
-    if (mimeData && mimeData->hasUrls())
+    if (mimeData && mimeData->hasUrls()) {
         event->acceptProposedAction();
+    }
 }
 
-void Gui::drop(QDropEvent *event)
-{
+void Gui::drop(QDropEvent *event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData && mimeData->hasUrls()) {
         foreach(QUrl url, mimeData->urls()) {
@@ -134,8 +146,7 @@ void Gui::drop(QDropEvent *event)
     }
 }
 
-void Gui::appendRow(const QString& name, const QString& file, const QString& args)
-{
+void Gui::appendRow(const QString& name, const QString& file, const QString& args) {
     int row = m_dlg->table->rowCount();
     m_dlg->table->insertRow(row);
     m_dlg->table->setItem(row, 0, new QTableWidgetItem(name));

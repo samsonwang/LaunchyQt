@@ -31,8 +31,11 @@
      <property name="columnCount">
       <number>3</number>
      </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>false</bool>
+     </attribute>
      <attribute name="verticalHeaderDefaultSectionSize">
-      <number>5</number>
+      <number>30</number>
      </attribute>
      <column>
       <property name="text">

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using namespace launchy;
 
 void Runner::init() {
-    cmds.clear();
+    m_cmds.clear();
 
     if (g_settings->value("runner/version", 0.0).toDouble() == 0.0) {
         g_settings->beginWriteArray("runner/cmds");
@@ -50,7 +50,7 @@ void Runner::init() {
     }
     g_settings->setValue("runner/version", 2.0);
 
-    // Read in the array of websites
+    // Read in the array of commands
     int count = g_settings->beginReadArray("runner/cmds");
     for (int i = 0; i < count; ++i) {
         g_settings->setArrayIndex(i);
@@ -58,7 +58,7 @@ void Runner::init() {
         cmd.file = g_settings->value("file").toString();
         cmd.name = g_settings->value("name").toString();
         cmd.args = g_settings->value("args").toString();
-        cmds.push_back(cmd);
+        m_cmds.push_back(cmd);
     }
     g_settings->endArray();
 }
@@ -71,23 +71,23 @@ void Runner::getName(QString* str) {
     *str = "Runner";
 }
 
-QString Runner::getIcon() {
-    return libPath + "/icons/runner.png";
+QString Runner::getIcon() const {
+    return m_libPath + "/runner.png";
 }
 
-QString Runner::getIcon(QString file) {
+QString Runner::getIcon(QString file) const {
     Q_UNUSED(file);
 #ifdef Q_OS_WIN
     QRegExp rx("\\.(exe|lnk)$", Qt::CaseInsensitive);
-    if (rx.indexIn(file) != -1)
+    if (rx.indexIn(file) != -1) {
         return file;
+    }
 #endif
     return getIcon();
 }
 
-
 void Runner::getCatalog(QList<CatItem>* items) {
-    foreach(runnerCmd cmd, cmds) {
+    foreach(runnerCmd cmd, m_cmds) {
         items->push_back(CatItem(cmd.file + "%%%" + cmd.args,
                                  cmd.name,
                                  HASH_RUNNER,
@@ -96,14 +96,13 @@ void Runner::getCatalog(QList<CatItem>* items) {
 }
 
 
-void Runner::getResults(QList<InputData>* inputData, QList<CatItem>* results)
-{
-    if (inputData->count() <= 1)
+void Runner::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
+    if (inputData->count() <= 1) {
         return;
+    }
 
     CatItem& catItem = inputData->first().getTopResult();
-    if (catItem.pluginId == (int)HASH_RUNNER && inputData->last().hasText())
-    {
+    if (catItem.pluginId == HASH_RUNNER && inputData->last().hasText()) {
         const QString & text = inputData->last().getText();
         // This is user search text, create an entry for it
         results->push_front(CatItem(text,
@@ -113,26 +112,19 @@ void Runner::getResults(QList<InputData>* inputData, QList<CatItem>* results)
     }
 }
 
-void Runner::launchItem(QList<InputData>* inputData, CatItem* item)
-{
-    item = item; // Compiler warning
+void Runner::launchItem(QList<InputData>* inputData, CatItem* item) {
+    Q_UNUSED(item)
 
-    QString file = "";
+    QString file = inputData->first().getTopResult().fullPath;
     QString args = "";
-
-    CatItem* base = &inputData->first().getTopResult();
-
-    file = base->fullPath;
 
     // Replace the $'s with arguments
     QStringList spl = file.split("$$");
 
     file = spl[0];
-    for (int i = 1; i < spl.size(); ++i)
-    {
-        if (inputData->count() >= i+1)
-        {
-            //			const InputData* ij = &inputData->at(i);
+    for (int i = 1; i < spl.size(); ++i) {
+        if (inputData->count() >= i+1) {
+            // const InputData* ij = &inputData->at(i);
             CatItem* it = &((InputData)inputData->at(i)).getTopResult();
             file += it->fullPath;
         }
@@ -143,11 +135,11 @@ void Runner::launchItem(QList<InputData>* inputData, CatItem* item)
     spl = file.split("%%%");
 
     file = spl[0];
-    if (spl.count() > 0)
+    if (spl.count() > 0) {
         args = spl[1];
+    }
 
-    if (file.contains("http://"))
-    {
+    if (file.contains("http://")) {
         QUrl url(file);
         file = url.toEncoded();
     }
@@ -157,27 +149,28 @@ void Runner::launchItem(QList<InputData>* inputData, CatItem* item)
 
 
 void Runner::doDialog(QWidget* parent, QWidget** newDlg) {
-    if (gui != NULL)
+    if (m_gui != NULL)
         return;
-    gui.reset(new Gui(parent));
-    *newDlg = gui.get();
+    m_gui.reset(new Gui(parent));
+    *newDlg = m_gui.get();
 }
 
 void Runner::endDialog(bool accept) {
     if (accept) {
-        gui->writeOptions();
+        m_gui->writeOptions();
         init();
     }
-    gui.reset();
+    m_gui.reset();
 }
 
 void Runner::setPath(const QString* path) {
-    libPath = *path;
+    m_libPath = *path;
+    qDebug() << "Runner::setPath, m_libPath:" << m_libPath;
 }
 
 
 Runner::Runner() {
-    gui.reset();
+    m_gui.reset();
     HASH_RUNNER = qHash(QString("runner"));
 }
 
@@ -222,8 +215,8 @@ int Runner::msg(int msgId, void* wParam, void* lParam) {
         endDialog(wParam != 0);
         break;
     case MSG_PATH:
-        setPath((QString*)wParam);
-
+        setPath((const QString*)wParam);
+        break;
     default:
         break;
     }
