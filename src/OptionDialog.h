@@ -49,7 +49,7 @@ protected:
 private:
     // general
     void initGeneralWidget();
-    void saveGeneralSettings();
+    bool saveGeneralSettings();
     // skin
     void initSkinWidget();
     void saveSkinSettings();

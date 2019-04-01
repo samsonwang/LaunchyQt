@@ -284,11 +284,19 @@ void LaunchyWidget::setAlternativeListMode(int mode) {
 }
 
 bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
+    QKeySequence seqOld = m_pHotKey->keySeq();
     m_pHotKey->setKeySeq(hotkey);
+
+    if (!m_pHotKey->registered()) {
+        m_pHotKey->setKeySeq(seqOld);
+        return false;
+    }
+
     m_trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
                            .arg(LAUNCHY_VERSION_STRING)
                            .arg(hotkey.toString()));
-    return m_pHotKey->registered();
+
+    return true;
 }
 
 void LaunchyWidget::showTrayIcon() {
@@ -887,7 +895,7 @@ void LaunchyWidget::retranslateUi() {
     m_actCheckUpdate->setText(tr("Check for updates"));
     m_actRestart->setText(tr("Restart"));
     m_actExit->setText(tr("Exit"));
-    
+
     m_optionButton->setToolTip(tr("Options"));
     m_closeButton->setToolTip(tr("Close"));
 

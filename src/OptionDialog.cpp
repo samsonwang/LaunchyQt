@@ -122,7 +122,7 @@ void OptionDialog::accept() {
         return;
     }
 
-    saveGeneralSettings();
+    bool bSuccess = saveGeneralSettings();
 
     saveSkinSettings();
 
@@ -137,6 +137,10 @@ void OptionDialog::accept() {
     saveSystemSettings();
 
     g_settings->sync();
+
+    if (!bSuccess) {
+        return;
+    }
 
     QDialog::accept();
 
@@ -626,13 +630,13 @@ void OptionDialog::initGeneralWidget() {
             this, SLOT(onAppStyleChanged(int)));
 }
 
-void OptionDialog::saveGeneralSettings() {
+bool OptionDialog::saveGeneralSettings() {
     // See if the new hotkey works, if not we're not leaving the dialog.
     QKeySequence hotkey(m_iMetaKeys[m_pUi->genModifierBox->currentIndex()] + m_iActionKeys[m_pUi->genKeyBox->currentIndex()]);
     if (!g_mainWidget->setHotkey(hotkey)) {
         QMessageBox::warning(this, tr("Launchy"),
                              tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
-        return;
+        return false;
     }
 
     g_settings->setValue(OPSTION_HOTKEY, hotkey.count() > 0 ? hotkey[0] : OPSTION_HOTKEY_DEFAULT);
@@ -669,6 +673,8 @@ void OptionDialog::saveGeneralSettings() {
     g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
 
     g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
+
+    return true;
 }
 
 void OptionDialog::initSkinWidget() {
