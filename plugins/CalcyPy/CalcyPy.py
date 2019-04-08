@@ -1,8 +1,9 @@
-﻿# Copyright (c) 2008 Shahar Kosti
+# Copyright (c) 2019 Samson Wang
+# Copyright (c) 2008 Shahar Kosti
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later
+# Foundation; either version 3 of the License, or (at your option) any later
 # version.
 #
 # This program is distributed in the hope that it will be useful, but WITHOUT
@@ -12,57 +13,32 @@
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-#
-# Version 1.0:
-#   * First public release
-#
-#import rpdb2; rpdb2.start_embedded_debugger("password")
 
-import sys, os
-import math
-import re
+#import sys, os
+#import math
+#import re
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QVariant
+from PyQt5.QtWidgets import QWidget
+from sip import wrapinstance, unwrapinstance
+
 import launchy
-
 from launchy import CatItem
 
-# Based on http://www.peterbe.com/plog/calculator-in-python-for-dummies
-class Calculator:
-    whitelist = '|'.join(
-        # oprators, digits
-        ['-', '\+', '/', '\\', '\*', '\^', '\*\*', '\(', '\)', '\d+', 'e']
-        # functions of math module (ex. __xxx__)
-        + [f for f in dir(math) if f[:2] != '__' and f != 'e']
-    )
-
-    integers_regex = re.compile(r'\b[\d\.]+\b')
-
-    @staticmethod
-    def isValidExpression(exp):
-        return re.match(Calculator.whitelist, exp)
-
-    @staticmethod
-    def calc(expr, advanced=False):
-        def safe_eval(expr, symbols={}):
-            return eval(expr, dict(__builtins__=None), symbols)
-        def whole_number_to_float(match):
-            group = match.group()
-            if group.find('.') == -1:
-                return group + '.0'
-            return group
-        expr = expr.replace('^','**')
-
-        if advanced:
-            return safe_eval(expr, vars(math))
-        else:
-            return safe_eval(expr)
+from Calculator import Calculator
+from Calcy import CalcyGui
 
 class CalcyPy(launchy.Plugin):
+    setting_dir = 'Calcy/'
+    settings = dict()
+
     def __init__(self):
         launchy.Plugin.__init__(self)
         self.hash = launchy.hash(self.getName())
 
     def init(self):
-        pass
+        self.__readSettings()
 
     def getID(self):
         return int(self.hash)
@@ -169,9 +145,46 @@ class CalcyPy(launchy.Plugin):
                                        "%s" % (retInSize),
                                        self.getID(), self.getIcon()))
 
+    def doDialog(self, parentWidgetPtr):
+#        print(parentWidgetPtr)
+        print('CalcyPy, doDialog')
+        parentWidget = wrapinstance(parentWidgetPtr, QtWidgets.QWidget)
+        self.widget = CalcyGui.CalcyOption(parentWidget, self.setting_dir, self.settings)
+        self.widget.show()
+        return unwrapinstance(self.widget)
+
+    def endDialog(self, accept):
+        print('CalcyPy, endDialog')
+        self.widget.hide()
+        if accept:
+            self.widget.writeSettings()
+            self.__readSettings()
+        del self.widget
+        self.widget = None
+
     def launchItem(self, inputDataList, catItem):
         pass
 
+    def __readSettings(self):
+        print('CalcyPy, __readSettings')
+        launchySettings = launchy.settings
+        # general
+        self.settings['decimalPointGroupSeparator'] = int(launchySettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0))
+        self.settings['outputPrecision'] = int(launchySettings.value(self.setting_dir + 'outputPrecision', 3))
+        self.settings['showGroupSeparator'] = bool(launchySettings.value(self.setting_dir + 'showGroupSeparator', False))
+        self.settings['copyToClipboard'] = bool(launchySettings.value(self.setting_dir + 'copyToClipboard', True))
+        self.settings['showBinOut'] = bool(launchySettings.value(self.setting_dir + 'showBinOut', True))
+        self.settings['showOctOut'] = bool(launchySettings.value(self.setting_dir + 'showOctOut', True))
+        self.settings['showDecOut'] = bool(launchySettings.value(self.setting_dir + 'showDecOut', True))
+        self.settings['showHexOut'] = bool(launchySettings.value(self.setting_dir + 'showHexOut', True))
+        self.settings['showSizeOut'] = bool(launchySettings.value(self.setting_dir + 'showSizeOut', True))
+        self.settings['showBasePrefix'] = bool(launchySettings.value(self.setting_dir + 'showBasePrefix', True))
+        self.settings['showZeroBin'] = bool(launchySettings.value(self.setting_dir + 'showZeroBin', True))
+        self.settings['showZeroOct'] = bool(launchySettings.value(self.setting_dir + 'showZeroOct', True))
+        self.settings['showZeroHex'] = bool(launchySettings.value(self.setting_dir + 'showZeroHex', True))
+        self.settings['bitwidth'] = int(launchySettings.value(self.setting_dir + 'bitwidth', 16))
+
+        print('CalcyPy, read settings', self.settings)
 
 def getPlugin():
     return CalcyPy
