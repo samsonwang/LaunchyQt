@@ -157,7 +157,7 @@ void Runner::doDialog(QWidget* parent, QWidget** newDlg) {
 }
 
 void Runner::endDialog(bool accept) {
-    if (accept) {
+    if (accept && m_gui != NULL) {
         m_gui->writeOptions();
         init();
     }

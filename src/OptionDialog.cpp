@@ -286,14 +286,6 @@ void OptionDialog::skinChanged(const QString& newSkin) {
 }
 
 void OptionDialog::pluginChanged(int row) {
-    m_pUi->plugBox->setTitle(tr("Plugin options"));
-
-    if (m_pUi->plugBox->layout() != NULL) {
-        for (int i = 1; i < m_pUi->plugBox->layout()->count(); ++i) {
-            m_pUi->plugBox->layout()->removeItem(m_pUi->plugBox->layout()->itemAt(i));
-        }
-    }
-
     // Close any current plugin dialogs
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
@@ -308,6 +300,14 @@ void OptionDialog::pluginChanged(int row) {
 }
 
 void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
+
+    m_pUi->plugBox->setTitle(tr("Plugin options"));
+    if (m_pUi->plugBox->layout() != NULL) {
+        for (int i = 1; i < m_pUi->plugBox->layout()->count(); ++i) {
+            m_pUi->plugBox->layout()->removeItem(m_pUi->plugBox->layout()->itemAt(i));
+        }
+    }
+
     QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
     if (win != NULL) {
         if (m_pUi->plugBox->layout() != NULL) {
@@ -322,13 +322,13 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
 }
 
 void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
-    int row = m_pUi->plugList->currentRow();
+    int row = m_pUi->plugList->row(item);
     if (row == -1) {
         return;
     }
 
-    // Close any current plugin dialogs
-    if (s_lastPlugin >= 0) {
+    // Close current plugin dialogs
+    if (s_lastPlugin == row && item->checkState() != Qt::Checked) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
     }
@@ -351,9 +351,14 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     // Reload the plugins
     PluginHandler::instance().loadPlugins();
 
-    // If enabled, reload the dialog
-    if (item->checkState() == Qt::Checked) {
-        loadPluginDialog(item);
+    if (row != m_pUi->plugList->currentRow()) {
+        m_pUi->plugList->setCurrentRow(row);
+    }
+    else {
+        // If enabled, reload the dialog
+        if (item->checkState() == Qt::Checked) {
+            loadPluginDialog(item);
+        }
     }
 }
 
