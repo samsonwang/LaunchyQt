@@ -99,19 +99,6 @@ OptionDialog::~OptionDialog() {
     m_pUi = nullptr;
 }
 
-void OptionDialog::setVisible(bool visible) {
-    QDialog::setVisible(visible);
-
-    if (visible) {
-        connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
-                this, SLOT(skinChanged(const QString)));
-
-        if (QListWidgetItem* pItem = m_pUi->skinList->currentItem()) {
-            skinChanged(pItem->text());
-        }
-    }
-}
-
 void OptionDialog::retranslateUi() {
     m_pUi->retranslateUi(this);
 }
@@ -163,7 +150,15 @@ void OptionDialog::reject() {
 }
 
 void OptionDialog::showEvent(QShowEvent* event) {
+    // skin
+    if (QListWidgetItem* pItem = m_pUi->skinList->currentItem()) {
+        skinChanged(pItem->text());
+    }
 
+    connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
+            this, SLOT(skinChanged(const QString)));
+
+    // plugin
     if (s_lastPlugin < 0 && m_pUi->plugList->count() > 0) {
         m_pUi->plugList->setCurrentRow(0);
     }
@@ -175,17 +170,21 @@ void OptionDialog::showEvent(QShowEvent* event) {
         m_pUi->plugList->setCurrentRow(s_lastPlugin);
     }
 
+    pluginChanged(m_pUi->plugList->currentRow());
+
+    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)),
+            this, SLOT(pluginChanged(int)));
+
     QDialog::showEvent(event);
 }
 
-void OptionDialog::changeEvent(QEvent *event) {
-
+void OptionDialog::changeEvent(QEvent* event) {
     if (event->type() == QEvent::LanguageChange) {
         // retranslate designer form (single inheritance approach)
         retranslateUi();
     }
 
-    // remember to call base class implementation
+    // call base class implementation
     QDialog::changeEvent(event);
 }
 
@@ -784,8 +783,9 @@ void OptionDialog::initPluginsWidget() {
     }
     m_pUi->plugList->sortItems();
 
-    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)), this, SLOT(pluginChanged(int)));
-    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(pluginItemChanged(QListWidgetItem*)));
+    // plugin item check state change
+    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)),
+            this, SLOT(pluginItemChanged(QListWidgetItem*)));
 }
 
 void OptionDialog::savePluginsSettings() {

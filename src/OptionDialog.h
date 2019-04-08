@@ -35,7 +35,6 @@ public:
     virtual ~OptionDialog();
 
 public:
-    virtual void setVisible(bool visible);
     void retranslateUi();
 
 public slots:
@@ -44,7 +43,7 @@ public slots:
 
 protected:
     virtual void showEvent(QShowEvent* event);
-    virtual void changeEvent(QEvent *event);
+    virtual void changeEvent(QEvent* event);
 
 private:
     // general
