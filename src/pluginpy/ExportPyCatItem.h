@@ -52,6 +52,7 @@ public:
     std::string fullPath() const;
     std::string shortName() const;
     std::string iconPath() const;
+    void setUsage(int usage);
 
 private:
     launchy::CatItem m_data;
