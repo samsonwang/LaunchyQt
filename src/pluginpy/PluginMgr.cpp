@@ -91,11 +91,18 @@ void PluginMgr::initSettings(QSettings* setting) {
         qWarning() << "PluginMgr::initSettings, setting is nullptr";
         return;
     }
+
+    // avoid multiple pybind11 import
+    if (setting == m_pSettings) {
+        return;
+    }
+    m_pSettings = setting;
+
     try {
         // init qsetting
         py::object launchyModule = py::module::import("launchy");
         py::object launchyDict = launchyModule.attr("__dict__");
-        PyObject* settingPyObj = PyLong_FromVoidPtr(setting);
+        PyObject* settingPyObj = PyLong_FromVoidPtr(m_pSettings);
         launchyDict["__settings"] = py::handle(settingPyObj);
 
         // run setQSetting from launchy_util
@@ -117,7 +124,8 @@ void PluginMgr::registerPlugin(py::object pluginClass) {
 
 }
 
-PluginMgr::PluginMgr() {
+PluginMgr::PluginMgr()
+    : m_pSettings(nullptr) {
     py::initialize_interpreter();
 
     QString pythonLibPath = qApp->applicationDirPath() + "/python";
@@ -134,7 +142,6 @@ PluginMgr::PluginMgr() {
         const char* errInfo = e.what();
         qDebug() << "pluginpy::PluginMgr::PluginMgr, launchy_util module not imported," << errInfo;
     }
-
 }
 
 PluginMgr::~PluginMgr() {
@@ -143,9 +150,9 @@ PluginMgr::~PluginMgr() {
         it1.next();
         delete it1.value();
     }
+    m_pSettings = nullptr;
     m_pluginInterface.clear();
     m_pluginObject.clear();
-
     py::finalize_interpreter();
 }
 

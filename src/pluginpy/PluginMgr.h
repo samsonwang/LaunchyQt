@@ -45,6 +45,7 @@ private:
 private:
     // type of python (embedable or installed)
     // QVector<py::object> m_pluginClass;
+    QSettings* m_pSettings;
     QHash<uint, py::object> m_pluginObject;
     QHash<uint, launchy::PluginInterface*> m_pluginInterface;
     //QVector<py::object> m_pluginObject;
