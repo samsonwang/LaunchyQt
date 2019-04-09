@@ -8,16 +8,16 @@ from .ui_calcy import *
 import launchy
 
 class CalcyOption(QWidget):
-    def __init__(self, parent=None, setting_dir=None, settings=dict()):
+    def __init__(self, parent=None, setting_dir=None, settings=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_CalcyOption()
         self.ui.setupUi(self)
         self.setting_dir = setting_dir
         self.settings = settings
-        print(settings)
         self.__initFromSettings()
 
     def __initFromSettings(self):
+        print('CalcyOption, __initFromsettings', self.settings)
         decPtGrpSep = self.settings['decimalPointGroupSeparator']
         if decPtGrpSep == 1:
             self.ui.radioButtonDecSepComa.setChecked(True)
@@ -32,7 +32,6 @@ class CalcyOption(QWidget):
 
         self.ui.checkBoxBinOut.setChecked(self.settings['showBinOut'])
         self.ui.checkBoxOctOut.setChecked(self.settings['showOctOut'])
-        self.ui.checkBoxDecOut.setChecked(self.settings['showDecOut'])
         self.ui.checkBoxHexOut.setChecked(self.settings['showHexOut'])
         self.ui.checkBoxSizeOut.setChecked(self.settings['showSizeOut'])
         self.ui.checkBoxShowBasePrefix.setChecked(self.settings['showBasePrefix'])
@@ -51,7 +50,7 @@ class CalcyOption(QWidget):
             self.ui.radioButtonBW64.setChecked(True)
 
     def writeSettings(self):
-        launchySettings = launchy.settings
+#        launchySettings = launchy.settings
 
         decPtGrpSep = 0
         if self.ui.radioButtonDecSepComa.isChecked():
@@ -59,21 +58,20 @@ class CalcyOption(QWidget):
         elif self.ui.radioButtonDecSepDot.isChecked():
             decPtGrpSep = 2
 
-        launchySettings.setValue(self.setting_dir + 'decimalPointGroupSeparator', decPtGrpSep)
-        launchySettings.setValue(self.setting_dir + 'outputPrecision', self.ui.spinBoxOutputPrecision.value())
-        launchySettings.setValue(self.setting_dir + 'showGroupSeparator', self.ui.checkBoxShowGrpSep.isChecked())
-        launchySettings.setValue(self.setting_dir + 'copyToClipboard', self.ui.checkBoxCopyToClipboard.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'decimalPointGroupSeparator', decPtGrpSep)
+        launchy.settings.setValue(self.setting_dir + 'outputPrecision', self.ui.spinBoxOutputPrecision.value())
+        launchy.settings.setValue(self.setting_dir + 'showGroupSeparator', self.ui.checkBoxShowGrpSep.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'copyToClipboard', self.ui.checkBoxCopyToClipboard.isChecked())
 
-        launchySettings.setValue(self.setting_dir + 'showBinOut', self.ui.checkBoxBinOut.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showOctOut', self.ui.checkBoxOctOut.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showDecOut', self.ui.checkBoxDecOut.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showHexOut', self.ui.checkBoxHexOut.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showSizeOut', self.ui.checkBoxSizeOut.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showBinOut', self.ui.checkBoxBinOut.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showOctOut', self.ui.checkBoxOctOut.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showHexOut', self.ui.checkBoxHexOut.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showSizeOut', self.ui.checkBoxSizeOut.isChecked())
 
-        launchySettings.setValue(self.setting_dir + 'showBasePrefix', self.ui.checkBoxShowBasePrefix.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showZeroBin', self.ui.checkBoxShowLeadingZerosBin.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showZeroOct', self.ui.checkBoxShowLeadingZerosOct.isChecked())
-        launchySettings.setValue(self.setting_dir + 'showZeroHex', self.ui.checkBoxShowLeadingZerosHex.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showBasePrefix', self.ui.checkBoxShowBasePrefix.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showZeroBin', self.ui.checkBoxShowLeadingZerosBin.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showZeroOct', self.ui.checkBoxShowLeadingZerosOct.isChecked())
+        launchy.settings.setValue(self.setting_dir + 'showZeroHex', self.ui.checkBoxShowLeadingZerosHex.isChecked())
 
         bitwidth = 8
         if self.ui.radioButtonBW16.isChecked():
@@ -82,4 +80,4 @@ class CalcyOption(QWidget):
             bitwidth = 32
         elif self.ui.radioButtonBW64.isChecked():
             bitwidth = 64
-        launchySettings.setValue(self.setting_dir + 'bitwidth', bitwidth)
+        launchy.settings.setValue(self.setting_dir + 'bitwidth', bitwidth)

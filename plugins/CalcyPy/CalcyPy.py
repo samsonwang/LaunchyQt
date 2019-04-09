@@ -20,7 +20,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QVariant
+from PyQt5.QtCore import QLocale
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QApplication
 from sip import wrapinstance, unwrapinstance
 
 import launchy
@@ -30,7 +32,7 @@ from Calculator import Calculator
 from Calcy import CalcyGui
 
 class CalcyPy(launchy.Plugin):
-    setting_dir = 'Calcy/'
+    setting_dir = 'CalcyPy/'
     settings = dict()
 
     def __init__(self):
@@ -60,93 +62,73 @@ class CalcyPy(launchy.Plugin):
             return
 
         text = inputDataList[0].getText()
+        text = self.__prepareExpression(text)
         if not Calculator.isValidExpression(text):
             return
 
         try:
             ret = Calculator.calc(text, advanced=True)
         except:
-            ret = None
+            return
+
+        print('CalcyPy, getResults,', text, ret)
+
+        # full divide
+        if isinstance(ret, float) and ret - int(ret) < 1e-15:
+            ret = int(ret)
 
         if isinstance(ret, int):
             retInFloat = None
 
-            # hex
-            retInHex = '0x%x' % ret
+            # hexadecimal
+            retInHex = self.__formatHexadecimal(ret)
 
-            # dec
-            retInDec = ret
+            # decimal
+            retInDec = self.__formatDecimal(ret)
 
             # octal
-            retInOct = '0%o' % ret
+            retInOct = self.__formatOctal(ret)
 
-            # bin
-            retb = format(ret, '032b')
-            retInBin = ""
-            for i in range(len(retb)):
-                retInBin += retb[i] if (i % 4 or i == 0) else ("," + retb[i])
+            # binary
+            retInBin = self.__formatBinary(ret)
 
             # size
-            retInSize = ""
-
-            size_giga_bytes = int(ret / (1024 ** 3)) if int(ret / (1024 ** 3)) else 0
-            ret -= size_giga_bytes * (1024 ** 3)
-            retInSize += "%s GB " % size_giga_bytes if size_giga_bytes else ""
-
-            size_mega_bytes = int(ret / (1024 * 1024)) if int(ret / (1024 * 1024)) else 0
-            ret -= size_mega_bytes * (1024 ** 2)
-            retInSize += "%s MB " % size_mega_bytes if size_mega_bytes else ""
-
-            size_kilo_bytes = int(ret / (1024)) if int(ret / (1024)) else 0
-            ret -= size_mega_bytes * (1024 ** 1)
-            retInSize += "%s KB " % size_kilo_bytes if size_kilo_bytes else ""
-
-            size_bytes = int(ret % (1024)) if int(ret % (1024)) else 0
-            retInSize += "%s B " % size_bytes if size_bytes else ""
-
-            if not retInSize:
-                retInSize = "0 B"
+            retInSize = self.__formatSize(ret)
 
         else:
-             retInFloat = ret
-             retInHex = None
-             retInDec = None
-             retInOct = None
-             retInBin = None
-             retInSize = None
+            retInFloat = ("%%.%df" % self.settings['outputPrecision']) % ret
+            retInHex = None
+            retInDec = None
+            retInOct = None
+            retInBin = None
+            retInSize = None
 
         if retInFloat is not None:
-            resultsList.append(CatItem("float.calcypy",
-                                       "%s" % (retInFloat),
+            resultsList.append(CatItem("float.calcypy", retInFloat,
                                        self.getID(), self.getIcon()))
 
         if retInDec is not None:
-            resultsList.append(CatItem("dec.calcpy",
-                                       str(retInDec),
+            resultsList.append(CatItem("dec.calcpy", retInDec,
                                        self.getID(), self.getIcon()))
 
         if retInOct is not None:
-            resultsList.append(CatItem("oct.calcpy",
-                                       str(retInOct),
+            resultsList.append(CatItem("oct.calcpy", retInOct,
                                        self.getID(), self.getIcon()))
 
         if retInHex is not None:
-            resultsList.append(CatItem("hex.calcpy",
-                                       str(retInHex),
+            resultsList.append(CatItem("hex.calcpy", retInHex,
                                        self.getID(), self.getIcon()))
 
         if retInBin is not None:
-            resultsList.append(CatItem("bin.calcpy",
-                                       str(retInBin),
+            resultsList.append(CatItem("bin.calcpy", retInBin,
                                        self.getID(), self.getIcon()))
 
         if retInSize is not None:
-            resultsList.append(CatItem("size.calcpy",
-                                       "%s" % (retInSize),
+            resultsList.append(CatItem("size.calcpy", retInSize,
                                        self.getID(), self.getIcon()))
 
+
     def doDialog(self, parentWidgetPtr):
-#        print(parentWidgetPtr)
         print('CalcyPy, doDialog')
         parentWidget = wrapinstance(parentWidgetPtr, QtWidgets.QWidget)
         self.widget = CalcyGui.CalcyOption(parentWidget, self.setting_dir, self.settings)
@@ -163,28 +145,133 @@ class CalcyPy(launchy.Plugin):
         self.widget = None
 
     def launchItem(self, inputDataList, catItem):
-        pass
+        if self.settings['copyToClipboard']:
+            QApplication.clipboard().setText(catItem.shortName())
 
     def __readSettings(self):
-        print('CalcyPy, __readSettings')
-        launchySettings = launchy.settings
         # general
-        self.settings['decimalPointGroupSeparator'] = int(launchySettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0))
-        self.settings['outputPrecision'] = int(launchySettings.value(self.setting_dir + 'outputPrecision', 3))
-        self.settings['showGroupSeparator'] = bool(launchySettings.value(self.setting_dir + 'showGroupSeparator', False))
-        self.settings['copyToClipboard'] = bool(launchySettings.value(self.setting_dir + 'copyToClipboard', True))
-        self.settings['showBinOut'] = bool(launchySettings.value(self.setting_dir + 'showBinOut', True))
-        self.settings['showOctOut'] = bool(launchySettings.value(self.setting_dir + 'showOctOut', True))
-        self.settings['showDecOut'] = bool(launchySettings.value(self.setting_dir + 'showDecOut', True))
-        self.settings['showHexOut'] = bool(launchySettings.value(self.setting_dir + 'showHexOut', True))
-        self.settings['showSizeOut'] = bool(launchySettings.value(self.setting_dir + 'showSizeOut', True))
-        self.settings['showBasePrefix'] = bool(launchySettings.value(self.setting_dir + 'showBasePrefix', True))
-        self.settings['showZeroBin'] = bool(launchySettings.value(self.setting_dir + 'showZeroBin', True))
-        self.settings['showZeroOct'] = bool(launchySettings.value(self.setting_dir + 'showZeroOct', True))
-        self.settings['showZeroHex'] = bool(launchySettings.value(self.setting_dir + 'showZeroHex', True))
-        self.settings['bitwidth'] = int(launchySettings.value(self.setting_dir + 'bitwidth', 16))
+        self.settings['decimalPointGroupSeparator'] = int(launchy.settings.value(self.setting_dir + 'decimalPointGroupSeparator', 0))
+        self.settings['outputPrecision'] = int(launchy.settings.value(self.setting_dir + 'outputPrecision', 3))
+        self.settings['showGroupSeparator'] = launchy.settings.value(self.setting_dir + 'showGroupSeparator', False) in ['true', True]
+        self.settings['copyToClipboard'] = launchy.settings.value(self.setting_dir + 'copyToClipboard', True) in ['true', True]
+        self.settings['showBinOut'] = launchy.settings.value(self.setting_dir + 'showBinOut', True) in ['true', True]
+        self.settings['showOctOut'] = launchy.settings.value(self.setting_dir + 'showOctOut', True) in ['true', True]
+        self.settings['showHexOut'] = launchy.settings.value(self.setting_dir + 'showHexOut', True) in ['true', True]
+        self.settings['showSizeOut'] = launchy.settings.value(self.setting_dir + 'showSizeOut', True) in ['true', True]
+        self.settings['showBasePrefix'] = launchy.settings.value(self.setting_dir + 'showBasePrefix', True) in ['true', True]
+        self.settings['showZeroBin'] = launchy.settings.value(self.setting_dir + 'showZeroBin', True) in ['true', True]
+        self.settings['showZeroOct'] = launchy.settings.value(self.setting_dir + 'showZeroOct', True) in ['true', True]
+        self.settings['showZeroHex'] = launchy.settings.value(self.setting_dir + 'showZeroHex', True) in ['true', True]
+        self.settings['bitwidth'] = int(launchy.settings.value(self.setting_dir + 'bitwidth', 16))
 
-        print('CalcyPy, read settings', self.settings)
+        print('CalcyPy, __readSettings', self.settings)
+
+    def __decimalPoint(self):
+        if self.settings['decimalPointGroupSeparator'] == 1:
+            return ','
+        elif self.settings['decimalPointGroupSeparator'] == 2:
+            return '.'
+        else:
+            return QLocale.system().decimalPoint()
+
+    def __groupSeparator(self):
+        if self.settings['decimalPointGroupSeparator'] == 1:
+            return '.'
+        elif self.settings['decimalPointGroupSeparator'] == 2:
+            return ','
+        else:
+            return QLocale.system().groupSeparator()
+
+    def __prepareExpression(self, text):
+        decimalPoint = self.__decimalPoint()
+        groupSeparator = self.__groupSeparator()
+
+        if groupSeparator == None or decimalPoint == None or groupSeparator == decimalPoint:
+            return text
+
+        retText = text.replace(groupSeparator, '')
+        if decimalPoint != '.':
+            retText = retText.replace(decimalPoint, '.')
+        return retText
+
+    def __formatHexadecimal(self, num):
+        if self.settings['showHexOut']:
+            hexFmtStr = ''
+            if self.settings['showBasePrefix']:
+                hexFmtStr += '0x'
+            if self.settings['showZeroHex']:
+                width = int(self.settings['bitwidth'] / 8)
+                hexFmtStr += ('%%0%dx' % width)
+            else:
+                hexFmtStr += '%x'
+            return hexFmtStr % num
+        else:
+            return None
+
+    def __formatDecimal(self, num):
+        if self.settings['showGroupSeparator']:
+            decStr = '{:,}'.format(num)
+            if self.__groupSeparator() == QLocale.system().groupSeparator():
+                return decStr
+            return decStr.replace(QLocale.system().groupSeparator(),
+                                  self.__groupSeparator())
+        else:
+            return '%d' % num
+
+    def __formatOctal(self, num):
+        if self.settings['showOctOut']:
+            octFmtStr = ''
+            if self.settings['showBasePrefix']:
+                octFmtStr += '0'
+            if self.settings['showZeroOct']:
+                width = int(self.settings['bitwidth'] / 3)
+                octFmtStr += ('%%0%do' % width)
+            else:
+                octFmtStr += '%o'
+            return octFmtStr % num
+        else:
+            return None
+
+    def __formatBinary(self, num):
+        if self.settings['showBinOut']:
+            if self.settings['showZeroBin']:
+                retb = format(num, '0%db' % self.settings['bitwidth'])
+            else:
+                retb = format(num, 'b')
+
+            ret = ''
+            for i in range(len(retb)):
+                ret += retb[i] if (i % 4 or i == 0) else (" " + retb[i])
+            return ret
+        else:
+            return None
+
+    def __formatSize(self, num):
+        if self.settings['showSizeOut']:
+            ret = ""
+
+            size_giga_bytes = int(num / (1024 ** 3)) if int(num / (1024 ** 3)) else 0
+            num -= size_giga_bytes * (1024 ** 3)
+            ret += "%s GB " % size_giga_bytes if size_giga_bytes else ""
+
+            size_mega_bytes = int(num / (1024 * 1024)) if int(num / (1024 * 1024)) else 0
+            num -= size_mega_bytes * (1024 ** 2)
+            ret += "%s MB " % size_mega_bytes if size_mega_bytes else ""
+
+            size_kilo_bytes = int(num / (1024)) if int(num / 1024) else 0
+            num -= size_mega_bytes * (1024 ** 1)
+            ret += "%s KB " % size_kilo_bytes if size_kilo_bytes else ""
+
+            size_bytes = int(num % (1024)) if int(num % (1024)) else 0
+            ret += "%s B " % size_bytes if size_bytes else ""
+
+            if not ret:
+                return  "0 B"
+            else:
+                return ret
+        else:
+            return None
+
 
 def getPlugin():
     return CalcyPy

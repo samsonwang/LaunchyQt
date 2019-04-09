@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>479</width>
+    <width>516</width>
     <height>262</height>
    </rect>
   </property>
@@ -41,7 +41,7 @@
             <item>
              <widget class="QRadioButton" name="radioButtonDecSepSystem">
               <property name="toolTip">
-               <string>Use system settings</string>
+               <string>Use system locale settings</string>
               </property>
               <property name="text">
                <string>System default</string>
@@ -53,9 +53,6 @@
             </item>
             <item>
              <widget class="QRadioButton" name="radioButtonDecSepComa">
-              <property name="toolTip">
-               <string>Use coma (',')</string>
-              </property>
               <property name="text">
                <string>Coma as decimal point and dot as group separator</string>
               </property>
@@ -63,9 +60,6 @@
             </item>
             <item>
              <widget class="QRadioButton" name="radioButtonDecSepDot">
-              <property name="toolTip">
-               <string>Use dot ('.')</string>
-              </property>
               <property name="text">
                <string>Dot as decimal point and coma as group separator</string>
               </property>
@@ -81,7 +75,7 @@
              <item>
               <widget class="QLabel" name="label">
                <property name="text">
-                <string>Output Precision</string>
+                <string>Decimal output Precision</string>
                </property>
               </widget>
              </item>
@@ -106,13 +100,13 @@
                 </size>
                </property>
                <property name="toolTip">
-                <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sets the maximal number of digits&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
                <property name="minimum">
-                <number>0</number>
+                <number>1</number>
                </property>
                <property name="maximum">
                 <number>10</number>
@@ -126,9 +120,6 @@
            </item>
            <item>
             <widget class="QCheckBox" name="checkBoxShowGrpSep">
-             <property name="toolTip">
-              <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
-             </property>
              <property name="text">
               <string>Show group separator in result</string>
              </property>
@@ -183,16 +174,6 @@
              <widget class="QCheckBox" name="checkBoxOctOut">
               <property name="text">
                <string>Oct</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBoxDecOut">
-              <property name="text">
-               <string>Dec</string>
               </property>
               <property name="checked">
                <bool>true</bool>
