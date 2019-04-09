@@ -170,7 +170,7 @@ void Runner::setPath(const QString* path) {
 }
 
 Runner::Runner()
-    : HASH_RUNNER(qHash("Runner")) {
+    : HASH_RUNNER(qHash(QString("Runner"))) {
     m_gui.reset();
 }
 
