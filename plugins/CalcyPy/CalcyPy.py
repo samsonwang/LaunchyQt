@@ -104,28 +104,40 @@ class CalcyPy(launchy.Plugin):
             retInSize = None
 
         if retInFloat is not None:
-            resultsList.append(CatItem("float.calcypy", retInFloat,
-                                       self.getID(), self.getIcon()))
+            item = CatItem("float.calcypy", retInFloat,
+                           self.getID(), self.getIcon())
+            item.setUsage(50000)
+            resultsList.append(item)
 
         if retInDec is not None:
-            resultsList.append(CatItem("dec.calcpy", retInDec,
-                                       self.getID(), self.getIcon()))
-
-        if retInOct is not None:
-            resultsList.append(CatItem("oct.calcpy", retInOct,
-                                       self.getID(), self.getIcon()))
+            item = CatItem("dec.calcpy", retInDec,
+                           self.getID(), self.getIcon())
+            item.setUsage(50000)
+            resultsList.append(item)
 
         if retInHex is not None:
-            resultsList.append(CatItem("hex.calcpy", retInHex,
-                                       self.getID(), self.getIcon()))
+            item = CatItem("hex.calcpy", retInHex,
+                           self.getID(), self.getIcon())
+            item.setUsage(40000)
+            resultsList.append(item)
+
+        if retInOct is not None:
+            item = CatItem("oct.calcpy", retInOct,
+                           self.getID(), self.getIcon())
+            item.setUsage(30000)
+            resultsList.append(item)
 
         if retInBin is not None:
-            resultsList.append(CatItem("bin.calcpy", retInBin,
-                                       self.getID(), self.getIcon()))
+            item = CatItem("bin.calcpy", retInBin,
+                           self.getID(), self.getIcon())
+            item.setUsage(20000)
+            resultsList.append(item)
 
         if retInSize is not None:
-            resultsList.append(CatItem("size.calcpy", retInSize,
-                                       self.getID(), self.getIcon()))
+            item = CatItem("size.calcpy", retInSize,
+                           self.getID(), self.getIcon())
+            item.setUsage(10000)
+            resultsList.append(item)
 
 
     def doDialog(self, parentWidgetPtr):
