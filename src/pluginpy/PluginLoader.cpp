@@ -43,10 +43,8 @@ launchy::PluginInterface* PluginLoader::instance() {
 bool PluginLoader::unload() {
     bool ret = false;
     try {
-        // finally get m_interface
-        PluginMgr& mgr = PluginMgr::instance();
+        PluginMgr::instance().unloadPlugin(qHash(m_pluginName));
         m_interface = nullptr;
-        mgr.unloadPlugin(qHash(m_pluginName));
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
@@ -61,23 +59,21 @@ bool PluginLoader::unload() {
 
 void PluginLoader::initSettings(QSettings* setting) {
     try {
-        PluginMgr& mgr = PluginMgr::instance();
-        mgr.initSettings(setting);
+        PluginMgr::instance().initSettings(setting);
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
-        qWarning() << "PluginLoader::initSettings, exception catched,"
-            << "error info:" << errInfo;
+        qWarning() << "PluginLoader::initSettings, exception catched, error info:"
+            << errInfo;
     }
 }
 
 bool PluginLoader::load() {
     try {
         // finally get m_interface
-        PluginMgr& mgr = PluginMgr::instance();
-        m_interface = mgr.loadPlugin(m_pluginName, m_pluginPath);
+        m_interface = PluginMgr::instance().loadPlugin(m_pluginName, m_pluginPath);
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();

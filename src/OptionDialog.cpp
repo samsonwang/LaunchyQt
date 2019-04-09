@@ -302,16 +302,17 @@ void OptionDialog::pluginChanged(int row) {
 void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
 
     m_pUi->plugBox->setTitle(tr("Plugin options"));
-    if (m_pUi->plugBox->layout() != NULL) {
-        for (int i = 1; i < m_pUi->plugBox->layout()->count(); ++i) {
-            m_pUi->plugBox->layout()->removeItem(m_pUi->plugBox->layout()->itemAt(i));
+    QLayout* pLayout = m_pUi->plugBox->layout();
+    if (pLayout != NULL) {
+        while (QLayoutItem* child = pLayout->takeAt(0)) {
+            delete child;
         }
     }
 
     QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
     if (win != NULL) {
-        if (m_pUi->plugBox->layout() != NULL) {
-            m_pUi->plugBox->layout()->addWidget(win);
+        if (pLayout != NULL) {
+            pLayout->addWidget(win);
         }
 
         win->show();
@@ -773,7 +774,7 @@ void OptionDialog::saveCatalogSettings() {
 
 void OptionDialog::initPluginsWidget() {
     // Load up the plugins
-    PluginHandler::instance().loadPlugins();
+    //PluginHandler::instance().loadPlugins();
     foreach(const PluginInfo& info, PluginHandler::instance().getPlugins()) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
         m_pUi->plugList->addItem(item);

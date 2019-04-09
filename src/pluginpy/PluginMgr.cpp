@@ -79,7 +79,9 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
         delete plugin;
         plugin = nullptr;
     }
+
     m_pluginInterface.remove(pluginId);
+    m_pluginObject.remove(pluginId);
 
     return true;
 }
