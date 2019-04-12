@@ -1401,14 +1401,14 @@ void LaunchyWidget::createActions() {
         UpdateChecker::instance().manualCheck();
     });
 
-    m_actRestart = new QAction(tr("Restart"), this);
+    m_actRestart = new QAction(tr("Relaunch"), this);
     connect(m_actRestart, &QAction::triggered, [=]() {
-        qInfo() << "Performing application restart...";
+        qInfo() << "Performing application relaunch...";
         // restart:
         //qApp->closeAllWindows();
         m_trayIcon->hide();
         qApp->exit(Restart);
-        qInfo() << "Finish application restart...";
+        qInfo() << "Finish application relaunch...";
     });
 
     m_actExit = new QAction(tr("Exit"), this);
