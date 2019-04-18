@@ -17,8 +17,8 @@ IDI_ICON1               ICON          DISCARDABLE           "launchy.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,0,7,0
- PRODUCTVERSION 3,0,7,0
+ FILEVERSION 3,0,8,0
+ PRODUCTVERSION 3,0,8,0
 //  FILEFLAGSMASK 0x3fL
 // #ifdef _DEBUG
 //  FILEFLAGS 0x1L
@@ -34,12 +34,12 @@ BEGIN
         BLOCK "040904E4"
         BEGIN
             VALUE "FileDescription",        "LaunchyQt"
-            VALUE "FileVersion",            "3.0.7.0"
+            VALUE "FileVersion",            "3.0.8.0"
             VALUE "InternalName",           "Launchy.exe"
             VALUE "LegalCopyright",         "GPLv3"
             VALUE "OriginalFilename",       "Launchy.exe"
             VALUE "ProductName",            "Launchy"
-            VALUE "ProductVersion",         "3.0.7.0"
+            VALUE "ProductVersion",         "3.0.8.0"
         END
     END
     BLOCK "VarFileInfo"

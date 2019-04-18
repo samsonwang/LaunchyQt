@@ -2,7 +2,7 @@
 here are the procedures to release a new version, in case of I forget something when doing release.
 
 1. update version number in source code
-2. update README and CHANGELOG
+2. update CHANGELOG
 3. update translation files
 4. commit all changes in source code
 5. build binary

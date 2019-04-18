@@ -1,4 +1,10 @@
 
+* 3.0.8 (2019-04-18)
+- ported Runner plugin (issue #10)
+- add option panel for CalcyPy (issue #10)
+- fix bug #8 , use capslock or alt+capslock as hotkey
+- fix memory leak when switching plugins
+- fix minor bugs
 
 * 3.0.7 (2019-03-22)
 - multi-language support
