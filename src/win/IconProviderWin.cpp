@@ -113,65 +113,40 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         retIcon = QIcon(QtWin::fromHICON(hIcon));
         DestroyIcon(hIcon);
     }
+    else if (info.isSymLink() || fileExtension == "lnk") {
+        QFileInfo targetInfo(info.symLinkTarget());
+        retIcon = QFileIconProvider::icon(targetInfo);
+    }
     else {
         // This 64 bit mapping needs to go away if we produce a 64 bit build of launchy
         QString filePath = wicon_aliasTo64(QDir::toNativeSeparators(info.filePath()));
 
         // Get the icon index using SHGetFileInfo
-        SHFILEINFO sfi = {0};
+        SHFILEINFO sfi;
+        ZeroMemory(&sfi, sizeof(sfi));
 
-        QRegExp re("\\\\\\\\([a-z0-9\\-]+\\\\?)?$", Qt::CaseInsensitive);
-        if (re.exactMatch(filePath)) {
-            // To avoid network hangs, explicitly fetch the My Computer icon for UNCs
-            LPITEMIDLIST pidl;
-            if (SHGetSpecialFolderLocation(NULL, CSIDL_DRIVES, &pidl) == S_OK) {
-                SHGetFileInfo((LPCTSTR)pidl, 0, &sfi, sizeof(sfi), SHGFI_PIDL | SHGFI_SYSICONINDEX);
-                // Set the file path to the My Computer GUID for any later fetches
-                filePath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
-            }
+        unsigned int flags = SHGFI_ICON | SHGFI_SYSICONINDEX | SHGFI_ICONLOCATION;
+
+        if (m_preferredSize <= 16) {
+            flags |= SHIL_SMALL;
         }
-        if (sfi.iIcon == 0) {
-            SHGetFileInfo((LPCTSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX);
+        else if (m_preferredSize <= 32) {
+            flags |= SHIL_LARGE;
+        }
+        else if (m_preferredSize <= 48) {
+            flags |= SHIL_EXTRALARGE;
+        }
+        else {
+            flags |= SHIL_JUMBO;
         }
 
-        // An icon index of 3 is the generic file icon
-        if (sfi.iIcon > 0 && sfi.iIcon != 3) {
-            // Retrieve the system image list.
-            // To get the 48x48 icons, use SHIL_EXTRALARGE
-            // To get the 256x256 icons (Vista only), use SHIL_JUMBO
-            int imageListIndex;
-            if (m_preferredSize <= 16) {
-                imageListIndex = SHIL_SMALL;
+        SHGetFileInfo((LPCTSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), flags);
+        if (sfi.hIcon) {
+            retIcon.addPixmap(QtWin::fromHICON(sfi.hIcon));
+            // extra large icon
+            if (m_preferredSize >= 48) {
+                addIconFromImageList(SHIL_EXTRALARGE, sfi.iIcon, retIcon);
             }
-            else if (m_preferredSize <= 32) {
-                imageListIndex = SHIL_LARGE;
-            }
-            else if (m_preferredSize <= 48) {
-                imageListIndex = SHIL_EXTRALARGE;
-            }
-            else {
-                imageListIndex = SHIL_JUMBO;
-            }
-
-            // If the OS supports SHCreateItemFromParsingName, get a 256x256 icon
-            if (!addIconFromShellFactory(filePath, retIcon)) {
-                // otherwise get the largest appropriate size
-                if (!addIconFromImageList(imageListIndex, sfi.iIcon, retIcon)
-                    && imageListIndex == SHIL_JUMBO) {
-                    addIconFromImageList(SHIL_EXTRALARGE, sfi.iIcon, retIcon);
-                }
-            }
-
-            // Ensure there's also a 32x32 icon - extralarge and above often only contain
-            // a large frame with the 32x32 icon in the middle or looks blurry
-            if (imageListIndex == SHIL_EXTRALARGE || imageListIndex == SHIL_JUMBO) {
-                addIconFromImageList(SHIL_LARGE, sfi.iIcon, retIcon);
-            }
-        }
-        // isSymLink is case sensitive when it perhaps shouldn't be
-        else if (info.isSymLink() || fileExtension == "lnk") {
-            QFileInfo targetInfo(info.symLinkTarget());
-            retIcon = icon(targetInfo);
         }
         else {
             retIcon = QFileIconProvider::icon(info);
