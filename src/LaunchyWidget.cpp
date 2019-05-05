@@ -503,6 +503,10 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
 }
 
 void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
+    if (event == nullptr) {
+        return;
+    }
+
     // Launchy widget would not receive Key_Tab from inputbox,
     // we have to pass it manually
     if (event->key() == Qt::Key_Tab) {
@@ -629,21 +633,20 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
              || event->key() == Qt::Key_PageDown
              || event->key() == Qt::Key_Up
              || event->key() == Qt::Key_PageUp) {
-        if (m_alternativeList->isVisible()) {
-            if (!m_alternativeList->isActiveWindow()) {
-                // Don't refactor the activateWindow outside the if, it won't work properly any other way!
-                if (m_alternativeList->currentRow() < 0 && m_alternativeList->count() > 0) {
-                    m_alternativeList->activateWindow();
-                    m_alternativeList->setCurrentRow(0);
-                }
-                else {
-                    m_alternativeList->activateWindow();
-                    qApp->sendEvent(m_alternativeList, event);
-                }
+        if (m_alternativeList->isVisible() && !m_alternativeList->isActiveWindow()) {
+            // Don't refactor the activateWindow outside the if,
+            // it won't work properly any other way!
+            if (m_alternativeList->currentRow() < 0 && m_alternativeList->count() > 0) {
+                m_alternativeList->activateWindow();
+                m_alternativeList->setCurrentRow(0);
+            }
+            else {
+                m_alternativeList->activateWindow();
+                qApp->sendEvent(m_alternativeList, event);
             }
         }
         else if (event->key() == Qt::Key_Down
-                 || event->key() == Qt::Key_PageDown) {
+                || event->key() == Qt::Key_PageDown) {
             // do a search and show the results, selecting the first one
             searchOnInput();
             if (m_searchResult.count() > 0) {
@@ -653,8 +656,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
         }
     }
 
-    else if ((event->key() == Qt::Key_Tab
-              || event->key() == Qt::Key_Backspace)
+    else if ((event->key() == Qt::Key_Tab || event->key() == Qt::Key_Backspace)
              && event->modifiers() == Qt::ShiftModifier) {
         doBackTab();
         processKey();
@@ -667,9 +669,12 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
 
     else if (event->key() == Qt::Key_Slash
              || event->key() == Qt::Key_Backslash) {
-        if (m_inputData.count() > 0 && m_inputData.last().hasLabel(LABEL_FILE) &&
-            m_searchResult.count() > 0 && m_searchResult[0].pluginId == HASH_LAUNCHYFILE)
+        if (!m_inputData.isEmpty()
+            && m_inputData.last().hasLabel(LABEL_FILE)
+            && !m_searchResult.isEmpty()
+            && m_searchResult[0].pluginId == HASH_LAUNCHYFILE) {
             doTab();
+        }
         processKey();
     }
 
@@ -687,17 +692,14 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
 }
 
 // remove input text back to the previous input section
-void LaunchyWidget::doBackTab()
-{
+void LaunchyWidget::doBackTab() {
     QString text = m_inputBox->text();
     int index = text.lastIndexOf(m_inputBox->separatorText());
-    if (index >= 0)
-    {
+    if (index >= 0) {
         text.truncate(index+3);
         m_inputBox->selectAll();
         m_inputBox->insert(text);
     }
-
     else if (text.lastIndexOf(QDir::separator()) >= 0) {
         text.truncate(text.lastIndexOf(QDir::separator())+1);
         m_inputBox->selectAll();
@@ -708,27 +710,15 @@ void LaunchyWidget::doBackTab()
         m_inputBox->selectAll();
         m_inputBox->insert(text);
     }
-
-    else if (text.lastIndexOf(QDir::separator()) >= 0) {
-        text.truncate(text.lastIndexOf(QDir::separator())+1);
-        m_inputBox->selectAll();
-        m_inputBox->insert(text);
-    }
-    else if (text.lastIndexOf(QChar(' ')) >= 0) {
-        text.truncate(text.lastIndexOf(QChar(' '))+1);
-        m_inputBox->selectAll();
-        m_inputBox->insert(text);
-    }
-    else
-    {
+    else {
         m_inputBox->clear();
     }
 }
 
 void LaunchyWidget::doTab() {
-    if (m_inputData.count() > 0 && m_searchResult.count() > 0) {
+    if (!m_inputData.isEmpty() && !m_searchResult.isEmpty()) {
         // If it's an incomplete file or directory, complete it
-        QFileInfo info(m_searchResult[0].fullPath);
+        QFileInfo info(m_searchResult.first().fullPath);
 
         if (m_inputData.last().hasLabel(LABEL_FILE) || info.isDir()) {
             QString path;

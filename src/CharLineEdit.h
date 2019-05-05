@@ -29,21 +29,20 @@ public:
     CharLineEdit(QWidget* parent = nullptr);
 
     void processKey(QKeyEvent* event);
-    bool focusNextPrevChild(bool next);
-
     QString separatorText() const;
 
 protected:
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void focusInEvent(QFocusEvent* event);
     virtual void focusOutEvent(QFocusEvent* event);
-    virtual void inputMethodEvent(QInputMethodEvent *event);
+    virtual void inputMethodEvent(QInputMethodEvent* event);
+    virtual bool focusNextPrevChild(bool next);
 
 signals:
     void keyPressed(QKeyEvent* event);
     void focusIn();
     void focusOut();
-    void inputMethod(QInputMethodEvent *event);
+    void inputMethod(QInputMethodEvent* event);
 
 private:
     bool isAtStartOfSeparator() const;
