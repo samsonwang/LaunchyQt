@@ -92,28 +92,25 @@ IconProviderWin::~IconProviderWin() {
 
 }
 
-// void IconProviderWin::setPreferredIconSize(int size) {
-//     m_preferredSize = size;
-// }
-
 QIcon IconProviderWin::icon(const QFileInfo& info) const {
     QIcon retIcon;
+
     QString fileExtension = info.suffix().toLower();
 
-    if (fileExtension == "png"
-        || fileExtension == "bmp"
-        || fileExtension == "jpg"
-        || fileExtension == "jpeg") {
+    if (fileExtension == QStringLiteral("png")
+        || fileExtension == QStringLiteral("bmp")
+        || fileExtension == QStringLiteral("jpg")
+        || fileExtension == QStringLiteral("jpeg")) {
         retIcon = QIcon(info.filePath());
     }
-    else if (fileExtension == "cpl") {
+    else if (fileExtension == QStringLiteral("cpl")) {
         HICON hIcon;
         QString filePath = QDir::toNativeSeparators(info.filePath());
         ExtractIconEx((LPCTSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
         retIcon = QIcon(QtWin::fromHICON(hIcon));
         DestroyIcon(hIcon);
     }
-    else if (info.isSymLink() || fileExtension == "lnk") {
+    else if (fileExtension == QStringLiteral("lnk") || info.isSymLink()) {
         QFileInfo targetInfo(info.symLinkTarget());
         retIcon = QFileIconProvider::icon(targetInfo);
     }
@@ -157,16 +154,17 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 }
 
 bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const {
-    HICON hIcon = 0;
     IImageList* imageList;
     HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
-    if (hResult == S_OK) {
+    if (hResult == S_OK && imageList != NULL) {
+        HICON hIcon = NULL;
         hResult = imageList->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
         imageList->Release();
-    }
-    if (hResult == S_OK && hIcon) {
-        icon.addPixmap(QtWin::fromHICON(hIcon));
-        DestroyIcon(hIcon);
+
+        if (hResult == S_OK && hIcon != NULL) {
+            icon.addPixmap(QtWin::fromHICON(hIcon));
+            DestroyIcon(hIcon);
+        }
     }
 
     return SUCCEEDED(hResult);
