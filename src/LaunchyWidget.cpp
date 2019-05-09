@@ -645,8 +645,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
                 qApp->sendEvent(m_alternativeList, event);
             }
         }
-        else if (event->key() == Qt::Key_Down
-                || event->key() == Qt::Key_PageDown) {
+        else {
             // do a search and show the results, selecting the first one
             searchOnInput();
             if (m_searchResult.count() > 0) {
@@ -780,7 +779,7 @@ void LaunchyWidget::processKey() {
 }
 
 void LaunchyWidget::searchOnInput() {
-    QString searchText = m_inputData.count() > 0 ? m_inputData.last().getText() : "";
+    QString searchText = m_inputData.isEmpty() ? "" : m_inputData.last().getText();
     QString searchTextLower = searchText.toLower();
     g_searchText = searchTextLower;
     m_searchResult.clear();
@@ -789,7 +788,7 @@ void LaunchyWidget::searchOnInput() {
         || m_inputBox->text().isEmpty()) {
         // Add history items exclusively and unsorted so they remain in most recently used order
         qDebug() << "LaunchyWidget::searchOnInput, searching history for" << searchText;
-        m_history.search(searchTextLower, m_searchResult);
+        m_history.search(m_searchResult);
     }
     else {
         // Search the catalog for matching items
@@ -799,7 +798,7 @@ void LaunchyWidget::searchOnInput() {
         }
 
         if (!m_searchResult.isEmpty()) {
-            m_inputData.last().setTopResult(m_searchResult[0]);
+            m_inputData.last().setTopResult(m_searchResult.front());
         }
 
         // Give plugins a chance to add their own dynamic matches

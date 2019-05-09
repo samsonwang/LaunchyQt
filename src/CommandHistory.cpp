@@ -61,13 +61,21 @@ void CommandHistory::save(const QString& filename) const {
 
 // Add an item or promote an existing matching item to the top of the list
 void CommandHistory::addItem(const InputDataList& item) {
-    if (item.empty())
+    if (item.isEmpty()) {
         return;
+    }
+
+    int historyMax = g_settings->value(OPSTION_MAXITEMSINHISTORY,
+                                       OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt();
+    if (historyMax <= 0) {
+        m_history.clear();
+        return;
+    }
 
     // Look for a matching history entry
     QString itemText = item.toString().toLower();
     for (auto it = m_history.begin(); it != m_history.end(); ++it) {
-        if ((*it).toString().toLower() == itemText) {
+        if (it->toString().toLower() == itemText) {
             // Found a match, remove it and add a replacement
             m_history.erase(it);
             break;
@@ -79,7 +87,7 @@ void CommandHistory::addItem(const InputDataList& item) {
     m_history.push_front(item);
     m_history.front().front().setLabel(LABEL_HISTORY);
 
-    if (m_history.size() > g_settings->value(OPSTION_MAXITEMSINHISTORY, OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt()) {
+    while (m_history.size() > historyMax) {
         m_history.pop_back();
     }
 }
@@ -96,11 +104,10 @@ void CommandHistory::removeAt(int index) {
 }
 
 // Populate the searchresults with items from the command history
-void CommandHistory::search(const QString& searchText, QList<CatItem>& searchResults) const {
-    Q_UNUSED(searchText)
+void CommandHistory::search(QList<CatItem>& searchResults) const {
     int64_t index = 0;
     foreach(InputDataList historyItem, m_history) {
-        CatItem item = historyItem.first().getTopResult();
+        CatItem& item = historyItem.first().getTopResult();
         item.pluginId = HASH_HISTORY;
         item.data = (void*)index++;
         searchResults.push_back(item);

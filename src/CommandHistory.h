@@ -32,7 +32,8 @@ public:
     void addItem(const InputDataList& item);
     void removeAt(int index);
     const InputDataList& getItem(int index);
-    void search(const QString& searchText, QList<CatItem>& searchResults) const;
+
+    void search(QList<CatItem>& searchResults) const;
 
 private:
     QLinkedList<InputDataList> m_history;
