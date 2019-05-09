@@ -612,27 +612,32 @@ void LaunchyWidget::onAlternativeListFocusOut() {
 }
 
 void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
-    qDebug() << "LaunchyWidget::keyPressEvent,"
-        << "key:" << event->key()
-        << "modifier:" << event->modifiers()
-        << "text:" << event->text();
-
-    if (event->key() == Qt::Key_Escape) {
-        if (m_alternativeList->isVisible())
-            hideAlternativeList();
-        else
-            hideLaunchy();
+    if (!event) {
+        return;
     }
 
-    else if (event->key() == Qt::Key_Return
-             || event->key() == Qt::Key_Enter) {
+    int key = event->key();
+    Qt::KeyboardModifiers mods = event->modifiers();
+
+    qDebug() << "LaunchyWidget::keyPressEvent,"
+        << "key:" << key << "modifier:" << mods
+        << "text:" << event->text();
+
+    if (key == Qt::Key_Escape) {
+        if (m_alternativeList->isVisible()) {
+            hideAlternativeList();
+        }
+        else {
+            hideLaunchy();
+        }
+    }
+
+    else if (key == Qt::Key_Return || key == Qt::Key_Enter) {
         doEnter();
     }
 
-    else if (event->key() == Qt::Key_Down
-             || event->key() == Qt::Key_PageDown
-             || event->key() == Qt::Key_Up
-             || event->key() == Qt::Key_PageUp) {
+    else if (key == Qt::Key_Down || key == Qt::Key_PageDown
+             || key == Qt::Key_Up || key == Qt::Key_PageUp) {
         if (m_alternativeList->isVisible() && !m_alternativeList->isActiveWindow()) {
             // Don't refactor the activateWindow outside the if,
             // it won't work properly any other way!
@@ -645,29 +650,30 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
                 qApp->sendEvent(m_alternativeList, event);
             }
         }
-        else {
+        else if (key == Qt::Key_Down || key == Qt::Key_PageDown
+                 || (m_inputBox->text().isEmpty()
+                     && (key == Qt::Key_Up || key == Qt::Key_PageUp))) {
             // do a search and show the results, selecting the first one
             searchOnInput();
-            if (m_searchResult.count() > 0) {
+            if (!m_searchResult.isEmpty()) {
                 updateAlternativeList();
                 showAlternativeList();
             }
         }
     }
 
-    else if ((event->key() == Qt::Key_Tab || event->key() == Qt::Key_Backspace)
-             && event->modifiers() == Qt::ShiftModifier) {
+    else if ((key == Qt::Key_Tab || key == Qt::Key_Backspace)
+             && mods == Qt::ShiftModifier) {
         doBackTab();
         processKey();
     }
 
-    else if (event->key() == Qt::Key_Tab) {
+    else if (key == Qt::Key_Tab) {
         doTab();
         processKey();
     }
 
-    else if (event->key() == Qt::Key_Slash
-             || event->key() == Qt::Key_Backslash) {
+    else if (key == Qt::Key_Slash || key == Qt::Key_Backslash) {
         if (!m_inputData.isEmpty()
             && m_inputData.last().hasLabel(LABEL_FILE)
             && !m_searchResult.isEmpty()
@@ -677,8 +683,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
         processKey();
     }
 
-    else if (event->key()== Qt::Key_Insert
-             && event->modifiers() == Qt::ShiftModifier) {
+    else if (key == Qt::Key_Insert && mods == Qt::ShiftModifier) {
         // ensure pasting text with Shift+Insert also parses input
         // longer term parsing should be done using the TextChanged event
         processKey();

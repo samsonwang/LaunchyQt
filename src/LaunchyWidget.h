@@ -74,7 +74,7 @@ public slots:
     void setOpaqueness(int level);
 
 protected:
-    virtual void showEvent(QShowEvent *event);
+    virtual void showEvent(QShowEvent* event);
     virtual void paintEvent(QPaintEvent* event);
     virtual void closeEvent(QCloseEvent* event);
     //virtual void focusInEvent(QFocusEvent* event);
