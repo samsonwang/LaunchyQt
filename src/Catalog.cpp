@@ -129,11 +129,10 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
 
     // Check for history matches
     QString location = "History/" + text;
-    QStringList hist;
-    hist = g_settings->value(location).toStringList();
+    QStringList hist = g_settings->value(location).toStringList();
     if (hist.count() == 2) {
         for (int i = 0; i < catMatches.count(); i++) {
-            if (catMatches[i]->searchName == hist[0]
+            if (catMatches[i]->shortName == hist[0]
                 && catMatches[i]->fullPath == hist[1]) {
                 CatItem* tmp = catMatches[i];
                 catMatches.removeAt(i);
@@ -149,20 +148,24 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     }
 }
 
-
-void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem> & list) {
+void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list) {
     // Check for history matches
     QString location = "History/" + text;
-    QStringList hist;
-    hist = g_settings->value(location, hist).toStringList();
-    if (hist.count() == 2) {
-        for (int i = 0; i < list.count(); i++) {
-            if (list[i].searchName == hist[0]
-                && list[i].fullPath == hist[1]) {
-                CatItem tmp = list[i];
-                list.removeAt(i);
-                list.push_front(tmp);
-            }
+    QStringList hist = g_settings->value(location).toStringList();
+    qDebug() << "Catalog::promoteRecentlyUsedItems, text:"
+        << text << "hist" << hist << "hist count:" << hist.count();
+
+    if (hist.count() != 2) {
+        return;
+    }
+
+    for (int i = 0; i < list.count(); i++) {
+        if (list[i].shortName == hist[0] && list[i].fullPath == hist[1]) {
+            CatItem tmp = list[i];
+            qDebug() << "Catalog::promoteRecentlyUsedItems, promoted:" << tmp.fullPath;
+            list.removeAt(i);
+            list.push_front(tmp);
+            break;
         }
     }
 }

@@ -34,8 +34,8 @@ public:
     bool load(const QString& filename);
     bool save(const QString& filename);
     void incrementTimestamp();
-    void searchCatalogs(const QString&, QList<CatItem>&);
-    void promoteRecentlyUsedItems(const QString& text, QList<CatItem> & list);
+    void searchCatalogs(const QString& text, QList<CatItem>& out);
+    void promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list);
 
     virtual int count() = 0;
     virtual void clear() = 0;
