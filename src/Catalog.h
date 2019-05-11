@@ -73,7 +73,7 @@ public:
 // than FastCatalog
 class SlowCatalog : public Catalog {
 public:
-    SlowCatalog() : Catalog() {}
+    SlowCatalog();
     virtual int count();
     virtual void clear();
     virtual void addItem(const CatItem& item);

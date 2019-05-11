@@ -218,6 +218,11 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
 }
 
 
+SlowCatalog::SlowCatalog()
+    : Catalog() {
+
+}
+
 int SlowCatalog::count() {
     return m_catalogItems.count();
 }
@@ -249,7 +254,7 @@ void SlowCatalog::addItem(const CatItem& item) {
 
     if (!replaced) {
         // If no match found, append the item to the catalog
-        qDebug() << "SlowCatalog::addItem, Adding" << item.fullPath;
+        // qDebug() << "SlowCatalog::addItem, Adding" << item.fullPath;
         m_catalogItems.push_back(CatalogItem(item, m_timestamp));
     }
 }

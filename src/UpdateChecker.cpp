@@ -60,7 +60,6 @@ void UpdateChecker::startup() {
 
     QDateTime last = QDateTime::fromString(lastUpdate, "yyyy-MM-dd HH:mm:ss");
     QDateTime now = QDateTime::currentDateTime();
-    qDebug() << "UpdateChecker::startup, last:" << last.toString(Qt::ISODate);
 
     if (now < last.addSecs(interval * 3600)) {
         qDebug() << "UpdateChecker::startup, last update time:" << lastUpdate
