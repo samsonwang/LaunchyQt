@@ -28,6 +28,7 @@ void LaunchyWidgetLinux::focusLaunchy() {
        it leads me to believe that it is due to an issue in the Qt implementation on Linux. */
     grabKeyboard();
     releaseKeyboard();
+    LaunchyWidget::focusLaunchy();
 }
 
 // Create the main widget for the application
