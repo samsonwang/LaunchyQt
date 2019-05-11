@@ -87,6 +87,8 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* event);
     virtual void changeEvent(QEvent* event);
 
+    virtual void focusLaunchy();
+
 protected:
     void saveSettings();
     void showTrayIcon();
@@ -117,7 +119,7 @@ protected slots:
     void catalogProgressUpdated(int);
     void catalogBuilt();
     void setFadeLevel(double level);
-    void iconExtracted(int index, QString path, QIcon icon);
+    void iconExtracted(int index, const QString& path, const QIcon& icon);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void reloadSkin();
     void exit();

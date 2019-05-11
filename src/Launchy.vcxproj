@@ -453,6 +453,7 @@ exit 0</Command>
     <ClCompile Include="UpdateChecker.cpp" />
     <ClCompile Include="win\CrashDumper.cpp" />
     <ClCompile Include="win\AppWin.cpp" />
+    <ClCompile Include="win\LaunchyWidgetWin.cpp" />
     <ClCompile Include="win\UtilWin.cpp" />
     <ClCompile Include="win\IconProviderWin.cpp" />
   </ItemGroup>
@@ -555,6 +556,7 @@ exit 0</Command>
     </CustomBuild>
     <ClInclude Include="win\IconProviderWin.h" />
     <ClInclude Include="win\CrashDumper.h" />
+    <ClInclude Include="win\LaunchyWidgetWin.h" />
     <ClInclude Include="win\UtilWin.h" />
     <CustomBuild Include="win\AppWin.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

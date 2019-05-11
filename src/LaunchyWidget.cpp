@@ -44,15 +44,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginMsg.h"
 #include "UpdateChecker.h"
 
-#include "TestWidget.h"
-
 namespace launchy {
 
 // for qt flags
 // check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
 
-LaunchyWidget* LaunchyWidget::s_instance;
+LaunchyWidget* LaunchyWidget::s_instance = nullptr;
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
@@ -913,7 +911,7 @@ void LaunchyWidget::dropTimeout() {
     }
 }
 
-void LaunchyWidget::iconExtracted(int itemIndex, QString path, QIcon icon) {
+void LaunchyWidget::iconExtracted(int itemIndex, const QString& path, const QIcon& icon) {
     if (itemIndex == -1) {
         // An index of -1 means update the output icon, check that it is also
         // the same item as was originally requested
@@ -1028,17 +1026,24 @@ void LaunchyWidget::trayNotify(const QString& infoMsg) {
 }
 
 void LaunchyWidget::onHotkey() {
+    qDebug() << "LaunchyWidget::onHotkey,"
+             << "m_alwaysShowLaunchy:" << m_alwaysShowLaunchy
+             << "isVisible()" << isVisible()
+             << "isFading():" << m_fader->isFading()
+             << "QApplication::activeWindow():" << QApplication::activeWindow();
+
     if (m_menuOpen || m_optionsOpen) {
         showLaunchy(true);
-        return;
     }
-    if (!m_alwaysShowLaunchy
-        && isVisible()
-        && !m_fader->isFading()
-        && QApplication::activeWindow() != nullptr) {
+    else if (!m_alwaysShowLaunchy
+             && isVisible()
+             && !m_fader->isFading()
+             && QApplication::activeWindow() != nullptr) {
+        qDebug() << "LaunchyWidget::onHotkey, hideLaunchy";
         hideLaunchy();
     }
     else {
+        qDebug() << "LaunchyWidget::onHotkey, showLaunchy";
         showLaunchy();
     }
 }
@@ -1069,6 +1074,7 @@ bool LaunchyWidget::setAlwaysTop(bool alwaysTop) {
 }
 
 void LaunchyWidget::setOpaqueness(int level) {
+    qDebug() << "LaunchyWidget::setOpaqueness," << level;
     double value = level / 100.0;
     setWindowOpacity(value);
     m_alternativeList->setWindowOpacity(value);
@@ -1216,7 +1222,7 @@ void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
     m_inputBox->setFocus();
 }
 
-void LaunchyWidget::mouseMoveEvent(QMouseEvent *event) {
+void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
     if (event->buttons() == Qt::LeftButton && m_dragging) {
         QPoint pt = event->globalPos() - m_dragStartPoint;
         move(pt);
@@ -1252,6 +1258,12 @@ void LaunchyWidget::changeEvent(QEvent* event) {
 
     // remember to call base class implementation
     QWidget::changeEvent(event);
+}
+
+void LaunchyWidget::focusLaunchy() {
+    qApp->setActiveWindow(this);
+    activateWindow();
+    raise();
 }
 
 void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -1314,7 +1326,6 @@ void LaunchyWidget::setFadeLevel(double level) {
     }
 }
 
-
 void LaunchyWidget::showLaunchy(bool noFade) {
 
     hideAlternativeList();
@@ -1323,21 +1334,8 @@ void LaunchyWidget::showLaunchy(bool noFade) {
 
     m_fader->fadeIn(noFade || m_alwaysShowLaunchy);
 
-#ifdef Q_OS_WIN
-    // need to use this method in Windows to ensure that keyboard focus is set when
-    // being activated via a hook or message from another instance of Launchy
-    // SetForegroundWindowEx((HWND)winId());
-#elif defined(Q_OS_LINUX)
-    /* Fix for bug 2994680: Not sure why this is necessary, perhaps someone with more
-       Qt experience can tell, but doing these two calls will force the window to actually
-       get keyboard focus when it is activated. It seems from the bug reports that this
-       only affects Linux (and I could only test it on my Linux system - running KDE), so
-       it leads me to believe that it is due to an issue in the Qt implementation on Linux. */
-    grabKeyboard();
-    releaseKeyboard();
-#endif
-    raise();
-    activateWindow();
+    focusLaunchy();
+
     m_inputBox->selectAll();
     m_inputBox->setFocus();
 

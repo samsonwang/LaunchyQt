@@ -292,6 +292,9 @@
     <ClCompile Include="TranslationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="win\LaunchyWidgetWin.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHistory.h">
@@ -350,6 +353,9 @@
     </ClInclude>
     <ClInclude Include="TranslationManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win\LaunchyWidgetWin.h">
+      <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -261,19 +261,4 @@ AppBase* createApplication(int& argc, char** argv) {
     return new AppLinux(argc, argv);
 }
 
-// Create the main widget for the application
-void createLaunchyWidget(CommandFlags command) {
-    if (!LaunchyWidget::s_instance) {
-        LaunchyWidget::s_instance = new LaunchyWidget(command);
-        if (!LaunchyWidget::s_instance->isVisible()) {
-            // dirty approach to make Qhotkey works, do not know why
-            qreal opac = LaunchyWidget::s_instance->windowOpacity();
-            LaunchyWidget::s_instance->setWindowOpacity(0.01);
-            LaunchyWidget::s_instance->show();
-            LaunchyWidget::s_instance->hide();
-            LaunchyWidget::s_instance->setWindowOpacity(opac);
-        }
-    }
-}
-
 }
