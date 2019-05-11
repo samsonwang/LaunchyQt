@@ -210,7 +210,6 @@ exit 0</Command>
     <ClCompile Include="PluginMgr.cpp" />
     <ClCompile Include="ExportPy.cpp" />
     <ClCompile Include="PluginWrapper.cpp" />
-    <ClCompile Include="TestWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExportPy.h" />
@@ -221,7 +220,6 @@ exit 0</Command>
     <ClInclude Include="PluginLoader.h" />
     <ClInclude Include="PluginMgr.h" />
     <ClInclude Include="PluginWrapper.h" />
-    <ClInclude Include="TestWidget.h" />
     <CustomBuild Include="Precompiled.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo /*-------------------------------------------------------------------- &gt;GeneratedFiles/Precompiled.h.cpp
 if errorlevel 1 goto VCEnd

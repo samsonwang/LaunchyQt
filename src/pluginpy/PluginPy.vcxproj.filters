@@ -53,9 +53,6 @@
     <ClCompile Include="ExportPyInputData.cpp">
       <Filter>ExportPy</Filter>
     </ClCompile>
-    <ClCompile Include="TestWidget.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PluginPyLib.h">
@@ -81,9 +78,6 @@
     </ClInclude>
     <ClInclude Include="ExportPyInputData.h">
       <Filter>ExportPy</Filter>
-    </ClInclude>
-    <ClInclude Include="TestWidget.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
