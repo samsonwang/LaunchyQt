@@ -33,7 +33,7 @@ CatItem::CatItem()
 CatItem::CatItem(const QString& full, bool isDir)
     : fullPath(full),
       usage(0),
-      data(NULL), 
+      data(NULL),
       pluginId(0) {
     int last = fullPath.lastIndexOf("/");
     if (last == -1) {
@@ -47,7 +47,7 @@ CatItem::CatItem(const QString& full, bool isDir)
     }
 
     searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[0]);
+    searchName[TRANS] = convertSearchName(searchName[LOWER]);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN)
@@ -58,7 +58,7 @@ CatItem::CatItem(const QString& full, const QString& shortN)
       pluginId(0) {
 
     searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[0]);
+    searchName[TRANS] = convertSearchName(searchName[LOWER]);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN, uint id)
@@ -69,7 +69,7 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint id)
       pluginId(id) {
 
     searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[0]);
+    searchName[TRANS] = convertSearchName(searchName[LOWER]);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath)
@@ -81,7 +81,7 @@ CatItem::CatItem(const QString& full, const QString& shortN, uint id, const QStr
       pluginId(id) {
 
     searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[0]);
+    searchName[TRANS] = convertSearchName(searchName[LOWER]);
 }
 
 bool CatItem::operator!=(const CatItem& other) const {

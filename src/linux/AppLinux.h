@@ -43,6 +43,7 @@ public:
 	virtual QString expandEnvironmentVars(QString txt);
 
     bool supportsAlphaBorder() const;
+
     /*
       QIcon icon(const QFileInfo& info) {
       shared_ptr<UnixIconProvider> u(dynamic_pointer_cast<UnixIconProvider>(icons));

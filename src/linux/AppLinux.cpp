@@ -132,60 +132,71 @@ bool AppLinux::supportsAlphaBorder() const {
     return QX11Info::isCompositingManagerRunning();
 }
 
-
 void AppLinux::alterItem(CatItem* item) {
-    if (!item->fullPath.endsWith(".desktop", Qt::CaseInsensitive))
+    if (!item->fullPath.endsWith(".desktop", Qt::CaseInsensitive)) {
         return;
+    }
+
+    QFile file(item->fullPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
 
     QString locale = QLocale::system().name();
 
-    QFile file(item->fullPath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    QString name = "";
-    QString icon = "";
-    QString exe = "";
+    QString name;
+    QString icon;
+    QString exe;
     while(!file.atEnd()) {
         QString line = QString::fromUtf8(file.readLine());
 
-        if (line.startsWith("Name[" + locale, Qt::CaseInsensitive))
+        if (line.startsWith("Name[" + locale, Qt::CaseInsensitive)) {
             name = line.split("=")[1].trimmed();
-        else if (line.startsWith("Name=", Qt::CaseInsensitive))
+        }
+        else if (line.startsWith("Name=", Qt::CaseInsensitive)) {
             name = line.split("=")[1].trimmed();
-        else if (line.startsWith("Icon", Qt::CaseInsensitive))
+        }
+        else if (line.startsWith("Icon", Qt::CaseInsensitive)) {
             icon = line.split("=")[1].trimmed();
-        else if (line.startsWith("Exec", Qt::CaseInsensitive))
+        }
+        else if (line.startsWith("Exec", Qt::CaseInsensitive)) {
             exe = line.split("=")[1].trimmed();
+        }
     }
+
     if (name.size() >= item->shortName.size() - 8) {
         item->shortName = name;
-        item->searchName = item->shortName.toLower();
+        item->searchName[LOWER] = item->shortName.toLower();
+        item->searchName[TRANS] = CatItem::convertSearchName(item->searchName[LOWER]);
     }
 
     // Don't index desktop items wthout icons
-    if (icon.trimmed() == "")
+    if (icon.trimmed().isEmpty()) {
         return;
+    }
 
     /* fill in some specifiers while we have the info */
     exe.replace("%i", "--icon " + icon);
     exe.replace("%c", name);
     exe.replace("%k", item->fullPath);
 
-    QStringList allExe = exe.trimmed().split(" ",QString::SkipEmptyParts);
-    if (allExe.size() == 0 || allExe[0].size() == 0 )
+    QStringList allExe = exe.trimmed().split(" ", QString::SkipEmptyParts);
+    if (allExe.isEmpty() || allExe[0].isEmpty()) {
         return;
+    }
+
     exe = allExe[0];
     allExe.removeFirst();
-    //    exe = exe.trimmed().split(" ")[0];
+    // exe = exe.trimmed().split(" ")[0];
 
     /* if an absolute or relative path is supplied we can just skip this
        everything else should be checked to avoid picking up [unwanted]
        stuff from the working directory - if it doesnt exsist, use it anyway */
     if(!exe.contains(QRegExp("^.?.?/"))) {
         foreach(QString line, QProcess::systemEnvironment()) {
-            if (!line.startsWith("Path", Qt::CaseInsensitive))
+            if (!line.startsWith("Path", Qt::CaseInsensitive)) {
                 continue;
+            }
 
             QStringList spl = line.split("=");
             QStringList spl2 = spl[1].split(":");
@@ -199,7 +210,6 @@ void AppLinux::alterItem(CatItem* item) {
             break;
         }
     }
-
 
     item->fullPath = exe + " " + allExe.join(" ");
 
@@ -218,7 +228,7 @@ void AppLinux::alterItem(CatItem* item) {
 
     item->iconPath = icon;
 
-    file.close();
+    // file.close();
     return;
 }
 
@@ -230,27 +240,24 @@ QString AppLinux::expandEnvironmentVars(QString txt) {
 	int curPos = txt.indexOf(delim, 0);
 	if (curPos == -1) return txt;
 
-	while(curPos != -1)
-	{
+	while(curPos != -1) {
 		int nextPos = txt.indexOf("$", curPos+1);
-		if (nextPos == -1)
-		{
+		if (nextPos == -1) {
 			out += txt.mid(curPos+1);
 			break;
 		}
 		QString var = txt.mid(curPos+1, nextPos-curPos-1);
 		bool found = false;
-		foreach(QString s, list)
-		{
-			if (s.startsWith(var, Qt::CaseInsensitive))
-			{
+		foreach(QString s, list) {
+			if (s.startsWith(var, Qt::CaseInsensitive)) {
 				found = true;
 				out += s.mid(var.length()+1);
 				break;
 			}
 		}
-		if (!found)
-			out += "$" + var;
+		if (!found) {
+            out += "$" + var;
+        }
 		curPos = nextPos;
 	}
 	return out;
