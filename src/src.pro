@@ -36,7 +36,9 @@ SOURCES = main.cpp \
     Logger.cpp \
     OptionItem.cpp \
     Directory.cpp \
-    UpdateChecker.cpp
+    UpdateChecker.cpp \
+    TranslationManager.cpp
+
 HEADERS = AppBase.h \
     GlobalVar.h \
     LaunchyWidget.h \
@@ -62,7 +64,8 @@ HEADERS = AppBase.h \
     Logger.h \
     OptionItem.h \
     Directory.h \
-    UpdateChecker.h
+    UpdateChecker.h \
+    TranslationManager.h
 
 FORMS = OptionDialog.ui
 
@@ -112,11 +115,13 @@ win32 {
     ICON = Launchy.ico
     if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
     SOURCES += win/AppWin.cpp \
+               win/LaunchyWidgetWin.cpp \
                win/UtilWin.cpp \
                win/IconProviderWin.cpp \
                win/CrashDumper.cpp
     HEADERS += win/AppWin.h \
                win/IconProviderWin.h \
+               win/LaunchyWidgetWin.h \
                win/UtilWin.h \
                win/CrashDumper.h
     CONFIG  += embed_manifest_exe
