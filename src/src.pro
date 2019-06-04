@@ -88,8 +88,11 @@ unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
     SOURCES += linux/AppLinux.cpp \
+               linux/LaunchyWidgetLinux.cpp \
                linux/IconProviderLinux.cpp
+
     HEADERS += linux/AppLinux.h \
+               linux/LaunchyWidgetLinux.h \
                linux/IconProviderLinux.h
     LIBS += -L$$OUT_PWD/src/lib/ $$DESTDIR/liblaunchy.so $$DESTDIR/libpluginpy.so
 

@@ -26,6 +26,7 @@ class LaunchyWidgetLinux : public LaunchyWidget {
     friend void createLaunchyWidget(CommandFlags command);
 
 protected:
+    LaunchyWidgetLinux(CommandFlags command);
     virtual void focusLaunchy();
 };
 
