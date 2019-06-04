@@ -166,8 +166,8 @@ void AppLinux::alterItem(CatItem* item) {
 
     if (name.size() >= item->shortName.size() - 8) {
         item->shortName = name;
-        item->searchName[LOWER] = item->shortName.toLower();
-        item->searchName[TRANS] = CatItem::convertSearchName(item->searchName[LOWER]);
+        item->searchName[CatItem::LOWER] = item->shortName.toLower();
+        item->searchName[CatItem::TRANS] = CatItem::convertSearchName(item->searchName[CatItem::LOWER]);
     }
 
     // Don't index desktop items wthout icons
