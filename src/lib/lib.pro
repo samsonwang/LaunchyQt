@@ -30,6 +30,12 @@ if(!debug_and_release|build_pass) {
     CONFIG(release, debug|release):DESTDIR = ../../release/
 }
 
+unix:!macx {
+    PREFIX   = /usr
+    target.path   = $$PREFIX/lib/
+    INSTALLS += target
+}
+
 win32 {
    LIBS += user32.lib \
            shell32.lib

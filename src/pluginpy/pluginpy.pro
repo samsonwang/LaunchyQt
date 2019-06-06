@@ -38,9 +38,13 @@ CONFIG(debug, debug|release):DESTDIR = ../../debug/
 CONFIG(release, debug|release):DESTDIR = ../../release/
 
 unix:!macx {
-#python3-config
-INCLUDEPATH += /usr/include/python3.6m
-LIBS += -lpython3.6m -lpthread -ldl  -lutil -lm
+    #python3-config
+    INCLUDEPATH += /usr/include/python3.6m
+    LIBS += -lpython3.6m -lpthread -ldl  -lutil -lm
+
+    PREFIX   = /usr
+    target.path   = $$PREFIX/lib/
+    INSTALLS += target
 }
 
 win32 {
