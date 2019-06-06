@@ -104,7 +104,7 @@ QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName)
                                "~/.local/share/applications/" };
         for(int i = 0; i < 5; i++) {
             QString dir = dirs[i];
-            QString path = dir + "/" + desktopFile;
+            QString path = dir + desktopFile;
 
             if (QFile::exists(path)) {
                 QFile file(path);
@@ -112,7 +112,7 @@ QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName)
                     return "";
                 }
 
-                while(!file.atEnd()) {
+                while (!file.atEnd()) {
                     QString line = file.readLine();
                     if (line.startsWith("Icon", Qt::CaseInsensitive)) {
                         m_desktop2icon[desktopFile] = line.split("=")[1].trimmed();
@@ -160,15 +160,12 @@ QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName)
 
         QStringList dirs;
         dirs += QDir::homePath() + "/.icons" + themes[0];
-
-        foreach(QString dir, m_xdgDataDirs) {
-            foreach(QString thm, themes) {
+        dirs += "/usr/share/pixmaps";
+        foreach (QString dir, m_xdgDataDirs) {
+            foreach (QString thm, themes) {
                 dirs += dir + "/icons" + thm;
             }
         }
-
-        dirs += "/usr/share/pixmaps";
-
 
         foreach(QString dir, dirs) {
             QDir d(dir);
@@ -179,7 +176,7 @@ QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName)
             sdirs += ".";
 
             foreach (QString subdir, sdirs) {
-                foreach(QString iname, inames) {
+                foreach (QString iname, inames) {
                     if (QFile::exists(dir + "/" + subdir + "/" +  iname)) {
                         iconPath = dir + "/" + subdir + "/" + iname;
                         m_icon2path[iconName] = iconPath;

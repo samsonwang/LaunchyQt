@@ -66,8 +66,9 @@ QList<Directory> AppLinux::getDefaultCatalogDirectories() {
     QStringList l;
     l << "*.desktop";
 
-    for(int i = 0; i < 5; i++)
-        list.append(Directory(dirs[i], l, false, true, 100));
+    for(int i = 0; i < 5; i++) {
+        list.append(Directory(dirs[i], l, false, true, 10));
+    }
 
     list.append(Directory("~", QStringList(), true, false, 0));
 

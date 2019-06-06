@@ -28,10 +28,10 @@ struct Directory {
     Directory(const QString& n);
     Directory(const QString& n, const QStringList& t, bool d, bool e, int dep);
 
-    bool indexDirs;
-    bool indexExe;
     QString name;
     QStringList types;
+    bool indexDirs;
+    bool indexExe;
     int depth;
 };
 }

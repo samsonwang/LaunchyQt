@@ -9,17 +9,17 @@ Directory::Directory()
 }
 
 Directory::Directory(const QString& n)
-    : indexDirs(false),
+    : name(n),
+      indexDirs(false),
       indexExe(false),
-      name(n),
       depth(10) {
 }
 
 Directory::Directory(const QString& n, const QStringList& t, bool d, bool e, int dep)
-    : indexDirs(d),
-      indexExe(e),
-      name(n),
+    : name(n),
       types(t),
+      indexDirs(d),
+      indexExe(e),
       depth(dep) {
 }
 }
