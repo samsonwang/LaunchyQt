@@ -80,7 +80,6 @@ public:
     friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
     friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
 
-private:
     /** Convert short name to search name */
     static QString convertSearchName(const QString& shortName);
 };

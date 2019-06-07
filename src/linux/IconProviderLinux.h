@@ -15,14 +15,14 @@ public:
     IconProviderLinux();
     virtual ~IconProviderLinux();
     virtual QIcon icon(const QFileInfo& info);
-    QString getDesktopIcon(QString desktopFile, QString IconName = "");
+    QString getDesktopIcon(QString desktopFile, QString iconName = "");
 
 private:
-    QHash<QString, QString> file2mime;
-    QHash<QString, QString> mime2desktop;
-    QHash<QString, QString> desktop2icon;
-    QHash<QString, QString> icon2path;
-    QStringList xdgDataDirs;
+    QHash<QString, QString> m_file2mime;
+    QHash<QString, QString> m_mime2desktop;
+    QHash<QString, QString> m_desktop2icon;
+    QHash<QString, QString> m_icon2path;
+    QStringList m_xdgDataDirs;
 };
 
 }

@@ -1,51 +1,48 @@
 TEMPLATE = lib
-CONFIG += plugin \
-    debug_and_release
-VPATH += ../../src
-INCLUDEPATH += ../../src
-INCLUDEPATH += ../../common
-INCLUDEPATH += c:/boost/
-PRECOMPILED_HEADER = precompiled.h
-UI_DIR = ../../plugins/runner/
-FORMS = dlg.ui
-HEADERS = plugin_interface.h \
-    runner.h \
-    gui.h \
-    globals.h \
-    ../../common/FileBrowserDelegate.h \
-    ../../common/FileBrowser.h \
-    ../../common/DropTableWidget.h \
-    precompiled.h
-SOURCES = plugin_interface.cpp \
-    runner.cpp \
-    gui.cpp \
-	../../common/FileBrowser.cpp \
-	../../common/FileBrowserDelegate.cpp \
-	../../common/DropTableWidget.cpp
-TARGET \
-    = \
-    runner
-win32 { 
-    CONFIG -= embed_manifest_dll
-	LIBS += user32.lib shell32.lib
-	QMAKE_CXXFLAGS_RELEASE += /Zi
-	QMAKE_LFLAGS_RELEASE += /DEBUG
-}
- 
-if(!debug_and_release|build_pass):CONFIG(debug, debug|release) {
-    DESTDIR = ../../debug/plugins
-}
 
-if(!debug_and_release|build_pass):CONFIG(release, debug|release) {
-    DESTDIR = ../../release/plugins
+QT += widgets
+
+CONFIG += plugin \
+          debug_and_release
+
+VPATH += ../../src
+INCLUDEPATH += ../../src \
+               ../../src/lib
+
+FORMS = dlg.ui
+
+HEADERS = runner.h \
+          gui.h \
+          globals.h \
+          precompiled.h
+
+SOURCES = runner.cpp \
+          gui.cpp \
+          globals.cpp
+
+PRECOMPILED_HEADER = precompiled.h
+
+TARGET = Runner
+
+#UI_DIR = ../../plugins/$$TARGET/
+CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins/$$TARGET
+CONFIG(release, debug|release):DESTDIR = ../../release/plugins/$$TARGET
+
+win32 {
+#    CONFIG -= embed_manifest_dll
+    LIBS += user32.lib \
+            shell32.lib \
+            $$DESTDIR/../../Launchy.lib
+    QMAKE_CXXFLAGS_RELEASE += /Zi
+#    QMAKE_LFLAGS_RELEASE += /DEBUG
 }
 
 unix:!macx {
- PREFIX = /usr
- target.path = $$PREFIX/lib/launchy/plugins/
- icon.path = $$PREFIX/lib/launchy/plugins/icons/
- icon.files = runner.png
- INSTALLS += target icon
+    PREFIX = /usr
+    target.path = $$PREFIX/lib/launchy/plugins/
+    icon.path = $$PREFIX/lib/launchy/plugins/icons/
+    icon.files = runner.png
+    INSTALLS += target icon
 }
 
 macx {

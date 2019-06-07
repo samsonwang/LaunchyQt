@@ -46,18 +46,18 @@ void CatalogBuilder::buildCatalog() {
     m_indexed.clear();
 
     PluginHandler& pluginHandler = PluginHandler::instance();
-    QList<Directory> memDirs = SettingsManager::instance().readCatalogDirectories();
+    QList<Directory> catDirs = SettingsManager::instance().readCatalogDirectories();
     const QHash<uint, PluginInfo>& pluginsInfo = pluginHandler.getPlugins();
-    m_totalItems = memDirs.count() + pluginsInfo.count();
+    m_totalItems = catDirs.count() + pluginsInfo.count();
     m_currentItem = 0;
 
-    while (m_currentItem < memDirs.count()) {
-        QString currentDir = g_app->expandEnvironmentVars(memDirs[m_currentItem].name);
+    while (m_currentItem < catDirs.count()) {
+        QString currentDir = g_app->expandEnvironmentVars(catDirs[m_currentItem].name);
         indexDirectory(currentDir,
-                       memDirs[m_currentItem].types,
-                       memDirs[m_currentItem].indexDirs,
-                       memDirs[m_currentItem].indexExe,
-                       memDirs[m_currentItem].depth);
+                       catDirs[m_currentItem].types,
+                       catDirs[m_currentItem].indexDirs,
+                       catDirs[m_currentItem].indexExe,
+                       catDirs[m_currentItem].depth);
         progressStep(m_currentItem);
     }
 
@@ -148,8 +148,9 @@ void CatalogBuilder::indexDirectory(const QString& directory,
             CatItem item(dir + "/" + files[i]);
             g_app->alterItem(&item);
 #ifdef Q_OS_LINUX
-            if (item.fullPath.endsWith(".desktop") && item.iconPath == "")
+            if (item.fullPath.endsWith(".desktop") && item.iconPath.isEmpty()) {
                 continue;
+            }
 #endif
             m_catalog->addItem(item);
 

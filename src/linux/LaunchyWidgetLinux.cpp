@@ -18,7 +18,11 @@
 
 #include "LaunchyWidgetLinux.h"
 
-namespace launhy {
+namespace launchy {
+
+LaunchyWidgetLinux::LaunchyWidgetLinux(CommandFlags command)
+    : LaunchyWidget(command) {
+}
 
 void LaunchyWidgetLinux::focusLaunchy() {
     /* Fix for bug 2994680: Not sure why this is necessary, perhaps someone with more
