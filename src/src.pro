@@ -106,7 +106,7 @@ unix:!macx {
     icon.path     = $$PREFIX/share/pixmaps
     icon.files    = ../misc/Launchy_Icon/launchy_icon.png
     desktop.path  = $$PREFIX/share/applications/
-    desktop.files = ../linux/launchy.desktop
+    desktop.files = ../dist/linux/launchy.desktop
     INSTALLS += target \
                 skins \
                 icon \
