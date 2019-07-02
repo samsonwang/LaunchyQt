@@ -24,6 +24,8 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QApplication
 from sip import wrapinstance, unwrapinstance
 
+from translator import *
+
 import launchy
 from launchy import CatItem
 
@@ -67,8 +69,28 @@ class TranslatorPy(launchy.Plugin):
             return
 
         text = inputDataList[1].getText()
-        print('TranslatorPy, getResults,', text)
-        item = CatItem(text+".translatorpy", text,
+        print('TranslatorPy, getResults, input text:', text)
+        if len(text) == 0:
+            print('TranslatorPy, getResults, input text is empty')
+            return
+
+        # press tab to query
+        if len(inputDataList) < 3:
+            item = CatItem('press tab to translate' , text,
+                           self.getID(), self.getIcon())
+            item.setUsage(50000)
+            resultsList.append(item)
+            return
+
+        gt = YoudaoTranslator()
+        print('TranslatorPy, getResults, translating ...')
+        ret = gt.translate('auto', 'auto', text)
+        if not ret:
+            print('TranslatorPy, getResults, fail to translate')
+            return
+
+        print('TranslatorPy, getResults, ret:', ret)
+        item = CatItem(text+".translatorpy", ret['result'],
                        self.getID(), self.getIcon())
         item.setUsage(50000)
         resultsList.append(item)
