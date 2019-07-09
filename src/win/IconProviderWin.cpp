@@ -112,7 +112,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     }
     else if (fileExtension == QStringLiteral("lnk") || info.isSymLink()) {
         QFileInfo targetInfo(info.symLinkTarget());
-        retIcon = QFileIconProvider::icon(targetInfo);
+        retIcon = icon(targetInfo);
     }
     else {
         // This 64 bit mapping needs to go away if we produce a 64 bit build of launchy
