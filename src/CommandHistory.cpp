@@ -103,14 +103,37 @@ void CommandHistory::removeAt(int index) {
     }
 }
 
-// Populate the searchresults with items from the command history
-void CommandHistory::search(QList<CatItem>& searchResults) const {
+void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
     int64_t index = 0;
-    foreach(InputDataList historyItem, m_history) {
+    foreach (InputDataList historyItem, m_history) {
         CatItem& item = historyItem.first().getTopResult();
         item.pluginId = HASH_HISTORY;
-        item.data = (void*)index++;
+        item.data = (void*)index++; // use this when switching alternative list
         searchResults.push_back(item);
     }
+}
+
+// Populate the search results with items from the command history
+void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) const {
+    if (text.isEmpty()) {
+        return;
+    }
+
+    int64_t index = 0;
+    foreach (InputDataList historyItem, m_history) {
+        // each InputDataList is a whole input and invoke action
+        foreach (InputData data, historyItem) {
+            if (data.getText().contains(text, Qt::CaseInsensitive)) {
+                // history matched
+                CatItem item = historyItem.first().getTopResult();
+                item.pluginId = HASH_HISTORY;
+                item.data = (void*)index;
+                item.shortName = historyItem.toString();
+                searchResults.push_back(item);
+            }
+        }
+        ++index;
+    }
+
 }
 }

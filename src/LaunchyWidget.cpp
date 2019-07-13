@@ -460,12 +460,12 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
     }
 
     const CatItem& item = m_searchResult[index];
+    int historyIndex = (int)(int64_t)(item.data);
+
     if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
         || m_inputBox->text().isEmpty()) {
         // Used a void* to hold an int.. ick!
         // BUT! Doing so avoids breaking existing catalogs
-        int64_t hi = reinterpret_cast<int64_t>(item.data);
-        int historyIndex = static_cast<int>(hi);
 
         if (item.pluginId == HASH_HISTORY && historyIndex < m_searchResult.count()) {
             m_inputData = m_history.getItem(historyIndex);
@@ -479,9 +479,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
             g_searchText = m_inputData.toString();
         }
     }
-    else if (!m_inputData.isEmpty()
-             && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST)
-                 || !m_inputData.last().hasText())) {
+    else if (!m_inputData.isEmpty() && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST) || !m_inputData.last().hasText())) {
         qDebug() << "Autosuggest" << item.shortName;
 
         m_inputData.last().setText(item.shortName);
@@ -536,8 +534,9 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
                 hist << m_searchResult[row].shortName << m_searchResult[row].fullPath;
                 g_settings->setValue(location, hist);
 
-                if (row > 0)
+                if (row > 0) {
                     m_searchResult.move(row, 0);
+                }
 
                 if (event->key() == Qt::Key_Tab) {
                     doTab();
@@ -790,14 +789,17 @@ void LaunchyWidget::searchOnInput() {
     if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
         || m_inputBox->text().isEmpty()) {
         // Add history items exclusively and unsorted so they remain in most recently used order
-        qDebug() << "LaunchyWidget::searchOnInput, searching history for" << searchText;
-        m_history.search(m_searchResult);
+        qDebug() << "LaunchyWidget::searchOnInput, get all history items";
+        m_history.getAllItem(m_searchResult);
     }
     else {
         // Search the catalog for matching items
         if (m_inputData.count() == 1) {
             qDebug() << "LaunchyWidget::searchOnInput, searching catalog for" << searchText;
             g_catalog->searchCatalogs(searchTextLower, m_searchResult);
+
+            qDebug() << "LaunchyWidget::searchOnInput, searching history for" << searchText;
+            m_history.search(searchTextLower, m_searchResult);
         }
 
         if (!m_searchResult.isEmpty()) {
@@ -850,8 +852,9 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
 
         if (m_outputItem.pluginId != HASH_HISTORY) {
             // Did the plugin take control of the input?
-            if (m_inputData.last().getID() != 0)
+            if (m_inputData.last().getID() != 0) {
                 m_outputItem.pluginId = m_inputData.last().getID();
+            }
             m_inputData.last().setTopResult(m_searchResult[0]);
         }
 
