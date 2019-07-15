@@ -119,20 +119,38 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
         return;
     }
 
-    int64_t index = 0;
-    foreach (InputDataList historyItem, m_history) {
+    int64_t index = -1;
+    foreach (InputDataList historyCmd, m_history) {
+        ++index;
+        // ignore history commands which have only one input segment
+        if (historyCmd.count() == 1) {
+            continue;
+        }
         // each InputDataList is a whole input and invoke action
-        foreach (InputData data, historyItem) {
+        foreach (InputData data, historyCmd) {
             if (data.getText().contains(text, Qt::CaseInsensitive)) {
                 // history matched
-                CatItem item = historyItem.first().getTopResult();
+                CatItem item = historyCmd.first().getTopResult();
                 item.pluginId = HASH_HISTORY;
                 item.data = (void*)index;
-                item.shortName = historyItem.toString();
-                searchResults.push_back(item);
+                item.shortName = historyCmd.toString();
+
+                // search for duplicates
+                bool duplicated = false;
+                foreach (CatItem retItem, searchResults) {
+                    if (retItem.shortName == item.shortName && retItem.fullPath == item.fullPath) {
+                        duplicated = true;
+                        break;
+                    }
+                }
+
+                if (!duplicated) {
+                    qDebug() << "CommandHistory::search, matched item:" << item.shortName
+                        << item.fullPath << item.data;
+                    searchResults.push_back(item);
+                }
             }
         }
-        ++index;
     }
 
 }

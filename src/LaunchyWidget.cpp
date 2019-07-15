@@ -392,7 +392,6 @@ void LaunchyWidget::hideAlternativeList() {
     m_iconExtractor.stop();
 }
 
-
 void LaunchyWidget::launchItem(CatItem& item) {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
@@ -416,13 +415,24 @@ void LaunchyWidget::launchItem(CatItem& item) {
         }
     }
 
+    qDebug() << "LaunchyWidget::launchItem, ops after plugins:" << ops;
+
     if (ops == MSG_CONTROL_LAUNCHITEM) {
         QString args;
-        if (m_inputData.count() > 1) {
+        if (item.pluginId == LABEL_HISTORY) {
+            qDebug() << "LaunchyWidget::launchItem, get args from history";
+            int historyIndex = (int)(int64_t)(item.data);
+            InputDataList inputData = m_history.getItem(historyIndex);
+            for (int i = 1; i < inputData.count(); ++i) {
+                args += inputData[i].getText() + " ";
+            }
+        }
+        else if (m_inputData.count() > 1) {
             for (int i = 1; i < m_inputData.count(); ++i) {
                 args += m_inputData[i].getText() + " ";
             }
         }
+        qDebug() << "LaunchyWidget::launchItem, cmd:" << item.fullPath << "args:" << args;
         runProgram(item.fullPath, args);
     }
 
@@ -495,6 +505,19 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
         m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
         m_outputItem = item;
         g_searchText = "";
+    }
+    else if (item.pluginId == HASH_HISTORY) {
+        m_inputData = m_history.getItem(historyIndex);
+        qDebug() << "LaunchyWidget::onAlternativeListRowChanged, historyIndex:" << historyIndex
+            << "inputData:" << m_inputData.toString();
+        //m_inputBox->selectAll();
+        //m_inputBox->insert(m_inputData.toString());
+        //m_inputBox->selectAll();
+        //m_outputBox->setText(m_inputData[0].getTopResult().shortName);
+        // No need to fetch the icon again, just grab it from the alternatives row
+        //m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
+        //m_outputItem = item;
+        //g_searchText = m_inputData.toString();
     }
 }
 
@@ -802,10 +825,6 @@ void LaunchyWidget::searchOnInput() {
             m_history.search(searchTextLower, m_searchResult);
         }
 
-        if (!m_searchResult.isEmpty()) {
-            m_inputData.last().setTopResult(m_searchResult.front());
-        }
-
         // Give plugins a chance to add their own dynamic matches
         // why getLabels first then getResults, why not getResult straightforward
         PluginHandler& pluginHandler = PluginHandler::instance();
@@ -817,6 +836,10 @@ void LaunchyWidget::searchOnInput() {
         qSort(m_searchResult.begin(), m_searchResult.end(), CatLessRef);
         g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
+        if (!m_searchResult.isEmpty()) {
+            m_inputData.last().setTopResult(m_searchResult[0]);
+        }
+
         // Finally, if the search text looks like a file or directory name,
         // add any file or directory matches
         if (searchText.contains(QDir::separator())
@@ -826,7 +849,6 @@ void LaunchyWidget::searchOnInput() {
         }
     }
 }
-
 
 // If there are current results, update the output text and icon
 void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
@@ -845,18 +867,19 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
         m_outputBox->setText(outputText);
 
         if (m_outputItem != m_searchResult[0]) {
-            m_outputItem = m_searchResult[0];
             m_outputIcon->clear();
             m_iconExtractor.processIcon(m_searchResult[0], true);
         }
 
-        if (m_outputItem.pluginId != HASH_HISTORY) {
-            // Did the plugin take control of the input?
-            if (m_inputData.last().getID() != 0) {
-                m_outputItem.pluginId = m_inputData.last().getID();
-            }
-            m_inputData.last().setTopResult(m_searchResult[0]);
-        }
+        m_outputItem = m_searchResult[0];
+        m_inputData.last().setTopResult(m_searchResult[0]);
+
+//         if (m_outputItem.pluginId != HASH_HISTORY) {
+//             // Did the plugin take control of the input?
+//             if (m_inputData.last().getID() != 0) {
+//                 m_outputItem.pluginId = m_inputData.last().getID();
+//             }
+//         }
 
         // Only update the alternatives list if it is visible
         if (m_alternativeList->isVisible()) {

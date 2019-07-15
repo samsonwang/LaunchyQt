@@ -118,7 +118,7 @@ bool Catalog::matches(CatItem* item, const QString& match) {
 
 // Search the catalog, for items matching the text parameter and
 // populate the out parameter
-void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
+void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
 
@@ -127,13 +127,12 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     // Now prioritize the catalog items
     qSort(catMatches.begin(), catMatches.end(), CatLessPtr);
 
-    // Check for history matches
+    // Check for history matches, and put them in the front
     QString location = "History/" + text;
     QStringList hist = g_settings->value(location).toStringList();
     if (hist.count() == 2) {
-        for (int i = 0; i < catMatches.count(); i++) {
-            if (catMatches[i]->shortName == hist[0]
-                && catMatches[i]->fullPath == hist[1]) {
+        for (int i = 0; i < catMatches.count(); ++i) {
+            if (catMatches[i]->shortName == hist[0] && catMatches[i]->fullPath == hist[1]) {
                 CatItem* tmp = catMatches[i];
                 catMatches.removeAt(i);
                 catMatches.push_front(tmp);
@@ -144,7 +143,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& out) {
     // Load up the results
     int max = g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt();
     for (int i = 0; i < max && i < catMatches.count(); i++) {
-        out.push_back(*catMatches[i]);
+        result.push_back(*catMatches[i]);
     }
 }
 

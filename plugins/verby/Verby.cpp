@@ -100,9 +100,10 @@ void Verby::addCatItem(QString text, QList<CatItem>* results,
 }
 
 void Verby::updateUsage(CatItem& item) {
-    launchy::g_settings->setValue("Verby/" + item.shortName.replace(" ", ""), item.usage + 1);
+    QString verb = item.shortName;
+    verb.replace(" ", ""); // remove spaces to use as configuration key
+    launchy::g_settings->setValue("Verby/" + verb, item.usage + 1);
 }
-
 
 void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     if (inputData->count() != 2) {
@@ -159,7 +160,7 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     CatItem& verbItem = inputData->last().getTopResult();
     QString verb = verbItem.shortName;
 
-    qDebug() << "Verby launchItem" << verb;
+    qDebug() << "verby::launchItem:" << noun << verb;
     if (verb == "Run") {
         runProgram(noun, "");
     }
