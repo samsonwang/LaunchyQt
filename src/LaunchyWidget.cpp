@@ -449,6 +449,9 @@ void LaunchyWidget::launchItem() {
         runProgram(item.fullPath, args);
     }
 
+    // udpate outputbox
+    updateOutputItem(item);
+
     g_catalog->incrementUsage(item);
     m_history.addItem(m_inputData);
 }
@@ -615,7 +618,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
                     << "demote item:" << item.shortName;
                 g_catalog->demoteItem(item);
                 searchOnInput();
-                updateOutputBox(false);
+                updateOutput(false);
             }
         }
     }
@@ -798,7 +801,7 @@ void LaunchyWidget::processKey() {
     qDebug() << "LaunchyWidget::processKey, inputbox text:" << m_inputBox->text();
     m_inputData.parse(m_inputBox->text());
     searchOnInput();
-    updateOutputBox();
+    updateOutput();
 
     // If there is no input text, ensure that the alternatives list is hidden
     // otherwise, show it after the user defined delay if it's not currently visible
@@ -858,35 +861,11 @@ void LaunchyWidget::searchOnInput() {
 }
 
 // If there are current results, update the output text and icon
-void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
+void LaunchyWidget::updateOutput(bool resetAlternativesSelection) {
     if (!m_searchResult.isEmpty()
         && (m_inputData.count() > 1 || !m_inputBox->text().isEmpty())) {
-        // qDebug() << "Setting output text to" << searchResults[0].shortName;
-        QString outputText = Catalog::decorateText(m_searchResult[0].shortName, g_searchText, true);
 
-#ifdef _DEBUG
-        outputText += QString(" (%1 launches)").arg(m_searchResult[0].usage);
-#endif
-
-        qDebug() << "LaunchyWidget::updateOutputBox,"
-            << "setting output box text:" << outputText
-            << "usage: " << m_searchResult[0].usage;
-        m_outputBox->setText(outputText);
-
-        if (m_outputItem != m_searchResult[0]) {
-            m_outputIcon->clear();
-            m_iconExtractor.processIcon(m_searchResult[0], true);
-        }
-
-        m_outputItem = m_searchResult[0];
-        //m_inputData.last().setTopResult(m_searchResult[0]);
-
-//         if (m_outputItem.pluginId != HASH_HISTORY) {
-//             // Did the plugin take control of the input?
-//             if (m_inputData.last().getID() != 0) {
-//                 m_outputItem.pluginId = m_inputData.last().getID();
-//             }
-//         }
+        updateOutputItem(m_searchResult[0]);
 
         // Only update the alternatives list if it is visible
         if (m_alternativeList->isVisible()) {
@@ -900,6 +879,28 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
         m_outputItem = CatItem();
         hideAlternativeList();
     }
+}
+
+void LaunchyWidget::updateOutputItem(const CatItem& item)
+{
+    // qDebug() << "Setting output text to" << searchResults[0].shortName;
+    QString outputText = Catalog::decorateText(item.shortName, g_searchText, true);
+
+#ifdef _DEBUG
+    outputText += QString(" (%1 launches)").arg(item.usage);
+#endif
+
+    qDebug() << "LaunchyWidget::updateOutputItem,"
+        << "setting output box text:" << outputText
+        << ", usage: " << item.usage;
+    m_outputBox->setText(outputText);
+
+    if (m_outputItem != item) {
+        m_outputIcon->clear();
+        m_iconExtractor.processIcon(item, true);
+    }
+
+    m_outputItem = item;
 }
 
 void LaunchyWidget::startDropTimer() {
@@ -979,7 +980,7 @@ void LaunchyWidget::catalogBuilt() {
 
     // Now do a search using the updated catalog
     searchOnInput();
-    updateOutputBox();
+    updateOutput();
 }
 
 void LaunchyWidget::setSkin(const QString& name) {
@@ -1143,7 +1144,7 @@ void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
             << ", inputbox text:" << m_inputBox->text();
         m_inputData.parse(m_inputBox->text());
         searchOnInput();
-        updateOutputBox();
+        updateOutput();
     }
 }
 

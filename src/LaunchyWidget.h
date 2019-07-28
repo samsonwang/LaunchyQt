@@ -99,7 +99,8 @@ protected:
     void showAlternativeList();
     void hideAlternativeList();
     void updateAlternativeList(bool resetSelection = true);
-    void updateOutputBox(bool resetAlternativesSelection = true);
+    void updateOutput(bool resetAlternativesSelection = true);
+    void updateOutputItem(const CatItem& item);
     void updateOutputSize();
     void searchOnInput();
     void loadPosition(QPoint pt);
