@@ -334,7 +334,9 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     int mode = g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt();
     int i = 0;
     for (; i < m_searchResult.size(); ++i) {
-        qDebug() << "LaunchyWidget::updateAlternativeList," << i << ":" << m_searchResult[i].fullPath;
+        qDebug() << "LaunchyWidget::updateAlternativeList," << i << ":"
+            << m_searchResult[i].shortName << ","
+            << m_searchResult[i].fullPath;
         QString fullPath = QDir::toNativeSeparators(m_searchResult[i].fullPath);
 #ifdef _DEBUG
         fullPath += QString(" (%1 launches)").arg(m_searchResult[i].usage);
@@ -392,7 +394,17 @@ void LaunchyWidget::hideAlternativeList() {
     m_iconExtractor.stop();
 }
 
-void LaunchyWidget::launchItem(CatItem& item) {
+void LaunchyWidget::launchItem() {
+    if (m_inputData.empty()) {
+        return;
+    }
+
+    CatItem& item = m_inputData[0].getTopResult();
+    qDebug() << "LaunchyWidget::launchItem, item.shortName:" << item.shortName
+        << "item.fullPath:" << item.fullPath
+        << "item.pluginId:" << item.pluginId
+        << "item.data:" << item.data;
+
     int ops = MSG_CONTROL_LAUNCHITEM;
 
     if (item.pluginId != HASH_LAUNCHY && item.pluginId != HASH_LAUNCHYFILE) {
@@ -419,7 +431,7 @@ void LaunchyWidget::launchItem(CatItem& item) {
 
     if (ops == MSG_CONTROL_LAUNCHITEM) {
         QString args;
-        if (item.pluginId == LABEL_HISTORY) {
+        if (item.pluginId == HASH_HISTORY) {
             qDebug() << "LaunchyWidget::launchItem, get args from history";
             int historyIndex = (int)(int64_t)(item.data);
             InputDataList inputData = m_history.getItem(historyIndex);
@@ -432,6 +444,7 @@ void LaunchyWidget::launchItem(CatItem& item) {
                 args += m_inputData[i].getText() + " ";
             }
         }
+
         qDebug() << "LaunchyWidget::launchItem, cmd:" << item.fullPath << "args:" << args;
         runProgram(item.fullPath, args);
     }
@@ -462,35 +475,46 @@ void LaunchyWidget::focusOutEvent(QFocusEvent* event) {
 }
 */
 
-void LaunchyWidget::onAlternativeListRowChanged(int index) {
+void LaunchyWidget::onAlternativeListRowChanged(int row) {
     // Check that index is a valid history item index
     // If the current entry is a history item or there is no text entered
-    if (index < 0 || index >= m_searchResult.count()) {
+    if (row < 0 || row >= m_searchResult.count()) {
+        qWarning() << "LaunchyWidget::onAlternativeListRowChanged, invalid row:" << row
+            << ", current row:" << m_alternativeList->currentRow();
         return;
     }
 
-    const CatItem& item = m_searchResult[index];
+    const CatItem& item = m_searchResult[row];
     int historyIndex = (int)(int64_t)(item.data);
+    qDebug() << "LaunchyWidget::onAlternativeListRowChanged, row:" << row
+        << ", item.fullpath:" << item.fullPath
+        << ", item.shortName:" << item.shortName
+        << ", item.pluginId:" << item.pluginId
+        << ", historyIndex:" << historyIndex;
 
-    if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
-        || m_inputBox->text().isEmpty()) {
+    if ( (!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
+        || m_inputBox->text().isEmpty() ) {
         // Used a void* to hold an int.. ick!
         // BUT! Doing so avoids breaking existing catalogs
 
         if (item.pluginId == HASH_HISTORY && historyIndex < m_searchResult.count()) {
+            qDebug() << "LaunchyWidget::onAlternativeListRowChanged, list history"
+                << item.shortName;
+
             m_inputData = m_history.getItem(historyIndex);
             m_inputBox->selectAll();
             m_inputBox->insert(m_inputData.toString());
             m_inputBox->selectAll();
             m_outputBox->setText(m_inputData[0].getTopResult().shortName);
             // No need to fetch the icon again, just grab it from the alternatives row
-            m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
+            m_outputIcon->setPixmap(m_alternativeList->item(row)->icon().pixmap(m_outputIcon->size()));
             m_outputItem = item;
             g_searchText = m_inputData.toString();
         }
     }
     else if (!m_inputData.isEmpty() && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST) || !m_inputData.last().hasText())) {
-        qDebug() << "Autosuggest" << item.shortName;
+        qDebug() << "LaunchyWidget::onAlternativeListRowChanged, autosuggest"
+            << item.shortName;
 
         m_inputData.last().setText(item.shortName);
         m_inputData.last().setLabel(LABEL_AUTOSUGGEST);
@@ -502,22 +526,13 @@ void LaunchyWidget::onAlternativeListRowChanged(int index) {
 
         m_outputBox->setText(item.shortName);
         // No need to fetch the icon again, just grab it from the alternatives row
-        m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
+        m_outputIcon->setPixmap(m_alternativeList->item(row)->icon().pixmap(m_outputIcon->size()));
         m_outputItem = item;
         g_searchText = "";
     }
-    else if (item.pluginId == HASH_HISTORY) {
-        m_inputData = m_history.getItem(historyIndex);
-        qDebug() << "LaunchyWidget::onAlternativeListRowChanged, historyIndex:" << historyIndex
-            << "inputData:" << m_inputData.toString();
-        //m_inputBox->selectAll();
-        //m_inputBox->insert(m_inputData.toString());
-        //m_inputBox->selectAll();
-        //m_outputBox->setText(m_inputData[0].getTopResult().shortName);
-        // No need to fetch the icon again, just grab it from the alternatives row
-        //m_outputIcon->setPixmap(m_alternativeList->item(index)->icon().pixmap(m_outputIcon->size()));
-        //m_outputItem = item;
-        //g_searchText = m_inputData.toString();
+    else {
+        qDebug() << "LaunchyWidget::onAlternativeListRowChanged, update top result";
+        m_inputData.first().setTopResult(item);
     }
 }
 
@@ -534,8 +549,8 @@ void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
         keyPressEvent(event);
     }
     else {
-        qDebug() << "LaunchyWidget::onInputBoxKeyPressed,"
-            << "event ignored";
+//        qDebug() << "LaunchyWidget::onInputBoxKeyPressed,"
+//            << "event ignored";
         event->ignore();
     }
 }
@@ -573,7 +588,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
                     inputData.parse(input->text());
                     inputData.erase(inputData.end() - 1);*/
 
-                    updateOutputBox();
+                    //updateOutputBox();
                     keyPressEvent(event);
                 }
             }
@@ -617,11 +632,10 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
     m_alternativeList->setFocus();
 }
 
-
 void LaunchyWidget::onAlternativeListFocusOut() {
-    qDebug() << "LaunchyWidget::onAlternativeFocusOut"
+    qDebug() << "LaunchyWidget::onAlternativeListFocusOut,"
         << "is main widget activeWindow:" << isActiveWindow()
-        << "is alternative list active window:" << m_alternativeList->isActiveWindow();
+        << ", is alternative list active window:" << m_alternativeList->isActiveWindow();
     if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
@@ -772,20 +786,13 @@ void LaunchyWidget::doEnter() {
 
     if ((!m_inputData.isEmpty() && !m_searchResult.isEmpty())
         || m_inputData.count() > 1) {
-        CatItem& item = m_inputData[0].getTopResult();
-        qDebug() << "LaunchyWidget::doEnter, launching" << item.shortName << ":" << item.fullPath;
-        launchItem(item);
+        launchItem();
         hideLaunchy();
     }
     else {
         qDebug("LaunchyWidget::doEnter, Nothing to launch");
     }
 }
-
-// void LaunchyWidget::inputMethodEvent(QInputMethodEvent* event) {
-//     processKey();
-//     QWidget::inputMethodEvent(event);
-// }
 
 void LaunchyWidget::processKey() {
     qDebug() << "LaunchyWidget::processKey, inputbox text:" << m_inputBox->text();
@@ -872,7 +879,7 @@ void LaunchyWidget::updateOutputBox(bool resetAlternativesSelection) {
         }
 
         m_outputItem = m_searchResult[0];
-        m_inputData.last().setTopResult(m_searchResult[0]);
+        //m_inputData.last().setTopResult(m_searchResult[0]);
 
 //         if (m_outputItem.pluginId != HASH_HISTORY) {
 //             // Did the plugin take control of the input?

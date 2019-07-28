@@ -108,7 +108,7 @@ protected:
     void doBackTab();
     void doEnter();
     void processKey();
-    void launchItem(CatItem& item);
+    void launchItem();
     void startDropTimer();
     void retranslateUi();
 

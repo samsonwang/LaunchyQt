@@ -103,9 +103,13 @@ void CharListWidget::setIconSize(int size) {
 }
 
 void CharListWidget::keyPressEvent(QKeyEvent* event) {
-    emit keyPressed(event);
+    /*
+    qDebug() << "CharListWidget::keyPressEvent, T1, key:" << event->key()
+        << "mod:" << event->modifiers() << "current row:" << currentRow();
+    */
+
     QListWidget::keyPressEvent(event);
-    event->ignore();
+    emit keyPressed(event);
 }
 
 void CharListWidget::mouseDoubleClickEvent(QMouseEvent* /*event*/) {

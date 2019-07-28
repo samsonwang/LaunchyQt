@@ -33,7 +33,9 @@ CharLineEdit::CharLineEdit(QWidget* parent)
 }
 
 void CharLineEdit::processKey(QKeyEvent* event) {
-    qDebug() << "CharLineEdit::processKey" << event->key();
+    qDebug() << "CharLineEdit::processKey, key:" << event->key()
+        << "mod:" << event->modifiers()
+        << "text:" << event->text();
 
     bool handled = false;
 
@@ -96,6 +98,10 @@ bool CharLineEdit::focusNextPrevChild(bool next) {
 }
 
 void CharLineEdit::keyPressEvent(QKeyEvent* event) {
+    qDebug() << "CharLineEdit::keyPressEvent, key:" << event->key()
+        << "mod:" << event->modifiers()
+        << "text:" << event->text();
+
     processKey(event);
 }
 
