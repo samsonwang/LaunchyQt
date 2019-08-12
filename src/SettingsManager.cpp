@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";
 static const char* historyName = "/history.db";
+static const char* installedName = "/.installed";
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
@@ -48,12 +49,17 @@ void SettingsManager::load() {
 
     // Load settings
     m_dirs = g_app->getDirectories();
-    m_portable = QFile::exists(m_dirs["portableConfig"][0] + iniName);
+    m_portable |= QFile::exists(m_dirs["portableConfig"][0]);
+    m_portable |= QFile::exists(m_dirs["portableConfig"][0] + iniName);
+    m_portable &= !QFile::exists(m_dirs["portableConfig"][0] + installedName);
 
     QString iniPath = configDirectory(m_portable) + iniName;
-    g_settings.reset(new QSettings(configDirectory(m_portable) + iniName, QSettings::IniFormat));
-    if (!QFile::exists(iniPath)) {
+    g_settings.reset(new QSettings(iniPath, QSettings::IniFormat));
+    int nVersion = g_settings->value(OPSTION_VERSION, OPSTION_VERSION_DEFAULT).toInt();
+
+    if (!QFile::exists(iniPath) || nVersion == OPSTION_VERSION_DEFAULT) {
         // Ini file doesn't exist, create some defaults and save them to disk
+        g_settings->setValue(OPSTION_VERSION, OPSTION_VERSION_DEFAULT);
         QList<Directory> directories = g_app->getDefaultCatalogDirectories();
         writeCatalogDirectories(directories);
     }
@@ -165,25 +171,32 @@ void SettingsManager::setPortable(bool makePortable) {
         QFile::remove(oldIniName);
         QFile::remove(oldDbName);
         QFile::remove(oldHistoryName);
+        QFile::remove(newDir + installedName);
 
-        if (!makePortable) {
+        if (!makePortable && !QDir(oldDir).rmdir(".")) {
             // if converting to installed mode,
             // try to remove portable mode config directory if it is empty.
             // !! This may be dangerous if the old directory could contain other files.
             // !! MUST be careful when deleting files and directories.
-            QDir(oldDir).rmdir(".");
+            QFile file(oldDir + installedName);
+            file.open(QIODevice::WriteOnly);
         }
     }
     else {
         qWarning("Could not convert to %s mode", makePortable ? "portable" : "installed");
-        if (makePortable) {
-            QMessageBox::warning(g_mainWidget, QString("Launchy"),
-                                 qApp->translate("launchy::OptionDialog",
-                                                 "Could not convert to portable mode, "
-                                                 "Please check the write access to the %1 directory.")
-                                 .arg(newDir));
-        }
+
+        QMessageBox::warning(g_app->activeModalWidget(),
+                             QString("Launchy"),
+                             qApp->translate("launchy::OptionDialog",
+                                             "Fail to convert to %1 mode.\n"
+                                             "Please check directory:\n %2")
+                             .arg(makePortable ? "portable" : "installed")
+                             .arg(newDir));
+
+
     }
+
+    m_portable = makePortable;
 
     load();
 }
