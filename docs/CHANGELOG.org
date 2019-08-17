@@ -1,4 +1,11 @@
 
+* 3.1.0 (2019-8-17)
+- fix bug #15, fix bulid error in linux
+- new feature: search command history with arguments
+- fix bug #19, improve portable mode detection method
+- fix UI icon size with '.lnk' item
+- minor improve option dialog user interface
+
 * 3.0.9 (2019-05-21)
 - fix bug #12, imporve icon extracting method
 - fix bug #14, make sure that main widget is focused when hotkey is triggered by keyboard hooks

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Gui;
 
-class Verby : public QObject, public launchy::PluginInterface{
+class Verby : public QObject, public launchy::PluginInterface {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(launchy::PluginInterface)
