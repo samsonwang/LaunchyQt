@@ -520,7 +520,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
             << item.shortName;
 
         m_inputData.last().setText(item.shortName);
-        m_inputData.last().setLabel(LABEL_AUTOSUGGEST);
+        m_inputData.last().setTopResult(item);
 
         QString inputRoot = m_inputData.toString(true);
         m_inputBox->selectAll();
@@ -535,7 +535,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
     }
     else {
         qDebug() << "LaunchyWidget::onAlternativeListRowChanged, update top result";
-        m_inputData.first().setTopResult(item);
+        m_inputData.last().setTopResult(item);
     }
 }
 
