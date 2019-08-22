@@ -493,7 +493,8 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
         << ", item.fullpath:" << item.fullPath
         << ", item.shortName:" << item.shortName
         << ", item.pluginId:" << item.pluginId
-        << ", historyIndex:" << historyIndex;
+        << ", historyIndex:" << historyIndex
+        << ", inputBox:" << m_inputBox->text();
 
     if ( (!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
         || m_inputBox->text().isEmpty() ) {
@@ -515,9 +516,11 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
             g_searchText = m_inputData.toString();
         }
     }
-    else if (!m_inputData.isEmpty() && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST) || !m_inputData.last().hasText())) {
-        qDebug() << "LaunchyWidget::onAlternativeListRowChanged, autosuggest"
-            << item.shortName;
+    else if (!m_inputData.isEmpty() && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST)
+                                        || !m_inputData.last().hasText())) {
+        qDebug() << "LaunchyWidget::onAlternativeListRowChanged"
+            << ", auto suggest:" << item.shortName
+            << ", m_inputData.size():" << m_inputData.size();
 
         m_inputData.last().setText(item.shortName);
         m_inputData.last().setTopResult(item);
@@ -537,6 +540,9 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
         qDebug() << "LaunchyWidget::onAlternativeListRowChanged, update top result";
         m_inputData.last().setTopResult(item);
     }
+
+    qDebug() << "LaunchyWidget::onAlternativeListRowChanged, input box text:"
+        << m_inputBox->text();
 }
 
 void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
@@ -763,13 +769,16 @@ void LaunchyWidget::doTab() {
 
         if (m_inputData.last().hasLabel(LABEL_FILE) || info.isDir()) {
             QString path;
-            if (info.isSymLink())
+            if (info.isSymLink()) {
                 path = info.symLinkTarget();
-            else
+            }
+            else {
                 path = m_searchResult[0].fullPath;
+            }
 
-            if (info.isDir() && !path.endsWith(QDir::separator()))
+            if (info.isDir() && !path.endsWith(QDir::separator())) {
                 path += QDir::separator();
+            }
 
             m_inputBox->selectAll();
             m_inputBox->insert(m_inputData.toString(true) + QDir::toNativeSeparators(path));

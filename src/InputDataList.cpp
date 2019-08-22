@@ -59,9 +59,9 @@ QString InputDataList::toString(bool omitLast) const {
     QString result;
     for (int i = 0; i < count(); ++i) {
         if (i > 0) {
-            if (at(i).getText().isEmpty()) {
-                continue;
-            }
+//             if (at(i).getText().isEmpty()) {
+//                 continue;
+//             }
             result += s_separator;
         }
         if (!omitLast || i < count()-1) {
