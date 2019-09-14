@@ -104,8 +104,10 @@ void CommandHistory::removeAt(int index) {
 }
 
 void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
-    int64_t index = 0;
-    foreach (InputDataList historyItem, m_history) {
+    int index = 0;
+    for(InputDataList historyItem: m_history) {
+        if(historyItem.isEmpty())
+            continue;
         CatItem& item = historyItem.first().getTopResult();
         item.pluginId = HASH_HISTORY;
         item.data = (void*)index++; // use this when switching alternative list
