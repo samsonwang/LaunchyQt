@@ -47,7 +47,7 @@ void CommandHistory::save(const QString& filename) const {
     QDataStream out(&ba, QIODevice::ReadWrite);
     out.setVersion(LAUNCHY_VERSION);
 
-    foreach(InputDataList item, m_history) {
+    for (const InputDataList& item : m_history) {
         out << item;
     }
 
@@ -104,11 +104,13 @@ void CommandHistory::removeAt(int index) {
 }
 
 void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
-    int index = 0;
-    for(InputDataList historyItem: m_history) {
-        if(historyItem.isEmpty())
+    long long index = 0; // long long in x86 is 4 bytes, and x64 is 8 bytes
+                         // use this to avoid VS C4312 warning
+    for (const InputDataList& historyItem: m_history) {
+        if (historyItem.isEmpty()) {
             continue;
-        CatItem& item = historyItem.first().getTopResult();
+        }
+        CatItem item = historyItem.first().getTopResult();
         item.pluginId = HASH_HISTORY;
         item.data = (void*)index++; // use this when switching alternative list
         searchResults.push_back(item);
@@ -121,15 +123,15 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
         return;
     }
 
-    int64_t index = -1;
-    foreach (InputDataList historyCmd, m_history) {
+    long long index = -1;
+    for (const InputDataList& historyCmd : m_history) {
         ++index;
         // ignore history commands which have only one input segment
-        if (historyCmd.count() == 1) {
+        if (historyCmd.empty() || historyCmd.count() == 1) {
             continue;
         }
         // each InputDataList is a whole input and invoke action
-        foreach (InputData data, historyCmd) {
+        for (const InputData& data : historyCmd) {
             if (data.getText().contains(text, Qt::CaseInsensitive)) {
                 // history matched
                 CatItem item = historyCmd.first().getTopResult();
@@ -139,7 +141,7 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
 
                 // search for duplicates
                 bool duplicated = false;
-                foreach (CatItem retItem, searchResults) {
+                for (const CatItem& retItem : searchResults) {
                     if (retItem.shortName == item.shortName && retItem.fullPath == item.fullPath) {
                         duplicated = true;
                         break;
