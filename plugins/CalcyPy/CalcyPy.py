@@ -14,10 +14,6 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#import sys, os
-#import math
-#import re
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QVariant
 from PyQt5.QtCore import QLocale
@@ -26,18 +22,21 @@ from PyQt5.QtWidgets import QApplication
 from sip import wrapinstance, unwrapinstance
 
 import launchy
+from launchy import Plugin
 from launchy import CatItem
+from launchy import hash as lHash
+from launchy import settings as lSettings
 
 from Calculator import Calculator
 from Calcy import CalcyGui
 
-class CalcyPy(launchy.Plugin):
+class CalcyPy(Plugin):
     setting_dir = 'CalcyPy/'
     settings = dict()
 
     def __init__(self):
-        launchy.Plugin.__init__(self)
-        self.hash = launchy.hash(self.getName())
+        Plugin.__init__(self)
+        self.hash = lHash(self.getName())
 
     def init(self):
         self.__readSettings()
@@ -162,19 +161,19 @@ class CalcyPy(launchy.Plugin):
 
     def __readSettings(self):
         # general
-        self.settings['decimalPointGroupSeparator'] = int(launchy.settings.value(self.setting_dir + 'decimalPointGroupSeparator', 0))
-        self.settings['outputPrecision'] = int(launchy.settings.value(self.setting_dir + 'outputPrecision', 3))
-        self.settings['showGroupSeparator'] = launchy.settings.value(self.setting_dir + 'showGroupSeparator', False) in ['true', True]
-        self.settings['copyToClipboard'] = launchy.settings.value(self.setting_dir + 'copyToClipboard', True) in ['true', True]
-        self.settings['showBinOut'] = launchy.settings.value(self.setting_dir + 'showBinOut', True) in ['true', True]
-        self.settings['showOctOut'] = launchy.settings.value(self.setting_dir + 'showOctOut', True) in ['true', True]
-        self.settings['showHexOut'] = launchy.settings.value(self.setting_dir + 'showHexOut', True) in ['true', True]
-        self.settings['showSizeOut'] = launchy.settings.value(self.setting_dir + 'showSizeOut', True) in ['true', True]
-        self.settings['showBasePrefix'] = launchy.settings.value(self.setting_dir + 'showBasePrefix', True) in ['true', True]
-        self.settings['showZeroBin'] = launchy.settings.value(self.setting_dir + 'showZeroBin', True) in ['true', True]
-        self.settings['showZeroOct'] = launchy.settings.value(self.setting_dir + 'showZeroOct', True) in ['true', True]
-        self.settings['showZeroHex'] = launchy.settings.value(self.setting_dir + 'showZeroHex', True) in ['true', True]
-        self.settings['bitwidth'] = int(launchy.settings.value(self.setting_dir + 'bitwidth', 16))
+        self.settings['decimalPointGroupSeparator'] = int(lSettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0))
+        self.settings['outputPrecision'] = int(lSettings.value(self.setting_dir + 'outputPrecision', 3))
+        self.settings['showGroupSeparator'] = lSettings.value(self.setting_dir + 'showGroupSeparator', False) in ['true', True]
+        self.settings['copyToClipboard'] = lSettings.value(self.setting_dir + 'copyToClipboard', True) in ['true', True]
+        self.settings['showBinOut'] = lSettings.value(self.setting_dir + 'showBinOut', True) in ['true', True]
+        self.settings['showOctOut'] = lSettings.value(self.setting_dir + 'showOctOut', True) in ['true', True]
+        self.settings['showHexOut'] = lSettings.value(self.setting_dir + 'showHexOut', True) in ['true', True]
+        self.settings['showSizeOut'] = lSettings.value(self.setting_dir + 'showSizeOut', True) in ['true', True]
+        self.settings['showBasePrefix'] = lSettings.value(self.setting_dir + 'showBasePrefix', True) in ['true', True]
+        self.settings['showZeroBin'] = lSettings.value(self.setting_dir + 'showZeroBin', True) in ['true', True]
+        self.settings['showZeroOct'] = lSettings.value(self.setting_dir + 'showZeroOct', True) in ['true', True]
+        self.settings['showZeroHex'] = lSettings.value(self.setting_dir + 'showZeroHex', True) in ['true', True]
+        self.settings['bitwidth'] = int(lSettings.value(self.setting_dir + 'bitwidth', 16))
 
         print('CalcyPy, __readSettings', self.settings)
 
