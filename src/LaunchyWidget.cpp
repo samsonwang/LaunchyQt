@@ -1327,7 +1327,8 @@ void LaunchyWidget::buildCatalog() {
     saveSettings();
 
     // Use the catalog builder to refresh the catalog in a worker thread
-    QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
+    // QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
+	QMetaObject::invokeMethod(g_builder, "buildCatalog");
 
     startRebuildTimer();
 }

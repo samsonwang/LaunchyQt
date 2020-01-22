@@ -153,7 +153,7 @@ void Runner::doDialog(QWidget* parent, QWidget** newDlg) {
     if (m_gui != NULL)
         return;
     m_gui.reset(new Gui(parent));
-    *newDlg = m_gui.get();
+    *newDlg = m_gui.data();
 }
 
 void Runner::endDialog(bool accept) {

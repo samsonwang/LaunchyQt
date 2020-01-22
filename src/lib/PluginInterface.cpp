@@ -36,8 +36,6 @@ PluginInterface::~PluginInterface() {
 
 
 #ifdef Q_OS_WIN
-// This doesn't exist until qt 4.6 (currently 4.5 in ubuntu 10.04)
-#include <QProcessEnvironment>
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN
@@ -48,6 +46,9 @@ PluginInterface::~PluginInterface() {
 #endif
 
 #include <windows.h>
+
+// This doesn't exist until qt 4.6 (currently 4.5 in ubuntu 10.04)
+#include <QProcessEnvironment>
 
 // This is also defined in WinIconProvider, remove from both locations if 64 bit build is produced
 static QString aliasTo64(QString path) {
