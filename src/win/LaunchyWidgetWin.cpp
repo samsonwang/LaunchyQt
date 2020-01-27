@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace launchy {
 
-LaunchyWidgetWin::LaunchyWidgetWin(CommandFlags command) : LaunchyWidget(command) {
+LaunchyWidgetWin::LaunchyWidgetWin(CommandFlags command)
+    : LaunchyWidget(command) {
     commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
 }
 

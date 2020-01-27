@@ -45,13 +45,28 @@ SettingsManager& SettingsManager::instance() {
 }
 
 void SettingsManager::load() {
-    Q_ASSERT(g_app);
+    if (!g_app) {
+        return;
+    }
 
-    // Load settings
+    // load settings
     m_dirs = g_app->getDirectories();
-    m_portable |= QFile::exists(m_dirs["portableConfig"][0]);
-    m_portable |= QFile::exists(m_dirs["portableConfig"][0] + iniName);
-    m_portable &= !QFile::exists(m_dirs["portableConfig"][0] + installedName);
+
+    if (m_dirs.contains("portableConfig")) {
+        QList<QString>& lst = m_dirs["portableConfig"];
+        if (!lst.empty()) {
+            QString strName = lst.front();
+            m_portable |= QFile::exists(strName);
+            m_portable |= QFile::exists(strName + iniName);
+            m_portable &= !QFile::exists(strName + installedName);
+        }
+        else {
+            m_portable = false;
+        }
+    }
+    else {
+        m_portable = false;
+    }
 
     QString iniPath = configDirectory(m_portable) + iniName;
     g_settings.reset(new QSettings(iniPath, QSettings::IniFormat));

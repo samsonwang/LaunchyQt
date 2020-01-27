@@ -32,12 +32,12 @@ AppWin::AppWin(int& argc, char** argv)
     : AppBase(argc, argv),
       m_crashDumper(new CrashDumper(_T("Launchy"))) {
 
+    m_iconProvider = new IconProviderWin();
+
     // Create local and global application mutexes so that installer knows when
     // Launchy is running
     localMutex = CreateMutex(NULL, 0, _T("LaunchyMutex"));
     globalMutex = CreateMutex(NULL, 0, _T("Global\\LaunchyMutex"));
-
-    m_iconProvider = new IconProviderWin();
 }
 
 AppWin::~AppWin() {
@@ -155,4 +155,5 @@ AppBase* createApplication(int& argc, char** argv) {
     }
     return new AppWin(argc, argv);
 }
+
 }

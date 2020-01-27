@@ -77,9 +77,6 @@ protected:
     virtual void showEvent(QShowEvent* event);
     virtual void paintEvent(QPaintEvent* event);
     virtual void closeEvent(QCloseEvent* event);
-    //virtual void focusInEvent(QFocusEvent* event);
-    //virtual void focusOutEvent(QFocusEvent* event);
-    //virtual void inputMethodEvent(QInputMethodEvent* event);
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseMoveEvent(QMouseEvent* event);
@@ -87,6 +84,8 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent* event);
     virtual void changeEvent(QEvent* event);
 
+protected:
+    // API for platform specific handler function
     virtual void focusLaunchy();
 
 protected:

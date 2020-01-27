@@ -103,11 +103,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     m_inputBox->setObjectName("input");
     connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
-    //connect(input, SIGNAL(focusIn()), this, SLOT(onInputFocusIn()));
     connect(m_inputBox, SIGNAL(focusOut()), this, SLOT(onInputBoxFocusOut()));
     connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
-    //connect(m_inputBox, SIGNAL(textEdited(const QString&)),
-    //        this, SLOT(onInputBoxTextEdited(const QString&)));
+
 
     m_outputBox->setObjectName("output");
     m_outputBox->setAlignment(Qt::AlignHCenter);
@@ -239,17 +237,21 @@ void LaunchyWidget::executeStartupCommand(int command) {
         applySkin("Default");
     }
 
-    if (command & ShowLaunchy)
+    if (command & ShowLaunchy) {
         showLaunchy();
+    }
 
-    if (command & ShowOptions)
+    if (command & ShowOptions) {
         showOptionDialog();
+    }
 
-    if (command & Rescan)
+    if (command & Rescan) {
         buildCatalog();
+    }
 
-    if (command & Exit)
+    if (command & Exit) {
         exit();
+    }
 }
 
 void LaunchyWidget::showEvent(QShowEvent* event) {
@@ -298,22 +300,9 @@ bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
 }
 
 void LaunchyWidget::showTrayIcon() {
-    m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
-    m_trayIcon->show();
-    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+
     if (!m_trayIcon->contextMenu()) {
         QMenu* trayMenu = new QMenu(this);
-
-#if 0
-        QAction* actTest = new QAction(tr("Test Widget"), this);
-        connect(actTest, &QAction::triggered, []() {
-            pluginpy::TestWidget::instance().initTestWidget();
-        });
-        trayMenu->addAction(actTest);
-        trayMenu->addSeparator();
-#endif
-
         trayMenu->addAction(m_actShow);
         trayMenu->addAction(m_actReloadSkin);
         trayMenu->addAction(m_actRebuild);
@@ -325,6 +314,12 @@ void LaunchyWidget::showTrayIcon() {
         trayMenu->addAction(m_actExit);
         m_trayIcon->setContextMenu(trayMenu);
     }
+
+    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+        this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+
+    m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
+    m_trayIcon->show();
 }
 
 
@@ -1295,11 +1290,11 @@ void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event) {
 
 void LaunchyWidget::changeEvent(QEvent* event) {
     if (event->type() == QEvent::LanguageChange) {
-        // retranslate designer form (single inheritance approach)
+        // retranslate ui form (single inheritance approach)
         retranslateUi();
     }
 
-    // remember to call base class implementation
+    // call base class implementation
     QWidget::changeEvent(event);
 }
 

@@ -13,10 +13,6 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#import sys, os
-#import math
-#import re
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QVariant
 from PyQt5.QtCore import QLocale
@@ -24,13 +20,10 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QApplication
 from sip import wrapinstance, unwrapinstance
 
-from translator import *
-
 import launchy
 from launchy import CatItem
 
-#from Calculator import Calculator
-#from Calcy import CalcyGui
+from translator import *
 
 class TranslatorPy(launchy.Plugin):
     setting_dir = 'TranslatorPy/'
@@ -46,7 +39,8 @@ class TranslatorPy(launchy.Plugin):
     def getID(self):
         return int(self.hash)
 
-    def getName(self):
+    @classmethod
+    def getName(cls):
         return "TranslatorPy"
 
     def setPath(self, path):
@@ -56,10 +50,10 @@ class TranslatorPy(launchy.Plugin):
         return self.path + "/translatorpy.png"
 
     def getCatalog(self, resultsList):
-        resultsList.push_back( launchy.CatItem("translatorpy",
-                                               "tr",
-                                               self.getID(),
-                                               self.getIcon() ) )
+        resultsList.push_back( CatItem("translatorpy",
+                                       "tr",
+                                       self.getID(),
+                                       self.getIcon() ) )
 
     def getLabels(self, inputDataList):
         pass
@@ -103,12 +97,15 @@ class TranslatorPy(launchy.Plugin):
 
     def launchItem(self, inputDataList, catItem):
         pass
+#        print('TranslatorPy, launchItem, catItem', catItem.fullPath())
+#        if len(inputDataList) > 3:
+#            QApplication.clipboard().setText(inputDataList[2].())
+
 #        if self.settings['copyToClipboard']:
-#        QApplication.clipboard().setText(catItem.fullPath())
+
 
     def __readSettings(self):
         print('TranslatorPy, __readSettings', self.settings)
-        pass
         # general
 #        self.settings['bitwidth'] = int(launchy.settings.value(self.setting_dir + 'bitwidth', 16))
 
