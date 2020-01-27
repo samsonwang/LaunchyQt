@@ -25,8 +25,6 @@ namespace py = pybind11;
 
 namespace exportpy {
 
-void registerPlugin(py::object pluginClass);
-
 unsigned int hash(const std::string& str);
 
 std::string getAppPath(bool toNative = true);
@@ -35,6 +33,8 @@ void runProgram(const std::string& file, const std::string& args);
 
 void setNeedRebuildCatalog();
 
-// for debu and test use
+// for debug and test
+void registerPlugin(py::object pluginClass);
+
 void objectReceiver(py::object obj);
 }

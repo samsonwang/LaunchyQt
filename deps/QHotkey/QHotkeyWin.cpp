@@ -187,8 +187,8 @@ bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
     if (msg->message == WM_HOTKEY || msg->message == WM_USER) {
         int id = static_cast<int>(msg->wParam);
         activateHotKey(id);
-        return true;
     }
+
     return false;
 }
 
