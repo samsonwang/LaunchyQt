@@ -650,16 +650,16 @@ void LaunchyWidget::onAlternativeListFocusOut() {
 }
 
 void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
-    if (!event) {
+    if (!event || !m_alternativeList || !m_inputBox) {
+        qWarning("LaunchyWidget::keyPressEvent, pointer is null");
         return;
     }
 
     int key = event->key();
     Qt::KeyboardModifiers mods = event->modifiers();
 
-    qDebug() << "LaunchyWidget::keyPressEvent,"
-        << "key:" << key << "modifier:" << mods
-        << "text:" << event->text();
+    qDebug() << "LaunchyWidget::keyPressEvent, key:" << key
+        << "modifier:" << mods << "text:" << event->text();
 
     if (key == Qt::Key_Escape) {
         if (m_alternativeList->isVisible()) {
@@ -885,8 +885,7 @@ void LaunchyWidget::updateOutput(bool resetAlternativesSelection) {
     }
 }
 
-void LaunchyWidget::updateOutputItem(const CatItem& item)
-{
+void LaunchyWidget::updateOutputItem(const CatItem& item) {
     // qDebug() << "Setting output text to" << searchResults[0].shortName;
     QString outputText = Catalog::decorateText(item.shortName, g_searchText, true);
 
@@ -894,9 +893,8 @@ void LaunchyWidget::updateOutputItem(const CatItem& item)
     outputText += QString(" (%1 launches)").arg(item.usage);
 #endif
 
-    qDebug() << "LaunchyWidget::updateOutputItem,"
-        << "setting output box text:" << outputText
-        << ", usage: " << item.usage;
+    qDebug() << "LaunchyWidget::updateOutputItem, setting output box text:"
+        << outputText << ", usage: " << item.usage;
     m_outputBox->setText(outputText);
 
     if (m_outputItem != item) {
@@ -1008,29 +1006,36 @@ void LaunchyWidget::updateVersion(int oldVersion) {
     }
 }
 
-void LaunchyWidget::loadPosition(QPoint pt) {
+void LaunchyWidget::loadPosition(const QPoint& pt) {
     // Get the dimensions of the screen containing the new center point
-    QRect rect = geometry();
-    QPoint newCenter = pt + QPoint(rect.width()/2, rect.height()/2);
-    QRect screen = qApp->desktop()->availableGeometry(newCenter);
+    QRect rtWidget = geometry();
+    QPoint ptCenter = pt + QPoint(rtWidget.width()/2, rtWidget.height()/2);
+    QRect rtScreen = qApp->desktop()->availableGeometry(ptCenter);
 
+    QPoint ptTarget(pt);
     // See if the new position is within the screen dimensions, if not pull it inside
-    if (newCenter.x() < screen.left())
-        pt.setX(screen.left());
-    else if (newCenter.x() > screen.right())
-        pt.setX(screen.right()-rect.width());
-    if (newCenter.y() < screen.top())
-        pt.setY(screen.top());
-    else if (newCenter.y() > screen.bottom())
-        pt.setY(screen.bottom()-rect.height());
+    if (ptCenter.x() < rtScreen.left()) {
+        ptTarget.setX(rtScreen.left());
+    }
+    else if (ptCenter.x() > rtScreen.right()) {
+        ptTarget.setX(rtScreen.right() - rtWidget.width());
+    }
+    if (ptCenter.y() < rtScreen.top()) {
+        ptTarget.setY(rtScreen.top());
+    }
+    else if (ptCenter.y() > rtScreen.bottom()) {
+        ptTarget.setY(rtScreen.bottom() - rtWidget.height());
+    }
 
     int centerOption = g_settings->value(OPSTION_ALWAYSCENTER, OPSTION_ALWAYSCENTER_DEFAULT).toInt();
-    if (centerOption & 1)
-        pt.setX(screen.center().x() - rect.width()/2);
-    if (centerOption & 2)
-        pt.setY(screen.center().y() - rect.height()/2);
+    if (centerOption & 1) {
+        ptTarget.setX(rtScreen.center().x() - rtWidget.width() / 2);
+    }
+    if (centerOption & 2) {
+        ptTarget.setY(rtScreen.center().y() - rtWidget.height() / 2);
+    }
 
-    move(pt);
+    move(ptTarget);
 }
 
 void LaunchyWidget::savePosition() {
@@ -1383,13 +1388,15 @@ void LaunchyWidget::showLaunchy(bool noFade) {
 }
 
 void LaunchyWidget::hideLaunchy(bool noFade) {
-    if (!isVisible() || isHidden())
+    if (!isVisible() || isHidden()) {
         return;
+    }
 
     savePosition();
     hideAlternativeList();
-    if (m_alwaysShowLaunchy)
+    if (m_alwaysShowLaunchy) {
         return;
+    }
 
     if (isVisible()) {
         m_fader->fadeOut(noFade);
@@ -1402,8 +1409,8 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
 int LaunchyWidget::getHotkey() const {
     int hotkey = g_settings->value(OPSTION_HOTKEY, -1).toInt();
     if (hotkey == -1) {
-        hotkey = g_settings->value(OPSTION_HOTKEYMOD, OPSTION_HOTKEYMOD_DEFAULT).toInt() |
-            g_settings->value(OPSTION_HOTKEYKEY, OPSTION_HOTKEYKEY_DEFAULT).toInt();
+        hotkey = g_settings->value(OPSTION_HOTKEYMOD, OPSTION_HOTKEYMOD_DEFAULT).toInt()
+            | g_settings->value(OPSTION_HOTKEYKEY, OPSTION_HOTKEYKEY_DEFAULT).toInt();
     }
     return hotkey;
 }

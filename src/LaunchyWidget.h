@@ -89,6 +89,13 @@ protected:
     virtual void focusLaunchy();
 
 protected:
+    // singlton
+    LaunchyWidget(CommandFlags command);
+    Q_DISABLE_COPY(LaunchyWidget)
+    virtual ~LaunchyWidget();
+    friend void createLaunchyWidget(CommandFlags command);
+
+protected:
     void saveSettings();
     void showTrayIcon();
     void createActions();
@@ -102,7 +109,7 @@ protected:
     void updateOutputItem(const CatItem& item);
     void updateOutputSize();
     void searchOnInput();
-    void loadPosition(QPoint pt);
+    void loadPosition(const QPoint& pt);
     void savePosition();
     void doTab();
     void doBackTab();
@@ -131,12 +138,6 @@ protected slots:
     void onInputBoxInputMethod(QInputMethodEvent* event);
     void onInputBoxTextEdited(const QString& str);
     void onSecondInstance();
-
-protected:
-    LaunchyWidget(CommandFlags command);
-    Q_DISABLE_COPY(LaunchyWidget)
-    friend void createLaunchyWidget(CommandFlags command);
-    virtual ~LaunchyWidget();
 
 protected:
     QString m_currentSkin;

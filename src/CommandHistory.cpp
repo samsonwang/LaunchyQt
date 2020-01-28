@@ -104,7 +104,7 @@ void CommandHistory::removeAt(int index) {
 }
 
 void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
-    long long index = 0; // long long in x86 is 4 bytes, and x64 is 8 bytes
+    long long index = 0; // long long in x86 is 4 bytes, and in x64 is 8 bytes
                          // use this to avoid VS C4312 warning
     for (const InputDataList& historyItem: m_history) {
         if (historyItem.isEmpty()) {
@@ -112,7 +112,7 @@ void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
         }
         CatItem item = historyItem.first().getTopResult();
         item.pluginId = HASH_HISTORY;
-        item.data = (void*)index++; // use this when switching alternative list
+        item.data = (void*)index++; // Need this when switching alternative list
         searchResults.push_back(item);
     }
 }
