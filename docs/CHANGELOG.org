@@ -1,4 +1,10 @@
 
+* 3.1.1 (2020-1-29)
+- fix bug #21, crash when backspace key is pressed
+- fix bug #22, fail to paste clipboard to excel
+- fix bug #29, crash in chinese path
+- fix bug, fail to open alternative list widget on input method
+
 * 3.1.0 (2019-8-17)
 - fix bug #15, fix bulid error in linux
 - new feature: search command history with arguments
