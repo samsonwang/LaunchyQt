@@ -187,9 +187,7 @@ exit 0</Command>
 copy /y $(OutputPath)$(TargetFileName) $(OutputPath)python\launchy.pyd
 echo "copying target to launchy.pyd"
 copy /y launchy_util.py $(OutputPath)python\launchy_util.py
-echo "copying launchy_util.py"
-copy /y launchy_test.py $(OutputPath)python\launchy_test.py
-echo "copying launchy_test.py"</Command>
+echo "copying launchy_util.py"</Command>
       <Message>
       </Message>
     </PostBuildEvent>

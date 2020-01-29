@@ -52,21 +52,44 @@ def setSettingsObject():
         print("launchy_util, setSettingsObject, Exception,", err)
 
 
-def loadPluginConf():
+def initPipPackage():
+    import sys, os
+    print("launchy_util, initPipPackage, sys.prefix:", sys.prefix)
+
+    xlib = os.path.join(sys.prefix, 'Lib')
+
+    if os.path.exists(xlib):
+        print("launchy_util, initPipPackage, Lib path found, init site")
+        sys.path.insert(0, xlib)
+        sys.path.insert(0, sys.prefix)
+        sys.path.insert(0, ".")
+
+        path = os.environ.get('PATH', '')
+        #print ("env.path(origin):", path)
+        os.environ['PATH'] = path + os.pathsep + sys.prefix + os.pathsep
+
+        #print("launchy_util, initPipPackage, sys.path:", sys.path)
+        #print("launchy_util, initPipPackage, env.path:", os.environ.get('PATH', ''))
+
+        import site
+        site.main()
+        os.chdir(sys.prefix)
+    else:
+        print("launchy_util, initPipPackage, Lib path not found, skip init site")
+
+def loadPyConf():
     try:
-        from pluginconf import loadConf
-        loadConf()
+        print("launchy_util, loadPyConf, begin")
+        import launchy_pyconf
+        print("launchy_util, loadPyConf, end")
     except Exception as err:
-        print("launchy_util, loadPluginconf,", err)
-
-
-def launchy_util():
-    redirectOutput()
-    loadPluginConf()
-    print("launchy_util, sys.path:", sys.path)
-    print("launchy_util, env.path:", os.environ.get('PATH', ''))
+        print("launchy_util, loadPyConf, catched exception:", err)
 
 try:
-    launchy_util()
+    redirectOutput()
+    initPipPackage()
+    #loadPyConf()
+    print("launchy_util, sys.path:", sys.path)
+    print("launchy_util, env.path:", os.environ.get('PATH', ''))
 except Exception as err:
-    print("launchy_util,", err)
+    print("launchy_util, catched exception", err)
