@@ -46,8 +46,8 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
 
     if (!m_pluginObject.contains(pluginId)) {
         py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
-        pathObj.append(qPrintable(QDir::toNativeSeparators(pluginPath)));
-        py::object module = py::module::import(qPrintable(pluginName));
+        pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pluginPath)));
+        py::object module = py::module::import(qUtf8Printable(pluginName));
         py::object pluginClass = module.attr("getPlugin")();
 
         m_pluginObject.insert(pluginId, pluginClass());
@@ -88,12 +88,13 @@ bool PluginMgr::unloadPlugin(uint pluginId) {
 
 void PluginMgr::initSettings(QSettings* setting) {
     if (!setting) {
-        qWarning() << "PluginMgr::initSettings, setting is nullptr";
+        qWarning("PluginMgr::initSettings, setting is nullptr");
         return;
     }
 
     // avoid multiple pybind11 import
     if (setting == m_pSettings) {
+        qDebug("PluginMgr::initSettings, setting is already set");
         return;
     }
     m_pSettings = setting;
@@ -126,11 +127,12 @@ void PluginMgr::registerPlugin(py::object pluginClass) {
 
 PluginMgr::PluginMgr()
     : m_pSettings(nullptr) {
+
     py::initialize_interpreter();
 
     QString pythonLibPath = qApp->applicationDirPath() + "/python";
     py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
-    pathObj.append(qPrintable(QDir::toNativeSeparators(pythonLibPath)));
+    pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pythonLibPath)));
 
     try {
         // import pluginconf.py
