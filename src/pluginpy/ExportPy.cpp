@@ -43,6 +43,10 @@ PYBIND11_MODULE(launchy, m) {
           "get launchy application path",
           py::arg("toNative") = true);
 
+    m.def("getAppTempPath", &exportpy::getAppTempPath,
+          "get launchy application temp path",
+          py::arg("toNative") = true);
+
     m.def("runProgram", &exportpy::runProgram,
           "run program by launchy");
 
@@ -94,6 +98,14 @@ unsigned int hash(const std::string& str) {
 
 std::string getAppPath(bool toNative) {
     QString path = qApp->applicationDirPath();
+    if (toNative) {
+        path = QDir::toNativeSeparators(path);
+    }
+    return path.toStdString();
+}
+
+std::string getAppTempPath(bool toNative) {
+    QString path = QDir::tempPath() + QString("/Launchy");
     if (toNative) {
         path = QDir::toNativeSeparators(path);
     }

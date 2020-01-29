@@ -29,6 +29,8 @@ unsigned int hash(const std::string& str);
 
 std::string getAppPath(bool toNative = true);
 
+std::string getAppTempPath(bool toNative = true);
+
 void runProgram(const std::string& file, const std::string& args);
 
 void setNeedRebuildCatalog();

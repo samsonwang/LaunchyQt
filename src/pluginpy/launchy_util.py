@@ -29,8 +29,8 @@ def redirectOutput():
                 print("launchy_util, FlashedFile.__getattr__,", err)
 
     # Redirect stdout and stderr
-    sys.stdout = FlushedFile(os.path.join(launchy.getAppPath(), 'python', 'stdout.log'))
-    sys.stderr = FlushedFile(os.path.join(launchy.getAppPath(), 'python', 'stderr.log'))
+    sys.stdout = FlushedFile(os.path.join(launchy.getAppTempPath(), 'py_stdout.log'))
+    sys.stderr = FlushedFile(os.path.join(launchy.getAppTempPath(), 'py_stderr.log'))
     print("launchy_util, redirect output finished")
 
 
