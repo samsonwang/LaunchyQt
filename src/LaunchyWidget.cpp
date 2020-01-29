@@ -582,7 +582,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
 
                 if (event->key() == Qt::Key_Tab) {
                     doTab();
-                    processKey();
+                    processInput();
                 }
                 else {
                     // Load up the inputData properly before running the command
@@ -703,12 +703,12 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
     else if ((key == Qt::Key_Tab || key == Qt::Key_Backspace)
              && mods == Qt::ShiftModifier) {
         doBackTab();
-        processKey();
+        processInput();
     }
 
     else if (key == Qt::Key_Tab) {
         doTab();
-        processKey();
+        processInput();
     }
 
     else if (key == Qt::Key_Slash || key == Qt::Key_Backslash) {
@@ -718,17 +718,17 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
             && m_searchResult[0].pluginId == HASH_LAUNCHYFILE) {
             doTab();
         }
-        processKey();
+        processInput();
     }
 
     else if (key == Qt::Key_Insert && mods == Qt::ShiftModifier) {
         // ensure pasting text with Shift+Insert also parses input
         // longer term parsing should be done using the TextChanged event
-        processKey();
+        processInput();
     }
 
     else if (!event->text().isEmpty()){
-        processKey();
+        processInput();
     }
 
 }
@@ -801,8 +801,9 @@ void LaunchyWidget::doEnter() {
     }
 }
 
-void LaunchyWidget::processKey() {
-    qDebug() << "LaunchyWidget::processKey, inputbox text:" << m_inputBox->text();
+void LaunchyWidget::processInput() {
+    qDebug() << "LaunchyWidget::processInput, inputbox text:" << m_inputBox->text();
+
     m_inputData.parse(m_inputBox->text());
     searchOnInput();
     updateOutput();
@@ -812,7 +813,7 @@ void LaunchyWidget::processKey() {
     if (m_inputBox->text().isEmpty()) {
         hideAlternativeList();
     }
-    else if (!m_alternativeList->isVisible()) {
+    else if (!m_searchResult.isEmpty() && !m_alternativeList->isVisible()) {
         startDropTimer();
     }
 }
@@ -909,6 +910,7 @@ void LaunchyWidget::startDropTimer() {
     int delay = g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt();
     if (delay > 0) {
         m_dropTimer->start(delay);
+        qDebug() << "LaunchyWidget::startDropTimer, timer start, delay =" << delay;
     }
     else {
         dropTimeout();
@@ -940,6 +942,8 @@ void LaunchyWidget::updateOutputSize() {
 }
 
 void LaunchyWidget::dropTimeout() {
+    qDebug("LaunchyWidget::dropTimeout, function entry");
+
     // Don't do anything if Launchy has been hidden since the timer was started
     if (isVisible() && m_searchResult.count() > 0) {
         updateAlternativeList();
@@ -1148,18 +1152,15 @@ void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
     qDebug() << "LaunchyWidget::onInputBoxInputMethod";
     QString commitStr = event->commitString();
     if (!commitStr.isEmpty()) {
-        qDebug() << "LaunchyWidget::onInputBoxInputMethod,"
-            << ", commit string:" << commitStr
-            << ", inputbox text:" << m_inputBox->text();
-        m_inputData.parse(m_inputBox->text());
-        searchOnInput();
-        updateOutput();
+        qDebug() << "LaunchyWidget::onInputBoxInputMethod, commit string:"
+            << commitStr << ", inputbox text:" << m_inputBox->text();
+        processInput();
     }
 }
 
 void LaunchyWidget::onInputBoxTextEdited(const QString& str) {
     qDebug() << "LaunchyWidget::onInputBoxTextEdited, str:" << str;
-    processKey();
+    processInput();
 }
 
 void LaunchyWidget::onSecondInstance() {

@@ -108,13 +108,13 @@ protected:
     void updateOutput(bool resetAlternativesSelection = true);
     void updateOutputItem(const CatItem& item);
     void updateOutputSize();
-    void searchOnInput();
     void loadPosition(const QPoint& pt);
     void savePosition();
     void doTab();
     void doBackTab();
     void doEnter();
-    void processKey();
+    void processInput();
+    void searchOnInput();
     void launchItem();
     void startDropTimer();
     void retranslateUi();
