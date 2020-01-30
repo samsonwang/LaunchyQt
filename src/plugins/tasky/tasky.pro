@@ -1,18 +1,31 @@
 TEMPLATE = lib
 
+TARGET = Tasky
+
 CONFIG += plugin \
           debug_and_release
-INCLUDEPATH += ../../src \
-               ../../src/lib
-FORMS =
-HEADERS = Tasky.h
+
 SOURCES = Tasky.cpp
+
+HEADERS = Tasky.h
+
+#FORMS =
+
+CONFIG += precompile_header
 PRECOMPILED_HEADER = Precompiled.h
-TARGET = Tasky
+
+INCLUDEPATH += ../../LaunchyLib
+
 #VERSION = 0.2
 
 CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins/$$TARGET
 CONFIG(release, debug|release):DESTDIR = ../../release/plugins/$$TARGET
+
+# copy resources to dest dir
+CONFIG += file_copies
+COPIES = extra_target
+extra_target.files = $$files(*.png)
+extra_target.path = $$DESTDIR
 
 win32 {
     QT += winextras

@@ -1,25 +1,35 @@
 TEMPLATE = lib
-QT += widgets
-CONFIG += plugin \
-          release
-#VPATH += ../../src/
-INCLUDEPATH += ../../src \
-               ../../src/lib
-#UI_DIR = ../../plugins/verby/
-FORMS = dlg.ui
-
-HEADERS = gui.h \
-          Verby.h
-
-SOURCES = gui.cpp \
-          Verby.cpp
-
-PRECOMPILED_HEADER = precompiled.h
 
 TARGET = Verby
 
+QT += widgets
+
+CONFIG += plugin release
+
+SOURCES = Verby.cpp \
+          gui.cpp
+
+HEADERS = Verby.h \
+          gui.h
+
+FORMS = dlg.ui
+
+CONFIG += precompile_header
+PRECOMPILED_HEADER = Precompiled.h
+
+INCLUDEPATH += ../../LaunchyLib
+
+#VPATH += ../../src/
+#UI_DIR = ../../plugins/verby/
+
 CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins/$$TARGET
 CONFIG(release, debug|release):DESTDIR = ../../release/plugins/$$TARGET
+
+# copy resources to dest dir
+CONFIG += file_copies
+COPIES = extra_target
+extra_target.files = $$files(*.png)
+extra_target.path = $$DESTDIR
 
 win32 {
 #    CONFIG -= embed_manifest_dll

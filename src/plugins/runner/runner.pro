@@ -1,32 +1,36 @@
 TEMPLATE = lib
 
+TARGET = Runner
+
 QT += widgets
 
-CONFIG += plugin \
-          debug_and_release
+CONFIG += plugin debug_and_release
 
-VPATH += ../../src
-INCLUDEPATH += ../../src \
-               ../../src/lib
+SOURCES = Runner.cpp \
+          gui.cpp \
+          Globals.cpp
+
+HEADERS = Runner.h \
+          gui.h \
+          Globals.h
 
 FORMS = dlg.ui
 
-HEADERS = runner.h \
-          gui.h \
-          globals.h \
-          precompiled.h
+CONFIG += precompile_header
+PRECOMPILED_HEADER = Precompiled.h
 
-SOURCES = runner.cpp \
-          gui.cpp \
-          globals.cpp
+INCLUDEPATH += ../../LaunchyLib
 
-PRECOMPILED_HEADER = precompiled.h
-
-TARGET = Runner
-
+#VPATH += ../../src
 #UI_DIR = ../../plugins/$$TARGET/
 CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins/$$TARGET
 CONFIG(release, debug|release):DESTDIR = ../../release/plugins/$$TARGET
+
+# copy resources to dest dir
+CONFIG += file_copies
+COPIES = extra_target
+extra_target.files = $$files(*.ico)
+extra_target.path = $$DESTDIR
 
 win32 {
 #    CONFIG -= embed_manifest_dll

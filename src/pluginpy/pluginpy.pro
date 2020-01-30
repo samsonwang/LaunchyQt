@@ -49,14 +49,14 @@ win32 {
             $$(PYTHONPATH)/libs/python3.lib \
             $$(PYTHONPATH)/libs/python36.lib
 
-
+    # copy dll to pyd
     QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$DESTDIR/PluginPy.dll) \
                        $$shell_path($$DESTDIR/python/launchy.pyd)
 
     #dir_commands = $$QMAKE_MKDIR $$shell_path($$DESTDIR/python)
 
     #pyd_commands = -$$QMAKE_COPY $$shell_path($$DESTDIR/PluginPy.dll) \
-                   $$shell_path($$DESTDIR/python/launchy.pyd)
+    #               $$shell_path($$DESTDIR/python/launchy.pyd)
 
     #QMAKE_EXTRA_TARGETS += extra_target dir pyd util
     #POST_TARGETDEPS += extra_target
