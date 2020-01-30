@@ -14,7 +14,8 @@ public:
     PluginWrapper(exportpy::Plugin* plugin);
     virtual ~PluginWrapper();
 
-    virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
+public:
+    virtual int msg(int msgId, void* wParam = nullptr, void* lParam = nullptr);
 
 private:
     void init();
@@ -33,7 +34,6 @@ private:
 
     //! Does the actual work of calling a Python function
     int dispatchFunction(int msgId, void* wParam, void* lParam);
-
 
 private:
     exportpy::Plugin* m_plugin;

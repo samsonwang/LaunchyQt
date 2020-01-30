@@ -14,7 +14,9 @@ void ExportPlugin(const pybind11::module& m);
 class Plugin {
 public:
     Plugin() = default;
+    virtual ~Plugin() = default;
 
+public:
     virtual void init() = 0;
 
     virtual unsigned int getID() = 0;
@@ -51,7 +53,14 @@ public:
 class PluginHelper : public Plugin {
 public:
     /* Inherit the constructors */
-    using Plugin::Plugin;
+    PluginHelper()
+        : Plugin() {
+
+    }
+
+    virtual ~PluginHelper() {
+
+    }
 
     /* Trampoline (need one for each virtual function) */
     void init() override {
@@ -170,7 +179,7 @@ public:
             }
         }
 
-        return NULL;
+        return nullptr;
     }
 
     void endDialog(bool accept) override {

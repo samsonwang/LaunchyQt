@@ -25,23 +25,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma warning (disable : 4099)
 #pragma warning (push, 1)
 #define _CRT_SECURE_NO_WARNINGS
+#define NOMINMAX
 #endif
 
 #include <QtGlobal> // for OS detection
 
 #ifdef Q_OS_WIN
-#include <windows.h>
+#include <Windows.h>
 #include <tchar.h>
 #include <shellapi.h>
-#include <shobjidl.h>
-#include <shlobj.h>
-#include <shlguid.h>
+#include <ShObjIdl.h>
+#include <ShlObj.h>
+#include <ShlGuid.h>
 #include <comdef.h>
-#include <commctrl.h>
+#include <CommCtrl.h>
 #include <objbase.h>
 #include <commoncontrols.h>
-#include <userenv.h>
-#include <lm.h>
+#include <UserEnv.h>
+#include <LM.h>
 #include <QtWin>
 #endif
 

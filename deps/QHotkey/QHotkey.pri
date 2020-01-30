@@ -7,7 +7,7 @@ HEADERS += $$PWD/QHotkey.h \
 SOURCES += $$PWD/QHotkey.cpp \
            $$PWD/QHotkeyP.cpp
 
-#INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD/../
 
 win32 {
     SOURCES    += $$PWD/QHotkeyWin.cpp

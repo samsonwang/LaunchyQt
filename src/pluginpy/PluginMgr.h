@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <QString>
+#include <QSettings>
 #include <pybind11/pybind11.h>
 
 namespace launchy { class PluginInterface; }
@@ -43,12 +45,9 @@ private:
     PluginMgr& operator=(const PluginMgr&) = delete;
 
 private:
-    // type of python (embedable or installed)
-    // QVector<py::object> m_pluginClass;
     QSettings* m_pSettings;
     QHash<uint, py::object> m_pluginObject;
     QHash<uint, launchy::PluginInterface*> m_pluginInterface;
-    //QVector<py::object> m_pluginObject;
 };
 
 }

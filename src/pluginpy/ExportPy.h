@@ -39,4 +39,5 @@ void setNeedRebuildCatalog();
 void registerPlugin(py::object pluginClass);
 
 void objectReceiver(py::object obj);
+
 }

@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PluginMgr.h"
+#include <QDebug>
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
 #include <pybind11/pytypes.h>

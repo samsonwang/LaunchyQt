@@ -19,9 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QScopedPointer>
-#include <QSettings>
-#include <QString>
 #include "LaunchyLib.h"
 
 namespace launchy {
@@ -37,7 +34,7 @@ class LAUNCHY_EXPORT PluginInterface {
 public:
     PluginInterface();
     virtual ~PluginInterface();
-
+    Q_DISABLE_COPY(PluginInterface)
 
     /**
         \brief This is how messages are passed to the plugin
@@ -100,9 +97,9 @@ public:
             return handled;
         }
         \endverbatim
-
     */
-    virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL) = 0;
+public:
+    virtual int msg(int msgId, void* wParam = nullptr, void* lParam = nullptr) = 0;
 };
 
 }

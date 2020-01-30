@@ -1,12 +1,10 @@
 TEMPLATE = lib
 
-unix:!macx:TARGET = launchy
-win32:TARGET = Launchy
-macx:TARGET = Launchy
-
-CONFIG += debug_and_release
+TARGET = Launchy
 
 QT += core
+
+CONFIG += debug_and_release
 
 SOURCES += CatalogItem.cpp \
            InputData.cpp \
@@ -26,17 +24,17 @@ HEADERS += CatalogItem.h \
 DEFINES += LAUNCHY_LIB
 
 if(!debug_and_release|build_pass) {
-    CONFIG(debug, debug|release):DESTDIR = ../../debug/
-    CONFIG(release, debug|release):DESTDIR = ../../release/
+    CONFIG(debug, debug|release):DESTDIR = ../debug/
+    CONFIG(release, debug|release):DESTDIR = ../release/
+}
+
+win32 {
+   LIBS += user32.lib \
+           shell32.lib
 }
 
 unix:!macx {
     PREFIX   = /usr
     target.path   = $$PREFIX/lib/
     INSTALLS += target
-}
-
-win32 {
-   LIBS += user32.lib \
-           shell32.lib
 }
