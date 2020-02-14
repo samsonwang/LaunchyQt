@@ -73,8 +73,9 @@ class CalcyPy(Plugin):
         print('CalcyPy, getResults,', text, ret)
 
         # full divide
-        if isinstance(ret, float) and ret - int(ret) < 1e-15:
+        if isinstance(ret, float) and abs(ret - int(ret)) < 1e-15:
             ret = int(ret)
+            print('CalcyPy, transform float to int:', ret)
 
         if isinstance(ret, int):
             retInFloat = None
@@ -95,7 +96,7 @@ class CalcyPy(Plugin):
             retInSize = self.__formatSize(ret)
 
         else:
-            retInFloat = ("%%.%df" % self.settings['outputPrecision']) % ret
+            retInFloat = self.__formatFloat(ret)
             retInHex = None
             retInDec = None
             retInOct = None
@@ -204,6 +205,12 @@ class CalcyPy(Plugin):
         if decimalPoint != '.':
             retText = retText.replace(decimalPoint, '.')
         return retText
+
+    def __formatFloat(self, num):
+        if self.settings['outputPrecision']:
+            return str(round(num, self.settings['outputPrecision']))
+        else:
+            return str(num)
 
     def __formatHexadecimal(self, num):
         if self.settings['showHexOut']:
