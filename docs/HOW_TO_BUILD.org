@@ -1,8 +1,23 @@
 
-
 * How to build
 
-** Windows with Visual Studio 2015
+** Windows with Qt Creator
+*** Environments
+- Visual Studio Community 2017
+- Qt 5.12.5
+- Python 3.6.7 (32-bit)
+Tips: If you wants to build 64-bit Launchy, 64-bit Python is required.
+
+*** Configuration
+1. Add =PYTHONPATH= in user environment variables, the value should be the path that you installed python.
+
+*** Build and Debug
+Now open =src.pro= with Qt Creator, you can build and debug Launchy.
+There are the tips:
+1. If you want to build a debug version, you need to download the python debug version library. As python installer only contains release version library by default.
+2. I have not try other Qt and Python version, if you already have other similar versions installed, try them first and you maight save the time for reinstalling develop environments.
+
+** (obsolete) Windows with Visual Studio 2015
 *** Environments
 Here is what I am using for development and release build.
 - Visual Studio Community 2015 ([[https://my.visualstudio.com/Downloads?q=visual%2520studio%25202015&wt.mc_id=o~msft~vscom~older-downloads][download page]])
