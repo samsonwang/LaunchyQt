@@ -96,7 +96,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             }
         }
         else {
-            qDebug() << "IconProviderWin::icon, exe, fail to extract by SHGetFileInfo";
+            qDebug() << "IconProviderWin::icon, exe, fail to extract by SHGetFileInfo, use qt default";
             retIcon = QFileIconProvider::icon(info);
         }
     }
