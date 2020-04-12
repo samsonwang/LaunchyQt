@@ -31,6 +31,7 @@ public:
     virtual QIcon icon(const QFileInfo& info) const;
 
 private:
+    QString linkTargetPathTo64(const QFileInfo& info) const;
     bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
     bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;
 };

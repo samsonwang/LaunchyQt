@@ -20,65 +20,7 @@
 #include "IconProviderWin.h"
 #include "UtilWin.h"
 
-#if 0
-// Temporary work around to avoid having to install the latest Windows SDK
-//#ifndef __IShellItemImageFactory_INTERFACE_DEFINED__
-#define __IShellItemImageFactory_INTERFACE_DEFINED__
-
-// ** marcro redefination
-// #define SHIL_JUMBO 0x4
-
-// IShellItemImageFactory::GetImage() flags
-enum _SIIGB {
-    SIIGBF_RESIZETOFIT = 0x00000000,
-    SIIGBF_BIGGERSIZEOK = 0x00000001,
-    SIIGBF_MEMORYONLY = 0x00000002,
-    SIIGBF_ICONONLY = 0x00000004,
-    SIIGBF_THUMBNAILONLY = 0x00000008,
-    SIIGBF_INCACHEONLY = 0x00000010
-};
-typedef int SIIGBF;
-
-
-const GUID IID_IShellItemImageFactory = {0xbcc18b79,0xba16,0x442f,{0x80,0xc4,0x8a,0x59,0xc3,0x0c,0x46,0x3b}};
-
-class IShellItemImageFactory : public IUnknown
-{
-public:
-    virtual HRESULT STDMETHODCALLTYPE GetImage(SIZE size, SIIGBF flags, /*__RPC__deref_out_opt*/ HBITMAP *phbm) = 0;
-};
-
-#endif
-
-
 namespace launchy {
-
-// This also exists in plugin_interface, need to remove both if I make a 64 build
-static QString wicon_aliasTo64(QString path) {
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QString pf32 = env.value("PROGRAMFILES");
-    QString pf64 = env.value("PROGRAMW6432");
-
-    // On 64 bit windows, 64 bit shortcuts don't resolve correctly from 32 bit executables, fix it here
-    QFileInfo pInfo(path);
-
-    if (env.contains("PROGRAMW6432") && pInfo.isSymLink() && pf32 != pf64) {
-        if (QDir::toNativeSeparators(pInfo.symLinkTarget()).contains(pf32)) {
-            QString path64 = QDir::toNativeSeparators(pInfo.symLinkTarget());
-            path64.replace(pf32, pf64);
-            if (QFileInfo(path64).exists()) {
-                path = path64;
-            }
-        }
-        else if (pInfo.symLinkTarget().contains("system32")) {
-            QString path32 = QDir::toNativeSeparators(pInfo.symLinkTarget());
-            if (!QFileInfo(path32).exists()) {
-                path = path32.replace("system32", "sysnative");
-            }
-        }
-    }
-    return path;
-}
 
 IconProviderWin::IconProviderWin() {
 //     // Load Vista/7 specific API pointers
@@ -111,16 +53,15 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         DestroyIcon(hIcon);
     }
     else if (fileExtension == QStringLiteral("lnk") || info.isSymLink()) {
-        QFileInfo targetInfo(info.symLinkTarget());
-        retIcon = icon(targetInfo);
+
+        QString targetPath = linkTargetPathTo64(info);
+
+        qDebug() << "IconProviderWin::icon, lnk, target path:" << targetPath
+                 << ", info target path:" << info.symLinkTarget();
+
+        retIcon = icon(targetPath);
     }
     else {
-        // This 64 bit mapping needs to go away if we produce a 64 bit build of launchy
-        QString filePath = wicon_aliasTo64(QDir::toNativeSeparators(info.filePath()));
-
-        // Get the icon index using SHGetFileInfo
-        SHFILEINFO sfi;
-        ZeroMemory(&sfi, sizeof(sfi));
 
         unsigned int flags = SHGFI_ICON | SHGFI_SYSICONINDEX | SHGFI_ICONLOCATION;
 
@@ -137,6 +78,15 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             flags |= SHIL_JUMBO;
         }
 
+        QString filePath = QDir::toNativeSeparators(info.filePath());
+
+        qDebug() << "IconProviderWin::icon, exe, file path:" << filePath
+                 << ", flags:" << flags;
+
+        SHFILEINFO sfi;
+        ZeroMemory(&sfi, sizeof(sfi));
+
+        // Get the icon index using SHGetFileInfo
         SHGetFileInfo((LPCTSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), flags);
         if (sfi.hIcon) {
             retIcon.addPixmap(QtWin::fromHICON(sfi.hIcon));
@@ -146,11 +96,47 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             }
         }
         else {
+            qDebug() << "IconProviderWin::icon, exe, fail to extract by SHGetFileInfo";
             retIcon = QFileIconProvider::icon(info);
         }
     }
 
     return retIcon;
+}
+
+QString IconProviderWin::linkTargetPathTo64(const QFileInfo& info) const {
+    // On 64 bit windows, 64 bit shortcuts don't resolve correctly from 32 bit executables, fix it here
+    QString path = QDir::toNativeSeparators(info.symLinkTarget());
+
+    if (QFileInfo(path).exists()) {
+        return path;
+    }
+
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    if (!env.contains("PROGRAMW6432")) {
+        return path;
+    }
+
+    QString pf32 = env.value("PROGRAMFILES"); // C:\Program Files (x86)
+    QString pf64 = env.value("PROGRAMW6432"); // C:\Program Files
+
+    if (pf32 != pf64) {
+        if (path.contains(pf32)) {
+            QString path64 = path;
+            path64.replace(pf32, pf64);
+            if (QFileInfo(path64).exists()) {
+                path = path64;
+            }
+        }
+        else if (path.contains("system32")) {
+            QString path32 = path;
+            if (!QFileInfo(path32).exists()) {
+                path = path32.replace("system32", "sysnative");
+            }
+        }
+    }
+
+    return path;
 }
 
 bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const {
@@ -170,7 +156,7 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
     return SUCCEEDED(hResult);
 }
 
-
+// !! OBSOLETED function (samson 2020-4-12)
 // On Vista or 7 we could use SHIL_JUMBO to get a 256x256 icon,
 // but we'll use SHCreateItemFromParsingName as it'll give an identical
 // icon to the one shown in explorer and it scales automatically.
