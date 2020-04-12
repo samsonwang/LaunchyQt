@@ -10,60 +10,59 @@ CONFIG += debug_and_release
 # CONFIG += qt release
 
 SOURCES = main.cpp \
-    AppBase.cpp \
-    LaunchyWidget.cpp \
-    GlobalVar.cpp \
-    OptionDialog.cpp \
-    Catalog.cpp \
-    CatalogBuilder.cpp \
-    PluginHandler.cpp \
-    IconDelegate.cpp \
-    IconExtractor.cpp \
-    IconProviderBase.cpp \
-    FileBrowserDelegate.cpp \
-    FileBrowser.cpp \
-    DropListWidget.cpp \
-    Fader.cpp \
-    CharListWidget.cpp \
-    CharLineEdit.cpp \
-    CommandHistory.cpp \
-    InputDataList.cpp \
-    FileSearch.cpp \
-    AnimationLabel.cpp \
-    SettingsManager.cpp \
-    Logger.cpp \
-    OptionItem.cpp \
-    Directory.cpp \
-    UpdateChecker.cpp \
-    TranslationManager.cpp
+          AppBase.cpp \
+          LaunchyWidget.cpp \
+          GlobalVar.cpp \
+          OptionDialog.cpp \
+          Catalog.cpp \
+          CatalogBuilder.cpp \
+          PluginHandler.cpp \
+          IconDelegate.cpp \
+          IconExtractor.cpp \
+          IconProviderBase.cpp \
+          FileBrowserDelegate.cpp \
+          FileBrowser.cpp \
+          DropListWidget.cpp \
+          Fader.cpp \
+          CharListWidget.cpp \
+          CharLineEdit.cpp \
+          CommandHistory.cpp \
+          InputDataList.cpp \
+          FileSearch.cpp \
+          AnimationLabel.cpp \
+          SettingsManager.cpp \
+          Logger.cpp \
+          OptionItem.cpp \
+          Directory.cpp \
+          UpdateChecker.cpp \
+          TranslationManager.cpp
 
 HEADERS = AppBase.h \
-    GlobalVar.h \
-    LaunchyWidget.h \
-    Catalog.h \
-    CatalogBuilder.h \
-    PluginHandler.h \
-    OptionDialog.h \
-    IconDelegate.h \
-    IconExtractor.h \
-    IconProviderBase.h \
-    FileBrowserDelegate.h \
-    FileBrowser.h \
-    DropListWidget.h \
-    CharListWidget.h \
-    CharLineEdit.h \
-    Fader.h \
-    precompiled.h \
-    CommandHistory.h \
-    InputDataList.h \
-    FileSearch.h \
-    AnimationLabel.h \
-    SettingsManager.h \
-    Logger.h \
-    OptionItem.h \
-    Directory.h \
-    UpdateChecker.h \
-    TranslationManager.h
+          GlobalVar.h \
+          LaunchyWidget.h \
+          Catalog.h \
+          CatalogBuilder.h \
+          PluginHandler.h \
+          OptionDialog.h \
+          IconDelegate.h \
+          IconExtractor.h \
+          IconProviderBase.h \
+          FileBrowserDelegate.h \
+          FileBrowser.h \
+          DropListWidget.h \
+          CharListWidget.h \
+          CharLineEdit.h \
+          Fader.h \
+          CommandHistory.h \
+          InputDataList.h \
+          FileSearch.h \
+          AnimationLabel.h \
+          SettingsManager.h \
+          Logger.h \
+          OptionItem.h \
+          Directory.h \
+          UpdateChecker.h \
+          TranslationManager.h
 
 FORMS = OptionDialog.ui
 
@@ -73,7 +72,8 @@ include(../../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../../deps/QHotkey/QHotkey.pri)
 
-PRECOMPILED_HEADER = Precompiled.h
+PRECOMPILED_HEADER  = Precompiled.h
+HEADERS            += Precompiled.h
 CONFIG += precompile_header
 
 INCLUDEPATH += ../LaunchyLib \
@@ -100,20 +100,24 @@ win32 {
                Windows/IconProviderWin.h \
                Windows/LaunchyWidgetWin.h \
                Windows/UtilWin.h \
-               WIndows/CrashDumper.h
+               Windows/CrashDumper.h
     CONFIG  += embed_manifest_exe
     RC_FILE += Windows/launchy.rc
-       LIBS += shell32.lib \
-               user32.lib \
+       LIBS += $$DESTDIR/Launchy.lib \
+               $$DESTDIR/PluginPy.lib \
                gdi32.lib \
-               ole32.lib \
-               comctl32.lib \
-               advapi32.lib \
                userenv.lib \
-               netapi32.lib \
-               $$DESTDIR/Launchy.lib \
-               $$DESTDIR/PluginPy.lib
+               netapi32.lib
+
+#               shell32.lib
+#               user32.lib
+#               ole32.lib
+#               comctl32.lib
+#               advapi32.lib
+
+
     DEFINES += VC_EXTRALEAN \
+               WIN32_LEAN_AND_MEAN \
                WIN32 \
                _UNICODE \
                UNICODE
@@ -125,13 +129,13 @@ win32 {
 unix:!macx {
     QT += x11extras
     ICON = Launchy.ico
-    SOURCES += linux/AppLinux.cpp \
-               linux/LaunchyWidgetLinux.cpp \
-               linux/IconProviderLinux.cpp
+    SOURCES += Linux/AppLinux.cpp \
+               Linux/LaunchyWidgetLinux.cpp \
+               Linux/IconProviderLinux.cpp
 
-    HEADERS += linux/AppLinux.h \
-               linux/LaunchyWidgetLinux.h \
-               linux/IconProviderLinux.h
+    HEADERS += Linux/AppLinux.h \
+               Linux/LaunchyWidgetLinux.h \
+               Linux/IconProviderLinux.h
     LIBS += -L$$OUT_PWD/src/lib/ $$DESTDIR/liblaunchy.so $$DESTDIR/libpluginpy.so
 
     PREFIX   = /usr

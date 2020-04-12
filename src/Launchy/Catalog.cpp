@@ -37,7 +37,8 @@ Catalog::~Catalog() {
 bool Catalog::load(const QString& filename) {
     QFile inFile(filename);
     if (!inFile.open(QIODevice::ReadOnly)) {
-        qWarning("Catalog::load, Could not open catalog file for reading");
+        qInfo() << "Catalog::load, fail to open catalog file:"
+                << filename;
         return false;
     }
 
