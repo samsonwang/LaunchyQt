@@ -451,7 +451,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="157"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation>A tecla de atalho %1 já está a ser utilizada. Por favor escolha outra.</translation>
+        <translation>A combinação %1 já está a ser utilizada. Por favor escolha outra.</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="295"/>
@@ -554,7 +554,7 @@ prima %2 para ativar</translation>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="643"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation>A tecla de atalho %1 já está a ser utilizada. Por favor escolha outra.</translation>
+        <translation>A combinação %1 já está a ser utilizada. Por favor escolha outra.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Launchy/OptionDialog.cpp" line="759"/>
@@ -604,7 +604,8 @@ prima %2 para ativar</translation>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível converter para o modo %1.
+Verifique o diretório: %2</translation>
     </message>
 </context>
 <context>
