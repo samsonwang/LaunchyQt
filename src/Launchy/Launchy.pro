@@ -203,4 +203,6 @@ TRANSLATIONS = ../../translations/launchy_zh_CN.ts \
                ../../translations/launchy_es.ts \
                ../../translations/launchy_de.ts \
                ../../translations/launchy_ja.ts \
-               ../../translations/launchy_ru.ts
+               ../../translations/launchy_ru.ts \
+               ../../translations/launchy_it.ts \
+               ../../translations/launchy_pt.ts

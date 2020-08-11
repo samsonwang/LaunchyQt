@@ -345,6 +345,67 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>launchy::LaunchyWidget</name>
+    <message>
+        <source>Exit</source>
+        <translation>Esci</translation>
+    </message>
+    <message>
+        <source>Rebuild catalog</source>
+        <translation>Ricostruisci il catalogo</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Chiudi</translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation>Controlla aggiornamenti</translation>
+    </message>
+    <message>
+        <source>Launchy</source>
+        <translation>Launchy</translation>
+    </message>
+    <message>
+        <source>Test Widget</source>
+        <translation type="vanished">Test Widget</translation>
+    </message>
+    <message>
+        <source>Options</source>
+        <translation>Opzioni</translation>
+    </message>
+    <message>
+        <source>Show Launchy</source>
+        <translation>Visualizza Launchy</translation>
+    </message>
+    <message>
+        <source>Reload skin</source>
+        <translation>Ricarica lo stile</translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation>Riavvia</translation>
+    </message>
+    <message>
+        <source>Relaunch</source>
+        <translation>Riavvia</translation>
+    </message>
+    <message>
+        <source>Launchy is already running!</source>
+        <translation>Launchy è già avviato!</translation>
+    </message>
+    <message>
+        <source>The hotkey %1 is already in use, please select another.</source>
+        <translation>La hotkey da tastiera %1 è già in uso, scegline una diversa.</translation>
+    </message>
+    <message>
+        <source>Launchy %1
+press %2 to activate</source>
+        <translation>Launchy %1
+premi %2 per attivarlo</translation>
+    </message>
+</context>
+<context>
     <name>launchy::OptionDialog</name>
     <message>
         <source>Up</source>
@@ -376,7 +437,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not convert to portable mode, Please check the write access to the %1 directory.</source>
-        <translation>Impossibile convertire in modalità portatile, controlla l&apos;accesso in scrittura alla cartella %1.</translation>
+        <translation type="vanished">Impossibile convertire in modalità portatile, controlla l&apos;accesso in scrittura alla cartella %1.</translation>
     </message>
     <message>
         <source>SOCKS5</source>
@@ -417,66 +478,11 @@ p, li { white-space: pre-wrap; }
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>La hotkey da tastiera %1 è già in uso, scegline una diversa.</translation>
     </message>
-</context>
-<context>
-    <name>launchy::LaunchyWidget</name>
     <message>
-        <source>Exit</source>
-        <translation>Esci</translation>
-    </message>
-    <message>
-        <source>Rebuild catalog</source>
-        <translation>Ricostruisci il catalogo</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Chiudi</translation>
-    </message>
-    <message>
-        <source>Check for updates</source>
-        <translation>Controlla aggiornamenti</translation>
-    </message>
-    <message>
-        <source>Launchy</source>
-        <translation>Launchy</translation>
-    </message>
-    <message>
-        <source>Test Widget</source>
-        <translation>Test Widget</translation>
-    </message>
-    <message>
-        <source>Options</source>
-        <translation>Opzioni</translation>
-    </message>
-    <message>
-        <source>Show Launchy</source>
-        <translation>Visualizza Launchy</translation>
-    </message>
-    <message>
-        <source>Reload skin</source>
-        <translation>Ricarica lo stile</translation>
-    </message>
-    <message>
-        <source>Restart</source>
-        <translation>Riavvia</translation>
-    </message>
-    <message>
-        <source>Relaunch</source>
-        <translation>Riavvia</translation>
-    </message>
-    <message>
-        <source>Launchy is already running!</source>
-        <translation>Launchy è già avviato!</translation>
-    </message>
-    <message>
-        <source>The hotkey %1 is already in use, please select another.</source>
-        <translation>La hotkey da tastiera %1 è già in uso, scegline una diversa.</translation>
-    </message>
-    <message>
-        <source>Launchy %1
-press %2 to activate</source>
-        <translation>Launchy %1
-premi %2 per attivarlo</translation>
+        <source>Fail to convert to %1 mode.
+Please check directory:
+ %2</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
