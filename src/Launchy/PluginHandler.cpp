@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "PluginHandler.h"
 #include <QPluginLoader>
-#include "PluginInterface.h"
-#include "PluginMsg.h"
 #include "Catalog.h"
 #include "SettingsManager.h"
-#include "PluginLoader.h"
+#include "LaunchyLib/PluginInterface.h"
+#include "LaunchyLib/PluginMsg.h"
+#include "PluginPy/PluginLoader.h"
 
 #if defined(Q_OS_WIN)
 #define LIB_EXT ".dll"
@@ -73,7 +73,7 @@ void PluginHandler::getResults(QList<InputData>* inputData, QList<CatItem>* resu
     }
 }
 
-void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep) {
+void PluginHandler::getCatalogs(Catalog* pCatalog, INotifyProgressStep* progressStep) {
     int index = 0;
 
     foreach(PluginInfo info, m_plugins) {
@@ -81,7 +81,7 @@ void PluginHandler::getCatalogs(Catalog* catalog, INotifyProgressStep* progressS
             QList<CatItem> items;
             info.sendMsg(MSG_GET_CATALOG, (void*)&items);
             foreach(CatItem item, items) {
-                catalog->addItem(item);
+                pCatalog->addItem(item);
             }
             if (progressStep) {
                 progressStep->progressStep(index);

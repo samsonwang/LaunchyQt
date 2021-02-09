@@ -76,10 +76,8 @@ PRECOMPILED_HEADER  = Precompiled.h
 HEADERS            += Precompiled.h
 CONFIG += precompile_header
 
-INCLUDEPATH += ../LaunchyLib \
-               ../PluginPy
-
-DEPENDPATH += ../LaunchyLib
+INCLUDEPATH += ../
+#DEPENDPATH += ../LaunchyLib
 
 CONFIG(debug, debug|release):DESTDIR = ../debug/
 CONFIG(release, debug|release):DESTDIR = ../release/
@@ -107,7 +105,8 @@ win32 {
                $$DESTDIR/PluginPy.lib \
                gdi32.lib \
                userenv.lib \
-               netapi32.lib
+               netapi32.lib \
+               shell32.lib
 
 #               shell32.lib
 #               user32.lib

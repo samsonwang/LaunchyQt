@@ -21,7 +21,7 @@
 
 #include <QVector>
 #include <QMutex>
-#include "CatalogItem.h"
+#include "LaunchyLib/CatalogItem.h"
 
 // These classes do not pertain to plugins
 

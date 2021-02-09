@@ -20,10 +20,10 @@
 #pragma once
 
 #include <QWidget>
-#include "CatalogItem.h"
 #include "IconExtractor.h"
-#include "InputData.h"
 #include "CommandHistory.h"
+#include "LaunchyLib/CatalogItem.h"
+#include "LaunchyLib/InputData.h"
 
 class QSystemTrayIcon;
 class QPushButton;

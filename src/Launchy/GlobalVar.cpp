@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppBase.h"
 #include "LaunchyWidget.h"
 #include "CatalogBuilder.h"
-#include "LaunchyLib.h"
+#include "LaunchyLib/LaunchyLib.h"
 
 // Check windows
 #if _WIN32 || _WIN64
@@ -74,4 +74,4 @@ void cleanupGlobalVar() {
     qInfo("cleanupGlobalVar, cleanup finished");
 }
 
-}
+} // namespace launchy

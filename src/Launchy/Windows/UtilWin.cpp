@@ -120,4 +120,4 @@ void SetForegroundWindowEx(HWND hWnd) {
     AttachThreadInput(foreGroundID, currentID, FALSE);
 }
 
-}
+} // namespace launchy
