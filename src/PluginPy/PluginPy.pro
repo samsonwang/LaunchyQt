@@ -46,8 +46,7 @@ win32 {
     INCLUDEPATH += $$(PYTHONPATH)/include
     LIBS += user32.lib \
             shell32.lib \
-            $$(PYTHONPATH)/libs/python3.lib \
-            $$(PYTHONPATH)/libs/python36.lib
+            $$(PYTHONPATH)/libs
 
     # copy dll to pyd
     QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$DESTDIR/PluginPy.dll) \
