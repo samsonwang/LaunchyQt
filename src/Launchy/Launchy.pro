@@ -72,9 +72,9 @@ include(../../deps/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 include(../../deps/QHotkey/QHotkey.pri)
 
-PRECOMPILED_HEADER  = Precompiled.h
-HEADERS            += Precompiled.h
-CONFIG += precompile_header
+PRECOMPILED_HEADER   = Precompiled.h
+HEADERS             += Precompiled.h
+CONFIG              += precompile_header
 
 INCLUDEPATH += ../
 #DEPENDPATH += ../LaunchyLib
@@ -113,7 +113,6 @@ win32 {
 #               ole32.lib
 #               comctl32.lib
 #               advapi32.lib
-
 
     DEFINES += VC_EXTRALEAN \
                WIN32_LEAN_AND_MEAN \
