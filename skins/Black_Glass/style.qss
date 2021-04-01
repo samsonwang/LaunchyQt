@@ -29,9 +29,12 @@
 
 #opsButton {
   border: none;
-  background: url(opsButton.png);
+  background-image: url(opsButton.png);
   qproperty-geometry: rect(412 12 14 15);
-  opacity: 60%;
+}
+
+#opsButton:hover {
+  background-image: url(opsButtonHover.png);
 }
 
 #opsButton:pressed {
