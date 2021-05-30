@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ExportPyCatItem.h"
-#include "CatalogItem.h"
+#include "LaunchyLib/CatalogItem.h"
 
 namespace py = pybind11;
 

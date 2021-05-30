@@ -108,7 +108,6 @@ win32 {
                netapi32.lib \
                shell32.lib
 
-#               shell32.lib
 #               user32.lib
 #               ole32.lib
 #               comctl32.lib

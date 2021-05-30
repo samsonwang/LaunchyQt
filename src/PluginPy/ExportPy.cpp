@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"
 #include "PluginMgr.h"
-#include "PluginInterface.h"
-#include "LaunchyLib.h"
+#include "LaunchyLib/PluginInterface.h"
+#include "LaunchyLib/LaunchyLib.h"
 
 static int add_five(int x) {
     return x+5;

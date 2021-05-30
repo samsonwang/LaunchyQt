@@ -23,11 +23,11 @@ HEADERS += PluginPyLib.h \
            ExportPyCatItem.h \
            ExportPyInputData.h
 
-INCLUDEPATH += ../LaunchyLib \
+INCLUDEPATH += ../ \
                ../../deps
 
-PRECOMPILED_HEADER = Precompiled.h
-CONFIG += precompile_header
+CONFIG              += precompile_header
+PRECOMPILED_HEADER   = Precompiled.h
 
 DEFINES += PLUGINPY_LIB
 
@@ -46,8 +46,9 @@ win32 {
     INCLUDEPATH += $$(PYTHONPATH)/include
     LIBS += user32.lib \
             shell32.lib \
-            $$(PYTHONPATH)/libs
+            -L"$$(PYTHONPATH)/libs"
 
+    QMAKE_
     # copy dll to pyd
     QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$DESTDIR/PluginPy.dll) \
                        $$shell_path($$DESTDIR/python/launchy.pyd)

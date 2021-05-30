@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "PluginWrapper.h"
 #include <pybind11/pybind11.h>
-#include "PluginMsg.h"
 #include "ExportPyPlugin.h"
+#include "LaunchyLib/PluginMsg.h"
 
 namespace py = pybind11;
 

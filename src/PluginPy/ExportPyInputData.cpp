@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ExportPyInputData.h"
-#include "InputData.h"
 #include "ExportPyCatItem.h"
+#include "LaunchyLib/InputData.h"
 
 namespace py = pybind11;
 

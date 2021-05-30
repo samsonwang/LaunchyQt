@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "PluginInterface.h"
 #include "ExportPyPlugin.h"
-#include "InputData.h"
-#include "CatalogItem.h"
+#include "LaunchyLib/InputData.h"
+#include "LaunchyLib/CatalogItem.h"
+#include "LaunchyLib/PluginInterface.h"
 
 namespace pluginpy {
 
