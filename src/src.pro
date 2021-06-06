@@ -7,7 +7,8 @@ SUBDIRS = Launchy \
 win32 {
 SUBDIRS += Plugins/Verby \
            Plugins/Tasky \
-           Plugins/Runner
+           Plugins/Runner \
+           Plugins/UWPApp
 
 #           plugins/calcy \
 #           plugins/controly \
