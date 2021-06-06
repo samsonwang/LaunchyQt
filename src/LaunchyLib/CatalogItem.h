@@ -56,6 +56,7 @@ public:
     /** The plugin id of the creator of this CatItem */
     uint pluginId;
 
+public:
     CatItem();
 
     CatItem(const QString& full, bool isDir = false);
@@ -74,14 +75,15 @@ public:
     */
     CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath);
 
+public:
     bool operator==(const CatItem& other) const;
     bool operator!=(const CatItem& other) const;
 
-    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
-    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
-
     /** Convert short name to search name */
     static QString convertSearchName(const QString& shortName);
+
+    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
+    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
 };
 
-}
+} // namespace launchy
