@@ -1,8 +1,10 @@
 TEMPLATE = subdirs
 
-SUBDIRS = Launchy \
-          LaunchyLib \
-          PluginPy
+CONFIG += ordered
+
+SUBDIRS = LaunchyLib \
+          PluginPy \
+          Launchy
 
 win32 {
 SUBDIRS += Plugins/Verby \

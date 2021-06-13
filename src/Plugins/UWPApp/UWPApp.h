@@ -24,13 +24,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/InputData.h"
 
-class UWPAppPlugin : public QObject, public launchy::PluginInterface {
+class UWPApp : public QObject, public launchy::PluginInterface {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(launchy::PluginInterface)
 public:
-    UWPAppPlugin();
-    virtual ~UWPAppPlugin();
+    UWPApp();
+    virtual ~UWPApp();
 
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
@@ -59,10 +59,9 @@ private:
 
     void endDialog(bool accept);
 
-    QString getIcon();
+private:
+    QString validateIconPath(const QString& iconPath);
 
 public:
     const uint HASH_UWPAPP;
 };
-
-extern UWPAppPlugin* guwpappInstance;

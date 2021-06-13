@@ -36,31 +36,23 @@ DEFINE_GUID(BHID_PropertyStore, 0x0384e1a4, 0x1523, 0x439c, 0xa4, 0xc8, 0xab, 0x
 #endif
 
 #include <QtGui>
-#include <QUrl>
 #include <QFile>
-#include <QRegExp>
-#include <QTextCodec>
 #include <QDebug>
 
 #include "LaunchyLib/PluginMsg.h"
-// #include "Package.h"
-// #include "Application.h"
-
-
-UWPAppPlugin* guwpappInstance = NULL;
 
 #define PLUGIN_NAME "UWPApp"
 
-UWPAppPlugin::UWPAppPlugin()
+UWPApp::UWPApp()
     : HASH_UWPAPP(qHash(QString(PLUGIN_NAME))) {
 
 }
 
-UWPAppPlugin::~UWPAppPlugin() {
+UWPApp::~UWPApp() {
 
 }
 
-int UWPAppPlugin::msg(int msgId, void* wParam, void* lParam) {
+int UWPApp::msg(int msgId, void* wParam, void* lParam) {
     int handled = 0;
     switch (msgId) {
     case MSG_INIT:
@@ -91,21 +83,21 @@ int UWPAppPlugin::msg(int msgId, void* wParam, void* lParam) {
         launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         handled = 1;
         break;
-        //     case MSG_EXTRACT_ICON:
-        //         extractIcon((launchy::CatItem*)wParam, (QIcon*)lParam);
-        //         handled = 1;
-        //         break;
+    //case MSG_EXTRACT_ICON:
+        // extractIcon((launchy::CatItem*)wParam, (QIcon*)lParam);
+        // handled = 1;
+        //break;
     case MSG_HAS_DIALOG:
         // Set to true if you provide a gui
-        handled = 1;
+        // handled = 1;
         break;
     case MSG_DO_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
-        doDialog((QWidget*)wParam, (QWidget**)lParam);
+        // doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
     case MSG_END_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
-        endDialog((bool)wParam);
+        // endDialog((bool)wParam);
         break;
 
     default:
@@ -115,31 +107,23 @@ int UWPAppPlugin::msg(int msgId, void* wParam, void* lParam) {
     return handled;
 }
 
-void UWPAppPlugin::init() {
+void UWPApp::init() {
 
 }
 
-void UWPAppPlugin::getID(uint* id) {
+void UWPApp::getID(uint* id) {
     *id = HASH_UWPAPP;
 }
 
-void UWPAppPlugin::getName(QString* str) {
+void UWPApp::getName(QString* str) {
     *str = PLUGIN_NAME;
 }
 
-void UWPAppPlugin::setPath(const QString* path) {
+void UWPApp::setPath(const QString* path) {
 
 }
 
-void UWPAppPlugin::getCatalog(QList<launchy::CatItem>* items) {
-    /*
-    if (!IsWindows8OrGreater()) {
-        return;
-    }
-    */
-
-    // Package package(HASH_UWPAPP, items, getIcon());
-    // package.findPackages();
+void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
     qDebug() << "UWPAppPlugin::getCatalog";
 
@@ -168,15 +152,18 @@ void UWPAppPlugin::getCatalog(QList<launchy::CatItem>* items) {
 
         PROPERTYKEY pkLauncherAppState;
         PSGetPropertyKeyFromName(L"System.Launcher.AppState", &pkLauncherAppState);
-
+        PROPERTYKEY pkSmallLogoPath;
+        PSGetPropertyKeyFromName(L"System.Tile.SmallLogoPath", &pkSmallLogoPath);
         PROPERTYKEY pkAppUserModelID;
         PSGetPropertyKeyFromName(L"System.AppUserModel.ID", &pkAppUserModelID);
+        PROPERTYKEY pkInstallPath;
+        PSGetPropertyKeyFromName(L"System.AppUserModel.PackageInstallPath", &pkInstallPath);
 
         const size_t pvslen = 512;
         CComHeapPtr<wchar_t> pvs;
         pvs.Allocate(pvslen);
 
-        IShellItem* shellItemNext;
+        IShellItem* shellItemNext = nullptr;
         while (enumShellItems->Next(1, &shellItemNext, nullptr) == S_OK) {
             CComPtr<IShellItem> shellItem = shellItemNext;
 
@@ -190,14 +177,13 @@ void UWPAppPlugin::getCatalog(QList<launchy::CatItem>* items) {
             PROPVARIANT pv;
             PropVariantInit(&pv);
 
+            // UWP app always has valid "Launcher.AppState"
             if (FAILED(propertyStore->GetValue(pkLauncherAppState, &pv))) {
-                // UWP app always has "Launcher.AppState"
                 continue;
             }
             else {
                 memset(pvs, 0, sizeof(wchar_t) * pvslen);
                 PropVariantToString(pv, pvs, pvslen);
-
                 if (std::wcslen(pvs) == 0) {
                     continue;
                 }
@@ -205,25 +191,40 @@ void UWPAppPlugin::getCatalog(QList<launchy::CatItem>* items) {
 
             QString shortName;
             QString fullPath;
+            QString installPath;
             QString iconPath;
 
             CComHeapPtr<wchar_t> name;
-            if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &name)))
-            {
-                // wprintf(L"%s\n", static_cast<wchar_t*>(name));
-                qDebug() << QString::fromWCharArray(static_cast<wchar_t*>(name));
-                shortName = QString::fromWCharArray(static_cast<wchar_t*>(name));
+            if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &name))) {
+                shortName = QString::fromWCharArray(name);
+                qDebug() << "name: " << shortName;
             }
 
             PropVariantClear(&pv);
-            if (SUCCEEDED(propertyStore->GetValue(pkAppUserModelID, &pv)))
-            {
+            if (SUCCEEDED(propertyStore->GetValue(pkAppUserModelID, &pv))) {
                 memset(pvs, 0, sizeof(wchar_t) * pvslen);
-                PropVariantToString(pv, pvs, pvslen); // needs propvarutil.h and propsys.lib
-                // PropVariantClear(&pv);
-                // wprintf(L" %s=%s\n", static_cast<wchar_t*>(pkName), static_cast<wchar_t*>(pvs));
-                qDebug() << " id: " << QString::fromWCharArray(static_cast<wchar_t*>(pvs));
+                PropVariantToString(pv, pvs, pvslen);
                 fullPath = QString::fromWCharArray(static_cast<wchar_t*>(pvs));
+                qDebug() << " id: " << fullPath;
+            }
+
+            PropVariantClear(&pv);
+            if (SUCCEEDED(propertyStore->GetValue(pkInstallPath, &pv))) {
+                memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                PropVariantToString(pv, pvs, pvslen);
+                installPath = QString::fromWCharArray(pvs);
+                qDebug() << " install: " << installPath;
+            }
+
+            PropVariantClear(&pv);
+            if (SUCCEEDED(propertyStore->GetValue(pkSmallLogoPath, &pv))) {
+                memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                PropVariantToString(pv, pvs, pvslen);
+                iconPath = QString::fromWCharArray(pvs);
+                qDebug() << " logo: " << iconPath;
+                iconPath = installPath + QDir::separator() + iconPath;
+                iconPath = validateIconPath(iconPath);
+                qDebug() << " logo(valiate): " << iconPath;
             }
 
             items->push_back(launchy::CatItem(fullPath,
@@ -237,19 +238,15 @@ void UWPAppPlugin::getCatalog(QList<launchy::CatItem>* items) {
     CoUninitialize();
 }
 
-void UWPAppPlugin::getLabels(QList<launchy::InputData>* inputData) {
+void UWPApp::getLabels(QList<launchy::InputData>* inputData) {
 
 }
 
-void UWPAppPlugin::getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results) {
+void UWPApp::getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results) {
 
 }
 
-QString UWPAppPlugin::getIcon() {
-    return QString();
-}
-
-void UWPAppPlugin::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
+void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
     // Specify the appropriate COM threading model
     CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
@@ -277,7 +274,7 @@ void UWPAppPlugin::launchItem(QList<launchy::InputData>* id, launchy::CatItem* i
     CoUninitialize();
 }
 
-void UWPAppPlugin::extractIcon(launchy::CatItem* item, QIcon* icon) {
+void UWPApp::extractIcon(launchy::CatItem* item, QIcon* icon) {
     QColor background;
     QStringList iconPaths = item->iconPath.split('\t');
     QString backgroundColor;
@@ -316,10 +313,27 @@ void UWPAppPlugin::extractIcon(launchy::CatItem* item, QIcon* icon) {
     icon->addPixmap(QPixmap::fromImage(iconImage));
 }
 
-void UWPAppPlugin::doDialog(QWidget* parent, QWidget** dialog) {
+void UWPApp::doDialog(QWidget* parent, QWidget** dialog) {
 
 }
 
-void UWPAppPlugin::endDialog(bool accept) {
+void UWPApp::endDialog(bool accept) {
 
+}
+
+QString UWPApp::validateIconPath(const QString& iconPath) {
+
+    static const char* scales[] = {".scale-200.", ".scale-100.", ".scale-300.", ".scale-400."};
+
+    QString iconPathBase = iconPath.section('.', 0, -2);
+    QString iconPathExt = iconPath.section('.', -1);
+
+    for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
+        QString path = iconPathBase + scales[i] + iconPathExt;
+        if (QFile::exists(path)) {
+            return path;
+        }
+    }
+
+    return iconPath;
 }
