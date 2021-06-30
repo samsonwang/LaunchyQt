@@ -20,18 +20,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QList>
-#include "PluginInterface.h"
-#include "CatalogItem.h"
-#include "InputData.h"
+#include "LaunchyLib/PluginInterface.h"
+#include "LaunchyLib/CatalogItem.h"
+#include "LaunchyLib/InputData.h"
 
-class uwpappPlugin : public QObject, public launchy::PluginInterface {
+class UWPApp : public QObject, public launchy::PluginInterface {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(launchy::PluginInterface)
-
 public:
-    uwpappPlugin();
-    virtual ~uwpappPlugin();
+    UWPApp();
+    virtual ~UWPApp();
 
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
@@ -60,10 +59,9 @@ private:
 
     void endDialog(bool accept);
 
-    QString getIcon();
+private:
+    QString validateIconPath(const QString& iconPath);
 
 public:
-    uint HASH_uwpapp;
+    const uint HASH_UWPAPP;
 };
-
-extern uwpappPlugin* guwpappInstance;

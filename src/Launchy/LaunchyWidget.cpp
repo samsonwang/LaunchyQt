@@ -39,10 +39,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CharLineEdit.h"
 #include "Catalog.h"
 #include "CatalogBuilder.h"
-#include "PluginInterface.h"
 #include "PluginHandler.h"
-#include "PluginMsg.h"
 #include "UpdateChecker.h"
+#include "LaunchyLib/PluginInterface.h"
+#include "LaunchyLib/PluginMsg.h"
 
 namespace launchy {
 
@@ -1453,4 +1453,5 @@ void LaunchyWidget::createActions() {
     m_actExit = new QAction(tr("Exit"), this);
     connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
 }
-}
+
+} // namespace launchy

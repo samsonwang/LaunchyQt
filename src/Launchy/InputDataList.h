@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QList>
 #include <QString>
-#include "InputData.h"
+#include "LaunchyLib/InputData.h"
+
 namespace launchy {
 class InputDataList : public QList<InputData> {
 public:
@@ -32,4 +33,4 @@ public:
 private:
     static QString s_separator;
 };
-}
+} // namespace launchy

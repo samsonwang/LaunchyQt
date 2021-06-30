@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QHash>
-#include "CatalogItem.h"
-#include "InputData.h"
-#include "PluginInfo.h"
+#include "LaunchyLib/CatalogItem.h"
+#include "LaunchyLib/InputData.h"
+#include "LaunchyLib/PluginInfo.h"
 
 namespace launchy {
 class Catalog;
@@ -64,4 +64,4 @@ public:
     virtual bool progressStep(int newStep) = 0;
 };
 
-}
+} // namespace launchy

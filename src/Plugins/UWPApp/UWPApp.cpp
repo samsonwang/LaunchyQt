@@ -21,34 +21,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-#include <shlobj.h>
-#include <tchar.h>
-#include <VersionHelpers.h>
+
+// #include <tchar.h>
+// #include <VersionHelpers.h>
+
+// #include <shlobj.h>
+#include <Shobjidl.h>
+#include <atlbase.h>
+#include <propvarutil.h>
+
+DEFINE_GUID(BHID_EnumItems, 0x94f60519, 0x2850, 0x4924, 0xaa, 0x5a, 0xd1, 0x5e, 0x84, 0x86, 0x80, 0x39);
+DEFINE_GUID(BHID_PropertyStore, 0x0384e1a4, 0x1523, 0x439c, 0xa4, 0xc8, 0xab, 0x91, 0x10, 0x52, 0xf5, 0x86);
+
 #endif
 
 #include <QtGui>
-#include <QUrl>
 #include <QFile>
-#include <QRegExp>
-#include <QTextCodec>
+#include <QDebug>
 
-#include "PluginMsg.h"
-#include "Package.h"
-#include "Application.h"
-
-uwpappPlugin* guwpappInstance = NULL;
+#include "LaunchyLib/PluginMsg.h"
 
 #define PLUGIN_NAME "UWPApp"
 
-uwpappPlugin::uwpappPlugin() {
-    HASH_uwpapp = qHash(QString(PLUGIN_NAME));
-}
-
-uwpappPlugin::~uwpappPlugin() {
+UWPApp::UWPApp()
+    : HASH_UWPAPP(qHash(QString(PLUGIN_NAME))) {
 
 }
 
-int uwpappPlugin::msg(int msgId, void* wParam, void* lParam) {
+UWPApp::~UWPApp() {
+
+}
+
+int UWPApp::msg(int msgId, void* wParam, void* lParam) {
     int handled = 0;
     switch (msgId) {
     case MSG_INIT:
@@ -79,21 +83,21 @@ int uwpappPlugin::msg(int msgId, void* wParam, void* lParam) {
         launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         handled = 1;
         break;
-//     case MSG_EXTRACT_ICON:
-//         extractIcon((launchy::CatItem*)wParam, (QIcon*)lParam);
-//         handled = 1;
-//         break;
+    //case MSG_EXTRACT_ICON:
+        // extractIcon((launchy::CatItem*)wParam, (QIcon*)lParam);
+        // handled = 1;
+        //break;
     case MSG_HAS_DIALOG:
         // Set to true if you provide a gui
-        handled = 1;
+        // handled = 1;
         break;
     case MSG_DO_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
-        doDialog((QWidget*)wParam, (QWidget**)lParam);
+        // doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
     case MSG_END_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
-        endDialog((bool)wParam);
+        // endDialog((bool)wParam);
         break;
 
     default:
@@ -103,68 +107,174 @@ int uwpappPlugin::msg(int msgId, void* wParam, void* lParam) {
     return handled;
 }
 
-void uwpappPlugin::init() {
+void UWPApp::init() {
 
 }
 
-void uwpappPlugin::getID(uint* id) {
-    *id = HASH_uwpapp;
+void UWPApp::getID(uint* id) {
+    *id = HASH_UWPAPP;
 }
 
-void uwpappPlugin::getName(QString* str) {
+void UWPApp::getName(QString* str) {
     *str = PLUGIN_NAME;
 }
 
-void uwpappPlugin::setPath(const QString* path) {
+void UWPApp::setPath(const QString* path) {
 
 }
 
-void uwpappPlugin::getCatalog(QList<launchy::CatItem>* items) {
-    if (!IsWindows8OrGreater()) {
-        return;
-    }
+void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
-    Package package(HASH_uwpapp, items, getIcon());
-    package.findPackages();
-}
+    qDebug() << "UWPAppPlugin::getCatalog";
 
-void uwpappPlugin::getLabels(QList<launchy::InputData>* inputData) {
+    CoInitialize(NULL);
 
-}
+    do {
+        CComPtr<IShellItem> appFolder;
+        if (FAILED(SHCreateItemFromParsingName(L"shell:AppsFolder",
+                                               nullptr,
+                                               IID_PPV_ARGS(&appFolder)))) {
+            qWarning() << "fail to open shell:AppsFolder";
+            break;
+        }
 
-void uwpappPlugin::getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results) {
+        qDebug() << "succeed to open shell::AppsFolder";
 
-}
+        CComPtr<IEnumShellItems> enumShellItems;
+        if (FAILED(appFolder->BindToHandler(nullptr,
+                                            BHID_EnumItems,
+                                            IID_PPV_ARGS(&enumShellItems)))) {
+            qWarning() << "fail to bind to handler";
+            break;
+        }
 
-QString uwpappPlugin::getIcon() {
-    return QString();
-}
+        qDebug() << "succeed to bind to handler";
 
-void uwpappPlugin::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
-    // Specify the appropriate COM threading model
-    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        PROPERTYKEY pkLauncherAppState;
+        PSGetPropertyKeyFromName(L"System.Launcher.AppState", &pkLauncherAppState);
+        PROPERTYKEY pkSmallLogoPath;
+        PSGetPropertyKeyFromName(L"System.Tile.SmallLogoPath", &pkSmallLogoPath);
+        PROPERTYKEY pkAppUserModelID;
+        PSGetPropertyKeyFromName(L"System.AppUserModel.ID", &pkAppUserModelID);
+        PROPERTYKEY pkInstallPath;
+        PSGetPropertyKeyFromName(L"System.AppUserModel.PackageInstallPath", &pkInstallPath);
 
-    IApplicationActivationManager* paam = NULL;
-    HRESULT hr = CoCreateInstance(CLSID_ApplicationActivationManager, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&paam));
-    if (FAILED(hr)) {
-        qDebug() << "Error creating CoCreateINstance & HR is" << hr;
-        return;
-    }
+        const size_t pvslen = 512;
+        CComHeapPtr<wchar_t> pvs;
+        pvs.Allocate(pvslen);
 
-    DWORD pid = 0;
-    hr = paam->ActivateApplication(item->fullPath.toStdWString().c_str(), L"", AO_NONE, &pid);
-    if (FAILED(hr)) {
-        qDebug() << "Error in ActivateApplication call & HR is " << hr;
-        return;
-    }
+        IShellItem* shellItemNext = nullptr;
+        while (enumShellItems->Next(1, &shellItemNext, nullptr) == S_OK) {
+            CComPtr<IShellItem> shellItem = shellItemNext;
 
-    if (hr == 0)
-        qDebug() << "Activated  " << item->fullPath << " with pid " << pid;
+            CComPtr<IPropertyStore> propertyStore;
+            if (FAILED(shellItem->BindToHandler(NULL,
+                                                BHID_PropertyStore,
+                                                IID_PPV_ARGS(&propertyStore)))) {
+                continue;
+            }
+
+            PROPVARIANT pv;
+            PropVariantInit(&pv);
+
+            // UWP app always has valid "Launcher.AppState"
+            if (FAILED(propertyStore->GetValue(pkLauncherAppState, &pv))) {
+                continue;
+            }
+            else {
+                memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                PropVariantToString(pv, pvs, pvslen);
+                if (std::wcslen(pvs) == 0) {
+                    continue;
+                }
+            }
+
+            QString shortName;
+            QString fullPath;
+            QString installPath;
+            QString iconPath;
+
+            CComHeapPtr<wchar_t> name;
+            if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &name))) {
+                shortName = QString::fromWCharArray(name);
+                qDebug() << "name: " << shortName;
+            }
+
+            PropVariantClear(&pv);
+            if (SUCCEEDED(propertyStore->GetValue(pkAppUserModelID, &pv))) {
+                memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                PropVariantToString(pv, pvs, pvslen);
+                fullPath = QString::fromWCharArray(static_cast<wchar_t*>(pvs));
+                qDebug() << " id: " << fullPath;
+            }
+
+            PropVariantClear(&pv);
+            if (SUCCEEDED(propertyStore->GetValue(pkInstallPath, &pv))) {
+                memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                PropVariantToString(pv, pvs, pvslen);
+                installPath = QString::fromWCharArray(pvs);
+                qDebug() << " install: " << installPath;
+            }
+
+            PropVariantClear(&pv);
+            if (SUCCEEDED(propertyStore->GetValue(pkSmallLogoPath, &pv))) {
+                memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                PropVariantToString(pv, pvs, pvslen);
+                iconPath = QString::fromWCharArray(pvs);
+                qDebug() << " logo: " << iconPath;
+                iconPath = installPath + QDir::separator() + iconPath;
+                iconPath = validateIconPath(iconPath);
+                qDebug() << " logo(valiate): " << iconPath;
+            }
+
+            items->push_back(launchy::CatItem(fullPath,
+                                              shortName,
+                                              HASH_UWPAPP,
+                                              iconPath));
+        }
+
+    } while (0);
 
     CoUninitialize();
 }
 
-void uwpappPlugin::extractIcon(launchy::CatItem* item, QIcon* icon) {
+void UWPApp::getLabels(QList<launchy::InputData>* inputData) {
+
+}
+
+void UWPApp::getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* results) {
+
+}
+
+void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
+    // Specify the appropriate COM threading model
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+    IApplicationActivationManager* pAAM = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_ApplicationActivationManager,
+                                  nullptr,
+                                  CLSCTX_INPROC_SERVER,
+                                  IID_PPV_ARGS(&pAAM));
+    if (FAILED(hr)) {
+        qWarning() << "UWPAppPlugin::launchItem, Error creating CoCreateInstance & HR is" << hr;
+        return;
+    }
+
+    DWORD pid = 0;
+    hr = pAAM->ActivateApplication(item->fullPath.toStdWString().c_str(), L"", AO_NONE, &pid);
+    if (FAILED(hr)) {
+        qWarning() << "UWPAppPlugin::launchItem, Error in ActivateApplication call & HR is " << hr;
+        return;
+    }
+
+    if (hr == 0) {
+        qDebug() << "UWPAppPlugin::launchItem, Activated " << item->fullPath << " with pid " << pid;
+    }
+
+    CoUninitialize();
+}
+
+void UWPApp::extractIcon(launchy::CatItem* item, QIcon* icon) {
     QColor background;
     QStringList iconPaths = item->iconPath.split('\t');
     QString backgroundColor;
@@ -180,7 +290,7 @@ void uwpappPlugin::extractIcon(launchy::CatItem* item, QIcon* icon) {
         DWORD size = sizeof(DWORD);
 
         RegGetValue(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\DWM", L"ColorizationColor",
-            RRF_RT_REG_DWORD, 0, &colorizationColor, &size);
+                    RRF_RT_REG_DWORD, 0, &colorizationColor, &size);
 
         BYTE r = (colorizationColor >> 16) & 0xFF;
         BYTE g = (colorizationColor >> 8) & 0xFF;
@@ -203,14 +313,27 @@ void uwpappPlugin::extractIcon(launchy::CatItem* item, QIcon* icon) {
     icon->addPixmap(QPixmap::fromImage(iconImage));
 }
 
-void uwpappPlugin::doDialog(QWidget* parent, QWidget** dialog) {
+void UWPApp::doDialog(QWidget* parent, QWidget** dialog) {
 
 }
 
-void uwpappPlugin::endDialog(bool accept) {
+void UWPApp::endDialog(bool accept) {
 
 }
 
+QString UWPApp::validateIconPath(const QString& iconPath) {
 
+    static const char* scales[] = {".scale-200.", ".scale-100.", ".scale-300.", ".scale-400."};
 
+    QString iconPathBase = iconPath.section('.', 0, -2);
+    QString iconPathExt = iconPath.section('.', -1);
 
+    for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
+        QString path = iconPathBase + scales[i] + iconPathExt;
+        if (QFile::exists(path)) {
+            return path;
+        }
+    }
+
+    return iconPath;
+}

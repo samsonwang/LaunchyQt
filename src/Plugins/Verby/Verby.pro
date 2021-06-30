@@ -4,7 +4,7 @@ TARGET = Verby
 
 QT += widgets
 
-CONFIG += plugin release
+CONFIG += plugin debug_and_release
 
 SOURCES = Verby.cpp \
           gui.cpp

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <pybind11/pytypes.h>
 #include "ExportPyPlugin.h"
 #include "PluginWrapper.h"
-#include "InputData.h"
+#include "LaunchyLib/InputData.h"
 
 namespace py = pybind11;
 

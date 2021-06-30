@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "PluginLoader.h"
 #include <QHash>
-#include "PluginInterface.h"
+#include "LaunchyLib/PluginInterface.h"
 #include "PluginMgr.h"
 
 namespace pluginpy {

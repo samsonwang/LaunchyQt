@@ -21,8 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FILESEARCH_H
 #define FILESEARCH_H
 
-#include "CatalogItem.h"
 #include "InputDataList.h"
+#include "LaunchyLib/CatalogItem.h"
 
 namespace launchy {
 class FileSearch {
@@ -31,6 +31,6 @@ public:
                        QList<CatItem>& searchResults,
                        InputDataList& inputData);
 };
-}
+} // namespace launchy
 
 #endif

@@ -1,39 +1,45 @@
 TEMPLATE = lib
+
+TARGET = UWPApp
+QT += gui widgets
 CONFIG += plugin debug_and_release
-VPATH += ../../src/
 
-# Check for requried environment variables
-!exists($$(BOOST_DIR)) {
- error("The BOOST_DIR environment variable is not defined.")
-}
+INCLUDEPATH += ../../
 
-INCLUDEPATH += ../../src/
-INCLUDEPATH += $$(BOOST_DIR)
-
-TR_EXCLUDE += $$(BOOST_DIR)/*
-
-PRECOMPILED_HEADER = precompiled.h
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += gui widgets
+#CONFIG += precompile_header
+#PRECOMPILED_HEADER = Precompiled.h
 
 FORMS = 
-HEADERS = plugin_interface.h uwpapp.h precompiled.h Package.h Application.h
-SOURCES = plugin_interface.cpp uwpapp.cpp Package.cpp Application.cpp
-TARGET = uwpapp
- 
-win32 {
- 	CONFIG -= embed_manifest_dll
-	LIBS += shell32.lib
-	LIBS += user32.lib
-	LIBS += Gdi32.lib
-	LIBS += comctl32.lib
-	LIBS += shlwapi.lib
-	LIBS += dwmapi.lib
-	LIBS += xmllite.lib
-	QMAKE_CXXFLAGS += /ZW /AI"$(VCInstallDir)vcpackages;$(UniversalCRTSdkDir)UnionMetadata"
-}
 
-if(!debug_and_release|build_pass):CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins
-if(!debug_and_release|build_pass):CONFIG(release, debug|release):DESTDIR = ../../release/plugins
+HEADERS = UWPApp.h
+          #Package.h \
+          #Application.h
+
+SOURCES = UWPApp.cpp
+          #Package.cpp \
+          #Application.cpp
 
 DISTFILES += uwpapp.json
+
+CONFIG(debug, debug|release):DESTDIR = ../../debug/plugins/$$TARGET
+CONFIG(release, debug|release):DESTDIR = ../../release/plugins/$$TARGET
+
+win32 {
+ 	CONFIG -= embed_manifest_dll
+
+        LIBS += user32.lib \
+                shell32.lib \
+                Propsys.lib \
+                $$DESTDIR/../../Launchy.lib
+#	LIBS += shell32.lib
+#	LIBS += user32.lib
+#	LIBS += Gdi32.lib
+#	LIBS += comctl32.lib
+#	LIBS += shlwapi.lib
+#	LIBS += dwmapi.lib
+#	LIBS += xmllite.lib
+        QMAKE_CXXFLAGS += /ZW
+        #/AI"$(VCInstallDir)vcpackages;$(UniversalCRTSdkDir)UnionMetadata"
+}
+
+

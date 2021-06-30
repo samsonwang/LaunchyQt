@@ -32,8 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "OptionItem.h"
 #include "UpdateChecker.h"
 #include "FileBrowserDelegate.h"
-#include "LaunchyLib.h"
 #include "TranslationManager.h"
+#include "LaunchyLib/LaunchyLib.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
