@@ -71,7 +71,7 @@ public:
     bool hasText() const;
 
     /** Get a pointer to the best catalog match for this segment of the query */
-    CatItem&  getTopResult();
+    CatItem& getTopResult();
     const CatItem& getTopResult() const;
 
     /** Change the best catalog match for this segment */

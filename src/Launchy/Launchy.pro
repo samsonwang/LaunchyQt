@@ -88,7 +88,7 @@ MOC_DIR = GeneratedFiles
 win32 {
     QT += winextras
     ICON = Launchy.ico
-    if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
+    # if(!debug_and_release|build_pass):CONFIG(debug, debug|release):CONFIG += console
     SOURCES += Windows/AppWin.cpp \
                Windows/LaunchyWidgetWin.cpp \
                Windows/UtilWin.cpp \

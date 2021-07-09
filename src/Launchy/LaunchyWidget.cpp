@@ -1,20 +1,20 @@
 /*
-Launchy: Application Launcher
-Copyright (C) 2007-2010  Josh Karlin, Simon Capewell
+  Launchy: Application Launcher
+  Copyright (C) 2007-2010  Josh Karlin, Simon Capewell
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "LaunchyWidget.h"
@@ -53,11 +53,7 @@ using ::operator|;
 LaunchyWidget* LaunchyWidget::s_instance = nullptr;
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
-#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
-    : QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
-#elif defined(Q_OS_MAC)
-    : QWidget(NULL, Qt::FramelessWindowHint),
-#endif
+    : QWidget(nullptr),
       m_skinChanged(false),
       m_inputBox(new CharLineEdit(this)),
       m_outputBox(new QLabel(this)),
@@ -76,6 +72,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_menuOpen(false),
       m_optionDialog(nullptr),
       m_optionsOpen(false) {
+
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+#elif defined(Q_OS_MAC)
+    setWindowFlags(Qt::FramelessWindowHint);
+#endif
 
     g_searchText.clear();
 
@@ -316,7 +318,7 @@ void LaunchyWidget::showTrayIcon() {
     }
 
     connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-        this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
     m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
     m_trayIcon->show();
@@ -330,8 +332,8 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     int i = 0;
     for (; i < m_searchResult.size(); ++i) {
         qDebug() << "LaunchyWidget::updateAlternativeList," << i << ":"
-            << m_searchResult[i].shortName << ","
-            << m_searchResult[i].fullPath;
+                 << m_searchResult[i].shortName << ","
+                 << m_searchResult[i].fullPath;
         QString fullPath = QDir::toNativeSeparators(m_searchResult[i].fullPath);
 #ifdef _DEBUG
         fullPath += QString(" (%1 launches)").arg(m_searchResult[i].usage);
@@ -394,11 +396,13 @@ void LaunchyWidget::launchItem() {
         return;
     }
 
+    qDebug() << "LaunchyWidget::launchItem, inputdata size:" << m_inputData.size();
+
     CatItem& item = m_inputData[0].getTopResult();
     qDebug() << "LaunchyWidget::launchItem, item.shortName:" << item.shortName
-        << "item.fullPath:" << item.fullPath
-        << "item.pluginId:" << item.pluginId
-        << "item.data:" << item.data;
+             << "item.fullPath:" << item.fullPath
+             << "item.pluginId:" << item.pluginId
+             << "item.data:" << item.data;
 
     int ops = MSG_CONTROL_LAUNCHITEM;
 
@@ -452,25 +456,25 @@ void LaunchyWidget::launchItem() {
 }
 
 /*
-void LaunchyWidget::focusInEvent(QFocusEvent* event) {
-    if (event->gotFocus() && fader->isFading())
-        fader->fadeIn(false);
+  void LaunchyWidget::focusInEvent(QFocusEvent* event) {
+  if (event->gotFocus() && fader->isFading())
+  fader->fadeIn(false);
 
-    QWidget::focusInEvent(event);
-}
+  QWidget::focusInEvent(event);
+  }
 
-void LaunchyWidget::focusOutEvent(QFocusEvent* event) {
-    Qt::FocusReason reason = event->reason();
-    if (event->reason() == Qt::ActiveWindowFocusReason) {
-        if (g_settings->value("GenOps/hideiflostfocus", false).toBool()
-            && !isActiveWindow()
-            && !alternatives->isActiveWindow()
-            && !optionsOpen
-            && !fader->isFading()) {
-            hideLaunchy();
-        }
-    }
-}
+  void LaunchyWidget::focusOutEvent(QFocusEvent* event) {
+  Qt::FocusReason reason = event->reason();
+  if (event->reason() == Qt::ActiveWindowFocusReason) {
+  if (g_settings->value("GenOps/hideiflostfocus", false).toBool()
+  && !isActiveWindow()
+  && !alternatives->isActiveWindow()
+  && !optionsOpen
+  && !fader->isFading()) {
+  hideLaunchy();
+  }
+  }
+  }
 */
 
 void LaunchyWidget::onAlternativeListRowChanged(int row) {
@@ -478,27 +482,27 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
     // If the current entry is a history item or there is no text entered
     if (row < 0 || row >= m_searchResult.count()) {
         qWarning() << "LaunchyWidget::onAlternativeListRowChanged, invalid row:" << row
-            << ", current row:" << m_alternativeList->currentRow();
+                   << ", current row:" << m_alternativeList->currentRow();
         return;
     }
 
     const CatItem& item = m_searchResult[row];
     int historyIndex = (int)(int64_t)(item.data);
     qDebug() << "LaunchyWidget::onAlternativeListRowChanged, row:" << row
-        << ", item.fullpath:" << item.fullPath
-        << ", item.shortName:" << item.shortName
-        << ", item.pluginId:" << item.pluginId
-        << ", historyIndex:" << historyIndex
-        << ", inputBox:" << m_inputBox->text();
+             << ", item.fullpath:" << item.fullPath
+             << ", item.shortName:" << item.shortName
+             << ", item.pluginId:" << item.pluginId
+             << ", historyIndex:" << historyIndex
+             << ", inputBox:" << m_inputBox->text();
 
     if ( (!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
-        || m_inputBox->text().isEmpty() ) {
+         || m_inputBox->text().isEmpty() ) {
         // Used a void* to hold an int.. ick!
         // BUT! Doing so avoids breaking existing catalogs
 
         if (item.pluginId == HASH_HISTORY && historyIndex < m_searchResult.count()) {
             qDebug() << "LaunchyWidget::onAlternativeListRowChanged, list history"
-                << item.shortName;
+                     << item.shortName;
 
             m_inputData = m_history.getItem(historyIndex);
             m_inputBox->selectAll();
@@ -514,8 +518,8 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
     else if (!m_inputData.isEmpty() && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST)
                                         || !m_inputData.last().hasText())) {
         qDebug() << "LaunchyWidget::onAlternativeListRowChanged"
-            << ", auto suggest:" << item.shortName
-            << ", m_inputData.size():" << m_inputData.size();
+                 << ", auto suggest:" << item.shortName
+                 << ", m_inputData.size():" << m_inputData.size();
 
         m_inputData.last().setText(item.shortName);
         m_inputData.last().setTopResult(item);
@@ -537,7 +541,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
     }
 
     qDebug() << "LaunchyWidget::onAlternativeListRowChanged, input box text:"
-        << m_inputBox->text();
+             << m_inputBox->text();
 }
 
 void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
@@ -549,7 +553,7 @@ void LaunchyWidget::onInputBoxKeyPressed(QKeyEvent* event) {
     // we have to pass it manually
     if (event->key() == Qt::Key_Tab) {
         qDebug() << "LaunchyWidget::onInputBoxKeyPressed,"
-            << "pass event to LaunchyWidget::keyPressEvent";
+                 << "pass event to LaunchyWidget::keyPressEvent";
         keyPressEvent(event);
     }
     else {
@@ -587,10 +591,10 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
                 else {
                     // Load up the inputData properly before running the command
                     /* commented out until I find a fix for it breaking the history selection
-                    inputData.last().setTopResult(searchResults[0]);
-                    doTab();
-                    inputData.parse(input->text());
-                    inputData.erase(inputData.end() - 1);*/
+                       inputData.last().setTopResult(searchResults[0]);
+                       doTab();
+                       inputData.parse(input->text());
+                       inputData.erase(inputData.end() - 1);*/
 
                     //updateOutputBox();
                     keyPressEvent(event);
@@ -606,7 +610,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
             if (item.pluginId == HASH_HISTORY) {
                 // Delete selected history entry from the alternatives list
                 qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
-                    << "delete history:" << item.shortName;
+                         << "delete history:" << item.shortName;
                 m_history.removeAt(row);
                 m_inputBox->clear();
                 searchOnInput();
@@ -616,7 +620,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
             else {
                 // Demote the selected item down the alternatives list
                 qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
-                    << "demote item:" << item.shortName;
+                         << "demote item:" << item.shortName;
                 g_catalog->demoteItem(item);
                 searchOnInput();
                 updateOutput(false);
@@ -638,8 +642,8 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
 
 void LaunchyWidget::onAlternativeListFocusOut() {
     qDebug() << "LaunchyWidget::onAlternativeListFocusOut,"
-        << "is main widget activeWindow:" << isActiveWindow()
-        << ", is alternative list active window:" << m_alternativeList->isActiveWindow();
+             << "is main widget activeWindow:" << isActiveWindow()
+             << ", is alternative list active window:" << m_alternativeList->isActiveWindow();
     if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
@@ -659,7 +663,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
     Qt::KeyboardModifiers mods = event->modifiers();
 
     qDebug() << "LaunchyWidget::keyPressEvent, key:" << key
-        << "modifier:" << mods << "text:" << event->text();
+             << "modifier:" << mods << "text:" << event->text();
 
     if (key == Qt::Key_Escape) {
         if (m_alternativeList->isVisible()) {
@@ -758,7 +762,10 @@ void LaunchyWidget::doBackTab() {
 }
 
 void LaunchyWidget::doTab() {
+
     if (!m_inputData.isEmpty() && !m_searchResult.isEmpty()) {
+        qDebug() << "LaunchyWidget::doTab, get path";
+
         // If it's an incomplete file or directory, complete it
         QFileInfo info(m_searchResult.first().fullPath);
 
@@ -786,7 +793,6 @@ void LaunchyWidget::doTab() {
         }
     }
 }
-
 
 void LaunchyWidget::doEnter() {
     hideAlternativeList();
@@ -895,7 +901,7 @@ void LaunchyWidget::updateOutputItem(const CatItem& item) {
 #endif
 
     qDebug() << "LaunchyWidget::updateOutputItem, setting output box text:"
-        << outputText << ", usage: " << item.usage;
+             << outputText << ", usage: " << item.usage;
     m_outputBox->setText(outputText);
 
     if (m_outputItem != item) {
@@ -1153,7 +1159,7 @@ void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
     QString commitStr = event->commitString();
     if (!commitStr.isEmpty()) {
         qDebug() << "LaunchyWidget::onInputBoxInputMethod, commit string:"
-            << commitStr << ", inputbox text:" << m_inputBox->text();
+                 << commitStr << ", inputbox text:" << m_inputBox->text();
         processInput();
     }
 }
@@ -1276,7 +1282,7 @@ void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
-    Q_UNUSED(event)
+    Q_UNUSED(event);
     m_dragging = false;
     hideAlternativeList();
     m_inputBox->setFocus();
@@ -1329,7 +1335,7 @@ void LaunchyWidget::buildCatalog() {
 
     // Use the catalog builder to refresh the catalog in a worker thread
     // QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
-	QMetaObject::invokeMethod(g_builder, "buildCatalog");
+    QMetaObject::invokeMethod(g_builder, "buildCatalog");
 
     startRebuildTimer();
 }

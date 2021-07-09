@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "CrashDumper.h"
 #include <tchar.h>
 
@@ -27,7 +27,7 @@ MINIDUMPWRITEDUMP CrashDumper::m_dumpFunction;
 CrashDumper::CrashDumper(const TCHAR* appName) {
     if (m_appName == NULL) {
         m_appName = _tcsdup(appName);
-#ifndef DEBUG
+#ifdef NDEBUG
         SetUnhandledExceptionFilter(TopLevelFilter);
 #endif
     }
