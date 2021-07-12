@@ -17,15 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "LaunchyLib.h"
+
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
 #include <QLocale>
 #include <QProcess>
 #include <QProcessEnvironment>
-#include "PluginMsg.h"
 
-namespace launchy {
+#include "PluginMsg.h"
 
 LAUNCHY_EXPORT QSharedPointer<QSettings> g_settings;
 
@@ -35,14 +35,16 @@ LAUNCHY_EXPORT QAtomicInt g_needRebuildCatalog;
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN
-#endif
+#endif // VC_EXTRALEAN
 
 #ifndef UNICODE
 #define UNICODE
 #endif
 
 #include <windows.h>
+#include <shellapi.h>
 
+namespace launchy {
 // This is also defined in WinIconProvider, remove from both locations if 64 bit build is produced
 static QString aliasTo64(QString path) {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -136,6 +138,8 @@ void runProgram(const QString& path, const QString& args, bool translateSeparato
     ShellExecuteEx(&ShExecInfo);
 }
 
+} // namespace launchy
+
 #elif defined(Q_OS_MAC)
 
 int getDesktop() {
@@ -206,5 +210,3 @@ void runProgram(const QString& file, const QString& args, bool translateSeparato
 }
 
 #endif
-
-}

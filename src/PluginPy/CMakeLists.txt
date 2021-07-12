@@ -4,10 +4,13 @@ cmake_minimum_required (VERSION 3.14.5)
 project (PluginPy)
 
 get_filename_component (ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../ ABSOLUTE)
+get_filename_component (DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/ ABSOLUTE)
+
 include (${ROOT_DIR}/CMakeModule/BaseConfig.cmake)
 include (${ROOT_DIR}/CMakeModule/QtConfig.cmake)
 
 include_directories (${ROOT_DIR})
+include_directories (${DEPS_DIR})
 
 list (APPEND TARGET_DEPEND_LIBRARIES
   LaunchyLib Qt5::Widgets)
