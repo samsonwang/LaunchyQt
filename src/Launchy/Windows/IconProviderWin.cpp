@@ -18,6 +18,19 @@
 */
 
 #include "IconProviderWin.h"
+
+#include <windows.h>
+
+#include <shellapi.h>
+#include <ShlObj.h>
+#include <CommCtrl.h>
+#include <commoncontrols.h>
+
+#include <QDir>
+#include <QDebug>
+#include <QtWin>
+#include <QProcessEnvironment>
+
 #include "UtilWin.h"
 
 namespace launchy {
@@ -48,7 +61,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     else if (fileExtension == QStringLiteral("cpl")) {
         HICON hIcon;
         QString filePath = QDir::toNativeSeparators(info.filePath());
-        ExtractIconEx((LPCTSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
+        ExtractIconExW((LPCWSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
         retIcon = QIcon(QtWin::fromHICON(hIcon));
         DestroyIcon(hIcon);
     }
@@ -164,7 +177,7 @@ bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& ic
     HRESULT hResult = S_FALSE;
     IShellItemImageFactory* pSIIF = NULL;
     CoInitialize(NULL);
-    hResult = SHCreateItemFromParsingName((LPCTSTR)filePath.utf16(), NULL, IID_PPV_ARGS(&pSIIF));
+    hResult = SHCreateItemFromParsingName((PCWSTR)filePath.utf16(), NULL, IID_PPV_ARGS(&pSIIF));
     if (hResult == S_OK) {
         HBITMAP hBitmap = NULL;
         SIZE iconSize = {m_preferredSize, m_preferredSize};

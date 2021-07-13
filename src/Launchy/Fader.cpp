@@ -17,12 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "Precompiled.h"
 #include "Fader.h"
 #include "LaunchyLib/LaunchyLib.h"
 #include "OptionItem.h"
 
 namespace launchy {
+
 Fader::Fader(QObject* parent)
     : QThread(parent),
       m_keepRunning(true) {
@@ -58,7 +58,6 @@ void Fader::fadeIn(bool quick) {
     }
 }
 
-
 void Fader::fadeOut(bool quick) {
     int time = g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt();
     double opaqueness = g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
@@ -87,7 +86,6 @@ void Fader::fadeOut(bool quick) {
     }
 }
 
-
 void Fader::run() {
     m_keepRunning = true;
     while (m_keepRunning) {
@@ -109,4 +107,6 @@ void Fader::run() {
 
     emit fadeLevel(m_targetLevel);
 }
-}
+
+} // namespace launchy
+

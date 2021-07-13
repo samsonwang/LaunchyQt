@@ -30,7 +30,7 @@ list (APPEND SOURCES ${SOURCES_PLATFORM})
 file (GLOB SOURCES_JSON
   *.json)
 list (APPEND SOURCES ${SOURCES_JSON})
-source_group("Json Files" FILES ${SOURCES_JSON})
+source_group ("Json Files" FILES ${SOURCES_JSON})
 
 # include parent directory
 get_filename_component (PUBLIC_PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../ ABSOLUTE)

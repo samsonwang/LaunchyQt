@@ -17,13 +17,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ExportPy.h"
+
 #include <iostream>
+
 #include <QHash>
+#include <QDebug>
+#include <QApplication>
+#include <QDir>
+
+#include "LaunchyLib/PluginInterface.h"
+#include "LaunchyLib/LaunchyLib.h"
+
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"
 #include "PluginMgr.h"
-#include "LaunchyLib/PluginInterface.h"
-#include "LaunchyLib/LaunchyLib.h"
 
 static int add_five(int x) {
     return x+5;

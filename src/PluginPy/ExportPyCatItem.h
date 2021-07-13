@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <Python.h>
 #include <pybind11/pybind11.h>
-#include "LaunchyLib/CatalogItem.h"
 
-//namespace launchy { class CatItem; }
+#include "LaunchyLib/CatalogItem.h"
 
 namespace py = pybind11;
 
@@ -72,4 +72,5 @@ private:
     QList<launchy::CatItem>* m_data;
 };
 
-}
+} // namespace exportpy
+

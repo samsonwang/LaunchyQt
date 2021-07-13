@@ -18,6 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "CharLineEdit.h"
+
+#include <QDebug>
+#include <QKeyEvent>
+
 #ifdef Q_OS_MAC
 #include <QMacStyle>
 #endif

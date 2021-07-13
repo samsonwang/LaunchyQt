@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "OptionItem.h"
 #include <Qt>
+#include <QNetworkProxy>
 
 namespace launchy {
 

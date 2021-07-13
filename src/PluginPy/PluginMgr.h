@@ -18,9 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+// qt defines "slots" macro
+// python.h must include before qt header files
+#include <Python.h>
+#include <pybind11/pybind11.h>
+
 #include <QString>
 #include <QSettings>
-#include <pybind11/pybind11.h>
 
 namespace launchy { class PluginInterface; }
 namespace py = pybind11;
@@ -50,4 +54,4 @@ private:
     QHash<uint, launchy::PluginInterface*> m_pluginInterface;
 };
 
-}
+} // namespace pluginpy

@@ -19,9 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include "Precompiled.h"
+#include <QThread>
+#include <QMutex>
 
 namespace launchy {
+
 class Fader : public QThread {
 	Q_OBJECT
 public:
@@ -48,4 +50,6 @@ private:
 	double m_level;
 	double m_targetLevel;
 };
-}
+
+} // namespace launchy
+

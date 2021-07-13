@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include <windows.h>
+
+#include <QString>
+
 namespace launchy {
 
 void UpdateEnvironment();
@@ -29,4 +33,4 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 
 void SetForegroundWindowEx(HWND hWnd);
 
-}
+} // namespace launchy

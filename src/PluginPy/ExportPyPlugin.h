@@ -3,7 +3,10 @@
 
 #include <string>
 #include <vector>
+
+#include <Python.h>
 #include <pybind11/pybind11.h>
+
 #include "ExportPyInputData.h"
 #include "ExportPyCatItem.h"
 

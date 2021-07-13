@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include <windows.h>
 #include <dbghelp.h>
 
 // from dbghelp.h
@@ -29,13 +30,13 @@ typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFi
 
 class CrashDumper {
 public:
-    CrashDumper(const TCHAR* appName);
+    CrashDumper(const WCHAR* appName);
 private:
     static LONG WINAPI TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo);
     static MINIDUMPWRITEDUMP GetMiniDumpWriteFunction();
-    static bool CreateMiniDump(const TCHAR* postfix, struct _EXCEPTION_POINTERS *exceptionInfo, MINIDUMP_TYPE dumpType);
-    static BOOL DirectoryExists(LPCTSTR szPath);
+    static bool CreateMiniDump(const WCHAR* postfix, struct _EXCEPTION_POINTERS *exceptionInfo, MINIDUMP_TYPE dumpType);
+    static BOOL DirectoryExists(LPCWSTR szPath);
 
     static MINIDUMPWRITEDUMP m_dumpFunction;
-    static TCHAR* m_appName;
+    static WCHAR* m_appName;
 };

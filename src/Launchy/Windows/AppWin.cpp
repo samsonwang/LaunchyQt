@@ -18,8 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "Precompiled.h"
 #include "AppWin.h"
+
+#include <tchar.h>
+#include <ShlObj.h>
+#include <LM.h>
+
 #include "LaunchyWidgetWin.h"
 #include "UtilWin.h"
 #include "LaunchyWidget.h"
@@ -30,14 +34,14 @@ namespace launchy {
 
 AppWin::AppWin(int& argc, char** argv)
     : AppBase(argc, argv),
-      m_crashDumper(new CrashDumper(_T("Launchy"))) {
+      m_crashDumper(new CrashDumper(L"Launchy")) {
 
     m_iconProvider = new IconProviderWin();
 
     // Create local and global application mutexes so that installer knows when
     // Launchy is running
-    localMutex = CreateMutex(NULL, 0, _T("LaunchyMutex"));
-    globalMutex = CreateMutex(NULL, 0, _T("Global\\LaunchyMutex"));
+    localMutex = CreateMutexW(NULL, 0, L"LaunchyMutex");
+    globalMutex = CreateMutexW(NULL, 0, L"Global\\LaunchyMutex");
 }
 
 AppWin::~AppWin() {
@@ -109,12 +113,13 @@ QList<Directory> AppWin::getDefaultCatalogDirectories() {
 QString AppWin::expandEnvironmentVars(QString txt) {
     QString result;
 
-    DWORD size = ExpandEnvironmentStrings((LPCWSTR)txt.utf16(), NULL, 0);
+    DWORD size = ExpandEnvironmentStringsW((LPCWSTR)txt.utf16(), NULL, 0);
     if (size > 0) {
-        TCHAR* buffer = new TCHAR[size];
-        ExpandEnvironmentStrings((LPCWSTR)txt.utf16(), buffer, size);
+        WCHAR* buffer = new WCHAR[size];
+        ExpandEnvironmentStringsW((LPCWSTR)txt.utf16(), buffer, size);
         result = QString::fromUtf16((const ushort*)buffer);
         delete[] buffer;
+        buffer = nullptr;
     }
 
     return result;
@@ -134,7 +139,7 @@ bool AppWin::getComputers(QStringList& computers) const {
     QStringList domains;
     if (EnumerateNetworkServers(domains, SV_TYPE_DOMAIN_ENUM)) {
         foreach(QString domain, domains) {
-            EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, (const TCHAR*)domain.utf16());
+            EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, (const WCHAR*)domain.utf16());
         }
 
         // If names have been retrieved from more than one domain, they'll need sorting

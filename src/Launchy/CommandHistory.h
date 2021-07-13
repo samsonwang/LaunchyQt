@@ -19,7 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include <QLinkedList>
+
 #include "LaunchyLib/CatalogItem.h"
+
 #include "InputDataList.h"
 
 namespace launchy {

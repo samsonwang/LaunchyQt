@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <string>
+
+#include <Python.h>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;

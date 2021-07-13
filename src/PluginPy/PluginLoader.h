@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <QString>
+
 #include "PluginPyLib.h"
 
 namespace launchy { class PluginInterface; }
@@ -47,4 +48,4 @@ private:
     launchy::PluginInterface* m_interface;
 };
 
-}
+} // namespace pluginpy

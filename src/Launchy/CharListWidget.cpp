@@ -18,9 +18,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "CharListWidget.h"
+
+#include <QScrollBar>
+#include <QDebug>
+#include <QKeyEvent>
+#include <QApplication>
+#include <QDesktopWidget>
+
+#include "LaunchyLib/LaunchyLib.h"
+
 #include "IconDelegate.h"
 #include "OptionItem.h"
-#include "LaunchyLib/LaunchyLib.h"
+
 
 namespace launchy {
 CharListWidget::CharListWidget(QWidget* parent)

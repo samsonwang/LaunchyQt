@@ -17,13 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "LaunchyWidgetWin.h"
+
 #include "UtilWin.h"
 
 namespace launchy {
 
 LaunchyWidgetWin::LaunchyWidgetWin(CommandFlags command)
     : LaunchyWidget(command) {
-    commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
+    commandMessageId = RegisterWindowMessageW(L"LaunchyCommand");
 }
 
 bool LaunchyWidgetWin::nativeEvent(const QByteArray &eventType, void *message, long *result) {
@@ -31,7 +32,7 @@ bool LaunchyWidgetWin::nativeEvent(const QByteArray &eventType, void *message, l
     switch (msg->message) {
     case WM_SETTINGCHANGE:
         // Refresh Launchy's environment on settings changes
-        if (msg->lParam && _tcscmp((TCHAR*)msg->lParam, _T("Environment")) == 0) {
+        if (msg->lParam && wcscmp((WCHAR*)msg->lParam, L"Environment") == 0) {
             UpdateEnvironment();
         }
         break;
@@ -72,4 +73,4 @@ void createLaunchyWidget(CommandFlags command) {
     }
 }
 
-}
+} // namespace launchy

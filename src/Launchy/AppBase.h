@@ -22,8 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QList>
 #include <QHash>
 #include <QString>
+#include <QFileIconProvider>
+
 #include <SingleApplication/singleapplication.h>
+
 #include "Directory.h"
+
 class QFileInfo;
 
 namespace launchy {

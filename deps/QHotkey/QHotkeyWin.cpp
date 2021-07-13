@@ -1,6 +1,9 @@
 
 #include "QHotKeyP.h"
-#include <Winuser.h>
+
+#include <windows.h>
+
+#include <QDebug>
 
 QHotkeyPrivate::NativeKeyMap QHotkeyPrivate::s_keyMap[] = {
     {Qt::Key_Escape,      VK_ESCAPE},

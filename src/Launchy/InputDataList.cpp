@@ -30,6 +30,9 @@ void InputDataList::parse(const QString& text) {
     if (text.isEmpty()) {
         clear();
     }
+    else if (!empty() && last().hasLabel(LABEL_FILE)) {
+        return;
+    }
     else {
         QStringList split = text.split(s_separator);
 

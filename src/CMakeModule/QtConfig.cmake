@@ -3,7 +3,7 @@
 # ---------------------------------------------------
 
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
-find_package (Qt5 COMPONENTS Widgets REQUIRED)
+find_package (Qt5 COMPONENTS Widgets WinExtras Network REQUIRED)
 
 set (CMAKE_AUTOUIC ON)
 set (CMAKE_AUTOMOC ON)

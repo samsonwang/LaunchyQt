@@ -18,6 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TranslationManager.h"
 
+#include <QApplication>
+#include <QDebug>
+#include <QDir>
+
 namespace launchy {
 
 TranslationManager& TranslationManager::instance() {

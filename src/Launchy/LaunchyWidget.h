@@ -20,12 +20,14 @@
 #pragma once
 
 #include <QWidget>
+#include <QSystemTrayIcon>
+#include <QLabel>
+
 #include "IconExtractor.h"
 #include "CommandHistory.h"
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/InputData.h"
 
-class QSystemTrayIcon;
 class QPushButton;
 class QHotkey;
 

@@ -18,13 +18,24 @@
 */
 
 #include "LaunchyWidget.h"
+
 #include <QScrollBar>
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QMenu>
 #include <QSystemTrayIcon>
 #include <QPushButton>
+#include <QTimer>
+#include <QPainter>
+#include <QDir>
+#include <QPixmap>
+#include <QBitmap>
+
 #include "QHotkey/QHotkey.h"
+
+#include "LaunchyLib/PluginInterface.h"
+#include "LaunchyLib/PluginMsg.h"
+
 #include "GlobalVar.h"
 #include "IconDelegate.h"
 #include "OptionDialog.h"
@@ -41,8 +52,6 @@
 #include "CatalogBuilder.h"
 #include "PluginHandler.h"
 #include "UpdateChecker.h"
-#include "LaunchyLib/PluginInterface.h"
-#include "LaunchyLib/PluginMsg.h"
 
 namespace launchy {
 
@@ -775,13 +784,14 @@ void LaunchyWidget::doTab() {
                 path = info.symLinkTarget();
             }
             else {
-                path = m_searchResult[0].fullPath;
+                path = m_searchResult.first().fullPath;
             }
 
             if (info.isDir() && !path.endsWith(QDir::separator())) {
                 path += QDir::separator();
             }
 
+            m_inputData.last().setLabel(LABEL_FILE);
             m_inputBox->selectAll();
             m_inputBox->insert(m_inputData.toString(true) + QDir::toNativeSeparators(path));
         }

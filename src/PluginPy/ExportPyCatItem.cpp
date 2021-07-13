@@ -17,9 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ExportPyCatItem.h"
-#include "LaunchyLib/CatalogItem.h"
 
-namespace py = pybind11;
+#include "LaunchyLib/CatalogItem.h"
 
 namespace exportpy {
 
@@ -94,4 +93,5 @@ void CatItemList::push_back(const CatItem& item) {
     m_data->push_back(item.getData());
 }
 
-}
+} // namespace exportpy
+

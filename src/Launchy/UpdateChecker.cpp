@@ -17,6 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "UpdateChecker.h"
+
+#include <QMetaType>
+#include <QNetworkProxy>
+#include <QNetworkAccessManager>
+#include <QTimer>
+#include <QNetworkReply>
+#include <QDebug>
+#include <QXmlStreamReader>
+
 #include "GlobalVar.h"
 #include "OptionItem.h"
 #include "LaunchyWidget.h"

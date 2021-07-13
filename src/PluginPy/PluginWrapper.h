@@ -1,7 +1,10 @@
 
 #pragma once
 
+#include <QMutex>
+
 #include "ExportPyPlugin.h"
+
 #include "LaunchyLib/InputData.h"
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/PluginInterface.h"

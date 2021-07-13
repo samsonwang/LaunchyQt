@@ -18,7 +18,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "OptionDialog.h"
+
 #include <QMessageBox>
+#include <QNetworkProxy>
+#include <QStyleFactory>
+#include <QBitmap>
+#include <QPainter>
+#include <QMimeData>
+#include <QDir>
+
 #include "AppBase.h"
 #include "ui_OptionDialog.h"
 #include "LaunchyWidget.h"

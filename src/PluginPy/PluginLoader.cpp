@@ -17,8 +17,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PluginLoader.h"
+
+// qt defines "slots" macro
+// python.h must include before qt header files
+#include <Python.h>
+
 #include <QHash>
+#include <QDebug>
+
 #include "LaunchyLib/PluginInterface.h"
+
 #include "PluginMgr.h"
 
 namespace pluginpy {
@@ -31,7 +39,7 @@ PluginLoader::PluginLoader(const QString& pluginName, const QString& pluginPath)
 }
 
 void PluginLoader::setFileName(const QString& fileName) {
-    Q_UNUSED(fileName)
+    Q_UNUSED(fileName);
     // split fileName to pluginName and pluginPath
     // m_fileName = fileName;
 }
@@ -86,4 +94,4 @@ bool PluginLoader::load() {
     return m_interface != nullptr;
 }
 
-}
+} // namespace pluginpy

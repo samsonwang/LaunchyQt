@@ -17,9 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-#include "Precompiled.h"
 #include "UtilWin.h"
+
+#include <UserEnv.h>
+#include <ShlObj.h>
+#include <LM.h>
+
 #include "AppWin.h"
 #include "GlobalVar.h"
 
@@ -38,8 +41,8 @@ void UpdateEnvironment() {
 
     // Empty the current environment
     QStringList variables;
-    wchar_t* currentEnvironment = GetEnvironmentStrings();
-    for (TCHAR* p = currentEnvironment; *p != 0;)
+    wchar_t* currentEnvironment = GetEnvironmentStringsW();
+    for (WCHAR* p = currentEnvironment; *p != 0;)
     {
         QString variable = QString::fromUtf16((const ushort*)p);
         QString name = variable.section("=", 0, 0);
@@ -49,12 +52,12 @@ void UpdateEnvironment() {
         p += wcslen(p) + 1;
     }
     if (currentEnvironment)
-        FreeEnvironmentStrings(currentEnvironment);
+        FreeEnvironmentStringsW(currentEnvironment);
 
     // Now we've finished enumerating the current environment, we can safely delete variables
     foreach(QString name, variables)
     {
-        SetEnvironmentVariable((LPCTSTR)name.utf16(), NULL);
+        SetEnvironmentVariableW((LPCWSTR)name.utf16(), NULL);
     }
 
     // Recreate the environment using the fresh system copy
@@ -66,7 +69,7 @@ void UpdateEnvironment() {
         if (value)
         {
             *value = L'\0';
-            SetEnvironmentVariable(name, value + 1);
+            SetEnvironmentVariableW(name, value + 1);
         }
     }
 
@@ -76,7 +79,7 @@ void UpdateEnvironment() {
 
 QString GetShellDirectory(int type) {
     wchar_t buffer[_MAX_PATH];
-    SHGetFolderPath(NULL, type, NULL, 0, buffer);
+    SHGetFolderPathW(NULL, type, NULL, 0, buffer);
     return QString::fromWCharArray(buffer);
 }
 
@@ -100,7 +103,7 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
     // ERROR_MORE_DATA: "More entries are available with subsequent calls."
 
     if (serverInfo) {
-        NetApiBufferFree((void*)serverInfo);
+        NetApiBufferFree(serverInfo);
     }
 
     return result == NERR_Success;

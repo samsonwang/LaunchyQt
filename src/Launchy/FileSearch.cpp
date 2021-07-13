@@ -17,8 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "Precompiled.h"
 #include "FileSearch.h"
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
+#include <QDir>
+#include <QDebug>
+
 #include "AppBase.h"
 #include "GlobalVar.h"
 #include "Catalog.h"
@@ -46,7 +53,7 @@ void FileSearch::search(const QString& searchText,
             // Retrieve volume name
             QString volumeName;
             WCHAR volName[MAX_PATH];
-            if (GetVolumeInformation((WCHAR*)info.filePath().utf16(), volName,
+            if (GetVolumeInformationW((WCHAR*)info.filePath().utf16(), volName,
                                      MAX_PATH, NULL, NULL, NULL, NULL, 0)) {
                 volumeName = QString::fromUtf16((const ushort*)volName);
             }

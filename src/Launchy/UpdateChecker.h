@@ -22,9 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class QNetworkAccessManager;
 class QTimer;
+class QNetworkReply;
 
 namespace launchy {
-class UpdateChecker : public QObject{
+class UpdateChecker : public QObject {
     Q_OBJECT
 public:
     static UpdateChecker& instance();

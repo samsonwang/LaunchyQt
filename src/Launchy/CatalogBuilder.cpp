@@ -18,7 +18,10 @@
 */
 
 #include "CatalogBuilder.h"
+
 #include <QThread>
+#include <QDir>
+
 #include "Catalog.h"
 #include "AppBase.h"
 #include "Directory.h"
@@ -72,8 +75,8 @@ void CatalogBuilder::buildCatalog() {
 
 void CatalogBuilder::indexDirectory(const QString& directory,
                                     const QStringList& filters,
-                                    bool fdirs,
-                                    bool fbin,
+                                    bool fDirs,
+                                    bool fBin,
                                     int depth) {
     QString dir = QDir::toNativeSeparators(directory);
     QDir qDir(dir);
@@ -94,13 +97,13 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                     }
                     else
 #endif
-                        indexDirectory(dir + "/" + dirs[i], filters, fdirs, fbin, depth-1);
+                        indexDirectory(dir + "/" + dirs[i], filters, fDirs, fBin, depth-1);
                 }
             }
         }
     }
 
-    if (fdirs) {
+    if (fDirs) {
         for (int i = 0; i < dirs.count(); ++i) {
             if (!dirs[i].startsWith(".") && !m_indexed.contains(dir + "/" + dirs[i])) {
                 bool isShortcut = dirs[i].endsWith(".lnk", Qt::CaseInsensitive);
@@ -126,7 +129,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         }
     }
 
-    if (fbin) {
+    if (fBin) {
         QStringList bins = qDir.entryList(QDir::Files | QDir::Executable);
         for (int i = 0; i < bins.count(); ++i) {
             if (!m_indexed.contains(dir + "/" + bins[i])) {
@@ -189,7 +192,7 @@ void CatalogBuilder::cleanup() {
     }
 }
 
-struct Catalog* CatalogBuilder::getCatalog() {
+Catalog* CatalogBuilder::getCatalog() {
     return instance()->m_catalog;
 }
 

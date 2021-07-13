@@ -17,13 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-#include "Precompiled.h"
 #include "IconExtractor.h"
+
+#include <QDir>
+
 #include "AppBase.h"
 #include "GlobalVar.h"
 
 namespace launchy {
+
 IconExtractor::IconExtractor() {
 }
 
@@ -50,7 +52,6 @@ void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
         start(LowPriority);
 }
 
-
 void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
     m_mutex.lock();
 
@@ -74,13 +75,11 @@ void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
         start(IdlePriority);
 }
 
-
 void IconExtractor::stop() {
     m_mutex.lock();
     m_items.clear();
     m_mutex.unlock();
 }
-
 
 void IconExtractor::run() {
     CatItem item;
@@ -126,4 +125,5 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
         return g_app->icon(QDir::toNativeSeparators(item.iconPath));
     }
 }
-}
+
+} // namespace launchy

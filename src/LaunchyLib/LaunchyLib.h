@@ -32,4 +32,4 @@ LAUNCHY_EXPORT void runProgram(const QString& file, const QString& args, bool tr
 
 LAUNCHY_EXPORT int getDesktop();
 
-}
+} // namespace launchy
