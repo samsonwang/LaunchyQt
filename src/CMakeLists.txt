@@ -65,8 +65,8 @@ if (MSVC)
 
   # set (CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
-  set (CMAKE_EXE_LINKER_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+#  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+#  set (CMAKE_EXE_LINKER_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 
   set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -93,7 +93,9 @@ file (GLOB SOURCES_LAUNCHY
 if (WIN32)
   file (GLOB SOURCES_PLATFORM_LAUNCHY
     ${SRC_DIR}/Launchy/Windows/*.h
-    ${SRC_DIR}/Launchy/Windows/*.cpp)
+    ${SRC_DIR}/Launchy/Windows/*.cpp
+    ${SRC_DIR}/Launchy/Windows/launchy.rc)
+  source_group ("Resource Files" FILES ${SRC_DIR}/Launchy/Windows/launchy.rc)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Windows)
 else ()
   file (GLOB SOURCES_PLATFORM_LAUNCHY
