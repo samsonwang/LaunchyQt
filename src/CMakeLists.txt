@@ -114,7 +114,6 @@ file (GLOB SOURCES_QT_LAUNCHY
 source_group ("Qt Files" FILES ${SOURCES_QT_LAUNCHY})
 list (APPEND SOURCES_LAUNCHY ${SOURCES_QT_LAUNCHY})
 
-
 target_sources (Launchy
   PRIVATE ${SOURCES_LAUNCHY}
   PRIVATE ${SOURCES_SINGLEAPP}
@@ -130,6 +129,8 @@ target_link_libraries (Launchy
 # LaunchyLib
 # source files
 add_library (LaunchyLib SHARED)
+
+set_target_properties(LaunchyLib PROPERTIES OUTPUT_NAME "Launchy")
 
 file (GLOB SOURCES_LAUNCHYLIB
   ${SRC_DIR}/LaunchyLib/*.h
