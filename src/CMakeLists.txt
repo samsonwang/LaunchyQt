@@ -22,6 +22,7 @@ message (STATUS "DEPS_DIR: ${DEPS_DIR}")
 ##################################################
 # Qt
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
+# eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
 find_package (Qt5 COMPONENTS Widgets WinExtras Network REQUIRED)
 
 set (CMAKE_AUTOUIC ON)
@@ -130,7 +131,8 @@ target_link_libraries (Launchy
 # source files
 add_library (LaunchyLib SHARED)
 
-set_target_properties(LaunchyLib PROPERTIES OUTPUT_NAME "Launchy")
+set_target_properties(LaunchyLib PROPERTIES
+  OUTPUT_NAME "Launchy")
 
 file (GLOB SOURCES_LAUNCHYLIB
   ${SRC_DIR}/LaunchyLib/*.h
@@ -193,3 +195,116 @@ target_sources (QHotKey
 target_link_libraries (QHotKey
   PUBLIC Qt5::Core
   PRIVATE Qt5::Widgets)
+
+##################################################
+# plugin: Runner
+add_library (Runner MODULE)
+
+file (GLOB SOURCES_RUNNER
+  ${SRC_DIR}/Plugins/Runner/*.h
+  ${SRC_DIR}/Plugins/Runner/*.cpp)
+
+# qt source files
+file (GLOB SOURCES_QT_RUNNER
+  ${SRC_DIR}/Plugins/Runner/*.ui
+  ${SRC_DIR}/Plugins/Runner/*.qrc
+  ${SRC_DIR}/Plugins/Runner/*.ts)
+source_group ("Qt Files" FILES ${SOURCES_QT_RUNNER})
+list (APPEND SOURCES_RUNNER ${SOURCES_QT_RUNNER})
+
+target_sources (Runner
+  PRIVATE ${SOURCES_RUNNER})
+
+target_link_libraries (Runner
+  PUBLIC Qt5::Core
+  PRIVATE Qt5::Widgets
+  PRIVATE LaunchyLib)
+
+set_target_properties (Runner PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Runner"
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Runner")
+
+##################################################
+# plugin: Tasky
+add_library (Tasky MODULE)
+
+file (GLOB SOURCES_TASKY
+  ${SRC_DIR}/Plugins/Tasky/*.h
+  ${SRC_DIR}/Plugins/Tasky/*.cpp)
+
+# qt source files
+file (GLOB SOURCES_QT_TASKY
+  ${SRC_DIR}/Plugins/Tasky/*.ui
+  ${SRC_DIR}/Plugins/Tasky/*.qrc
+  ${SRC_DIR}/Plugins/Tasky/*.ts)
+source_group ("Qt Files" FILES ${SOURCES_QT_TASKY})
+list (APPEND SOURCES_TASKY ${SOURCES_QT_TASKY})
+
+target_sources (Tasky
+  PRIVATE ${SOURCES_TASKY})
+
+target_link_libraries (Tasky
+  PUBLIC Qt5::Core
+  PRIVATE Qt5::Widgets Qt5::WinExtras
+  PRIVATE LaunchyLib)
+
+set_target_properties (Tasky PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Tasky"
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Tasky")
+
+##################################################
+# plugin: UWPApp
+add_library (UWPApp MODULE)
+
+file (GLOB SOURCES_UWPAPP
+  ${SRC_DIR}/Plugins/UWPApp/*.h
+  ${SRC_DIR}/Plugins/UWPApp/*.cpp)
+
+# qt source files
+file (GLOB SOURCES_QT_UWPAPP
+  ${SRC_DIR}/Plugins/UWPApp/*.ui
+  ${SRC_DIR}/Plugins/UWPApp/*.qrc
+  ${SRC_DIR}/Plugins/UWPApp/*.ts)
+source_group ("Qt Files" FILES ${SOURCES_QT_UWPAPP})
+list (APPEND SOURCES_UWPAPP ${SOURCES_QT_UWPAPP})
+
+target_sources (UWPApp
+  PRIVATE ${SOURCES_UWPAPP})
+
+target_link_libraries (UWPApp
+  PUBLIC Qt5::Core
+  PRIVATE Qt5::Widgets
+  PRIVATE LaunchyLib
+  PRIVATE user32 shell32 propsys)
+
+set_target_properties (UWPApp PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/UWPApp"
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/UWPApp")
+
+##################################################
+# plugin: Verby
+add_library (Verby MODULE)
+
+file (GLOB SOURCES_VERBY
+  ${SRC_DIR}/Plugins/Verby/*.h
+  ${SRC_DIR}/Plugins/Verby/*.cpp)
+
+# qt source files
+file (GLOB SOURCES_QT_VERBY
+  ${SRC_DIR}/Plugins/Verby/*.ui
+  ${SRC_DIR}/Plugins/Verby/*.qrc
+  ${SRC_DIR}/Plugins/Verby/*.ts)
+source_group ("Qt Files" FILES ${SOURCES_QT_VERBY})
+list (APPEND SOURCES_VERBY ${SOURCES_QT_VERBY})
+
+target_sources (Verby
+  PRIVATE ${SOURCES_VERBY})
+
+target_link_libraries (Verby
+  PUBLIC Qt5::Core
+  PRIVATE Qt5::Widgets
+  PRIVATE LaunchyLib)
+
+set_target_properties (Verby PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Verby"
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Verby")

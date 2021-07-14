@@ -18,8 +18,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "Verby.h"
+
+#include <stdlib.h>
+
+#include <QtGlobal>
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <shellapi.h>
+#include <shlobj.h>
+#include <tchar.h>
+#endif
+
+#include <QDebug>
+#include <QFileInfo>
+#include <QDir>
+#include <QClipboard>
+
+#include "LaunchyLib/PluginMsg.h"
+
 #include "gui.h"
-#include "PluginMsg.h"
 
 using namespace launchy;
 
@@ -183,13 +200,13 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     }
     else if (verb == "Run as admin") {
 #ifdef Q_OS_WIN
-        SHELLEXECUTEINFO shellExecInfo;
+        SHELLEXECUTEINFOW shellExecInfo;
 
-        shellExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+        shellExecInfo.cbSize = sizeof(shellExecInfo);
         shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
         shellExecInfo.hwnd = NULL;
         shellExecInfo.lpVerb = L"runas";
-        shellExecInfo.lpFile = (LPCTSTR)noun.utf16();
+        shellExecInfo.lpFile = (LPCWSTR)noun.utf16();
         shellExecInfo.lpParameters = NULL;
         QDir dir(noun);
         QFileInfo info(noun);
@@ -197,30 +214,30 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
             dir.cdUp();
         }
         QString filePath = QDir::toNativeSeparators(dir.absolutePath());
-        shellExecInfo.lpDirectory = (LPCTSTR)filePath.utf16();
+        shellExecInfo.lpDirectory = (LPCWSTR)filePath.utf16();
         shellExecInfo.nShow = SW_NORMAL;
         shellExecInfo.hInstApp = NULL;
 
-        ShellExecuteEx(&shellExecInfo);
+        ShellExecuteExW(&shellExecInfo);
 #endif
     }
     else if (verb == "File properties") {
 #ifdef Q_OS_WIN
-        SHELLEXECUTEINFO shellExecInfo;
+        SHELLEXECUTEINFOW shellExecInfo;
 
-        shellExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+        shellExecInfo.cbSize = sizeof(shellExecInfo);
         shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_INVOKEIDLIST;
         shellExecInfo.hwnd = NULL;
         shellExecInfo.lpVerb = L"properties";
         QString filePath = QDir::toNativeSeparators(noun);
-        shellExecInfo.lpFile = (LPCTSTR)filePath.utf16();
+        shellExecInfo.lpFile = (LPCWSTR)filePath.utf16();
         shellExecInfo.lpIDList = NULL;
         shellExecInfo.lpParameters = NULL;
         shellExecInfo.lpDirectory = NULL;
         shellExecInfo.nShow = SW_NORMAL;
         shellExecInfo.hInstApp = NULL;
 
-        ShellExecuteEx(&shellExecInfo);
+        ShellExecuteExW(&shellExecInfo);
 #endif
     }
     else if (verb == "Copy path to clipboard") {

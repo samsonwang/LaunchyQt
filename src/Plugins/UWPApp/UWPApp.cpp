@@ -19,27 +19,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UWPApp.h"
 
-#ifdef Q_OS_WIN
 #include <windows.h>
-
-// #include <tchar.h>
-// #include <VersionHelpers.h>
-
-// #include <shlobj.h>
 #include <Shobjidl.h>
 #include <atlbase.h>
 #include <propvarutil.h>
-
-DEFINE_GUID(BHID_EnumItems, 0x94f60519, 0x2850, 0x4924, 0xaa, 0x5a, 0xd1, 0x5e, 0x84, 0x86, 0x80, 0x39);
-DEFINE_GUID(BHID_PropertyStore, 0x0384e1a4, 0x1523, 0x439c, 0xa4, 0xc8, 0xab, 0x91, 0x10, 0x52, 0xf5, 0x86);
-
-#endif
 
 #include <QtGui>
 #include <QFile>
 #include <QDebug>
 
 #include "LaunchyLib/PluginMsg.h"
+
+DEFINE_GUID(BHID_EnumItems, 0x94f60519, 0x2850, 0x4924, 0xaa, 0x5a, 0xd1, 0x5e, 0x84, 0x86, 0x80, 0x39);
+DEFINE_GUID(BHID_PropertyStore, 0x0384e1a4, 0x1523, 0x439c, 0xa4, 0xc8, 0xab, 0x91, 0x10, 0x52, 0xf5, 0x86);
+
 
 #define PLUGIN_NAME "UWPApp"
 
@@ -248,6 +241,7 @@ void UWPApp::getResults(QList<launchy::InputData>* inputData, QList<launchy::Cat
 
 void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
     // Specify the appropriate COM threading model
+
     CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     IApplicationActivationManager* pAAM = nullptr;
@@ -289,8 +283,8 @@ void UWPApp::extractIcon(launchy::CatItem* item, QIcon* icon) {
         DWORD colorizationColor;
         DWORD size = sizeof(DWORD);
 
-        RegGetValue(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\DWM", L"ColorizationColor",
-                    RRF_RT_REG_DWORD, 0, &colorizationColor, &size);
+        RegGetValueW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\DWM", L"ColorizationColor",
+                     RRF_RT_REG_DWORD, 0, &colorizationColor, &size);
 
         BYTE r = (colorizationColor >> 16) & 0xFF;
         BYTE g = (colorizationColor >> 8) & 0xFF;

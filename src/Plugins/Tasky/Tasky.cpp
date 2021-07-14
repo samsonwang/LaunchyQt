@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef Q_OS_WIN
 #include <windows.h>
+#include <shellapi.h>
 #include <psapi.h>
 #include <shlobj.h>
 #include <tchar.h>
@@ -34,7 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QRegExp>
 #include <QTextCodec>
 #include <QPixmap>
-#include "PluginMsg.h"
+
+#include "LaunchyLib/PluginMsg.h"
 
 #define PLUGIN_NAME "Tasky"
 
@@ -86,12 +88,12 @@ static BOOL windowHasTaskbarButton(HWND hWnd) {
 
 static BOOL CALLBACK enumWindowsProc(HWND hWnd, LPARAM lParam) {
     Q_UNUSED(lParam)
-    if (!windowHasTaskbarButton(hWnd))
-        return TRUE;
+        if (!windowHasTaskbarButton(hWnd))
+            return TRUE;
 
     int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
-    QScopedPointer<wchar_t> title(new wchar_t[len+1]);
-    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title.data()))) {
+    QScopedPointer<wchar_t> title(new wchar_t[len + 1]);
+    if (!::SendMessage(hWnd, WM_GETTEXT, len + 1, reinterpret_cast<LPARAM>(title.data()))) {
         return TRUE; // No Title
     }
 
@@ -103,15 +105,15 @@ static BOOL CALLBACK enumWindowsProc(HWND hWnd, LPARAM lParam) {
 
 static BOOL CALLBACK findWindowTitle(HWND hWnd, LPARAM lParam) {
     Q_UNUSED(lParam)
-    if (!hWnd)
-        return TRUE; // Not a window
+        if (!hWnd)
+            return TRUE; // Not a window
 
     if (!::IsWindowVisible(hWnd))
         return TRUE; // Not visible
 
     int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
-    QScopedPointer<wchar_t> title(new wchar_t[len+1]);
-    if (!::SendMessage(hWnd, WM_GETTEXT, len+1, reinterpret_cast<LPARAM>(title.data())))
+    QScopedPointer<wchar_t> title(new wchar_t[len + 1]);
+    if (!::SendMessage(hWnd, WM_GETTEXT, len + 1, reinterpret_cast<LPARAM>(title.data())))
         return TRUE; // No Title
 
     if (g_selectedCatItemText == QString::fromWCharArray(title.data())) {
@@ -197,7 +199,7 @@ void Tasky::getCatalog(QList<CatItem>* items) {
 void Tasky::launchItem(QList<InputData>* id, CatItem* item) {
     Q_UNUSED(item)
 
-    CatItem* base = (id->count() == 1) ? &id->first().getTopResult() : &id->last().getTopResult();
+        CatItem* base = (id->count() == 1) ? &id->first().getTopResult() : &id->last().getTopResult();
     g_selectedCatItemText = base->shortName;
 
     EnumWindows(findWindowTitle, NULL);
@@ -223,7 +225,7 @@ void Tasky::launchItem(QList<InputData>* id, CatItem* item) {
 
 void Tasky::doDialog(QWidget* parent, QWidget** dialog) {
     Q_UNUSED(parent)
-    Q_UNUSED(dialog)
+        Q_UNUSED(dialog)
 }
 
 void Tasky::endDialog(bool accept) {
