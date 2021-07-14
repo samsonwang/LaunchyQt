@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QtCore/qglobal.h>
+#include <QtGlobal>
 
 #ifndef BUILD_STATIC
-# if defined(PLUGINPY_LIB)
+# if defined(PLUGINPY_LIB) || defined(PluginPy_EXPORTS)
 #  define PLUGINPY_EXPORT Q_DECL_EXPORT
 # else
 #  define PLUGINPY_EXPORT Q_DECL_IMPORT

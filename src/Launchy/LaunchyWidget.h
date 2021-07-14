@@ -23,10 +23,11 @@
 #include <QSystemTrayIcon>
 #include <QLabel>
 
-#include "IconExtractor.h"
-#include "CommandHistory.h"
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/InputData.h"
+
+#include "IconExtractor.h"
+#include "CommandHistory.h"
 
 class QPushButton;
 class QHotkey;

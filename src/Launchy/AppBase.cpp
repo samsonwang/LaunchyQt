@@ -18,7 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "AppBase.h"
+
 #include <QFileInfo>
+#include <QApplication>
+
 #include "Directory.h"
 #include "LaunchyLib/CatalogItem.h"
 #include "IconProviderBase.h"

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QString>
 
-#include "PluginPyLib.h"
+#include "PluginPy.h"
 
 namespace launchy { class PluginInterface; }
 

@@ -1,3 +1,4 @@
+
 /*
 Launchy: Application Launcher
 Copyright (C) 2009  Simon Capewell
@@ -19,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CommandHistory.h"
 
+#include <QFile>
+#include <QDataStream>
 #include <QDebug>
 
 #include "GlobalVar.h"

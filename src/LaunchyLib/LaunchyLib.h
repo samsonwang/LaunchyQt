@@ -9,7 +9,7 @@
 #pragma warning(disable : 4251)
 #endif
 
-#if defined LAUNCHY_LIB
+#if defined(LAUNCHY_LIB) || defined(LaunchyLib_EXPORTS)
 #define LAUNCHY_EXPORT Q_DECL_EXPORT
 #else
 #define LAUNCHY_EXPORT Q_DECL_IMPORT

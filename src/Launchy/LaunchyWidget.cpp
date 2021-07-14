@@ -19,6 +19,7 @@
 
 #include "LaunchyWidget.h"
 
+#include <QApplication>
 #include <QScrollBar>
 #include <QMessageBox>
 #include <QDesktopWidget>
@@ -30,6 +31,10 @@
 #include <QDir>
 #include <QPixmap>
 #include <QBitmap>
+#include <QKeyEvent>
+#include <QCloseEvent>
+#include <QInputMethodEvent>
+#include <QMouseEvent>
 
 #include "QHotkey/QHotkey.h"
 

@@ -17,10 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "Precompiled.h"
 #include "DropListWidget.h"
 
+#include <QDragEnterEvent>
+#include <QDropEvent>
+
 namespace launchy {
+
 DropListWidget::DropListWidget(QWidget* pParent)
     : QListWidget(pParent) {
     setAcceptDrops(true);
@@ -43,4 +46,5 @@ void DropListWidget::dropEvent(QDropEvent *event) {
     emit drop(event);
     event->acceptProposedAction();
 }
-}
+
+} // namespace launchy

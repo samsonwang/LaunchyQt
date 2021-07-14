@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QPainter>
 #include <QMimeData>
 #include <QDir>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 
 #include "AppBase.h"
 #include "ui_OptionDialog.h"
