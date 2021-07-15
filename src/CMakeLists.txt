@@ -23,6 +23,7 @@ message (STATUS "DEPS_DIR: ${DEPS_DIR}")
 # Qt
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
+set (ENV{CMAKE_PREFIX_PATH} "c:/Qt/Qt5.12.10/5.12.10/msvc2017")
 find_package (Qt5 COMPONENTS Widgets WinExtras Network REQUIRED)
 
 set (CMAKE_AUTOUIC ON)
@@ -46,6 +47,7 @@ endif ()
 
 ##################################################
 # Python
+set (ENV{Python_ROOT_DIR} "C:/Program Files (x86)/Python39-32")
 find_package (Python COMPONENTS Interpreter Development)
 
 message ("Python_FOUND: ${Python_FOUND}")
@@ -163,6 +165,18 @@ target_link_libraries (PluginPy
   PRIVATE Qt5::Core Qt5::Widgets
   PRIVATE ${Python_LIBRARIES})
 
+add_custom_command (TARGET PluginPy POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  $<TARGET_FILE:PluginPy> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/python/launchy.pyd)
+#  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/python)
+
+##################################################
+# plugin: WebSearchPy
+add_custom_target (PluginPy.Util
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/python)
+
 ##################################################
 # QSingleApplication
 add_library (QSingleApplication STATIC)
@@ -198,7 +212,10 @@ target_link_libraries (QHotKey
 
 ##################################################
 # plugin: Runner
-add_library (Runner MODULE)
+add_library (Plugin.Runner MODULE)
+
+set_target_properties(Plugin.Runner PROPERTIES
+  OUTPUT_NAME "Runner")
 
 file (GLOB SOURCES_RUNNER
   ${SRC_DIR}/Plugins/Runner/*.h
@@ -212,21 +229,31 @@ file (GLOB SOURCES_QT_RUNNER
 source_group ("Qt Files" FILES ${SOURCES_QT_RUNNER})
 list (APPEND SOURCES_RUNNER ${SOURCES_QT_RUNNER})
 
-target_sources (Runner
+target_sources (Plugin.Runner
   PRIVATE ${SOURCES_RUNNER})
 
-target_link_libraries (Runner
+target_link_libraries (Plugin.Runner
   PUBLIC Qt5::Core
   PRIVATE Qt5::Widgets
   PRIVATE LaunchyLib)
 
-set_target_properties (Runner PROPERTIES
+set_target_properties (Plugin.Runner PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Runner"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Runner")
 
+file (GLOB RESOURCES_RUNNER
+  ${SRC_DIR}/Plugins/Runner/*.png)
+
+add_custom_command (TARGET Plugin.Runner POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  ${RESOURCES_RUNNER} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Runner)
+
 ##################################################
 # plugin: Tasky
-add_library (Tasky MODULE)
+add_library (Plugin.Tasky MODULE)
+
+set_target_properties(Plugin.Tasky PROPERTIES
+  OUTPUT_NAME "Tasky")
 
 file (GLOB SOURCES_TASKY
   ${SRC_DIR}/Plugins/Tasky/*.h
@@ -240,21 +267,31 @@ file (GLOB SOURCES_QT_TASKY
 source_group ("Qt Files" FILES ${SOURCES_QT_TASKY})
 list (APPEND SOURCES_TASKY ${SOURCES_QT_TASKY})
 
-target_sources (Tasky
+target_sources (Plugin.Tasky
   PRIVATE ${SOURCES_TASKY})
 
-target_link_libraries (Tasky
+target_link_libraries (Plugin.Tasky
   PUBLIC Qt5::Core
   PRIVATE Qt5::Widgets Qt5::WinExtras
   PRIVATE LaunchyLib)
 
-set_target_properties (Tasky PROPERTIES
+set_target_properties (Plugin.Tasky PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Tasky"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Tasky")
 
+file (GLOB RESOURCES_TASKY
+  ${SRC_DIR}/Plugins/Tasky/*.png)
+
+add_custom_command (TARGET Plugin.Tasky POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  ${RESOURCES_TASKY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Tasky)
+
 ##################################################
 # plugin: UWPApp
-add_library (UWPApp MODULE)
+add_library (Plugin.UWPApp MODULE)
+
+set_target_properties(Plugin.UWPApp PROPERTIES
+  OUTPUT_NAME "UWPApp")
 
 file (GLOB SOURCES_UWPAPP
   ${SRC_DIR}/Plugins/UWPApp/*.h
@@ -268,22 +305,25 @@ file (GLOB SOURCES_QT_UWPAPP
 source_group ("Qt Files" FILES ${SOURCES_QT_UWPAPP})
 list (APPEND SOURCES_UWPAPP ${SOURCES_QT_UWPAPP})
 
-target_sources (UWPApp
+target_sources (Plugin.UWPApp
   PRIVATE ${SOURCES_UWPAPP})
 
-target_link_libraries (UWPApp
+target_link_libraries (Plugin.UWPApp
   PUBLIC Qt5::Core
   PRIVATE Qt5::Widgets
   PRIVATE LaunchyLib
   PRIVATE user32 shell32 propsys)
 
-set_target_properties (UWPApp PROPERTIES
+set_target_properties (Plugin.UWPApp PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/UWPApp"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/UWPApp")
 
 ##################################################
 # plugin: Verby
-add_library (Verby MODULE)
+add_library (Plugin.Verby MODULE)
+
+set_target_properties(Plugin.Verby PROPERTIES
+  OUTPUT_NAME "Verby")
 
 file (GLOB SOURCES_VERBY
   ${SRC_DIR}/Plugins/Verby/*.h
@@ -297,14 +337,39 @@ file (GLOB SOURCES_QT_VERBY
 source_group ("Qt Files" FILES ${SOURCES_QT_VERBY})
 list (APPEND SOURCES_VERBY ${SOURCES_QT_VERBY})
 
-target_sources (Verby
+target_sources (Plugin.Verby
   PRIVATE ${SOURCES_VERBY})
 
-target_link_libraries (Verby
+target_link_libraries (Plugin.Verby
   PUBLIC Qt5::Core
   PRIVATE Qt5::Widgets
   PRIVATE LaunchyLib)
 
-set_target_properties (Verby PROPERTIES
+set_target_properties (Plugin.Verby PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Verby"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Verby")
+
+file (GLOB RESOURCES_VERBY
+  ${SRC_DIR}/Plugins/Verby/*.png)
+
+add_custom_command (TARGET Plugin.Verby POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  ${RESOURCES_VERBY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Verby)
+
+##################################################
+# plugin: CalcPy
+add_custom_target (PluginPy.CalcPy
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${SRC_DIR}/Plugins/CalcyPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/CalcyPy)
+
+##################################################
+# plugin: PydiryPy
+add_custom_target (PluginPy.PydiryPy
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${SRC_DIR}/Plugins/PydiryPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/PydiryPy)
+
+##################################################
+# plugin: WebSearchPy
+add_custom_target (PluginPy.WebSearchPy
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${SRC_DIR}/Plugins/WebSearchPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/WebSearchPy)

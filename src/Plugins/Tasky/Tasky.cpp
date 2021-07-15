@@ -57,9 +57,9 @@ static HICON getHIconFromExe(HWND hWnd) {
     if (procId != 0) {
         HANDLE hndl = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, procId);
         if (hndl != 0) {
-            TCHAR filename[2048];
-            if (GetModuleFileNameEx(hndl, NULL, filename, sizeof(filename) / sizeof(TCHAR))) {
-                ExtractIconEx(filename, 0, &hIcon, 0, 1);
+            WCHAR filename[2048];
+            if (GetModuleFileNameExW(hndl, NULL, filename, sizeof(filename) / sizeof(WCHAR))) {
+                ExtractIconExW(filename, 0, &hIcon, 0, 1);
             }
             CloseHandle(hndl);
         }
@@ -91,9 +91,9 @@ static BOOL CALLBACK enumWindowsProc(HWND hWnd, LPARAM lParam) {
         if (!windowHasTaskbarButton(hWnd))
             return TRUE;
 
-    int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
+    int len = static_cast<int>(::SendMessageW(hWnd, WM_GETTEXTLENGTH, 0, 0));
     QScopedPointer<wchar_t> title(new wchar_t[len + 1]);
-    if (!::SendMessage(hWnd, WM_GETTEXT, len + 1, reinterpret_cast<LPARAM>(title.data()))) {
+    if (!::SendMessageW(hWnd, WM_GETTEXT, len + 1, reinterpret_cast<LPARAM>(title.data()))) {
         return TRUE; // No Title
     }
 
@@ -111,9 +111,9 @@ static BOOL CALLBACK findWindowTitle(HWND hWnd, LPARAM lParam) {
     if (!::IsWindowVisible(hWnd))
         return TRUE; // Not visible
 
-    int len = static_cast<int>(::SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0));
+    int len = static_cast<int>(::SendMessageW(hWnd, WM_GETTEXTLENGTH, 0, 0));
     QScopedPointer<wchar_t> title(new wchar_t[len + 1]);
-    if (!::SendMessage(hWnd, WM_GETTEXT, len + 1, reinterpret_cast<LPARAM>(title.data())))
+    if (!::SendMessageW(hWnd, WM_GETTEXT, len + 1, reinterpret_cast<LPARAM>(title.data())))
         return TRUE; // No Title
 
     if (g_selectedCatItemText == QString::fromWCharArray(title.data())) {

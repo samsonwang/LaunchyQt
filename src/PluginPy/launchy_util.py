@@ -1,6 +1,5 @@
 
 import sys, os
-import launchy
 
 def redirectOutput():
     # If I write code such as sys.stdout = open('stdout.txt', 'w'),
@@ -29,8 +28,13 @@ def redirectOutput():
                 print("launchy_util, FlashedFile.__getattr__,", err)
 
     # Redirect stdout and stderr
-    sys.stdout = FlushedFile(os.path.join(launchy.getAppTempPath(), 'py_stdout.log'))
-    sys.stderr = FlushedFile(os.path.join(launchy.getAppTempPath(), 'py_stderr.log'))
+    try:
+        import launchy
+        sys.stdout = FlushedFile(os.path.join(launchy.getAppTempPath(), 'py_stdout.log'))
+        sys.stderr = FlushedFile(os.path.join(launchy.getAppTempPath(), 'py_stderr.log'))
+    except:
+        sys.stdout = FlushedFile('python/py_stdout.log')
+        sys.stderr = FlushedFile('python/py_stderr.log')
     print("launchy_util, redirect output finished")
 
 
@@ -41,6 +45,7 @@ def setSettingsObject():
         # Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
         from PyQt5 import QtCore
         from sip import wrapinstance
+        import launchy
         print("launchy:", dir(launchy))
         launchy.settings = wrapinstance(launchy.__settings, QtCore.QSettings)
         print("launchy.settings:", launchy.settings)
