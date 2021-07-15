@@ -14,7 +14,7 @@ HEADERS = Tasky.h
 CONFIG += precompile_header
 PRECOMPILED_HEADER = Precompiled.h
 
-INCLUDEPATH += ../../LaunchyLib
+INCLUDEPATH += ../../
 
 #VERSION = 0.2
 

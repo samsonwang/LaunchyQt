@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = PluginPy
 
-QT += core
+QT += core widgets
 
 CONFIG += debug_and_release
 
@@ -14,7 +14,7 @@ SOURCES += PluginLoader.cpp \
            ExportPyCatItem.cpp \
            ExportPyInputData.cpp
 
-HEADERS += PluginPyLib.h \
+HEADERS += PluginPy.h \
            PluginLoader.h \
            PluginMgr.h \
            PluginWrapper.h \

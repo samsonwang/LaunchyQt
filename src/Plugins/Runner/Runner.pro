@@ -19,7 +19,7 @@ FORMS = dlg.ui
 CONFIG += precompile_header
 PRECOMPILED_HEADER = Precompiled.h
 
-INCLUDEPATH += ../../LaunchyLib
+INCLUDEPATH += ../../
 
 #VPATH += ../../src
 #UI_DIR = ../../plugins/$$TARGET/
