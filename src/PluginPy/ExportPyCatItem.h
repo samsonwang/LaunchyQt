@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Python.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
+#include <pybind11/stl.h>
+#include <pybind11/embed.h>
+#include <pybind11/eval.h>
 
 #include "LaunchyLib/CatalogItem.h"
 

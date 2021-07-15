@@ -22,6 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // python.h must include before qt header files
 #include <Python.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
+#include <pybind11/stl.h>
+#include <pybind11/embed.h>
+#include <pybind11/eval.h>
 
 #include <QString>
 #include <QSettings>
