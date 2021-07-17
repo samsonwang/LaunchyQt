@@ -76,7 +76,7 @@ int UWPApp::msg(int msgId, void* wParam, void* lParam) {
         launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         handled = 1;
         break;
-    //case MSG_EXTRACT_ICON:
+   //case MSG_EXTRACT_ICON:
         // extractIcon((launchy::CatItem*)wParam, (QIcon*)lParam);
         // handled = 1;
         //break;
@@ -118,7 +118,7 @@ void UWPApp::setPath(const QString* path) {
 
 void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
-    qDebug() << "UWPAppPlugin::getCatalog";
+    qDebug() << "UWPApp::getCatalog, function entry";
 
     CoInitialize(NULL);
 
@@ -127,21 +127,21 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
         if (FAILED(SHCreateItemFromParsingName(L"shell:AppsFolder",
                                                nullptr,
                                                IID_PPV_ARGS(&appFolder)))) {
-            qWarning() << "fail to open shell:AppsFolder";
+            qWarning() << "UWPApp::getCatalog, fail to open shell:AppsFolder";
             break;
         }
 
-        qDebug() << "succeed to open shell::AppsFolder";
+        qDebug() << "UWPApp::getCatalog, succeed to open shell::AppsFolder";
 
         CComPtr<IEnumShellItems> enumShellItems;
         if (FAILED(appFolder->BindToHandler(nullptr,
                                             BHID_EnumItems,
                                             IID_PPV_ARGS(&enumShellItems)))) {
-            qWarning() << "fail to bind to handler";
+            qWarning() << "UWPApp::getCatalog, fail to bind to handler";
             break;
         }
 
-        qDebug() << "succeed to bind to handler";
+        qDebug() << "UWPApp::getCatalog, succeed to bind to handler";
 
         PROPERTYKEY pkLauncherAppState;
         PSGetPropertyKeyFromName(L"System.Launcher.AppState", &pkLauncherAppState);
@@ -156,6 +156,7 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
         CComHeapPtr<wchar_t> pvs;
         pvs.Allocate(pvslen);
 
+        qDebug() << "UWPApp::getCatalog, begin while loop";
         IShellItem* shellItemNext = nullptr;
         while (enumShellItems->Next(1, &shellItemNext, nullptr) == S_OK) {
             CComPtr<IShellItem> shellItem = shellItemNext;
@@ -226,6 +227,8 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
                                               iconPath));
         }
 
+        qDebug() << "UWPApp::getCatalog, end while loop";
+
     } while (0);
 
     CoUninitialize();
@@ -250,19 +253,19 @@ void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
                                   CLSCTX_INPROC_SERVER,
                                   IID_PPV_ARGS(&pAAM));
     if (FAILED(hr)) {
-        qWarning() << "UWPAppPlugin::launchItem, Error creating CoCreateInstance & HR is" << hr;
+        qWarning() << "UWPApp::launchItem, Error creating CoCreateInstance & HR is" << hr;
         return;
     }
 
     DWORD pid = 0;
     hr = pAAM->ActivateApplication(item->fullPath.toStdWString().c_str(), L"", AO_NONE, &pid);
     if (FAILED(hr)) {
-        qWarning() << "UWPAppPlugin::launchItem, Error in ActivateApplication call & HR is " << hr;
+        qWarning() << "UWPApp::launchItem, Error in ActivateApplication call & HR is " << hr;
         return;
     }
 
     if (hr == 0) {
-        qDebug() << "UWPAppPlugin::launchItem, Activated " << item->fullPath << " with pid " << pid;
+        qDebug() << "UWPApp::launchItem, Activated " << item->fullPath << " with pid " << pid;
     }
 
     CoUninitialize();
