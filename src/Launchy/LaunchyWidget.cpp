@@ -956,10 +956,10 @@ void LaunchyWidget::retranslateUi() {
 }
 
 void LaunchyWidget::updateOutputSize() {
-    int maxIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
-    qDebug() << "LaunchyWidget::showEvent, output icon size:" << maxIconSize;
-    g_app->setPreferredIconSize(maxIconSize);
-    m_alternativeList->setIconSize(maxIconSize);
+    int nIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
+    qDebug() << "LaunchyWidget::showEvent, output icon size:" << nIconSize;
+    g_app->setPreferredIconSize(nIconSize);
+    m_alternativeList->setIconSize(nIconSize);
 }
 
 void LaunchyWidget::dropTimeout() {

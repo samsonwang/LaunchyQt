@@ -174,7 +174,8 @@ add_custom_command (TARGET PluginPy POST_BUILD
 # pluginpy util
 add_custom_target (PluginPy.Util
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python)
+  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python
+  SOURCES ${SRC_DIR}/PluginPy/launchy_util.py)
 
 ##################################################
 # Launchy main translation
@@ -191,7 +192,6 @@ set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
   OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
 qt5_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
 
-# add_custom_target (LaunchyTS DEPENDS ${QM_FILES_LAUNCHY})
 add_custom_target (LaunchyQM
   DEPENDS ${QM_FILES_LAUNCHY})
 

@@ -46,7 +46,7 @@ AppBase::AppBase(int& argc, char** argv)
     setQuitOnLastWindowClosed(false);
     setApplicationName("LaunchyQt");
     setOrganizationName("LaunchyQt");
-    setOrganizationDomain("launchyqt.com");
+    setOrganizationDomain("launchy.wangzhl.com");
 }
 
 AppBase::~AppBase() {

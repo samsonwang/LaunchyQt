@@ -36,11 +36,7 @@
 namespace launchy {
 
 IconProviderWin::IconProviderWin() {
-//     // Load Vista/7 specific API pointers
-//     HMODULE hLib = GetModuleHandleW(L"shell32");
-//     if (hLib) {
-//         (FARPROC&)fnSHCreateItemFromParsingName = GetProcAddress(hLib, "SHCreateItemFromParsingName");
-//     }
+
 }
 
 IconProviderWin::~IconProviderWin() {
@@ -65,7 +61,8 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         retIcon = QIcon(QtWin::fromHICON(hIcon));
         DestroyIcon(hIcon);
     }
-    else if (fileExtension == QStringLiteral("lnk") || info.isSymLink()) {
+    else if (fileExtension == QStringLiteral("lnk")
+             || info.isSymLink()) {
 
         QString targetPath = linkTargetPathTo64(info);
 
@@ -96,11 +93,11 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         qDebug() << "IconProviderWin::icon, exe, file path:" << filePath
                  << ", flags:" << flags;
 
-        SHFILEINFO sfi;
+        SHFILEINFOW sfi;
         ZeroMemory(&sfi, sizeof(sfi));
 
         // Get the icon index using SHGetFileInfo
-        SHGetFileInfo((LPCTSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), flags);
+        SHGetFileInfoW((LPCWSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), flags);
         if (sfi.hIcon) {
             retIcon.addPixmap(QtWin::fromHICON(sfi.hIcon));
             // extra large icon
@@ -119,51 +116,50 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 
 QString IconProviderWin::linkTargetPathTo64(const QFileInfo& info) const {
     // On 64 bit windows, 64 bit shortcuts don't resolve correctly from 32 bit executables, fix it here
-    QString path = QDir::toNativeSeparators(info.symLinkTarget());
+    QString strPath = QDir::toNativeSeparators(info.symLinkTarget());
 
-    if (QFileInfo(path).exists()) {
-        return path;
+    if (QFileInfo(strPath).exists()) {
+        return strPath;
     }
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     if (!env.contains("PROGRAMW6432")) {
-        return path;
+        return strPath;
     }
 
-    QString pf32 = env.value("PROGRAMFILES"); // C:\Program Files (x86)
-    QString pf64 = env.value("PROGRAMW6432"); // C:\Program Files
+    QString strDir32 = env.value("PROGRAMFILES"); // C:\Program Files (x86)
+    QString strDir64 = env.value("PROGRAMW6432"); // C:\Program Files
 
-    if (pf32 != pf64) {
-        if (path.contains(pf32)) {
-            QString path64 = path;
-            path64.replace(pf32, pf64);
-            if (QFileInfo(path64).exists()) {
-                path = path64;
+    if (strDir32 != strDir64) {
+        if (strPath.contains(strDir32)) {
+            QString strPath64 = strPath;
+            strPath64.replace(strDir32, strDir64);
+            if (QFileInfo(strPath64).exists()) {
+                strPath = strPath64;
             }
         }
-        else if (path.contains("system32")) {
-            QString path32 = path;
-            if (!QFileInfo(path32).exists()) {
-                path = path32.replace("system32", "sysnative");
+        else if (strPath.contains("system32")) {
+            QString strPath32 = strPath;
+            if (!QFileInfo(strPath32).exists()) {
+                strPath = strPath32.replace("system32", "sysnative");
             }
         }
     }
 
-    return path;
+    return strPath;
 }
 
 bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const {
-    IImageList* imageList;
-    HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&imageList);
-    if (hResult == S_OK && imageList != NULL) {
+    IImageList* pImageList = NULL;
+    HRESULT hResult = SHGetImageList(imageListIndex, IID_IImageList, (void**)&pImageList);
+    if (hResult == S_OK && pImageList != NULL) {
         HICON hIcon = NULL;
-        hResult = imageList->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
-        imageList->Release();
-
+        hResult = pImageList->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
         if (hResult == S_OK && hIcon != NULL) {
             icon.addPixmap(QtWin::fromHICON(hIcon));
             DestroyIcon(hIcon);
         }
+        pImageList->Release();
     }
 
     return SUCCEEDED(hResult);
@@ -174,15 +170,15 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
 // but we'll use SHCreateItemFromParsingName as it'll give an identical
 // icon to the one shown in explorer and it scales automatically.
 bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& icon) const {
+    CoInitialize(NULL);
     HRESULT hResult = S_FALSE;
     IShellItemImageFactory* pSIIF = NULL;
-    CoInitialize(NULL);
     hResult = SHCreateItemFromParsingName((PCWSTR)filePath.utf16(), NULL, IID_PPV_ARGS(&pSIIF));
-    if (hResult == S_OK) {
+    if (hResult == S_OK && pSIIF) {
         HBITMAP hBitmap = NULL;
         SIZE iconSize = {m_preferredSize, m_preferredSize};
         hResult = pSIIF->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY , &hBitmap);
-        if (hResult == S_OK) {
+        if (hResult == S_OK && hBitmap != NULL) {
             QPixmap iconPixmap = QtWin::fromHBITMAP(hBitmap, QtWin::HBitmapPremultipliedAlpha);
             icon.addPixmap(iconPixmap);
             DeleteObject(hBitmap);
@@ -193,4 +189,4 @@ bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& ic
     return hResult == S_OK;
 }
 
-}
+} // namespace launchy
