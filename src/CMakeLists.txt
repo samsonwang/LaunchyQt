@@ -13,18 +13,20 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 get_filename_component (SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ ABSOLUTE)
 get_filename_component (DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../deps/ ABSOLUTE)
-
-include_directories (${SRC_DIR} ${DEPS_DIR})
+get_filename_component (TRANS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../translations/ ABSOLUTE)
 
 message (STATUS "SRC_DIR: ${SRC_DIR}")
 message (STATUS "DEPS_DIR: ${DEPS_DIR}")
+message (STATUS "TRANS_DIR: ${TRANS_DIR}")
+
+include_directories (${SRC_DIR} ${DEPS_DIR})
 
 ##################################################
 # Qt
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
 set (ENV{CMAKE_PREFIX_PATH} "c:/Qt/Qt5.12.10/5.12.10/msvc2017")
-find_package (Qt5 COMPONENTS Widgets WinExtras Network REQUIRED)
+find_package (Qt5 COMPONENTS Widgets WinExtras Network LinguistTools REQUIRED)
 
 set (CMAKE_AUTOUIC ON)
 set (CMAKE_AUTOMOC ON)
@@ -48,7 +50,7 @@ endif ()
 ##################################################
 # Python
 set (ENV{Python_ROOT_DIR} "C:/Program Files (x86)/Python39-32")
-find_package (Python COMPONENTS Interpreter Development)
+find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
 message ("Python_FOUND: ${Python_FOUND}")
 message ("Python_VERSION: ${Python_VERSION}")
@@ -167,15 +169,35 @@ target_link_libraries (PluginPy
 
 add_custom_command (TARGET PluginPy POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  $<TARGET_FILE:PluginPy> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/python/launchy.pyd)
-#  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/python)
+  $<TARGET_FILE:PluginPy> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python/launchy.pyd)
 
-##################################################
-# plugin: WebSearchPy
+# pluginpy util
 add_custom_target (PluginPy.Util
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/python)
+  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python)
+
+##################################################
+# Launchy main translation
+file (GLOB TS_FILES_LAUNCHY
+  ${TRANS_DIR}/*.ts)
+
+qt5_create_translation (QM_FILES_LAUNCHY
+  ${SRC_DIR}/Launchy
+  ${SRC_DIR}/LaunchyLib
+  ${SRC_DIR}/PluginPy
+  ${TS_FILE_LAUNCHY})
+
+set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
+  OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
+qt5_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
+
+# add_custom_target (LaunchyTS DEPENDS ${QM_FILES_LAUNCHY})
+add_custom_target (LaunchyQM
+  DEPENDS ${QM_FILES_LAUNCHY})
+
+add_custom_command (TARGET LaunchyQM POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  ${QM_FILES_LAUNCHY} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations)
 
 ##################################################
 # QSingleApplication
