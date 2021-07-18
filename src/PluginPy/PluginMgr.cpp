@@ -118,9 +118,8 @@ void PluginMgr::initSettings(QSettings* setting) {
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
-        const char* errInfo = e.what();
         qWarning() << "pluginpy::PluginMgr::initSettings,"
-            << "fail to init QSetting," << errInfo;
+            << "fail to init QSetting," << e.what();
     }
 }
 

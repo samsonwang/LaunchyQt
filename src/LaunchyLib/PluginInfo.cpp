@@ -17,20 +17,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PluginInfo.h"
+
 #include <QPluginLoader>
 #include <QDebug>
+
 #include "PluginInterface.h"
 
 namespace launchy {
+
 PluginInfo::PluginInfo()
     : id(0),
-    obj(nullptr),
-    loaded(false) {
+      obj(nullptr),
+      loaded(false) {
 }
 
 PluginInfo::~PluginInfo() {
-    QPluginLoader loader(path);
-    loader.unload();
+
 }
 
 bool PluginInfo::isValid() const {
@@ -52,4 +54,5 @@ int PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
     }
     return ret;
 }
-}
+
+} // namespace launchy

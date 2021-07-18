@@ -23,17 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDir>
 #include <QDebug>
 
-#include "Catalog.h"
-#include "SettingsManager.h"
 #include "LaunchyLib/PluginInterface.h"
 #include "LaunchyLib/PluginMsg.h"
 #include "PluginPy/PluginLoader.h"
 
-#if defined(Q_OS_WIN)
-#define LIB_EXT ".dll"
-#elif defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-#define LIB_EXT ".so"
-#endif
+#include "Catalog.h"
+#include "SettingsManager.h"
 
 namespace launchy {
 
@@ -83,7 +78,7 @@ void PluginHandler::getCatalogs(Catalog* pCatalog, INotifyProgressStep* progress
     foreach(PluginInfo info, m_plugins) {
         if (info.loaded) {
             QList<CatItem> items;
-            info.sendMsg(MSG_GET_CATALOG, (void*)&items);
+            info.sendMsg(MSG_GET_CATALOG, &items);
             foreach(CatItem item, items) {
                 pCatalog->addItem(item);
             }
@@ -99,15 +94,15 @@ int PluginHandler::launchItem(QList<InputData>* inputData, CatItem* result) {
     if (!m_plugins.contains(result->pluginId) || !m_plugins[result->pluginId].loaded) {
         return MSG_CONTROL_LAUNCHITEM;
     }
-    return m_plugins[result->pluginId].sendMsg(MSG_LAUNCH_ITEM, (void*)inputData, (void*)result);
+    return m_plugins[result->pluginId].sendMsg(MSG_LAUNCH_ITEM, inputData, result);
 }
 
 QWidget* PluginHandler::doDialog(QWidget* parent, uint id) {
     if (!m_plugins.contains(id) || !m_plugins[id].loaded) {
-        return NULL;
+        return nullptr;
     }
-    QWidget* newBox = NULL;
-    m_plugins[id].sendMsg(MSG_DO_DIALOG, (void*)parent, (void*)&newBox);
+    QWidget* newBox = nullptr;
+    m_plugins[id].sendMsg(MSG_DO_DIALOG, parent, &newBox);
     return newBox;
 }
 
@@ -142,11 +137,15 @@ void PluginHandler::loadPlugins() {
         QDir pluginsDir(directory);
         foreach(QString pluginName, pluginsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
             QString pluginLibDir = QDir::cleanPath(directory + "/" + pluginName);
-            if (QFile::exists(pluginLibDir + "/" + pluginName + ".py")) {
+            if (QLibrary(pluginLibDir + "/" + pluginName).load()) {
+                loadCppPlugin(pluginName, pluginLibDir);
+            }
+            else if (QFile::exists(pluginLibDir + "/" + pluginName + ".py")) {
                 loadPythonPlugin(pluginName, pluginLibDir);
             }
-            else if (QFile::exists(pluginLibDir + "/" + pluginName + LIB_EXT)) {
-                loadCppPlugin(pluginName, pluginLibDir);
+            else {
+                qWarning() << "PluginHandler::loadPlugins, unknown plugin type, plugin name: "
+                    << pluginName << ", dir: " << pluginLibDir;
             }
         }
     }
@@ -161,7 +160,7 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     pluginpy::PluginLoader loader(pluginName, pluginPath);
     PluginInterface* plugin = loader.instance();
     if (!plugin) {
-        qWarning() << pluginFullPath << "is not a Launchy plugin";
+        qWarning() << "PluginHandler::loadPythonPlugin, " << pluginFullPath << "is not a Launchy plugin";
         return;
     }
     qDebug() << "PluginHandler::loadPythonPlugin, plugin loaded:" << pluginFullPath;
@@ -169,14 +168,14 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     PluginInfo info;
     info.obj = plugin;
     info.path = pluginFullPath;
-    bool handled = (info.sendMsg(MSG_GET_ID, (void*)&info.id) != 0);
-    info.sendMsg(MSG_GET_NAME, (void*)&info.name);
+    bool handled = (info.sendMsg(MSG_GET_ID, &info.id) != 0);
+    info.sendMsg(MSG_GET_NAME, &info.name);
 
     // configured not to load
     if (handled && (!m_loadable.contains(info.id) || m_loadable[info.id])) {
         info.loaded = true;
         info.sendMsg(MSG_INIT);
-        info.sendMsg(MSG_PATH, (void*)&pluginPath);
+        info.sendMsg(MSG_PATH, const_cast<QString*>(&pluginPath));
     }
     else {
         // set not load
@@ -188,26 +187,28 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
 }
 
 void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& pluginPath) {
-    QString pluginFullPath = pluginPath + "/" + pluginName + LIB_EXT;
+    QString pluginFullPath = pluginPath + "/" + pluginName;
     QPluginLoader loader(pluginFullPath);
     qDebug() << "PluginHandler::loadCppPlugin, plugin:" << pluginFullPath;
     PluginInterface* plugin = qobject_cast<PluginInterface*>(loader.instance());
     if (!plugin) {
-        qWarning() << pluginFullPath << "is not a Launchy plugin";
+        qWarning() << "PluginHandler::loadCppPlugin, "
+            << pluginFullPath << "is not a valid plugin";
         return;
     }
-    qDebug() << "Plugin loaded:" << pluginFullPath;
+    qDebug() << "PluginHandler::loadCppPlugin, plugin loaded:"
+        << pluginFullPath;
 
     PluginInfo info;
     info.obj = plugin;
     info.path = pluginFullPath;
-    bool handled = info.sendMsg(MSG_GET_ID, (void*)&info.id) != 0;
-    info.sendMsg(MSG_GET_NAME, (void*)&info.name);
+    bool handled = info.sendMsg(MSG_GET_ID, &info.id) != 0;
+    info.sendMsg(MSG_GET_NAME, &info.name);
 
     if (handled && (!m_loadable.contains(info.id) || m_loadable[info.id])) {
         info.loaded = true;
         info.sendMsg(MSG_INIT);
-        info.sendMsg(MSG_PATH, (void*)&pluginPath);
+        info.sendMsg(MSG_PATH, const_cast<QString*>(&pluginPath));
 
         // Load any of the plugin's plugins of its own
         QList<PluginInfo> additionalPlugins;
@@ -239,5 +240,4 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
     m_plugins[info.id] = info;
 }
 
-
-}
+} // namespace launchy

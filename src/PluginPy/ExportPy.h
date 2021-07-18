@@ -42,8 +42,6 @@ void runProgram(const std::string& file, const std::string& args);
 void setNeedRebuildCatalog();
 
 // for debug and test
-void registerPlugin(py::object pluginClass);
-
 void objectReceiver(py::object obj);
 
-}
+} // namespace exportpy
