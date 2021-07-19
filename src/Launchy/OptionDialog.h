@@ -21,11 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QDialog>
 #include "Directory.h"
+
 class QListWidgetItem;
 class QVBoxLayout;
 namespace Ui { class OptionDialog; }
 
 namespace launchy {
+
 class FileBrowserDelegate;
 
 class OptionDialog : public QDialog {
@@ -125,4 +127,6 @@ private:
     static int s_lastTab;
     static int s_lastPlugin;
 };
-}
+
+} // namespace launchy
+

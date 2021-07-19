@@ -57,7 +57,7 @@ void UpdateChecker::startup() {
     bool checkOnStartup = g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP,
                                             OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT).toBool();
     if (!checkOnStartup) {
-        qDebug() << "UpdateChecker::startup, no startup check";
+        qInfo() << "UpdateChecker::startup, no startup check";
         return;
     }
 
@@ -71,7 +71,7 @@ void UpdateChecker::startup() {
     QDateTime now = QDateTime::currentDateTime();
 
     if (now < last.addSecs(interval * 3600)) {
-        qDebug() << "UpdateChecker::startup, last update time:" << lastUpdate
+        qInfo() << "UpdateChecker::startup, last update time:" << lastUpdate
             << ", wait for next startup";
         return;
     }
@@ -79,7 +79,7 @@ void UpdateChecker::startup() {
     int delay = g_settings->value(OPTION_UPDATE_CHECK_ON_STARTUP_DELAY,
                                   OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT).toInt();
 
-    qDebug() << "UpdateChecker::startup, will update in" << delay << "seconds";
+    qInfo() << "UpdateChecker::startup, will update in" << delay << "seconds";
 
     m_timerStartup->start(delay * 1000);
 }
@@ -99,17 +99,21 @@ void UpdateChecker::manualCheck() {
     if (m_manualCheck) {
         return;
     }
-    qDebug() << "UpdateChecker::manualCheck, doing manual check";
+    qInfo() << "UpdateChecker::manualCheck, doing manual check";
     m_manualCheck = true;
     getVersionInfo();
 }
 
 void UpdateChecker::getVersionInfo() {
-    m_mgr->get(QNetworkRequest(QUrl("https://launchyqt.com/version.xml")));
+    m_mgr->get(QNetworkRequest(QUrl("https://launchy.wangzhl.com/version.xml")));
     qDebug() << "UpdateChecker::checkUpdate, getting version info";
 }
 
 void UpdateChecker::replyFinished(QNetworkReply* reply) {
+    if (!reply) {
+        return;
+    }
+
     QByteArray info = reply->readAll();
     qDebug() << "UpdateChecker::replyFinished, content:" << info;
 
@@ -122,13 +126,13 @@ void UpdateChecker::replyFinished(QNetworkReply* reply) {
         if (token == QXmlStreamReader::StartDocument) {
             continue;
         }
-        if (token == QXmlStreamReader::StartElement) {
-            if (reader.name() == "latest") {
-                QXmlStreamAttributes attr = reader.attributes();
-                if (attr.hasAttribute("version")) {
-                    lastestVersion = attr.value("version").toInt();
-                    qInfo() << "UpdateChecker::replyFinished, latest version:" << lastestVersion;
-                }
+        if (token == QXmlStreamReader::StartElement
+            && reader.name() == "latest") {
+            QXmlStreamAttributes attr = reader.attributes();
+            if (attr.hasAttribute("version")) {
+                lastestVersion = attr.value("version").toInt();
+                qInfo() << "UpdateChecker::replyFinished, latest version:"
+                    << lastestVersion;
             }
         }
     }
@@ -153,4 +157,5 @@ void UpdateChecker::replyFinished(QNetworkReply* reply) {
     reader.clear();
 }
 
-}
+} // namespace launchy
+
