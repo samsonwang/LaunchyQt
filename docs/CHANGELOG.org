@@ -1,4 +1,13 @@
 
+* 3.1.2 (2021-7-20)
+- new feature #23 #37: UWPApp plugin for indexing UWP applications
+- translation: add Portuguese and Italian translation
+- fix bug #53: fail to open nested folder
+- fix bug #31: CalcPy fail to calculate negative numbers
+- fix bug: fail to extract icon from 32-bit lnk
+- move python plugin log into system temp folder
+- use Qt5.12.10 and Python3.9.6
+
 * 3.1.1 (2020-1-29)
 - fix bug #21, crash when backspace key is pressed
 - fix bug #22, fail to paste clipboard to excel
