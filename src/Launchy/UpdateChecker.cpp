@@ -106,6 +106,9 @@ void UpdateChecker::manualCheck() {
 
 void UpdateChecker::getVersionInfo() {
     m_mgr->get(QNetworkRequest(QUrl("https://launchy.wangzhl.com/version.xml")));
+    qDebug() << "UpdateChecker::checkUpdate, ssl:" << QSslSocket::supportsSsl();
+    qDebug() << "UpdateChecker::checkUpdate, qt ssl:" << QSslSocket::sslLibraryBuildVersionString();
+    qDebug() << "UpdateChecker::checkUpdate, current ssl:" << QSslSocket::sslLibraryVersionString();
     qDebug() << "UpdateChecker::checkUpdate, getting version info";
 }
 
