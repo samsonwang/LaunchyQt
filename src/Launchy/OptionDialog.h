@@ -119,10 +119,6 @@ private:
     QList<int> m_iActionKeys;
     QList<Directory> m_memDirs;
 
-    //QList<QPair<QString, uint>> pluginNames;
-    //QVBoxLayout* pluginLayout;
-    //QString lastDir;
-
     static QByteArray s_lastWindowGeometry;
     static int s_lastTab;
     static int s_lastPlugin;
