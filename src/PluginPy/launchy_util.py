@@ -1,5 +1,23 @@
 
 import sys, os
+import logging as log
+
+def init_logging():
+    try:
+        import launchy
+        log_file_name = os.path.join(launchy.getAppTempPath(), 'launchypy.log')
+    except:
+        import pathlib
+        log_file_name = os.path.join(pathlib.Path(__file__).parent.resolve(), 'launchypy.log')
+    finally:
+        print('launchy_util::init_logging, log file name:', log_file_name)
+        log.basicConfig(filename=log_file_name,
+                        filemode='w',
+                        format='%(asctime)s.%(msecs)03d [%(levelname).1s] %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        level=log.DEBUG)
+        log.info('launchy_util::init_logging, log init')
+
 
 def redirectOutput():
     # If I write code such as sys.stdout = open('stdout.txt', 'w'),
@@ -39,30 +57,29 @@ def redirectOutput():
 
 
 def setSettingsObject():
-    print("launchy_util, setSettingsObject called")
+    log.info("launchy_util::setSettingsObject, called")
     # Set the launchy.settings object
     try:
         # Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
         from PyQt5 import QtCore
         from sip import wrapinstance
         import launchy
-        print("launchy:", dir(launchy))
+        log.debug("launchy_util::setSettingsObject, launchy dir: %s" % dir(launchy))
         launchy.settings = wrapinstance(launchy.__settings, QtCore.QSettings)
-        print("launchy.settings:", launchy.settings)
+        log.debug("launchy_util::setSettingsObject, launchy.settings: %s" % launchy.settings)
     except ImportError as err:
-        print("launchy_util, setSettingsObject, ImportError,", err)
-    except NameError:
-        print("launchy_util, setSettingsObject, NameError, Could not find __settings object")
+        log.warning("launchy_util::setSettingsObject, ImportError, %s" % err)
+    except NameError as err:
+        log.warning("launchy_util::setSettingsObject, NameError, %s" % err)
     except Exception as err:
-        print("launchy_util, setSettingsObject, Exception,", err)
+        log.warning("launchy_util, setSettingsObject, Exception, %s" % err)
 
 
 def initPipPackage():
-    import sys, os
-    print("launchy_util, initPipPackage, sys.prefix:", sys.prefix)
+    log.info('launchy_util::initPipPackage, sys.prefix: %s' % sys.prefix)
 
-    # print ("launchy_util, initPipPackage, env.path:", os.environ.get('PATH', ''))
-    # print ("launchy_util, initPipPackage, sys.path:", sys.path)
+    # print ("launchy_util::initPipPackage, env.path:", os.environ.get('PATH', ''))
+    # print ("launchy_util::initPipPackage, sys.path:", sys.path)
 
     path = os.environ.get('PATH', '')
     os.environ['PATH'] = path + os.pathsep + sys.prefix
@@ -73,19 +90,19 @@ def initPipPackage():
     xlib = os.path.join(sys.prefix, 'Lib')
 
     if os.path.exists(xlib):
-        print("launchy_util, initPipPackage, Lib path found, init site")
+        log.info('launchy_util::initPipPackage, Lib path found, init site')
         sys.path.insert(0, xlib)
         import site
         site.main()
         os.chdir(sys.prefix)
     else:
-        print("launchy_util, initPipPackage, Lib path not found, skip init site")
-
+        log.info('launchy_util::initPipPackage, Lib path not found, skip init site')
 
 try:
     redirectOutput()
+    init_logging()
     initPipPackage()
-    print("launchy_util, sys.path:", sys.path)
-    print("launchy_util, env.path:", os.environ.get('PATH', ''))
+    log.info("launchy_util, sys.path: %s" % sys.path)
+    log.info("launchy_util, env.path: %s" % os.environ.get('PATH', ''))
 except Exception as err:
-    print("launchy_util, catched exception", err)
+    log.warning("launchy_util, catched exception: %s" % err)
