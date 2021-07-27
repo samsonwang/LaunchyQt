@@ -872,16 +872,16 @@ void LaunchyWidget::searchOnInput() {
         qSort(m_searchResult.begin(), m_searchResult.end(), CatLessRef);
         g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
-        if (!m_searchResult.isEmpty()) {
-            m_inputData.last().setTopResult(m_searchResult[0]);
-        }
-
         // Finally, if the search text looks like a file or directory name,
         // add any file or directory matches
         if (searchText.contains(QDir::separator())
             || searchText.startsWith("~")
             || (searchText.size() == 2 && searchText[0].isLetter() && searchText[1] == ':')) {
             FileSearch::search(searchText, m_searchResult, m_inputData);
+        }
+
+        if (!m_searchResult.isEmpty()) {
+            m_inputData.last().setTopResult(m_searchResult[0]);
         }
     }
 }
