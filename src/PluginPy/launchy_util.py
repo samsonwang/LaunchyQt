@@ -82,16 +82,28 @@ def initPipPackage():
     # print ("launchy_util::initPipPackage, sys.path:", sys.path)
 
     path = os.environ.get('PATH', '')
-    os.environ['PATH'] = path + os.pathsep + sys.prefix
 
-    sys.path.insert(0, sys.prefix)
+    log.debug('launchy_util::initPipPackage, path type: %s' % type(path))
+    pathsplit = path.split(';')
+    log.debug('launchy_util::initPipPackage, path split1: %s' % pathsplit)
+    if not sys.prefix in pathsplit:
+        pathsplit.insert(0, sys.prefix)
+    log.debug('launchy_util::initPipPackage, path split2: %s' % pathsplit)
+    pathjoin = ';'.join(str(s) for s in pathsplit)
+    log.debug('launchy_util::initPipPackage, pathjoin: %s' % pathjoin)
+
+    os.environ['PATH'] = pathjoin
+
+    if sys.prefix not in sys.path:
+        sys.path.insert(0, sys.prefix)
     # sys.path.insert(0, ".")
 
     xlib = os.path.join(sys.prefix, 'Lib')
 
     if os.path.exists(xlib):
         log.info('launchy_util::initPipPackage, Lib path found, init site')
-        sys.path.insert(0, xlib)
+        if xlib not in sys.path:
+            sys.path.insert(0, xlib)
         import site
         site.main()
         os.chdir(sys.prefix)
@@ -101,6 +113,8 @@ def initPipPackage():
 try:
     redirectOutput()
     init_logging()
+    log.debug("launchy_util, sys.path: %s" % sys.path)
+    log.debug("launchy_util, env.path: %s" % os.environ.get('PATH', ''))
     initPipPackage()
     log.info("launchy_util, sys.path: %s" % sys.path)
     log.info("launchy_util, env.path: %s" % os.environ.get('PATH', ''))
