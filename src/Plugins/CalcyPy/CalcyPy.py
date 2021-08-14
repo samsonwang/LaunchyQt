@@ -14,6 +14,8 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+import logging as log
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QVariant
 from PyQt5.QtCore import QLocale
@@ -70,31 +72,25 @@ class CalcyPy(Plugin):
         except:
             return
 
-        print('CalcyPy, getResults,', text, ret)
+        log.debug('CalcyPy::getResults, text = {}, result = {}'.format(text, ret))
 
         # full divide
         if isinstance(ret, float) and abs(ret - int(ret)) < 1e-15:
             ret = int(ret)
-            print('CalcyPy, transform float to int:', ret)
+            log.debug('CalcyPy::getResults, transform float to int: {}'.format(ret))
 
         if isinstance(ret, int):
             retInFloat = None
-
             # hexadecimal
             retInHex = self.__formatHexadecimal(ret)
-
             # decimal
             retInDec = self.__formatDecimal(ret)
-
             # octal
             retInOct = self.__formatOctal(ret)
-
             # binary
             retInBin = self.__formatBinary(ret)
-
             # size
             retInSize = self.__formatSize(ret)
-
         else:
             retInFloat = self.__formatFloat(ret)
             retInHex = None
@@ -139,16 +135,15 @@ class CalcyPy(Plugin):
             item.setUsage(10000)
             resultsList.append(item)
 
-
     def doDialog(self, parentWidgetPtr):
-        print('CalcyPy, doDialog')
+        log.debug('CalcyPy::doDialog ...')
         parentWidget = wrapinstance(parentWidgetPtr, QtWidgets.QWidget)
         self.widget = CalcyGui.CalcyOption(parentWidget, self.setting_dir, self.settings)
         self.widget.show()
         return unwrapinstance(self.widget)
 
     def endDialog(self, accept):
-        print('CalcyPy, endDialog')
+        log.debug('CalcyPy::endDialog ...')
         self.widget.hide()
         if accept:
             self.widget.writeSettings()
@@ -176,7 +171,7 @@ class CalcyPy(Plugin):
         self.settings['showZeroHex'] = lSettings.value(self.setting_dir + 'showZeroHex', True) in ['true', True]
         self.settings['bitwidth'] = int(lSettings.value(self.setting_dir + 'bitwidth', 16))
 
-        print('CalcyPy, __readSettings', self.settings)
+        log.debug('CalcyPy::__readSettings, {}'.format(self.settings))
 
     def __decimalPoint(self):
         if self.settings['decimalPointGroupSeparator'] == 1:
@@ -266,25 +261,25 @@ class CalcyPy(Plugin):
 
     def __formatSize(self, num):
         if self.settings['showSizeOut']:
-            ret = ""
+            ret = ''
 
             size_giga_bytes = int(num / (1024 ** 3)) if int(num / (1024 ** 3)) else 0
             num -= size_giga_bytes * (1024 ** 3)
-            ret += "%s GB " % size_giga_bytes if size_giga_bytes else ""
+            ret += '%s GB ' % size_giga_bytes if size_giga_bytes else ''
 
             size_mega_bytes = int(num / (1024 * 1024)) if int(num / (1024 * 1024)) else 0
             num -= size_mega_bytes * (1024 ** 2)
-            ret += "%s MB " % size_mega_bytes if size_mega_bytes else ""
+            ret += '%s MB ' % size_mega_bytes if size_mega_bytes else ''
 
             size_kilo_bytes = int(num / (1024)) if int(num / 1024) else 0
             num -= size_mega_bytes * (1024 ** 1)
-            ret += "%s KB " % size_kilo_bytes if size_kilo_bytes else ""
+            ret += '%s KB ' % size_kilo_bytes if size_kilo_bytes else ''
 
             size_bytes = int(num % (1024)) if int(num % (1024)) else 0
-            ret += "%s B " % size_bytes if size_bytes else ""
+            ret += '%s B ' % size_bytes if size_bytes else ''
 
             if not ret:
-                return  "0 B"
+                return  '0 B'
             else:
                 return ret
         else:
