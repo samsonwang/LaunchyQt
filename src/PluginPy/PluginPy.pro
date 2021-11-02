@@ -69,7 +69,7 @@ win32 {
 
 unix:!macx {
     CONFIG += link_pkgconfig
-    PKGCONFIG += python3
+    PKGCONFIG += python3-embed
 
     PREFIX = /usr
     target.path = $$PREFIX/lib/
