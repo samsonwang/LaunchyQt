@@ -68,9 +68,8 @@ win32 {
 }
 
 unix:!macx {
-    #python3-config
-    INCLUDEPATH += /usr/include/python3.6m
-    LIBS += -lpython3.6m -lpthread -ldl  -lutil -lm
+    CONFIG += link_pkgconfig
+    PKGCONFIG += python3
 
     PREFIX = /usr
     target.path = $$PREFIX/lib/
