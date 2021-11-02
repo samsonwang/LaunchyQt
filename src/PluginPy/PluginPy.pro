@@ -34,7 +34,8 @@ DEFINES += PLUGINPY_LIB
 CONFIG(debug, debug|release):DESTDIR = ../debug
 CONFIG(release, debug|release):DESTDIR = ../release
 
-LIBS += $$DESTDIR/Launchy.lib
+win32:LIBS += $$DESTDIR/Launchy.lib
+unix:LIBS += -L$$DESTDIR -lLaunchy
 
 # extra target copy to python
 CONFIG += file_copies
