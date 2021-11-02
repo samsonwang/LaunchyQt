@@ -143,6 +143,8 @@ void runProgram(const QString& path, const QString& args, bool translateSeparato
 
 #elif defined(Q_OS_MAC)
 
+namespace launchy {
+
 int getDesktop() {
     return DESKTOP_MAC;
 }
@@ -156,7 +158,11 @@ void runProgram(QString path, QString args, bool translateSeparators) {
     return;
 }
 
+} // namespace launchy
+
 #elif defined(Q_OS_LINUX)
+
+namespace launchy {
 
 int getDesktop() {
     QStringList list = QProcess::systemEnvironment();
@@ -209,5 +215,7 @@ void runProgram(const QString& file, const QString& args, bool translateSeparato
 
     return;
 }
+
+} // namespace launchy
 
 #endif
