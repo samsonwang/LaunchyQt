@@ -133,7 +133,7 @@ unix:!macx {
     HEADERS += Linux/AppLinux.h \
                Linux/LaunchyWidgetLinux.h \
                Linux/IconProviderLinux.h
-    LIBS += -L$$OUT_PWD/src/lib/ $$DESTDIR/liblaunchy.so $$DESTDIR/libpluginpy.so
+    LIBS += -L$$OUT_PWD/src/lib/ $$DESTDIR/libLaunchy.so $$DESTDIR/libPluginPy.so
 
     PREFIX   = /usr
     DEFINES += SKINS_PATH=\\\"$$PREFIX/share/launchy/skins/\\\" \
