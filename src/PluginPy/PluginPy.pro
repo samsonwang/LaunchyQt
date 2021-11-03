@@ -34,7 +34,8 @@ DEFINES += PLUGINPY_LIB
 CONFIG(debug, debug|release):DESTDIR = ../debug
 CONFIG(release, debug|release):DESTDIR = ../release
 
-LIBS += $$DESTDIR/Launchy.lib
+win32:LIBS += $$DESTDIR/Launchy.lib
+unix:LIBS += -L$$DESTDIR -lLaunchy
 
 # extra target copy to python
 CONFIG += file_copies
@@ -67,9 +68,8 @@ win32 {
 }
 
 unix:!macx {
-    #python3-config
-    INCLUDEPATH += /usr/include/python3.6m
-    LIBS += -lpython3.6m -lpthread -ldl  -lutil -lm
+    CONFIG += link_pkgconfig
+    PKGCONFIG += python3-embed
 
     PREFIX = /usr
     target.path = $$PREFIX/lib/
