@@ -25,9 +25,14 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # Qt
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
-set (ENV{CMAKE_PREFIX_PATH} "c:/Qt/Qt5.12.10/5.12.10/msvc2017")
-find_package (Qt5 COMPONENTS Widgets WinExtras Network LinguistTools REQUIRED)
-
+if (WIN32)
+  set (ENV{CMAKE_PREFIX_PATH} "c:/Qt/Qt5.12.10/5.12.10/msvc2017")
+  find_package (Qt5 COMPONENTS Widgets WinExtras Network LinguistTools REQUIRED)
+else ()
+  find_package (Qt5 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(X11 x11 xcb REQUIRED)
+endif ()
 set (CMAKE_AUTOUIC ON)
 set (CMAKE_AUTOMOC ON)
 set (CMAKE_AUTORCC ON)
@@ -49,7 +54,9 @@ endif ()
 
 ##################################################
 # Python
-set (ENV{Python_ROOT_DIR} "C:/Program Files (x86)/Python39-32")
+if (WIN32)
+  set (ENV{Python_ROOT_DIR} "C:/Program Files (x86)/Python39-32")
+endif ()
 find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
 message ("Python_FOUND: ${Python_FOUND}")
@@ -124,11 +131,18 @@ target_sources (Launchy
   PRIVATE ${SOURCES_SINGLEAPP}
   PRIVATE ${SOURCES_HOTKEY})
 
+if (WIN32)
 target_link_libraries (Launchy
   LaunchyLib PluginPy
   QSingleApplication QHotKey
   userenv netapi32
   Qt5::Widgets Qt5::WinExtras Qt5::Network)
+else ()
+target_link_libraries (Launchy
+  LaunchyLib PluginPy
+  QSingleApplication QHotKey
+  Qt5::Widgets Qt5::X11Extras Qt5::Network)
+endif ()
 
 ##################################################
 # LaunchyLib
@@ -220,17 +234,27 @@ target_link_libraries (QSingleApplication
 add_library (QHotKey STATIC)
 
 file (GLOB SOURCES_HOTKEY
-  ${DEPS_DIR}/QHotKey/*.h
-  ${DEPS_DIR}/QHotKey/QHotKey.cpp
-  ${DEPS_DIR}/QHotKey/QHotKeyP.cpp
-  ${DEPS_DIR}/QHotKey/QHotKeyWin.cpp)
+  ${DEPS_DIR}/QHotkey/*.h
+  ${DEPS_DIR}/QHotkey/QHotkey.cpp
+  ${DEPS_DIR}/QHotkey/QHotkeyP.cpp)
+if (WIN32)
+  list (APPEND SOURCES_HOTKEY ${DEPS_DIR}/QHotkey/QHotkeyWin.cpp)
+else ()
+  list (APPEND SOURCES_HOTKEY ${DEPS_DIR}/QHotkey/QHotkeyX11.cpp)
+endif ()
 
 target_sources (QHotKey
   PRIVATE ${SOURCES_HOTKEY})
 
+if (WIN32)
 target_link_libraries (QHotKey
   PUBLIC Qt5::Core
   PRIVATE Qt5::Widgets)
+else ()
+target_link_libraries (QHotKey
+  PUBLIC Qt5::Core Qt5::X11Extras
+  PRIVATE Qt5::Widgets X11 xcb)
+endif ()
 
 ##################################################
 # plugin: Runner
@@ -271,6 +295,7 @@ add_custom_command (TARGET Plugin.Runner POST_BUILD
   ${RESOURCES_RUNNER} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Runner)
 
 ##################################################
+if (WIN32)
 # plugin: Tasky
 add_library (Plugin.Tasky MODULE)
 
@@ -307,8 +332,9 @@ file (GLOB RESOURCES_TASKY
 add_custom_command (TARGET Plugin.Tasky POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${RESOURCES_TASKY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Tasky)
-
+endif ()
 ##################################################
+if (WIN32)
 # plugin: UWPApp
 add_library (Plugin.UWPApp MODULE)
 
@@ -339,7 +365,7 @@ target_link_libraries (Plugin.UWPApp
 set_target_properties (Plugin.UWPApp PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/UWPApp"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/UWPApp")
-
+endif ()
 ##################################################
 # plugin: Verby
 add_library (Plugin.Verby MODULE)

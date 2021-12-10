@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "globals.h"
+#include "Globals.h"
 
 const char* RUNNER_VERSION = "Runner/version";
 const char* RUNNER_COMMANDS = "Runner/commands";

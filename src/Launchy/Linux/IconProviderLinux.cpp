@@ -1,5 +1,6 @@
 
 #include "IconProviderLinux.h"
+#include <QDir>
 #include <QPixmap>
 #include <QIcon>
 #include <QDebug>

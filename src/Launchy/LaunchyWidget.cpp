@@ -36,7 +36,7 @@
 #include <QInputMethodEvent>
 #include <QMouseEvent>
 
-#include "QHotkey/QHotkey.h"
+#include "QHotkey/QHotkeyP.h"
 
 #include "LaunchyLib/PluginInterface.h"
 #include "LaunchyLib/PluginMsg.h"
