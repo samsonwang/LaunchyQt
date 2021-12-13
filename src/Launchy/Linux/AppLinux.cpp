@@ -83,11 +83,11 @@ QHash<QString, QList<QString> > AppLinux::getDirectories() {
 
     out["skins"] += qApp->applicationDirPath() + "/skins";
     out["skins"] += QDir::homePath() + "/.launchy/skins";
-    out["skins"] += SKINS_PATH;
+    out["skins"] += "/usr/share/launchy/skins";
 
     out["plugins"] += qApp->applicationDirPath() + "/plugins";
     out["plugins"] += QDir::homePath() + "/.launchy/plugins";
-    out["plugins"] += PLUGINS_PATH;
+    out["plugins"] += "/usr/lib/launchy/plugins";
 
     out["config"] += QDir::homePath() + "/.launchy";
     out["portableConfig"] += qApp->applicationDirPath();
@@ -98,7 +98,7 @@ QHash<QString, QList<QString> > AppLinux::getDirectories() {
         out["defSkin"] += out["skins"].first() + "/Default";
 
     out["platforms"] += qApp->applicationDirPath();
-    out["platforms"] += PLATFORMS_PATH;
+    out["platforms"] += "/usr/lib/launchy";
 
     return out;
 }

@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "precompiled.h"
+#include "Precompiled.h"
 #include "gui.h"
 #include "ui_dlg.h"
 #include "Runner.h"
-#include "globals.h"
+#include "Globals.h"
 
 
 #define ROW_PADDING 6
