@@ -553,14 +553,16 @@ void OptionDialog::initGeneralWidget() {
 
 #ifdef Q_OS_MAC
     m_metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
-        << QString("Command+Alt") << QString("Command+Shift") << QString("Command+Control");
+        << QString("Command+Alt") << QString("Command+Shift") << QString("Command+Control")
+        << QString("Command+Alt+Shift");
 #else
     m_metaKeys << QString("") << QString("Alt") << QString("Control") << QString("Shift") << QString("Win")
-        << QString("Ctrl+Alt") << QString("Ctrl+Shift") << QString("Ctrl+Win");
+        << QString("Ctrl+Alt") << QString("Ctrl+Shift") << QString("Ctrl+Win")
+        << QString("Ctrl+Alt+Shift");
 #endif
     m_iMetaKeys << Qt::NoModifier << Qt::AltModifier << Qt::ControlModifier << Qt::ShiftModifier << Qt::MetaModifier
         << (Qt::ControlModifier | Qt::AltModifier) << (Qt::ControlModifier | Qt::ShiftModifier)
-        << (Qt::ControlModifier | Qt::MetaModifier);
+        << (Qt::ControlModifier | Qt::MetaModifier) << (Qt::ControlModifier | Qt::AltModifier | Qt::ShiftModifier);
 
     m_actionKeys << QString("Space") << QString("Tab") << QString("Caps Lock") << QString("Backspace")
         << QString("Enter") << QString("Esc") << QString("Insert") << QString("Delete") << QString("Home")
