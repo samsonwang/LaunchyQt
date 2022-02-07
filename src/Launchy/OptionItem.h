@@ -40,6 +40,9 @@ extern const int        OPSTION_ALWAYSCENTER_DEFAULT;
 extern const char*      OPSTION_DRAGMODE;
 extern const bool       OPSTION_DRAGMODE_DEFAULT;
 
+static const char*      OPTION_HIDE_TRAY_ICON = "GenOps/HideTrayIcon";
+static const bool       OPTION_HIDE_TRAY_ICON_DEFAULT = false;
+
 extern const char*      OPTION_APPSTYLE;
 extern const char*      OPTION_APPSTYLE_DEFAULT;
 

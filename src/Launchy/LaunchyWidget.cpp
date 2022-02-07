@@ -148,7 +148,33 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     m_workingAnimation->setObjectName("workingAnimation");
     m_workingAnimation->setGeometry(QRect());
 
-    showTrayIcon();
+    // tray icon
+    if (!m_trayIcon->contextMenu()) {
+        QMenu* trayMenu = new QMenu(this);
+        trayMenu->addAction(m_actShow);
+        trayMenu->addAction(m_actReloadSkin);
+        trayMenu->addAction(m_actRebuild);
+        trayMenu->addSeparator();
+        trayMenu->addAction(m_actOptions);
+        trayMenu->addAction(m_actCheckUpdate);
+        trayMenu->addSeparator();
+        trayMenu->addAction(m_actRestart);
+        trayMenu->addAction(m_actExit);
+        m_trayIcon->setContextMenu(trayMenu);
+    }
+
+    m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
+
+    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+
+    if (g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool()) {
+        hideTrayIcon();
+    }
+    else {
+        showTrayIcon();
+    }
+
 
     connect(m_fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
@@ -314,30 +340,6 @@ bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
 
     return true;
 }
-
-void LaunchyWidget::showTrayIcon() {
-
-    if (!m_trayIcon->contextMenu()) {
-        QMenu* trayMenu = new QMenu(this);
-        trayMenu->addAction(m_actShow);
-        trayMenu->addAction(m_actReloadSkin);
-        trayMenu->addAction(m_actRebuild);
-        trayMenu->addSeparator();
-        trayMenu->addAction(m_actOptions);
-        trayMenu->addAction(m_actCheckUpdate);
-        trayMenu->addSeparator();
-        trayMenu->addAction(m_actRestart);
-        trayMenu->addAction(m_actExit);
-        m_trayIcon->setContextMenu(trayMenu);
-    }
-
-    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
-
-    m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
-    m_trayIcon->show();
-}
-
 
 // Repopulate the alternatives list with the current search results
 // and set its size and position accordingly.
@@ -1085,12 +1087,17 @@ void LaunchyWidget::startRebuildTimer() {
     }
 }
 
+void LaunchyWidget::showTrayIcon() {
+    m_trayIcon->show();
+}
+
+void LaunchyWidget::hideTrayIcon() {
+    m_trayIcon->hide();
+}
 
 void LaunchyWidget::trayNotify(const QString& infoMsg) {
-    if (m_trayIcon) {
-        m_trayIcon->showMessage(tr("Launchy"), infoMsg,
-                                QIcon(":/resources/launchy128.png"));
-    }
+    m_trayIcon->showMessage(tr("Launchy"), infoMsg,
+                            QIcon(":/resources/launchy128.png"));
 }
 
 void LaunchyWidget::onHotkey() {
@@ -1153,8 +1160,8 @@ void LaunchyWidget::reloadSkin() {
 }
 
 void LaunchyWidget::exit() {
-    m_trayIcon->hide();
     m_fader->stop();
+    hideTrayIcon();
     saveSettings();
     qApp->quit();
 }
@@ -1466,7 +1473,7 @@ void LaunchyWidget::createActions() {
         qInfo() << "Performing application relaunch...";
         // restart:
         //qApp->closeAllWindows();
-        m_trayIcon->hide();
+        hideTrayIcon();
         qApp->exit(Restart);
         qInfo() << "Finish application relaunch...";
     });

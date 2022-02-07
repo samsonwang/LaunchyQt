@@ -532,6 +532,7 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genAlwaysTop->setChecked(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
     m_pUi->genHideFocus->setChecked(g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
     m_pUi->genDecorateText->setChecked(g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool());
+    m_pUi->genHideTray->setChecked(g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool());
 
     int center = g_settings->value(OPSTION_ALWAYSCENTER, OPSTION_ALWAYSCENTER_DEFAULT).toInt();
     m_pUi->genHCenter->setChecked((center & 1) != 0);
@@ -667,6 +668,7 @@ bool OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPSTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
     g_settings->setValue(OPSTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
     g_settings->setValue(OPSTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
+    g_settings->setValue(OPTION_HIDE_TRAY_ICON, m_pUi->genHideTray->isChecked());
 
     g_settings->setValue(OPSTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
     g_settings->setValue(OPSTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
@@ -690,6 +692,13 @@ bool OptionDialog::saveGeneralSettings() {
     g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
 
     g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
+
+    if (m_pUi->genHideTray->isChecked()) {
+        g_mainWidget->hideTrayIcon();
+    }
+    else {
+        g_mainWidget->showTrayIcon();
+    }
 
     return true;
 }

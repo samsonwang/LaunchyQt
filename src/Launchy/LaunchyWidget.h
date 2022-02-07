@@ -69,6 +69,9 @@ public:
     void setSkin(const QString& name);
     int getHotkey() const;
     void startRebuildTimer();
+
+    void showTrayIcon();
+    void hideTrayIcon();
     void trayNotify(const QString& infoMsg);
 
 public slots:
@@ -100,7 +103,6 @@ protected:
 
 protected:
     void saveSettings();
-    void showTrayIcon();
     void createActions();
     void applySkin(const QString& name);
     void updateVersion(int oldVersion);
