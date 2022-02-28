@@ -49,7 +49,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="116"/>
         <source>Hide when lose focus</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">フォーカスを失った時に隠す</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="132"/>
@@ -59,62 +59,62 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="156"/>
         <source>Always center</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">常に中央</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="178"/>
         <source>horizontally</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">水平方向</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="197"/>
         <source>vertically</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">垂直方向</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="231"/>
         <source>Only allow dragging whilst Shift is pressed</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Shift 押下中のみドラッグを許可する</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="278"/>
         <source> + </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> + </translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="475"/>
         <source>Suggestion List</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">サジェストリスト</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="514"/>
         <source>Underline matched text</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">一致したテキストに下線</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="547"/>
         <source>Suggestions display</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">サジェスト表示</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="594"/>
         <source>Name and path</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">名前とパス</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="599"/>
         <source>Path only</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">パスのみ</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="604"/>
         <source>Name only</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">名前のみ</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="646"/>
         <source>Auto open delay</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">自動表示の遅延</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="676"/>
@@ -124,7 +124,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="334"/>
         <source>Visual Effects</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">視覚効果</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="352"/>
@@ -144,22 +144,22 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="243"/>
         <source>Hotkey:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ホットキー:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1448"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">更新</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1456"/>
         <source>Check for updates on startup</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">スタートアップ時に更新を確認</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1467"/>
         <source>Delay:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">遅延:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1483"/>
@@ -169,7 +169,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1499"/>
         <source>Every:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">間隔:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1518"/>
@@ -179,47 +179,47 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1539"/>
         <source>Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">プロキシ</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1545"/>
         <source>Proxy type:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">プロキシの種類:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1579"/>
         <source>Server:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">サーバ:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1598"/>
         <source>:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1626"/>
         <source>Proxy server requires password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">プロキシサーバがパスワードを要求</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1633"/>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ユーザ名:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1667"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">パスワード:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1714"/>
         <source>Check for updates</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">更新を確認</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1737"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">システム</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1758"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1766"/>
         <source>Auto rescan catalog every</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">カタログの自動再スキャン間隔</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1818"/>
@@ -239,12 +239,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1800"/>
         <source> min</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> 分</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1825"/>
         <source>Show network in browse mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ブラウズ・モードでネットワークも表示する</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1832"/>
@@ -254,22 +254,22 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1844"/>
         <source>Logging level</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ログレベル</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1877"/>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">オフ</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1882"/>
         <source>Debug</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">デバッグ</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1887"/>
         <source>Normal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ノーマル</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="871"/>
@@ -279,27 +279,27 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="698"/>
         <source>Simultaneously visible items</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">同時に見える項目</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="736"/>
         <source>Max number of items</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">項目の最大数</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="774"/>
         <source>Max number of history</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">履歴の最大数</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="808"/>
         <source>Style</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">スタイル</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="816"/>
         <source>Application Style</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">アプリケーションのスタイル</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="892"/>
@@ -386,12 +386,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1899"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">言語</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1967"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Launchy について</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2194"/>
@@ -418,7 +418,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2157"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ホームページ: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;フィードバック: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;開発: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2137"/>
@@ -428,12 +428,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2238"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">OK</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2245"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">キャンセル</translation>
     </message>
     <message>
         <source>About Launchy</source>
@@ -488,58 +488,59 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="144"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="951"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">閉じる</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="173"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ホットキー %1 は既に使われています。別のホットキーを選択してください。</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="311"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="953"/>
         <source>Launchy %1
 press %2 to activate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Launchy %1
+%2 を押下でアクティブ化</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1188"/>
         <source>Launchy is already running!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Launchy は既に実行中です!</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1464"/>
         <source>Relaunch</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">再起動</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="942"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1441"/>
         <source>Show Launchy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Launchy を表示</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="943"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1444"/>
         <source>Reload skin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">スキンを再読み込み</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="944"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1449"/>
         <source>Rebuild catalog</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">カタログを再構築</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="946"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1459"/>
         <source>Check for updates</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">更新を確認</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="947"/>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">再起動</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="948"/>
@@ -559,7 +560,7 @@ press %2 to activate</source>
         <location filename="../src/Launchy/OptionDialog.cpp" line="414"/>
         <source>Index has %n item(s)</source>
         <translation type="unfinished">
-            <numerusform></numerusform>
+            <numerusform>%n 項目のインデックス</numerusform>
         </translation>
     </message>
     <message>
@@ -590,35 +591,35 @@ press %2 to activate</source>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="653"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ホットキー %1 は既に使われています。別のホットキーを選択してください。</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Launchy/OptionDialog.cpp" line="769"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation type="unfinished">
-            <numerusform></numerusform>
+            <numerusform>%n 項目のインデックス</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="839"/>
         <source>No Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">プロキシなし</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="840"/>
         <source>System Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">システムのプロキシ</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="841"/>
         <source>HTTP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">HTTP</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="842"/>
         <source>SOCKS5</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SOCKS5</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="978"/>
@@ -635,7 +636,9 @@ press %2 to activate</source>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 モードへの変換に失敗しました。
+ディレクトリを確認してください:
+ %2</translation>
     </message>
 </context>
 <context>
@@ -643,12 +646,12 @@ Please check directory:
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="142"/>
         <source>A new version is available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">新しいバージョンが利用可能です。</translation>
     </message>
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="146"/>
         <source>No update is available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">更新はありません。</translation>
     </message>
 </context>
 </TS>
