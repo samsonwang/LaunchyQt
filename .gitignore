@@ -53,7 +53,7 @@ x64
 .vs
 GeneratedFiles
 [P|p]recompiled.h.cpp
-
+*.aps
 
 # Python
 __pycache__
