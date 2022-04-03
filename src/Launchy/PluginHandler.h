@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QHash>
+
+#include "LaunchyLib/PluginInterface.h"
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/InputData.h"
 #include "LaunchyLib/PluginInfo.h"
@@ -32,16 +34,22 @@ class PluginHandler {
 public:
     static PluginHandler& instance();
 
+public:
     void loadPlugins();
+
     void showLaunchy();
     void hideLaunchy();
+
     void getLabels(QList<InputData>* inputData);
     void getResults(QList<InputData>* inputData, QList<CatItem>* results);
     void getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep);
+
     int launchItem(QList<InputData>* inputData, CatItem* item);
-    QWidget* doDialog(QWidget* parent, uint pluginId);
-    void endDialog(uint pluginId, bool accept);
-    const QHash<uint, PluginInfo>& getPlugins() const;
+
+    QWidget* doDialog(QWidget* parent, const QString& name);
+    void endDialog(const QString& name, bool accept);
+
+    const QHash<QString, PluginInfo>& getPlugins() const;
 
 private:
     // load plugin written in python
@@ -54,8 +62,8 @@ private:
     Q_DISABLE_COPY(PluginHandler)
 
 private:
-    QHash<uint, PluginInfo> m_plugins;
-    QHash<uint, bool> m_loadable;
+    QHash<QString, PluginInfo> m_plugins;
+    QHash<QString, bool> m_loadable;
 };
 
 // This interface is used to notify clients when a step in a long running process occurs

@@ -55,10 +55,10 @@ public:
 
     \param i The plugin id of the plugin to execute the query's best match from the catalog
     */
-    void setID(unsigned int i);
+    void setPlugin(const std::string& plugin);
 
     /** Returns the current owner id of the query */
-    unsigned int getID() const;
+    std::string getPlugin() const;
 
     /** Get the text of the query segment */
     std::string getText() const;
@@ -72,10 +72,8 @@ public:
     /** Get a pointer to the best catalog match for this segment of the query */
     CatItem getTopResult();
 
-
-
 private:
     launchy::InputData* m_data;
 };
 
-}
+} // namespace exportpy

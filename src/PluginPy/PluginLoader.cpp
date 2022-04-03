@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PluginLoader.h"
-
 // qt defines "slots" macro
 // python.h must include before qt header files
 #include <Python.h>
+
+#include "PluginLoader.h"
 
 #include <QHash>
 #include <QDebug>
@@ -51,7 +51,7 @@ launchy::PluginInterface* PluginLoader::instance() {
 bool PluginLoader::unload() {
     bool ret = false;
     try {
-        PluginMgr::instance().unloadPlugin(qHash(m_pluginName));
+        PluginMgr::instance().unloadPlugin(m_pluginName);
         m_interface = nullptr;
     }
     catch (const py::error_already_set& e) {

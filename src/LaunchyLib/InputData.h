@@ -21,8 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QList>
 #include <QSet>
+
 #include "LaunchyLib.h"
 #include "CatalogItem.h"
+
 class QDataStream;
 
 /** InputData shows one segment (between tabs) of a user's query
@@ -33,11 +35,13 @@ E.g.  query = "google <tab> this is my search" will have 2 InputData segments
 in the list.  One for "google" and one for "this is my search"
 */
 namespace launchy {
+
 class LAUNCHY_EXPORT InputData {
 public:
     InputData();
     InputData(const QString& str);
 
+public:
     /** Get the labels applied to this query segment */
     const QSet<uint>& getLabels() const;
     /** Apply a label to this query segment */
@@ -48,18 +52,15 @@ public:
     /** Check if it has the given label applied to it */
     bool hasLabel(uint l);
 
-    /** Set the id of this query
-
+    /** Set plugin name of this query
     This can be used to override the owner of the selected catalog item, so that
     no matter what item is chosen from the catalog, the given plugin will be the one
     to execute it.
-
-    \param i The plugin id of the plugin to execute the query's best match from the catalog
+    \param i The name of the plugin to execute the query's best match from the catalog
     */
-    void setID(uint i);
-
-    /** Returns the current owner id of the query */
-    uint getID() const;
+    void setPlugin(const QString& plugin);
+    /** Returns the current owner of the query */
+    const QString& getPlugin() const;
 
     /** Get the text of the query segment */
     const QString& getText() const;
@@ -87,7 +88,7 @@ private:
     QSet<uint> m_labels;
     /** A pointer to the best catalog match for this segment of the query */
     CatItem m_topResult;
-    /** The plugin id of this query's owner */
-    uint m_id;
+    /** The plugin name of this query's owner */
+    QString m_pluginName;
 };
 }

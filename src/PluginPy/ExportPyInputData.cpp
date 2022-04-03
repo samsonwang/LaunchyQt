@@ -41,12 +41,12 @@ bool InputData::hasLabel(unsigned int l) {
     return m_data->hasLabel(l);
 }
 
-void InputData::setID(unsigned int i) {
-    m_data->setID(i);
+void InputData::setPlugin(const std::string& plugin) {
+    m_data->setPlugin(QString::fromStdString(plugin));
 }
 
-unsigned int InputData::getID() const {
-    return m_data->getID();
+std::string InputData::getPlugin() const {
+    return m_data->getPlugin().toStdString();
 }
 
 std::string InputData::getText() const {
@@ -72,12 +72,12 @@ void ExportInputData(const py::module& m) {
         .def("setLabel", &exportpy::InputData::setLabel)
         .def("removeLabel", &exportpy::InputData::removeLabel)
         .def("hasLabel", &exportpy::InputData::hasLabel)
-        .def("setID", &exportpy::InputData::setID)
-        .def("getID", &exportpy::InputData::getID)
+        .def("setPlugin", &exportpy::InputData::setPlugin)
+        .def("getPlugin", &exportpy::InputData::getPlugin)
         .def("getText", &exportpy::InputData::getText)
         .def("setText", &exportpy::InputData::setText)
         .def("getTopResult", &exportpy::InputData::getTopResult);
 
 }
 
-}
+} // namespace exportpy

@@ -48,7 +48,7 @@ public:
     */
     CatItem(const std::string& full,
             const std::string& shortN,
-            unsigned int pluginId,
+            const std::string& plugin,
             const std::string& iconPath);
 
     const launchy::CatItem& getData() const;

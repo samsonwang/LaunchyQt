@@ -27,18 +27,19 @@ class PluginInterface;
 // This structure is used by plugins such as PyLaunchy, so it must not be extended
 // with virtual methods or additional data members
 struct LAUNCHY_EXPORT PluginInfo {
-    uint id;
     QString name;
     QString path;
-    PluginInterface* obj;
     bool loaded;
+    PluginInterface* obj;
 
+public:
     PluginInfo();
     ~PluginInfo();
 
+public:
     bool isValid() const;
 
-    int sendMsg(int msgId, void* wParam = nullptr, void* lParam = nullptr);
+    bool sendMsg(int msgId, void* wParam = nullptr, void* lParam = nullptr);
 };
 
 } // namespace launchy

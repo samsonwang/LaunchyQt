@@ -26,10 +26,10 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
 if (WIN32)
-  set (ENV{CMAKE_PREFIX_PATH} "c:/Qt/Qt5.12.10/5.12.10/msvc2017")
-  find_package (Qt5 COMPONENTS Widgets WinExtras Network LinguistTools REQUIRED)
+  set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.2.3/msvc2019_64")
+  find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
 else ()
-  find_package (Qt5 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)
+  find_package (Qt6 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(X11 x11 xcb REQUIRED)
 endif ()
@@ -55,7 +55,7 @@ endif ()
 ##################################################
 # Python
 if (WIN32)
-  set (ENV{Python_ROOT_DIR} "C:/Program Files (x86)/Python39-32")
+  set (ENV{Python_ROOT_DIR} "C:/Program Files/Python310")
 endif ()
 find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
@@ -136,12 +136,12 @@ target_link_libraries (Launchy
   LaunchyLib PluginPy
   QSingleApplication QHotKey
   userenv netapi32
-  Qt5::Widgets Qt5::WinExtras Qt5::Network)
+  Qt6::Widgets Qt6::Network)
 else ()
 target_link_libraries (Launchy
   LaunchyLib PluginPy
   QSingleApplication QHotKey
-  Qt5::Widgets Qt5::X11Extras Qt5::Network)
+  Qt6::Widgets Qt6::X11Extras Qt6::Network)
 endif ()
 
 ##################################################
@@ -160,7 +160,7 @@ target_sources (LaunchyLib
   PRIVATE ${SOURCES_LAUNCHYLIB})
 
 target_link_libraries (LaunchyLib
-  PRIVATE Qt5::Core Qt5::Widgets)
+  PRIVATE Qt6::Core Qt6::Widgets)
 
 ##################################################
 # PluginPy
@@ -178,7 +178,7 @@ target_include_directories (PluginPy
 
 target_link_libraries (PluginPy
   PUBLIC LaunchyLib
-  PRIVATE Qt5::Core Qt5::Widgets
+  PRIVATE Qt6::Core Qt6::Widgets
   PRIVATE ${Python_LIBRARIES})
 
 add_custom_command (TARGET PluginPy POST_BUILD
@@ -196,7 +196,7 @@ add_custom_target (PluginPy.Util
 file (GLOB TS_FILES_LAUNCHY
   ${TRANS_DIR}/*.ts)
 
-qt5_create_translation (QM_FILES_LAUNCHY
+qt6_create_translation (QM_FILES_LAUNCHY
   ${SRC_DIR}/Launchy
   ${SRC_DIR}/LaunchyLib
   ${SRC_DIR}/PluginPy
@@ -204,7 +204,7 @@ qt5_create_translation (QM_FILES_LAUNCHY
 
 set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
   OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
-qt5_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
+qt6_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
 
 add_custom_target (LaunchyQM
   DEPENDS ${QM_FILES_LAUNCHY})
@@ -227,7 +227,7 @@ target_sources (QSingleApplication
   PRIVATE ${SOURCES_SINGLEAPP})
 
 target_link_libraries (QSingleApplication
-  PUBLIC Qt5::Core Qt5::Widgets Qt5::Network)
+  PUBLIC Qt6::Core Qt6::Widgets Qt6::Network)
 
 ##################################################
 # QHotKey
@@ -248,12 +248,12 @@ target_sources (QHotKey
 
 if (WIN32)
 target_link_libraries (QHotKey
-  PUBLIC Qt5::Core
-  PRIVATE Qt5::Widgets)
+  PUBLIC Qt6::Core
+  PRIVATE Qt6::Widgets)
 else ()
 target_link_libraries (QHotKey
-  PUBLIC Qt5::Core Qt5::X11Extras
-  PRIVATE Qt5::Widgets X11 xcb)
+  PUBLIC Qt6::Core Qt6::X11Extras
+  PRIVATE Qt6::Widgets X11 xcb)
 endif ()
 
 ##################################################
@@ -279,8 +279,8 @@ target_sources (Plugin.Runner
   PRIVATE ${SOURCES_RUNNER})
 
 target_link_libraries (Plugin.Runner
-  PUBLIC Qt5::Core
-  PRIVATE Qt5::Widgets
+  PUBLIC Qt6::Core
+  PRIVATE Qt6::Widgets
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Runner PROPERTIES
@@ -318,8 +318,8 @@ target_sources (Plugin.Tasky
   PRIVATE ${SOURCES_TASKY})
 
 target_link_libraries (Plugin.Tasky
-  PUBLIC Qt5::Core
-  PRIVATE Qt5::Widgets Qt5::WinExtras
+  PUBLIC Qt6::Core
+  PRIVATE Qt6::Widgets
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Tasky PROPERTIES
@@ -357,8 +357,8 @@ target_sources (Plugin.UWPApp
   PRIVATE ${SOURCES_UWPAPP})
 
 target_link_libraries (Plugin.UWPApp
-  PUBLIC Qt5::Core
-  PRIVATE Qt5::Widgets
+  PUBLIC Qt6::Core
+  PRIVATE Qt6::Widgets
   PRIVATE LaunchyLib
   PRIVATE user32 shell32 propsys)
 
@@ -389,8 +389,8 @@ target_sources (Plugin.Verby
   PRIVATE ${SOURCES_VERBY})
 
 target_link_libraries (Plugin.Verby
-  PUBLIC Qt5::Core
-  PRIVATE Qt5::Widgets
+  PUBLIC Qt6::Core
+  PRIVATE Qt6::Widgets
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Verby PROPERTIES

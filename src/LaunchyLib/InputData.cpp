@@ -18,9 +18,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "InputData.h"
+
 #include <QDataStream>
 
 namespace launchy {
+
+InputData::InputData() {
+}
+
+InputData::InputData(const QString& str)
+    : m_text(str) {
+}
+
 const QSet<uint>& InputData::getLabels() const {
     return m_labels;
 }
@@ -41,12 +50,12 @@ bool InputData::hasLabel(uint l) {
     return m_labels.contains(l);
 }
 
-void InputData::setID(uint i) {
-    m_id = i;
+void InputData::setPlugin(const QString& plugin) {
+    m_pluginName = plugin;
 }
 
-uint InputData::getID() const {
-    return m_id;
+const QString& InputData::getPlugin() const {
+    return m_pluginName;
 }
 
 const QString& InputData::getText() const {
@@ -73,20 +82,11 @@ void InputData::setTopResult(const CatItem& sr) {
     m_topResult = sr;
 }
 
-InputData::InputData()
-    : m_id(0) {
-}
-
-InputData::InputData(const QString& str)
-    : m_text(str),
-    m_id(0) {
-}
-
 QDataStream& operator<<(QDataStream& out, const InputData& inputData) {
     out << inputData.m_text;
     out << inputData.m_labels;
     out << inputData.m_topResult;
-    out << inputData.m_id;
+    out << inputData.m_pluginName;
     return out;
 }
 
@@ -94,7 +94,8 @@ QDataStream& operator>>(QDataStream& in, InputData& inputData) {
     in >> inputData.m_text;
     in >> inputData.m_labels;
     in >> inputData.m_topResult;
-    in >> inputData.m_id;
+    in >> inputData.m_pluginName;
     return in;
 }
-}
+
+} // namespace launchy

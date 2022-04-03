@@ -42,8 +42,6 @@ PYBIND11_MODULE(launchy, m) {
     // Export our basic testing function
     m.def("add_five", &add_five, "function which increase number by 5");
 
-    m.def("hash", &exportpy::hash, "hash function from qt");
-
     m.def("getAppPath", &exportpy::getAppPath,
           "get launchy application path",
           py::arg("toNative") = true);
@@ -67,10 +65,6 @@ PYBIND11_MODULE(launchy, m) {
 }
 
 namespace exportpy {
-
-unsigned int hash(const std::string& str) {
-    return qHash(QString::fromStdString(str));
-}
 
 std::string getAppPath(bool toNative) {
     QString path = qApp->applicationDirPath();

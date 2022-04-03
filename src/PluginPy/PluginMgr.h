@@ -40,7 +40,7 @@ public:
     static PluginMgr& instance();
 
     launchy::PluginInterface* loadPlugin(const QString& pluginName, const QString& pluginPath);
-    bool unloadPlugin(uint pluginId);
+    bool unloadPlugin(const QString& pluginName);
 
     void initSettings(QSettings* setting);
 
@@ -54,8 +54,8 @@ private:
 
 private:
     QSettings* m_pSettings;
-    QHash<uint, py::object> m_pluginObject;
-    QHash<uint, launchy::PluginInterface*> m_pluginInterface;
+    QHash<QString, py::object> m_pluginObject;
+    QHash<QString, launchy::PluginInterface*> m_pluginInterface;
 };
 
 } // namespace pluginpy

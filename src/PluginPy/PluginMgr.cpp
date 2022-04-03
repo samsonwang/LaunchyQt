@@ -42,23 +42,22 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     qDebug() << "pluginpy::PluginMgr::loadPlugin, name:" << pluginName
         << "path:" << pluginPath;
 
-    uint pluginId = qHash(pluginName);
-    if (m_pluginInterface.contains(pluginId)) {
+    if (m_pluginInterface.contains(pluginName)) {
         qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin alread loaded, name:" << pluginName
             << "path:" << pluginPath;
-        return m_pluginInterface[pluginId];
+        return m_pluginInterface[pluginName];
     }
 
-    if (!m_pluginObject.contains(pluginId)) {
+    if (!m_pluginObject.contains(pluginName)) {
         py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
         pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pluginPath)));
         py::object module = py::module::import(qUtf8Printable(pluginName));
         py::object pluginClass = module.attr("getPlugin")();
 
-        m_pluginObject.insert(pluginId, pluginClass());
+        m_pluginObject.insert(pluginName, pluginClass());
     }
 
-    py::object& pluginObject = m_pluginObject[pluginId];
+    py::object& pluginObject = m_pluginObject[pluginName];
 
     if (py::isinstance<exportpy::Plugin>(pluginObject)) {
         qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin load succeed";
@@ -68,7 +67,7 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
             qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin name:" << name.c_str();
             launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr);
             // store this pointer in manager
-            m_pluginInterface.insert(pluginId, intf);
+            m_pluginInterface.insert(pluginName, intf);
             return intf;
         }
     }
@@ -76,17 +75,17 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     return nullptr;
 }
 
-bool PluginMgr::unloadPlugin(uint pluginId) {
-    qDebug() << "pluginpy::PluginMgr::unloadPlugin, id:" << pluginId;
+bool PluginMgr::unloadPlugin(const QString& pluginName) {
+    qDebug() << "pluginpy::PluginMgr::unloadPlugin, name:" << pluginName;
 
-    launchy::PluginInterface* plugin = m_pluginInterface[pluginId];
+    launchy::PluginInterface* plugin = m_pluginInterface[pluginName];
     if (plugin) {
         delete plugin;
         plugin = nullptr;
     }
 
-    m_pluginInterface.remove(pluginId);
-    m_pluginObject.remove(pluginId);
+    m_pluginInterface.remove(pluginName);
+    m_pluginObject.remove(pluginName);
 
     return true;
 }
@@ -126,7 +125,6 @@ void PluginMgr::initSettings(QSettings* setting) {
 void PluginMgr::registerPlugin(py::object pluginClass) {
     qDebug() << "pluginpy::PluginMgr::registerPlugin, register plugin called";
     //m_pluginClass.push_back(pluginClass);
-
 }
 
 PluginMgr::PluginMgr()
@@ -151,10 +149,10 @@ PluginMgr::PluginMgr()
 }
 
 PluginMgr::~PluginMgr() {
-    QHashIterator<uint, launchy::PluginInterface*> it1(m_pluginInterface);
-    while (it1.hasNext()) {
-        it1.next();
-        delete it1.value();
+    QHashIterator<QString, launchy::PluginInterface*> it(m_pluginInterface);
+    while (it.hasNext()) {
+        it.next();
+        delete it.value();
     }
     m_pSettings = nullptr;
     m_pluginInterface.clear();

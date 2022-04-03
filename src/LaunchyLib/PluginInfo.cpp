@@ -26,9 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace launchy {
 
 PluginInfo::PluginInfo()
-    : id(0),
-      obj(nullptr),
-      loaded(false) {
+    : loaded(false),
+      obj(nullptr) {
 }
 
 PluginInfo::~PluginInfo() {
@@ -36,10 +35,10 @@ PluginInfo::~PluginInfo() {
 }
 
 bool PluginInfo::isValid() const {
-    return obj && !name.isNull() && id > 0;
+    return obj && !name.isEmpty();
 }
 
-int PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
+bool PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
     // This should have some kind of exception guard to prevent
     // Launchy from crashing when a plugin is misbehaving.
     // This would consist of a try/catch block to handle C++ exceptions
@@ -52,7 +51,7 @@ int PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
     catch (const std::exception& e) {
         qWarning() << "PluginInfo::sendMsg, exception catched:" << e.what();
     }
-    return ret;
+    return ret != 0;
 }
 
 } // namespace launchy

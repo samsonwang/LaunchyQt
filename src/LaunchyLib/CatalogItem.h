@@ -31,30 +31,31 @@ namespace launchy {
 
 class LAUNCHY_EXPORT CatItem {
 public:
-    enum SearchNameType {
-        LOWER = 0,
-        TRANS,
-        CAPACITY
-    };
-
-public:
     /** The full path of the indexed item */
     QString fullPath;
+
     /** The abbreviated name of the indexed item
         It is a name without path and suffix */
     QString shortName;
+
     /** The transformed name of the indexed item,
-        searchName[LOWER] is the lower form of shortName
-        searchName[TRANS] is prepared to search and match non-English letters */
-    QString searchName[CAPACITY];
+        searchName is the lower form of shortName
+        searchNameTrans is prepared to search and match non-English letters */
+    QString searchName;
+    QString searchNameTrans;
+
     /** A path to an icon for the item */
     QString iconPath;
+
     /** How many times this item has been called by the user */
     int usage;
-    /** This is unused, and meant for plugin writers and future extensions */
+
+    /** The plugin name of the creator of this CatItem */
+    QString pluginName;
+
+    /** This is unused, and meant for plugin writers and future extensions
+        !!! consider remove in the future*/
     void* data;
-    /** The plugin id of the creator of this CatItem */
-    uint pluginId;
 
 public:
     CatItem();
@@ -63,17 +64,19 @@ public:
 
     CatItem(const QString& full, const QString& shortN);
 
-    CatItem(const QString& full, const QString& shortN, uint id);
+    CatItem(const QString& full, const QString& shortN, const QString& plugin);
 
     /** This is the constructor most used by plugins
     \param full The full path of the file to execute
     \param shortN The abbreviated name for the entry
     \param id Your plugin id (0 for Launchy itself)
     \param iconPath The path to the icon for this entry
-    \warning It is usually a good idea to append ".your_plugin_name" to the end of the full parameter
-    so that there are not multiple items in the index with the same full path.
+    \warning It is usually a good idea to append ".your_plugin_name" to the end of
+             the full parameter so that there are not multiple items in the index
+             with the same full path.
     */
-    CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath);
+    CatItem(const QString& full, const QString& shortN,
+            const QString& plugin, const QString& iconPath);
 
 public:
     bool operator==(const CatItem& other) const;

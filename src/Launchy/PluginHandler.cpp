@@ -37,7 +37,38 @@ PluginHandler& PluginHandler::instance() {
     return s_obj;
 }
 
-PluginHandler::PluginHandler() {
+void PluginHandler::loadPlugins() {
+    // Get the list of loadable plugins
+    m_loadable.clear();
+    int size = g_settings->beginReadArray("plugins");
+    for (int i = 0; i < size; ++i) {
+        g_settings->setArrayIndex(i);
+        QString name = g_settings->value("name").toString();
+        bool toLoad = g_settings->value("load").toBool();
+        m_loadable[name] = toLoad;
+    }
+    g_settings->endArray();
+
+    // init QSetting for python plugin
+    pluginpy::PluginLoader::initSettings(g_settings.data());
+
+    foreach(QString directory, SettingsManager::instance().directory("plugins")) {
+        // Load up the plugins in the plugins/ directory
+        QDir pluginsDir(directory);
+        foreach(QString pluginName, pluginsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            QString pluginLibDir = QDir::cleanPath(directory + "/" + pluginName);
+            if (QLibrary(pluginLibDir + "/" + pluginName).load()) {
+                loadCppPlugin(pluginName, pluginLibDir);
+            }
+            else if (QFile::exists(pluginLibDir + "/" + pluginName + ".py")) {
+                loadPythonPlugin(pluginName, pluginLibDir);
+            }
+            else {
+                qWarning() << "PluginHandler::loadPlugins, unknown plugin type, plugin name: "
+                    << pluginName << ", dir: " << pluginLibDir;
+            }
+        }
+    }
 }
 
 void PluginHandler::showLaunchy() {
@@ -91,64 +122,30 @@ void PluginHandler::getCatalogs(Catalog* pCatalog, INotifyProgressStep* progress
 }
 
 int PluginHandler::launchItem(QList<InputData>* inputData, CatItem* result) {
-    if (!m_plugins.contains(result->pluginId) || !m_plugins[result->pluginId].loaded) {
+    if (!m_plugins.contains(result->pluginName) || !m_plugins[result->pluginName].loaded) {
         return MSG_CONTROL_LAUNCHITEM;
     }
-    return m_plugins[result->pluginId].sendMsg(MSG_LAUNCH_ITEM, inputData, result);
+    return m_plugins[result->pluginName].sendMsg(MSG_LAUNCH_ITEM, inputData, result);
 }
 
-QWidget* PluginHandler::doDialog(QWidget* parent, uint id) {
-    if (!m_plugins.contains(id) || !m_plugins[id].loaded) {
+QWidget* PluginHandler::doDialog(QWidget* parent, const QString& name) {
+    if (!m_plugins.contains(name) || !m_plugins[name].loaded) {
         return nullptr;
     }
     QWidget* newBox = nullptr;
-    m_plugins[id].sendMsg(MSG_DO_DIALOG, parent, &newBox);
+    m_plugins[name].sendMsg(MSG_DO_DIALOG, parent, &newBox);
     return newBox;
 }
 
-void PluginHandler::endDialog(uint id, bool accept) {
-    if (!m_plugins.contains(id) || !m_plugins[id].loaded) {
+void PluginHandler::endDialog(const QString& name, bool accept) {
+    if (!m_plugins.contains(name) || !m_plugins[name].loaded) {
         return;
     }
-    m_plugins[id].sendMsg(MSG_END_DIALOG, (void*)accept);
+    m_plugins[name].sendMsg(MSG_END_DIALOG, (void*)accept);
 }
 
-const QHash<uint, launchy::PluginInfo> & PluginHandler::getPlugins() const {
+const QHash<QString, launchy::PluginInfo> & PluginHandler::getPlugins() const {
     return m_plugins;
-}
-
-void PluginHandler::loadPlugins() {
-    // Get the list of loadable plugins
-    m_loadable.clear();
-    int size = g_settings->beginReadArray("plugins");
-    for (int i = 0; i < size; ++i) {
-        g_settings->setArrayIndex(i);
-        uint id = g_settings->value("id").toUInt();
-        bool toLoad = g_settings->value("load").toBool();
-        m_loadable[id] = toLoad;
-    }
-    g_settings->endArray();
-
-    // init QSetting for python plugin
-    pluginpy::PluginLoader::initSettings(g_settings.data());
-
-    foreach(QString directory, SettingsManager::instance().directory("plugins")) {
-        // Load up the plugins in the plugins/ directory
-        QDir pluginsDir(directory);
-        foreach(QString pluginName, pluginsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-            QString pluginLibDir = QDir::cleanPath(directory + "/" + pluginName);
-            if (QLibrary(pluginLibDir + "/" + pluginName).load()) {
-                loadCppPlugin(pluginName, pluginLibDir);
-            }
-            else if (QFile::exists(pluginLibDir + "/" + pluginName + ".py")) {
-                loadPythonPlugin(pluginName, pluginLibDir);
-            }
-            else {
-                qWarning() << "PluginHandler::loadPlugins, unknown plugin type, plugin name: "
-                    << pluginName << ", dir: " << pluginLibDir;
-            }
-        }
-    }
 }
 
 void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& pluginPath) {
@@ -166,24 +163,31 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     qDebug() << "PluginHandler::loadPythonPlugin, plugin loaded:" << pluginFullPath;
 
     PluginInfo info;
-    info.obj = plugin;
     info.path = pluginFullPath;
-    bool handled = (info.sendMsg(MSG_GET_ID, &info.id) != 0);
-    info.sendMsg(MSG_GET_NAME, &info.name);
+    info.loaded = false;
+    info.obj = plugin;
 
-    // configured not to load
-    if (handled && (!m_loadable.contains(info.id) || m_loadable[info.id])) {
+    if (!info.sendMsg(MSG_GET_NAME, &info.name)) {
+        qWarning() << "PluginHandler::loadPythonPlugin, fail to get plugin name,"
+            << " plugin path:" << pluginFullPath;
+    }
+    else if (info.name != pluginName) {
+        qWarning() << "PluginHandler::loadPythonPlugin, plugin name not match:"
+            << pluginName << ", " << info.name;
+    }
+    else if (!m_loadable.contains(pluginName) || m_loadable[pluginName]) {
+        qDebug() << "PluginHandler::loadPythonPlugin, plugin loaded:" << pluginName;
         info.loaded = true;
         info.sendMsg(MSG_INIT);
-        info.sendMsg(MSG_PATH, const_cast<QString*>(&pluginPath));
+        info.sendMsg(MSG_PATH, &info.path);
     }
     else {
-        // set not load
-        info.loaded = false;
+        qDebug() << "PluginHandler::loadPythonPlugin, plugin configured not to load:"
+            << pluginName;
         loader.unload();
     }
 
-    m_plugins[info.id] = info;
+    m_plugins[pluginName] = info;
 }
 
 void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& pluginPath) {
@@ -192,23 +196,25 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
     qDebug() << "PluginHandler::loadCppPlugin, plugin:" << pluginFullPath;
     PluginInterface* plugin = qobject_cast<PluginInterface*>(loader.instance());
     if (!plugin) {
-        qWarning() << "PluginHandler::loadCppPlugin, "
-            << pluginFullPath << "is not a valid plugin";
+        qWarning() << "PluginHandler::loadCppPlugin, " << pluginFullPath
+            << "is not a valid plugin";
         return;
     }
-    qDebug() << "PluginHandler::loadCppPlugin, plugin loaded:"
-        << pluginFullPath;
+    qDebug() << "PluginHandler::loadCppPlugin, plugin loaded:" << pluginFullPath;
 
     PluginInfo info;
-    info.obj = plugin;
     info.path = pluginFullPath;
-    bool handled = info.sendMsg(MSG_GET_ID, &info.id) != 0;
-    info.sendMsg(MSG_GET_NAME, &info.name);
+    info.loaded = false;
+    info.obj = plugin;
 
-    if (handled && (!m_loadable.contains(info.id) || m_loadable[info.id])) {
+    if (!info.sendMsg(MSG_GET_NAME, &info.name)) {
+        qWarning() << "PluginHandler::loadCppPlugin, fail to get plugin name,"
+            << " plugin path:" << pluginFullPath;
+    }
+    else if (!m_loadable.contains(pluginName) || m_loadable[pluginName]) {
         info.loaded = true;
         info.sendMsg(MSG_INIT);
-        info.sendMsg(MSG_PATH, const_cast<QString*>(&pluginPath));
+        info.sendMsg(MSG_PATH, &info.path);
 
         // Load any of the plugin's plugins of its own
         QList<PluginInfo> additionalPlugins;
@@ -220,24 +226,27 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
             }
 
             bool isPluginLoadable =
-                !m_loadable.contains(pluginInfo.id) || m_loadable[pluginInfo.id];
+                !m_loadable.contains(pluginInfo.name) || m_loadable[pluginInfo.name];
 
             if (isPluginLoadable) {
                 pluginInfo.sendMsg(MSG_INIT);
                 pluginInfo.loaded = true;
             }
             else {
-                pluginInfo.sendMsg(MSG_UNLOAD_PLUGIN, (void*)(int64_t)pluginInfo.id);
+                pluginInfo.sendMsg(MSG_UNLOAD_PLUGIN, &pluginInfo.name);
                 pluginInfo.loaded = false;
             }
-            m_plugins[pluginInfo.id] = pluginInfo;
+            m_plugins[pluginInfo.name] = pluginInfo;
         }
     }
     else {
         info.loaded = false;
         loader.unload();
     }
-    m_plugins[info.id] = info;
+    m_plugins[pluginName] = info;
+}
+
+PluginHandler::PluginHandler() {
 }
 
 } // namespace launchy

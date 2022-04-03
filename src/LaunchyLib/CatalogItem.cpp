@@ -23,18 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UnicodeTable.h"
 
 namespace launchy {
+
 CatItem::CatItem()
     : usage(0),
-      data(NULL),
-      pluginId(0) {
+      data(NULL) {
 
 }
 
 CatItem::CatItem(const QString& full, bool isDir)
     : fullPath(full),
       usage(0),
-      data(NULL),
-      pluginId(0) {
+      data(NULL) {
     int last = fullPath.lastIndexOf("/");
     if (last == -1) {
         shortName = fullPath;
@@ -46,42 +45,42 @@ CatItem::CatItem(const QString& full, bool isDir)
         }
     }
 
-    searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[LOWER]);
+    searchName = shortName.toLower();
+    searchNameTrans = convertSearchName(searchName);
 }
 
 CatItem::CatItem(const QString& full, const QString& shortN)
     : fullPath(full),
       shortName(shortN),
       usage(0),
-      data(NULL),
-      pluginId(0) {
+      data(NULL) {
 
-    searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[LOWER]);
+    searchName = shortName.toLower();
+    searchNameTrans = convertSearchName(searchName);
 }
 
-CatItem::CatItem(const QString& full, const QString& shortN, uint id)
+CatItem::CatItem(const QString& full, const QString& shortN, const QString& plugin)
     : fullPath(full),
       shortName(shortN),
       usage(0),
-      data(NULL),
-      pluginId(id) {
+      pluginName(plugin),
+      data(NULL) {
 
-    searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[LOWER]);
+    searchName = shortName.toLower();
+    searchNameTrans = convertSearchName(searchName);
 }
 
-CatItem::CatItem(const QString& full, const QString& shortN, uint id, const QString& iconPath)
+CatItem::CatItem(const QString& full, const QString& shortN,
+                 const QString& plugin, const QString& iconPath)
     : fullPath(full),
       shortName(shortN),
       iconPath(iconPath),
       usage(0),
-      data(NULL),
-      pluginId(id) {
+      pluginName(plugin),
+      data(NULL) {
 
-    searchName[LOWER] = shortName.toLower();
-    searchName[TRANS] = convertSearchName(searchName[LOWER]);
+    searchName = shortName.toLower();
+    searchNameTrans = convertSearchName(searchName);
 }
 
 bool CatItem::operator!=(const CatItem& other) const {
@@ -95,22 +94,22 @@ bool CatItem::operator==(const CatItem& other) const {
 QDataStream& operator<<(QDataStream& out, const CatItem &item) {
     out << item.fullPath;
     out << item.shortName;
-    out << item.searchName[CatItem::LOWER];
-    out << item.searchName[CatItem::TRANS];
+    out << item.searchName;
+    out << item.searchNameTrans;
     out << item.iconPath;
+    out << item.pluginName;
     out << item.usage;
-    out << item.pluginId;
     return out;
 }
 
 QDataStream& operator>>(QDataStream& in, CatItem &item) {
     in >> item.fullPath;
     in >> item.shortName;
-    in >> item.searchName[CatItem::LOWER];
-    in >> item.searchName[CatItem::TRANS];
+    in >> item.searchName;
+    in >> item.searchNameTrans;
     in >> item.iconPath;
+    in >> item.pluginName;
     in >> item.usage;
-    in >> item.pluginId;
     return in;
 }
 
@@ -131,4 +130,5 @@ QString CatItem::convertSearchName(const QString& shortName) {
     return result;
 }
 
-}
+} // namespace launchy
+

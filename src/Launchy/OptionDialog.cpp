@@ -795,7 +795,7 @@ void OptionDialog::saveCatalogSettings() {
 
 void OptionDialog::initPluginsWidget() {
     // Load up the plugins
-    //PluginHandler::instance().loadPlugins();
+    // PluginHandler::instance().loadPlugins();
     foreach(const PluginInfo& info, PluginHandler::instance().getPlugins()) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
         m_pUi->plugList->addItem(item);

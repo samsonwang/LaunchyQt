@@ -102,7 +102,8 @@ public:
     virtual int msg(int msgId, void* wParam = nullptr, void* lParam = nullptr) = 0;
 };
 
-}
+typedef std::size_t PluginId;
+} // namespace launchy
 
-#define PLUGININTERFACE_IID "com.launchyqt.PluginInterface/1.0"
+#define PLUGININTERFACE_IID "launchy.PluginInterface/1.0"
 Q_DECLARE_INTERFACE(launchy::PluginInterface, PLUGININTERFACE_IID)

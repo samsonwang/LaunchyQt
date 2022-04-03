@@ -24,12 +24,12 @@ namespace exportpy {
 
 CatItem::CatItem(const std::string& full,
                  const std::string& shortN,
-                 unsigned int pluginId,
+                 const std::string& plugin,
                  const std::string& iconPath) {
 
     m_data = launchy::CatItem(QString::fromStdString(full),
                               QString::fromStdString(shortN),
-                              uint(pluginId),
+                              QString::fromStdString(plugin),
                               QString::fromStdString(iconPath));
 }
 
@@ -59,7 +59,8 @@ void CatItem::setUsage(int usage) {
 
 void ExportCatItem(const py::module& m) {
     py::class_<exportpy::CatItem>(m, "CatItem")
-        .def(py::init<const std::string&, const std::string&, unsigned int, const std::string&>())
+        .def(py::init<const std::string&, const std::string&,
+             const std::string&, const std::string&>())
         .def("fullPath", &exportpy::CatItem::fullPath)
         .def("shortName", &exportpy::CatItem::shortName)
         .def("iconPath", &exportpy::CatItem::iconPath)
