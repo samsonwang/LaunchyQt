@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QAbstractNativeEventFilter>
 #include <QKeySequence>
+
 #include "QHotkey.h"
 
 class QHotkeyPrivate : public QObject {
@@ -37,9 +38,9 @@ private:
 private:
     class EventFilter : public QAbstractNativeEventFilter {
     public:
-        virtual bool nativeEventFilter(const QByteArray &eventType,
-                                       void *message,
-                                       long *result);
+        virtual bool nativeEventFilter(const QByteArray& eventType,
+                                       void* message,
+                                       qintptr* result);
     };
 
 private:

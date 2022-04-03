@@ -149,7 +149,7 @@ int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
 
 bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
                                                     void* message,
-                                                    long* result) {
+                                                    qintptr* result) {
     Q_UNUSED(eventType);
     Q_UNUSED(result);
 

@@ -182,14 +182,17 @@ int QHotkeyPrivate::calcHotkeyId(quint32 key, quint32 mod) {
 
 bool QHotkeyPrivate::EventFilter::nativeEventFilter(const QByteArray& eventType,
                                                     void* message,
-                                                    long* result) {
+                                                    qintptr* result) {
     Q_UNUSED(eventType);
     Q_UNUSED(result);
 
-    MSG* msg = static_cast<MSG*>(message);
-    if (msg->message == WM_HOTKEY || msg->message == WM_USER) {
-        int id = static_cast<int>(msg->wParam);
-        activateHotKey(id);
+    if (eventType == "windows_dispatcher_MSG") {
+        MSG* msg = static_cast<MSG*>(message);
+        if (msg && (msg->message == WM_HOTKEY
+                    || msg->message == WM_USER)) {
+            int id = static_cast<int>(msg->wParam);
+            activateHotKey(id);
+        }
     }
 
     return false;

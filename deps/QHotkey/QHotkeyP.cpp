@@ -60,14 +60,14 @@ Qt::Key QHotkeyPrivate::getKey(const QKeySequence& keySeq) {
     if (keySeq.isEmpty()) {
         return Qt::Key(0);
     }
-    return Qt::Key(keySeq[0] & ~Qt::KeyboardModifierMask);
+    return keySeq[0].key();
 }
 
 Qt::KeyboardModifiers QHotkeyPrivate::getModifiers(const QKeySequence& keySeq) {
     if (keySeq.isEmpty()) {
         return Qt::KeyboardModifiers(0);
     }
-    return Qt::KeyboardModifiers(keySeq[0] & Qt::KeyboardModifierMask);
+    return keySeq[0].keyboardModifiers();
 }
 
 const QKeySequence& QHotkeyPrivate::keySeq() const {
