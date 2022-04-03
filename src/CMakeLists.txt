@@ -215,19 +215,8 @@ add_custom_command (TARGET LaunchyQM POST_BUILD
 
 ##################################################
 # QSingleApplication
-add_library (QSingleApplication STATIC)
-
-file (GLOB SOURCES_SINGLEAPP
-  ${DEPS_DIR}/SingleApplication/*.h
-  ${DEPS_DIR}/SingleApplication/*.cpp)
-
-target_compile_definitions (QSingleApplication PUBLIC QAPPLICATION_CLASS=QApplication)
-
-target_sources (QSingleApplication
-  PRIVATE ${SOURCES_SINGLEAPP})
-
-target_link_libraries (QSingleApplication
-  PUBLIC Qt6::Core Qt6::Widgets Qt6::Network)
+set(QAPPLICATION_CLASS QApplication)
+add_subdirectory(${DEPS_DIR}/SingleApplication SingleApplication)
 
 ##################################################
 # QHotKey

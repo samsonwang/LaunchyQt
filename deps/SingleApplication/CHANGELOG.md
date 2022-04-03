@@ -1,6 +1,128 @@
 Changelog
 =========
 
+If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
+
+__3.3.2__
+---------
+
+* Fixed crash caused by sending a `writeAck` on a removed connection. - _Nicolas Werner_
+
+__3.3.1__
+---------
+
+* Added support for _AppImage_ dynamic executable paths. - _Michael Klein_
+
+__3.3.0__
+---------
+
+* Fixed message fragmentation issue causing crashes and incorrectly / inconsistently received messages. - _Nils Jeisecke_
+
+__3.2.0__
+---------
+
+* Added support for Qt 6  - _Jonas Kvinge_
+* Fixed warning in `Qt 5.9` with `min`/`max` functions on Windows - _Nick Korotysh_
+* Fix return value of connectToPrimary() when connect is successful - _Jonas Kvinge_
+* Fix build issue with MinGW GCC pedantic mode - _Iakov Kirilenko_
+* Fixed conversion from `int` to `quint32` and Clang Tidy warnings - _Hennadii Chernyshchyk_
+
+__3.1.5__
+---------
+
+* Improved library stability in edge cases and very rapid process initialisation
+* Fixed Bug where the shared memory block may have been modified without a lock
+* Fixed Bug causing `instanceStarted()` to not get emitted when a second instance
+  has been started before the primary has initiated it's `QLocalServer`.
+
+__3.1.4__
+---------
+* Officially supporting and build-testing against Qt 5.15
+* Fixed an MSVC C4996 warning that suggests using `strncpy_s`.
+
+    _Hennadii Chernyshchyk_
+
+__3.1.3.1__
+---------
+* CMake build system improvements
+* Fixed Clang Tidy warnings
+
+    _Hennadii Chernyshchyk_
+
+__3.1.3__
+---------
+* Improved `CMakeLists.txt`
+
+    _Hennadii Chernyshchyk_
+
+__3.1.2__
+---------
+
+* Fix a crash when exiting an application on Android and iOS
+
+    _Emeric Grange_
+
+__3.1.1a__
+----------
+
+* Added currentUser() method that returns the user the current instance is running as.
+
+    _Leander Schulten_
+
+__3.1.0a__
+----------
+
+* Added primaryUser() method that returns the user the primary instance is running as.
+
+__3.0.19__
+----------
+
+* Fixed code warning for depricated functions in Qt 5.10 related to `QTime` and `qrand()`.
+
+   _Hennadii Chernyshchyk_  
+   _Anton Filimonov_  
+   _Jonas Kvinge_
+
+__3.0.18__
+----------
+
+* Fallback to standard QApplication class on iOS and Android systems where
+  the library is not supported.
+
+* Added Build CI tests to verify the library builds successfully on Linux, Windows and MacOS  across multiple Qt versions.
+
+  _Anton Filimonov_
+
+__3.0.17__
+----------
+
+* Fixed compilation warning/error caused by `geteuid()` on unix based systems.
+
+   _Iakov Kirilenko_
+
+* Added CMake support
+
+   _Hennadii Chernyshchyk_
+
+__3.0.16__
+----------
+
+* Use geteuid and getpwuid to get username on Unix, fallback to environment variable.
+
+   _Jonas Kvinge_
+
+__3.0.15__
+----------
+
+* Bug Fix: sendMessage() might return false even though data was actually written.
+
+   _Jonas Kvinge_
+
+__3.0.14__
+----------
+
+* Fixed uninitialised variables in the `SingleApplicationPrivate` constructor.
+
 __3.0.13a__
 ----------
 
@@ -121,7 +243,7 @@ __3.0.1a__
 __v3.0a__
 ---------
 
-*   Depricated secondary instances count.
+*   Deprecated secondary instances count.
 *   Added a sendMessage() method to send a message to the primary instance.
 *   Added a receivedMessage() signal, emitted when a message is received from a
     secondary instance.
