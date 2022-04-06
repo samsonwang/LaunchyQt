@@ -22,7 +22,6 @@
 #include <QApplication>
 #include <QScrollBar>
 #include <QMessageBox>
-#include <QDesktopWidget>
 #include <QMenu>
 #include <QSystemTrayIcon>
 #include <QPushButton>
@@ -266,9 +265,8 @@ void LaunchyWidget::cleanup() {
 void LaunchyWidget::executeStartupCommand(int command) {
     if (command & ResetPosition) {
         QRect r = geometry();
-        int primary = qApp->desktop()->primaryScreen();
-        QRect scr = qApp->desktop()->availableGeometry(primary);
-
+        auto screen = qApp->screenAt(r.topLeft());
+        QRect scr = screen->availableGeometry();
         QPoint pt(scr.width()/2 - r.width()/2, scr.height()/2 - r.height()/2);
         move(pt);
     }
@@ -308,7 +306,7 @@ void LaunchyWidget::showEvent(QShowEvent* event) {
 void LaunchyWidget::paintEvent(QPaintEvent* event) {
     // Do the default draw first to render any background specified in the stylesheet
     QStyleOption styleOption;
-    styleOption.init(this);
+    styleOption.initFrom(this);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     style()->drawPrimitive(QStyle::PE_Widget, &styleOption, &painter, this);
@@ -417,12 +415,12 @@ void LaunchyWidget::launchItem() {
     CatItem& item = m_inputData[0].getTopResult();
     qDebug() << "LaunchyWidget::launchItem, item.shortName:" << item.shortName
              << "item.fullPath:" << item.fullPath
-             << "item.pluginId:" << item.pluginId
+             << "item.pluginName:" << item.pluginName
              << "item.data:" << item.data;
 
     int ops = MSG_CONTROL_LAUNCHITEM;
 
-    if (item.pluginId != HASH_LAUNCHY && item.pluginId != HASH_LAUNCHYFILE) {
+    if (item.pluginName != NAME_LAUNCHY && item.pluginName != NAME_LAUNCHYFILE) {
         ops = PluginHandler::instance().launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
@@ -446,7 +444,7 @@ void LaunchyWidget::launchItem() {
 
     if (ops == MSG_CONTROL_LAUNCHITEM) {
         QString args;
-        if (item.pluginId == HASH_HISTORY) {
+        if (item.pluginName == NAME_HISTORY) {
             qDebug() << "LaunchyWidget::launchItem, get args from history";
             int historyIndex = (int)(int64_t)(item.data);
             InputDataList inputData = m_history.getItem(historyIndex);
@@ -471,28 +469,6 @@ void LaunchyWidget::launchItem() {
     m_history.addItem(m_inputData);
 }
 
-/*
-  void LaunchyWidget::focusInEvent(QFocusEvent* event) {
-  if (event->gotFocus() && fader->isFading())
-  fader->fadeIn(false);
-
-  QWidget::focusInEvent(event);
-  }
-
-  void LaunchyWidget::focusOutEvent(QFocusEvent* event) {
-  Qt::FocusReason reason = event->reason();
-  if (event->reason() == Qt::ActiveWindowFocusReason) {
-  if (g_settings->value("GenOps/hideiflostfocus", false).toBool()
-  && !isActiveWindow()
-  && !alternatives->isActiveWindow()
-  && !optionsOpen
-  && !fader->isFading()) {
-  hideLaunchy();
-  }
-  }
-  }
-*/
-
 void LaunchyWidget::onAlternativeListRowChanged(int row) {
     // Check that index is a valid history item index
     // If the current entry is a history item or there is no text entered
@@ -507,7 +483,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
     qDebug() << "LaunchyWidget::onAlternativeListRowChanged, row:" << row
              << ", item.fullpath:" << item.fullPath
              << ", item.shortName:" << item.shortName
-             << ", item.pluginId:" << item.pluginId
+             << ", item.pluginName:" << item.pluginName
              << ", historyIndex:" << historyIndex
              << ", inputBox:" << m_inputBox->text();
 
@@ -516,7 +492,7 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
         // Used a void* to hold an int.. ick!
         // BUT! Doing so avoids breaking existing catalogs
 
-        if (item.pluginId == HASH_HISTORY && historyIndex < m_searchResult.count()) {
+        if (item.pluginName == NAME_HISTORY && historyIndex < m_searchResult.count()) {
             qDebug() << "LaunchyWidget::onAlternativeListRowChanged, list history"
                      << item.shortName;
 
@@ -623,7 +599,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
         int row = m_alternativeList->currentRow();
         if (row > -1) {
             const CatItem& item = m_searchResult[row];
-            if (item.pluginId == HASH_HISTORY) {
+            if (item.pluginName == NAME_HISTORY) {
                 // Delete selected history entry from the alternatives list
                 qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
                          << "delete history:" << item.shortName;
@@ -735,7 +711,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
         if (!m_inputData.isEmpty()
             && m_inputData.last().hasLabel(LABEL_FILE)
             && !m_searchResult.isEmpty()
-            && m_searchResult[0].pluginId == HASH_LAUNCHYFILE) {
+            && m_searchResult[0].pluginName == NAME_LAUNCHYFILE) {
             doTab();
         }
         processInput();
@@ -871,7 +847,7 @@ void LaunchyWidget::searchOnInput() {
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
-        qSort(m_searchResult.begin(), m_searchResult.end(), CatLessRef);
+        std::sort(m_searchResult.begin(), m_searchResult.end(), CatLessRef);
         g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
         // Finally, if the search text looks like a file or directory name,
@@ -1037,7 +1013,8 @@ void LaunchyWidget::loadPosition(const QPoint& pt) {
     // Get the dimensions of the screen containing the new center point
     QRect rtWidget = geometry();
     QPoint ptCenter = pt + QPoint(rtWidget.width()/2, rtWidget.height()/2);
-    QRect rtScreen = qApp->desktop()->availableGeometry(ptCenter);
+    QScreen* screen = qApp->screenAt(ptCenter);
+    QRect rtScreen = screen->availableGeometry();
 
     QPoint ptTarget(pt);
     // See if the new position is within the screen dimensions, if not pull it inside
@@ -1234,7 +1211,7 @@ void LaunchyWidget::applySkin(const QString& name) {
             validFrame = true;
         }
         else if (frame.load(skinPath + "background.png")) {
-            QPixmap border;
+            QBitmap border;
             if (border.load(skinPath + "mask.png")) {
                 frame.setMask(border);
             }
@@ -1252,7 +1229,7 @@ void LaunchyWidget::applySkin(const QString& name) {
             validFrame = true;
 
             // Set the background mask
-            QPixmap mask;
+            QBitmap mask;
             if (mask.load(skinPath + "mask_nc.png")) {
                 // For some reason, w/ compiz setmask won't work
                 // for rectangular areas. This is due to compiz and
@@ -1296,7 +1273,7 @@ void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
 
 void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
     if (event->buttons() == Qt::LeftButton && m_dragging) {
-        QPoint pt = event->globalPos() - m_dragStartPoint;
+        QPoint pt = event->globalPosition().toPoint() - m_dragStartPoint;
         move(pt);
         hideAlternativeList();
         m_inputBox->setFocus();

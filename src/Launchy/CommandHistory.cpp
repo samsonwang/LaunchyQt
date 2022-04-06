@@ -98,7 +98,7 @@ void CommandHistory::addItem(const InputDataList& item) {
     }
 }
 
-const InputDataList& CommandHistory::getItem(int index) {
+InputDataList CommandHistory::getItem(int index) {
     Q_ASSERT(index >= 0 && index < m_history.size());
     return *(m_history.begin() + index);
 }
@@ -117,7 +117,7 @@ void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
             continue;
         }
         CatItem item = historyItem.first().getTopResult();
-        item.pluginId = HASH_HISTORY;
+        item.pluginName = NAME_HISTORY;
         item.data = (void*)index++; // Need this when switching alternative list
         searchResults.push_back(item);
     }
@@ -141,14 +141,15 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
             if (data.getText().contains(text, Qt::CaseInsensitive)) {
                 // history matched
                 CatItem item = historyCmd.first().getTopResult();
-                item.pluginId = HASH_HISTORY;
+                item.pluginName = NAME_HISTORY;
                 item.data = (void*)index;
                 item.shortName = historyCmd.toString();
 
                 // search for duplicates
                 bool duplicated = false;
                 for (const CatItem& retItem : searchResults) {
-                    if (retItem.shortName == item.shortName && retItem.fullPath == item.fullPath) {
+                    if (retItem.shortName == item.shortName
+                        && retItem.fullPath == item.fullPath) {
                         duplicated = true;
                         break;
                     }
@@ -162,6 +163,7 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
             }
         }
     }
+}
 
-}
-}
+} // namespace launchy
+

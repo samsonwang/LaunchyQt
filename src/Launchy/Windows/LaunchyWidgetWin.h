@@ -36,7 +36,7 @@ protected:
     LaunchyWidgetWin(CommandFlags command);
 
 protected:
-    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result);
+    virtual bool nativeEvent(const QByteArray& eventType, void* message, intptr_t* result);
 
     virtual void focusLaunchy();
 

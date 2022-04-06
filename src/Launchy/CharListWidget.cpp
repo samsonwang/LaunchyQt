@@ -20,18 +20,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CharListWidget.h"
 
 #include <QScrollBar>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QDebug>
 
 #include "LaunchyLib/LaunchyLib.h"
 
 #include "IconDelegate.h"
 #include "OptionItem.h"
 
-
 namespace launchy {
+
 CharListWidget::CharListWidget(QWidget* parent)
     : QListWidget(parent),
       m_iconListDelegate(new IconDelegate(this)),
@@ -78,16 +78,18 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
     qDebug() << "CharListWidget::updateGeometry, height:" << rect.height();
 
     // Is there room for the dropdown box?
-    if (rect.y() + rect.height() > qApp->desktop()->height()) {
+    QScreen* screen = qApp->screenAt(basePos);
+    QRect screenSize = screen->geometry();
+    if (rect.y() + rect.height() > screenSize.height()) {
         // Only move it if there's more space above
         // In both cases, ensure it doesn't spill off the screen
-        if (basePos.y() + offset.y() > qApp->desktop()->height() / 2) {
+        if (basePos.y() + offset.y() > screenSize.height() / 2) {
             rect.moveTop(basePos.y() + offset.y() - rect.height());
             if (rect.top() < 0)
                 rect.setTop(0);
         }
         else {
-            rect.setBottom(qApp->desktop()->height());
+            rect.setBottom(screenSize.height());
         }
     }
 
@@ -122,7 +124,7 @@ void CharListWidget::keyPressEvent(QKeyEvent* event) {
 }
 
 void CharListWidget::mouseDoubleClickEvent(QMouseEvent* /*event*/) {
-    QKeyEvent key(QEvent::KeyPress, Qt::Key_Enter, NULL);
+    QKeyEvent key(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
     emit keyPressed(&key);
 }
 

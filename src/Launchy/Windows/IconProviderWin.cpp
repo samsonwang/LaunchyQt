@@ -27,8 +27,9 @@
 #include <commoncontrols.h>
 
 #include <QDir>
+#include <QFileInfo>
 #include <QDebug>
-#include <QtWin>
+// #include <QtWin>
 #include <QProcessEnvironment>
 
 #include "UtilWin.h"
@@ -58,7 +59,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         HICON hIcon;
         QString filePath = QDir::toNativeSeparators(info.filePath());
         ExtractIconExW((LPCWSTR)filePath.utf16(), 0, &hIcon, NULL, 1);
-        retIcon = QIcon(QtWin::fromHICON(hIcon));
+        retIcon = QIcon(QPixmap::fromImage(QImage::fromHICON(hIcon)));
         DestroyIcon(hIcon);
     }
     else if (fileExtension == QStringLiteral("lnk")
@@ -69,7 +70,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         qDebug() << "IconProviderWin::icon, lnk, target path:" << targetPath
                  << ", info target path:" << info.symLinkTarget();
 
-        retIcon = icon(targetPath);
+        retIcon = icon(QFileInfo(targetPath));
     }
     else {
 
@@ -99,7 +100,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         // Get the icon index using SHGetFileInfo
         SHGetFileInfoW((LPCWSTR)filePath.utf16(), 0, &sfi, sizeof(sfi), flags);
         if (sfi.hIcon) {
-            retIcon.addPixmap(QtWin::fromHICON(sfi.hIcon));
+            retIcon.addPixmap(QPixmap::fromImage(QImage::fromHICON(sfi.hIcon)));
             // extra large icon
             if (m_preferredSize >= 48) {
                 addIconFromImageList(SHIL_EXTRALARGE, sfi.iIcon, retIcon);
@@ -156,7 +157,7 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
         HICON hIcon = NULL;
         hResult = pImageList->GetIcon(iconIndex, ILD_TRANSPARENT, &hIcon);
         if (hResult == S_OK && hIcon != NULL) {
-            icon.addPixmap(QtWin::fromHICON(hIcon));
+            icon.addPixmap(QPixmap::fromImage(QImage::fromHICON(hIcon)));
             DestroyIcon(hIcon);
         }
         pImageList->Release();
@@ -179,7 +180,7 @@ bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& ic
         SIZE iconSize = {m_preferredSize, m_preferredSize};
         hResult = pSIIF->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY , &hBitmap);
         if (hResult == S_OK && hBitmap != NULL) {
-            QPixmap iconPixmap = QtWin::fromHBITMAP(hBitmap, QtWin::HBitmapPremultipliedAlpha);
+            QPixmap iconPixmap = QPixmap::fromImage(QImage::fromHBITMAP(hBitmap));
             icon.addPixmap(iconPixmap);
             DeleteObject(hBitmap);
         }

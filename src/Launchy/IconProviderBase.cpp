@@ -16,4 +16,4 @@ void IconProviderBase::setPreferredIconSize(int size) {
     m_preferredSize = size;
 }
 
-}
+} // namespace launchy

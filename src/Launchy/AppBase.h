@@ -42,6 +42,7 @@ public:
     static void cleanup();
 
     QIcon icon(const QFileInfo& info);
+    QIcon icon(const QString& path);
     QIcon icon(QFileIconProvider::IconType type);
     void setPreferredIconSize(int size);
 

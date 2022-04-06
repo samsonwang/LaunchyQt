@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma warning (disable : 4091)
 #pragma warning (disable : 4099)
 #pragma warning (push, 1)
-#define _CRT_SECURE_NO_WARNINGS
 #define NOMINMAX
 #endif
 
@@ -43,7 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <commoncontrols.h>
 #include <UserEnv.h>
 #include <LM.h>
-#include <QtWin>
+// #include <QtWin>
 #endif
 
 #include <QtGui>

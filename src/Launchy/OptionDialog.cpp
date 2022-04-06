@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CatalogBuilder.h"
 #include "OptionItem.h"
 #include "UpdateChecker.h"
-#include "FileBrowserDelegate.h"
 #include "TranslationManager.h"
 #include "LaunchyLib/LaunchyLib.h"
 
@@ -152,7 +151,7 @@ void OptionDialog::accept() {
 void OptionDialog::reject() {
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), false);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), false);
     }
 
     QDialog::reject();
@@ -261,9 +260,9 @@ void OptionDialog::skinChanged(const QString& newSkin) {
         if (pix.hasAlpha())
             pix.setMask(pix.mask());
         if (!g_app->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
-            pix.setMask(QPixmap(directory + "mask_nc.png"));
+            pix.setMask(QBitmap(directory + "mask_nc.png"));
         else if (QFile::exists(directory + "mask.png"))
-            pix.setMask(QPixmap(directory + "mask.png"));
+            pix.setMask(QBitmap(directory + "mask.png"));
 
         if (g_app->supportsAlphaBorder()) {
             // Compose the alpha image with the background
@@ -299,7 +298,7 @@ void OptionDialog::pluginChanged(int row) {
     // Close any current plugin dialogs
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 
     // Open the new plugin dialog
@@ -319,7 +318,7 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
         }
     }
 
-    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toUInt());
+    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toString());
     if (win != NULL) {
         if (pLayout != NULL) {
             pLayout->addWidget(win);
@@ -341,7 +340,7 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     // Close current plugin dialogs
     if (s_lastPlugin == row && item->checkState() != Qt::Checked) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 
     // Write out the new config
@@ -382,7 +381,7 @@ void OptionDialog::languageChanged(int index) {
     g_settings->setValue(OPTION_LANGUAGE, loc);
 
     qDebug() << "OptionDialog::languageChanged, loc =" << loc;
-    TranslationManager::instance().setLocale(loc);
+    TranslationManager::instance().setLocale(QLocale(loc));
 }
 
 void OptionDialog::onProxyTypeChanged(int index) {
@@ -799,7 +798,7 @@ void OptionDialog::initPluginsWidget() {
     foreach(const PluginInfo& info, PluginHandler::instance().getPlugins()) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
         m_pUi->plugList->addItem(item);
-        item->setData(Qt::UserRole, info.id);
+        item->setData(Qt::UserRole, info.name);
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         if (info.loaded) {
             item->setCheckState(Qt::Checked);
@@ -818,7 +817,7 @@ void OptionDialog::initPluginsWidget() {
 void OptionDialog::savePluginsSettings() {
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toUInt(), true);
+        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 }
 

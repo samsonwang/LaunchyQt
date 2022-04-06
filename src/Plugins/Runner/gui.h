@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef GUI_H
 #define GUI_H
 
-//#include "FileBrowserDelegate.h"
-
 #include <QWidget>
 
 class QTableWidgetItem;
@@ -49,7 +47,6 @@ private:
 
 private:
     Ui::Dlg* m_dlg;
-    //FileBrowserDelegate delegate;
 };
 
 #endif 

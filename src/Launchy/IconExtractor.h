@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyLib/CatalogItem.h"
 
 namespace launchy {
+
 class IconExtractor : public QThread {
     Q_OBJECT
 public:
@@ -40,7 +41,9 @@ protected:
     virtual void run();
 
 signals:
-    void iconExtracted(int itemIndex, QString path, QIcon icon);
+    void iconExtracted(const QString& pluginName,
+                       const QString& path,
+                       const QIcon& icon);
 
 private:
     QIcon getIcon(const CatItem& item);
@@ -48,4 +51,5 @@ private:
     QMutex m_mutex;
     QQueue<CatItem> m_items;
 };
-}
+
+} // namespace launchy

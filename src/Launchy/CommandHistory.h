@@ -19,28 +19,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QLinkedList>
+#include <QList>
 
 #include "LaunchyLib/CatalogItem.h"
 
 #include "InputDataList.h"
 
 namespace launchy {
+
 class CommandHistory {
 public:
     CommandHistory();
 
+public:
     bool load(const QString& filename);
     void save(const QString& filename) const;
 
     void addItem(const InputDataList& item);
     void removeAt(int index);
-    const InputDataList& getItem(int index);
+    InputDataList getItem(int index);
 
     void getAllItem(QList<CatItem>& searchResults) const;
     void search(const QString& text, QList<CatItem>& searchResults) const;
 
 private:
-    QLinkedList<InputDataList> m_history;
+    QList<InputDataList> m_history;
 };
-}
+
+} // namespace launchy

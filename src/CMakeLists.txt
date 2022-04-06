@@ -134,13 +134,13 @@ target_sources (Launchy
 if (WIN32)
 target_link_libraries (Launchy
   LaunchyLib PluginPy
-  QSingleApplication QHotKey
+  SingleApplication QHotKey
   userenv netapi32
   Qt6::Widgets Qt6::Network)
 else ()
 target_link_libraries (Launchy
   LaunchyLib PluginPy
-  QSingleApplication QHotKey
+  SingleApplication QHotKey
   Qt6::Widgets Qt6::X11Extras Qt6::Network)
 endif ()
 

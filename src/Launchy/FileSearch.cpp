@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <QDir>
+#include <QRegularExpression>
 #include <QDebug>
 
 #include "AppBase.h"
@@ -55,13 +56,13 @@ void FileSearch::search(const QString& searchText,
             WCHAR volName[MAX_PATH];
             if (GetVolumeInformationW((WCHAR*)info.filePath().utf16(), volName,
                                      MAX_PATH, NULL, NULL, NULL, NULL, 0)) {
-                volumeName = QString::fromUtf16((const ushort*)volName);
+                volumeName = QString::fromWCharArray(volName);
             }
             else {
                 volumeName = QDir::toNativeSeparators(info.filePath());
             }
             CatItem item(QDir::toNativeSeparators(info.filePath()), volumeName);
-            item.pluginId = HASH_LAUNCHYFILE;
+            item.pluginName = NAME_LAUNCHYFILE;
             searchResults.push_front(item);
         }
         return;
@@ -89,8 +90,9 @@ void FileSearch::search(const QString& searchText,
             return;
 
         // Check for a search against just the network name
-        QRegExp re("//([a-z0-9\\-]+)?$", Qt::CaseInsensitive);
-        if (re.exactMatch(searchPath)) {
+        QRegularExpression re(QStringLiteral("//([a-z0-9\\-]+)?$"),
+                              QRegularExpression::CaseInsensitiveOption);
+        if (re.match(searchPath).hasMatch()) {
             // Get a list of devices on the network. This will be filtered and sorted later.
             g_app->getComputers(itemList);
             isDirectory = false;
@@ -124,7 +126,7 @@ void FileSearch::search(const QString& searchText,
         QString filePath = QDir::cleanPath(dir.absolutePath() + "/" + fileName);
         CatItem item(QDir::toNativeSeparators(filePath), fileName);
         if (filePart.length() == 0 || Catalog::matches(&item, filePart.toLower())) {
-            item.pluginId = HASH_LAUNCHYFILE;
+            item.pluginName = NAME_LAUNCHYFILE;
             searchResults.push_front(item);
         }
     }
@@ -139,12 +141,12 @@ void FileSearch::search(const QString& searchText,
         QString fullPath = QDir::toNativeSeparators(directoryPart);
         QString name = dir.dirName();
         CatItem item(fullPath, name.length() == 0 ? fullPath : name);
-        item.pluginId = HASH_LAUNCHYFILE;
+        item.pluginName = NAME_LAUNCHYFILE;
         searchResults.push_front(item);
     }
     else if (sort) {
         // If we're not matching exactly and there's a filename then do a priority sort
-        qSort(searchResults.begin(), searchResults.end(), CatLessRef);
+        std::sort(searchResults.begin(), searchResults.end(), CatLessRef);
     }
 
     inputData.last().setLabel(LABEL_FILE);

@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QNetworkReply>
 #include <QDebug>
 #include <QXmlStreamReader>
+#include <QStringView>
 
 #include "GlobalVar.h"
 #include "OptionItem.h"
@@ -130,7 +131,7 @@ void UpdateChecker::replyFinished(QNetworkReply* reply) {
             continue;
         }
         if (token == QXmlStreamReader::StartElement
-            && reader.name() == "latest") {
+            && reader.name().compare(QLatin1String("latest")) == 0) {
             QXmlStreamAttributes attr = reader.attributes();
             if (attr.hasAttribute("version")) {
                 lastestVersion = attr.value("version").toInt();

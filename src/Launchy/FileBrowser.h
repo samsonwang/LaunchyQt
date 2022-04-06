@@ -7,8 +7,7 @@
  * http://www.gnu.org/licenses/lgpl.html
  */
 
-#ifndef FILEBROWSER_H
-#define FILEBROWSER_H
+#pragma once
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -41,7 +40,7 @@ public:
      *  @param   pParent
      *           The parent widget.
      */
-    FileBrowser(QWidget* pParent = NULL);
+    FileBrowser(QWidget* pParent = nullptr);
 
     /**
      *  Destroys the widget and all child widget items.
@@ -208,6 +207,6 @@ private:
     bool mExistingFile;
     BrowseType mBrowseType;
 };
-}
 
-#endif
+} // namespace launchy
+

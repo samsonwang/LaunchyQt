@@ -99,7 +99,7 @@ bool Catalog::matches(CatItem* item, const QString& match) {
     int matchLength = match.count();
     int curChar = 0;
 
-    foreach(QChar c, item->searchName[CatItem::LOWER]) {
+    foreach(QChar c, item->searchName) {
         if (c == match[curChar]) {
             ++curChar;
             if (curChar >= matchLength) {
@@ -108,7 +108,7 @@ bool Catalog::matches(CatItem* item, const QString& match) {
         }
     }
 
-    foreach(QChar c, item->searchName[CatItem::TRANS]) {
+    foreach(QChar c, item->searchNameTrans) {
         if (c == match[curChar]) {
             ++curChar;
             if (curChar >= matchLength) {
@@ -130,7 +130,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
     QList<CatItem*> catMatches = search(text);
     qDebug() << "Catalog::searchCatalogs, search matched count:" << catMatches.count();
     // Now prioritize the catalog items
-    qSort(catMatches.begin(), catMatches.end(), CatLessPtr);
+    std::sort(catMatches.begin(), catMatches.end(), CatLessPtr);
 
     // Check for history matches, and put them in the front
     QString location = "History/" + text;
@@ -352,11 +352,11 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     if (b->usage < 0 && a->usage >= 0)
         return true;
 
-    bool localEqual = (a->searchName[CatItem::LOWER] == g_searchText
-        || a->searchName[CatItem::TRANS] == g_searchText);
+    bool localEqual = (a->searchName == g_searchText
+                       || a->searchNameTrans == g_searchText);
 
-    bool otherEqual = (b->searchName[CatItem::LOWER] == g_searchText
-        || b->searchName[CatItem::TRANS] == g_searchText);
+    bool otherEqual = (b->searchName == g_searchText
+                       || b->searchNameTrans == g_searchText);
 
     // Exact match between search text and item name has higest priority
     if (localEqual && !otherEqual)
@@ -364,10 +364,10 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     if (!localEqual && otherEqual)
         return false;
 
-    int localFind = std::min(a->searchName[CatItem::LOWER].indexOf(g_searchText),
-                             a->searchName[CatItem::TRANS].indexOf(g_searchText));
-    int otherFind = std::min(b->searchName[CatItem::LOWER].indexOf(g_searchText),
-                             b->searchName[CatItem::TRANS].indexOf(g_searchText));
+    int localFind = std::min(a->searchName.indexOf(g_searchText),
+                             a->searchNameTrans.indexOf(g_searchText));
+    int otherFind = std::min(b->searchName.indexOf(g_searchText),
+                             b->searchNameTrans.indexOf(g_searchText));
 
     if (g_searchText.count() == 1) {
         // Match at the start
@@ -435,4 +435,4 @@ CatalogItem::CatalogItem(const CatItem& item, int time)
 
 }
 
-}
+} // namespace launchy

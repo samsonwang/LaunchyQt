@@ -117,7 +117,7 @@ QString AppWin::expandEnvironmentVars(QString txt) {
     if (size > 0) {
         WCHAR* buffer = new WCHAR[size];
         ExpandEnvironmentStringsW((LPCWSTR)txt.utf16(), buffer, size);
-        result = QString::fromUtf16((const ushort*)buffer);
+        result = QString::fromWCharArray(buffer);
         delete[] buffer;
         buffer = nullptr;
     }

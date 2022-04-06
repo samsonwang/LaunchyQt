@@ -129,7 +129,7 @@ void SettingsManager::load() {
         TranslationManager::instance().setLocale(QLocale::system());
     }
     else {
-        TranslationManager::instance().setLocale(lang);
+        TranslationManager::instance().setLocale(QLocale(lang));
     }
 }
 

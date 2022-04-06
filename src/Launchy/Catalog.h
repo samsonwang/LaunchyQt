@@ -21,6 +21,7 @@
 
 #include <QVector>
 #include <QMutex>
+
 #include "LaunchyLib/CatalogItem.h"
 
 // These classes do not pertain to plugins
@@ -93,4 +94,4 @@ private:
 bool CatLessPtr(CatItem* left, CatItem* right);
 bool CatLessRef(CatItem& left, CatItem& right);
 
-}
+} // namespace launchy

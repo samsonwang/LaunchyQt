@@ -55,9 +55,10 @@ const char* LAUNCHY_BIT_STRING = "32";
 const char* LAUNCHY_BIT_STRING = "N/A";
 #endif
 
-const uint HASH_LAUNCHY = 0;
-const uint HASH_HISTORY = 1;
-const uint HASH_LAUNCHYFILE = 2;
+const QString NAME_LAUNCHY = QStringLiteral("launchy");
+const QString NAME_HISTORY = QStringLiteral("launchy_history");
+const QString NAME_LAUNCHYFILE = QStringLiteral("launchy_file");
+
 const uint LABEL_FILE = 0;
 const uint LABEL_AUTOSUGGEST = 1;
 const uint LABEL_HISTORY = 2;

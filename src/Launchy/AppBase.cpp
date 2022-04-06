@@ -28,18 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 
-static auto HIDPI = []() {
-    // hidpi detecttion
-    static const char ENV_VAR_QT_DEVICE_PIXEL_RATIO[] = "QT_DEVICE_PIXEL_RATIO";
-    if (!qEnvironmentVariableIsSet(ENV_VAR_QT_DEVICE_PIXEL_RATIO)
-        && !qEnvironmentVariableIsSet("QT_AUTO_SCREEN_SCALE_FACTOR")
-        && !qEnvironmentVariableIsSet("QT_SCALE_FACTOR")
-        && !qEnvironmentVariableIsSet("QT_SCREEN_SCALE_FACTORS")) {
-        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    }
-    return 0;
-}();
-
 AppBase::AppBase(int& argc, char** argv)
     : SingleApplication(argc, argv, false, Mode::User),
       m_iconProvider(nullptr) {
@@ -67,6 +55,11 @@ QIcon AppBase::icon(const QFileInfo& info) {
         return m_iconProvider->icon(info);
     }
     return QIcon();
+}
+
+QIcon AppBase::icon(const QString& path)
+{
+    return icon(QFileInfo(path));
 }
 
 QIcon AppBase::icon(QFileIconProvider::IconType type) {
@@ -102,4 +95,5 @@ bool AppBase::getComputers(QStringList& computers) const {
     Q_UNUSED(computers);
     return false;
 }
-}
+
+} // namespace launchy

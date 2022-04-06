@@ -36,5 +36,5 @@ private:
     bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;
 };
 
-}
+} // namespace launchy
 
