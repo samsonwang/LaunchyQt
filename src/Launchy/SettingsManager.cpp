@@ -88,7 +88,7 @@ void SettingsManager::load() {
     Logger::setLogLevel(logLevel);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
-        << "(build" << __DATE__ << __TIME__ << ")";
+        << "( build" << __DATE__ << __TIME__ << ")";
     qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 

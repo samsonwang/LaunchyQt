@@ -995,11 +995,6 @@ void LaunchyWidget::setSkin(const QString& name) {
 }
 
 void LaunchyWidget::updateVersion(int oldVersion) {
-//     if (oldVersion < 199) {
-//         SettingsManager::instance().removeAll();
-//         SettingsManager::instance().load();
-//     }
-
     if (oldVersion < 249) {
         g_settings->setValue(OPSTION_SKIN, OPSTION_SKIN_DEFAULT);
     }

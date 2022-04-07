@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QProcess>
+#include <QObject>
 
 #include "AppBase.h"
 #include "SettingsManager.h"
@@ -67,12 +68,6 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-    }
-
-    if (!allowMultipleInstances && g_app->isAlreadyRunning()) {
-        g_app->sendInstanceCommand(command);
-        qInfo("second instance, app about to exit");
-        exit(0);
     }
 
     launchy::createLaunchyWidget(command);
