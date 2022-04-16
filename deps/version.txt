@@ -1,0 +1,3 @@
+SingleApplication - 3.3.2
+QHotKey - 1.5.0
+pybind11 -
