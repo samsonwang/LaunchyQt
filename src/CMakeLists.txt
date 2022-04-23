@@ -73,9 +73,7 @@ if (MSVC)
 
   add_compile_definitions (_CRT_SECURE_NO_WARNINGS)
   add_compile_definitions (NOMINMAX)
-  add_compile_definitions (WIN32_LEAN_AND_MEAN)
-
-  # set (CMAKE_CONFIGURATION_TYPES "Debug;Release")
+  # add_compile_definitions (WIN32_LEAN_AND_MEAN)
 
 #  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 #  set (CMAKE_EXE_LINKER_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
@@ -222,18 +220,16 @@ add_subdirectory(${DEPS_DIR}/SingleApplication SingleApplication)
 # QHotKey
 add_library (QHotKey STATIC)
 
-file (GLOB SOURCES_HOTKEY
-  ${DEPS_DIR}/QHotkey/*.h
-  ${DEPS_DIR}/QHotkey/QHotkey.cpp
-  ${DEPS_DIR}/QHotkey/QHotkeyP.cpp)
-if (WIN32)
-  list (APPEND SOURCES_HOTKEY ${DEPS_DIR}/QHotkey/QHotkeyWin.cpp)
-else ()
-  list (APPEND SOURCES_HOTKEY ${DEPS_DIR}/QHotkey/QHotkeyX11.cpp)
-endif ()
+target_sources (QHotKey PRIVATE ${DEPS_DIR}/QHotkey/qhotkey.cpp)
 
-target_sources (QHotKey
-  PRIVATE ${SOURCES_HOTKEY})
+if (WIN32)
+  target_sources(QHotKey PRIVATE ${DEPS_DIR}/QHotkey/qhotkey_win.cpp)
+else ()
+  find_package(X11 REQUIRED)
+  include_directories(${X11_INCLUDE_DIR})
+  target_link_libraries(QHotKey PRIVATE ${X11_LIBRARIES})
+  target_sources(QHotKey PRIVATE ${DEPS_DIR}/QHotkey/qhotkey_x11.cpp)
+endif ()
 
 if (WIN32)
 target_link_libraries (QHotKey
@@ -241,7 +237,7 @@ target_link_libraries (QHotKey
   PRIVATE Qt6::Widgets)
 else ()
 target_link_libraries (QHotKey
-  PUBLIC Qt6::Core Qt6::X11Extras
+  PUBLIC Qt6::Core
   PRIVATE Qt6::Widgets X11 xcb)
 endif ()
 
