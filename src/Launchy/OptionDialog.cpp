@@ -582,19 +582,21 @@ void OptionDialog::initGeneralWidget() {
 
     for (int i = '0'; i <= '9'; ++i) {
         m_actionKeys << QString(QChar(i));
-        m_iActionKeys << i;
+        m_iActionKeys << Qt::Key(i);
     }
 
     for (int i = 'A'; i <= 'Z'; ++i) {
         m_actionKeys << QString(QChar(i));
-        m_iActionKeys << i;
+        m_iActionKeys << Qt::Key(i);
     }
 
-    m_actionKeys << "`" << "-" << "=" << "[" << "]"
-        << ";" << "'" << "#" << "\\" << "," << "." << "/";
+    m_actionKeys << "`" << "-" << "=" << "["
+        << "]" << ";" << "'" << "#"
+        << "\\" << "," << "." << "/";
 
-    m_iActionKeys << '`' << '-' << '=' << '[' << ']'
-        << ';' << '\'' << '#' << '\\' << ',' << '.' << '/';
+    m_iActionKeys << Qt::Key('`') << Qt::Key('-') << Qt::Key('=') << Qt::Key('[')
+        << Qt::Key(']') << Qt::Key(';') << Qt::Key('\'') << Qt::Key('#')
+        << Qt::Key('\\') << Qt::Key(',') << Qt::Key('.') << Qt::Key('/');
 
     // Find the current hotkey
     int hotkey = g_mainWidget->getHotkey();
@@ -649,17 +651,17 @@ void OptionDialog::initGeneralWidget() {
 
 bool OptionDialog::saveGeneralSettings() {
     // See if the new hotkey works, if not we're not leaving the dialog.
-    QKeySequence hotkey(m_iMetaKeys[m_pUi->genModifierBox->currentIndex()] + m_iActionKeys[m_pUi->genKeyBox->currentIndex()]);
+    QKeySequence hotkey(m_iMetaKeys[m_pUi->genModifierBox->currentIndex()], m_iActionKeys[m_pUi->genKeyBox->currentIndex()]);
     if (!g_mainWidget->setHotkey(hotkey)) {
         QMessageBox::warning(this, tr("Launchy"),
                              tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
         return false;
     }
 
-    g_settings->setValue(OPSTION_HOTKEY, hotkey.count() > 0 ? hotkey[0] : OPSTION_HOTKEY_DEFAULT);
+    g_settings->setValue(OPSTION_HOTKEY, hotkey.isEmpty() ? OPSTION_HOTKEY_DEFAULT : hotkey[0].toCombined());
 
     // Save General Options
-    //	g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
+    // g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
     g_settings->setValue(OPSTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
     g_settings->setValue(OPSTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
 

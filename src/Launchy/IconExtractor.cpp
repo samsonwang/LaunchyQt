@@ -41,8 +41,9 @@ void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
 
     m_mutex.unlock();
 
-    if (!isRunning())
+    if (!isRunning()) {
         start(LowPriority);
+    }
 }
 
 void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
@@ -67,8 +68,9 @@ void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
 
     m_mutex.unlock();
 
-    if (!isRunning())
+    if (!isRunning()) {
         start(IdlePriority);
+    }
 }
 
 void IconExtractor::stop() {
@@ -78,15 +80,18 @@ void IconExtractor::stop() {
 }
 
 void IconExtractor::run() {
-    CatItem item;
+
     bool itemsRemaining = true;
 
     do {
+        CatItem item;
+
         m_mutex.lock();
         itemsRemaining = m_items.size() > 0;
         if (itemsRemaining)
             item = m_items.dequeue();
         m_mutex.unlock();
+
         if (itemsRemaining) {
             QIcon icon = getIcon(item);
             emit iconExtracted(item.pluginName, item.fullPath, icon);
@@ -95,7 +100,7 @@ void IconExtractor::run() {
 }
 
 QIcon IconExtractor::getIcon(const CatItem& item) {
-    qDebug() << "Fetching icon for" << item.fullPath;
+    qDebug() << "IconExtractor::getIcon, Fetching icon for" << item.fullPath;
 
 #ifdef Q_OS_MAC
     if (item.iconPath.endsWith(".png") || item.iconPath.endsWith(".ico"))

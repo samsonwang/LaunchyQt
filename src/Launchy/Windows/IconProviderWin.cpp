@@ -92,7 +92,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         QString filePath = QDir::toNativeSeparators(info.filePath());
 
         qDebug() << "IconProviderWin::icon, exe, file path:" << filePath
-                 << ", flags:" << flags;
+            << ", flags:" << flags;
 
         SHFILEINFOW sfi;
         ZeroMemory(&sfi, sizeof(sfi));

@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QString>
 #include <QIcon>
 #include <QMutex>
+
 #include "LaunchyLib/CatalogItem.h"
 
 namespace launchy {
@@ -33,6 +34,8 @@ class IconExtractor : public QThread {
     Q_OBJECT
 public:
     IconExtractor();
+
+public:
     void processIcon(const CatItem& item, bool highPriority = false);
     void processIcons(const QList<CatItem>& newItems, bool reset = true);
     void stop();

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QString>
 #include <QFileIconProvider>
 
-#include "SingleApplication/Singleapplication"
+#include <SingleApplication/Singleapplication>
 
 #include "Directory.h"
 

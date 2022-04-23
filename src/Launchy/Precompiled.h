@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma warning (disable : 4091)
 #pragma warning (disable : 4099)
 #pragma warning (push, 1)
-#define NOMINMAX
 #endif
 
 #include <QtGlobal> // for OS detection

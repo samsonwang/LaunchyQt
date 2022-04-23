@@ -115,8 +115,8 @@ private:
 
     QStringList m_metaKeys;
     QStringList m_actionKeys;
-    QList<int> m_iMetaKeys;
-    QList<int> m_iActionKeys;
+    QList<Qt::KeyboardModifiers> m_iMetaKeys;
+    QList<Qt::Key> m_iActionKeys;
     QList<Directory> m_memDirs;
 
     static QByteArray s_lastWindowGeometry;

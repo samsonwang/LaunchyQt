@@ -44,7 +44,7 @@ void UpdateEnvironment() {
     wchar_t* currentEnvironment = GetEnvironmentStringsW();
     for (WCHAR* p = currentEnvironment; *p != 0;)
     {
-        QString variable = QString::fromUtf16((const ushort*)p);
+        QString variable = QString::fromWCharArray(p);
         QString name = variable.section("=", 0, 0);
         // Ignore entries for drive current directory entries that have no name
         if (name.size() > 0)
@@ -91,7 +91,7 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
                                           &read, &totalOnNetwork, serverType, domain, 0);
     if (result == NERR_Success) {
         for (DWORD i = 0; i < read; ++i) {
-            QString name = QString::fromUtf16((ushort*)serverInfo[i].sv100_name);
+            QString name = QString::fromWCharArray(serverInfo[i].sv100_name);
             items.push_back(name);
         }
     }

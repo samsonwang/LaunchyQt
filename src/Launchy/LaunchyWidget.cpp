@@ -35,7 +35,7 @@
 #include <QInputMethodEvent>
 #include <QMouseEvent>
 
-#include "QHotkey/QHotkeyP.h"
+#include <QHotkey/QHotkey>
 
 #include "LaunchyLib/PluginInterface.h"
 #include "LaunchyLib/PluginMsg.h"
@@ -113,8 +113,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     createActions();
 
-    connect(&m_iconExtractor, SIGNAL(iconExtracted(int, QString, QIcon)),
-            this, SLOT(iconExtracted(int, QString, QIcon)));
+    connect(&m_iconExtractor, &IconExtractor::iconExtracted,
+            this, &LaunchyWidget::iconExtracted);
 
     m_inputBox->setObjectName("input");
     connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
@@ -324,11 +324,11 @@ void LaunchyWidget::setAlternativeListMode(int mode) {
 }
 
 bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
-    QKeySequence seqOld = m_pHotKey->keySeq();
-    m_pHotKey->setKeySeq(hotkey);
+    QKeySequence seqOld = m_pHotKey->shortcut();
+    m_pHotKey->setShortcut(hotkey, true);
 
-    if (!m_pHotKey->registered()) {
-        m_pHotKey->setKeySeq(seqOld);
+    if (!m_pHotKey->isRegistered()) {
+        m_pHotKey->setShortcut(seqOld, true);
         return false;
     }
 
@@ -343,22 +343,24 @@ bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
 // and set its size and position accordingly.
 void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     int mode = g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt();
+
     int i = 0;
     for (; i < m_searchResult.size(); ++i) {
         qDebug() << "LaunchyWidget::updateAlternativeList," << i << ":"
                  << m_searchResult[i].shortName << ","
                  << m_searchResult[i].fullPath;
         QString fullPath = QDir::toNativeSeparators(m_searchResult[i].fullPath);
-#ifdef _DEBUG
+#ifndef NDEBUG
         fullPath += QString(" (%1 launches)").arg(m_searchResult[i].usage);
 #endif
-        QListWidgetItem* item;
+        QListWidgetItem* item = nullptr;
         if (i < m_alternativeList->count()) {
             item = m_alternativeList->item(i);
         }
         else {
             item = new QListWidgetItem(fullPath, m_alternativeList);
         }
+
         if (item->data(mode == 1 ? ROLE_SHORT : ROLE_FULL) != fullPath) {
             // condensedTempIcon is a blank icon or null
             item->setData(ROLE_ICON, QIcon());
@@ -366,8 +368,11 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
         }
         item->setData(mode == 1 ? ROLE_FULL : ROLE_SHORT, m_searchResult[i].shortName);
         item->setData(mode == 1 ? ROLE_SHORT : ROLE_FULL, fullPath);
-        if (i >= m_alternativeList->count())
+        item->setData(Qt::UserRole, m_searchResult[i].fullPath);
+
+        if (i >= m_alternativeList->count()) {
             m_alternativeList->addItem(item);
+        }
     }
 
     while (m_alternativeList->count() > i) {
@@ -377,6 +382,7 @@ void LaunchyWidget::updateAlternativeList(bool resetSelection) {
     if (resetSelection) {
         m_alternativeList->setCurrentRow(0);
     }
+
     m_iconExtractor.processIcons(m_searchResult);
 
     m_alternativeList->updateGeometry(pos(), m_inputBox->pos());
@@ -930,7 +936,7 @@ void LaunchyWidget::retranslateUi() {
 
     m_trayIcon->setToolTip(tr("Launchy %1\npress %2 to activate")
                            .arg(LAUNCHY_VERSION_STRING)
-                           .arg(m_pHotKey->keySeq().toString()));
+                           .arg(m_pHotKey->shortcut().toString()));
 }
 
 void LaunchyWidget::updateOutputSize() {
@@ -950,23 +956,21 @@ void LaunchyWidget::dropTimeout() {
     }
 }
 
-void LaunchyWidget::iconExtracted(int itemIndex, const QString& path, const QIcon& icon) {
-    if (itemIndex == -1) {
-        // An index of -1 means update the output icon, check that it is also
-        // the same item as was originally requested
-        if (path == m_outputItem.fullPath) {
-            m_outputIcon->setPixmap(icon.pixmap(m_outputIcon->size()));
-        }
-    }
-    else if (itemIndex < m_alternativeList->count()) {
-        // >=0 is an item in the alternatives list
-        if (itemIndex < m_searchResult.count()
-            && path == m_searchResult[itemIndex].fullPath) {
-            QListWidgetItem* listItem = m_alternativeList->item(itemIndex);
-            listItem->setIcon(icon);
-            listItem->setData(ROLE_ICON, icon);
+void LaunchyWidget::iconExtracted(const QString& pluginName, const QString& path, const QIcon& icon) {
 
-            QRect rect = m_alternativeList->visualItemRect(listItem);
+    if (path == m_outputItem.fullPath) {
+        m_outputIcon->setPixmap(icon.pixmap(m_outputIcon->size()));
+    }
+
+    for (int i = 0; i < m_alternativeList->count(); ++i)
+    {
+        QListWidgetItem* item = m_alternativeList->item(i);
+        if (item && item->data(Qt::UserRole).toString() == path)
+        {
+            item->setIcon(icon);
+            item->setData(ROLE_ICON, icon);
+
+            QRect rect = m_alternativeList->visualItemRect(item);
             repaint(rect);
         }
     }

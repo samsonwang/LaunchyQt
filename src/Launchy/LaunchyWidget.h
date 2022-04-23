@@ -131,7 +131,7 @@ protected slots:
     void catalogProgressUpdated(int);
     void catalogBuilt();
     void setFadeLevel(double level);
-    void iconExtracted(int index, const QString& path, const QIcon& icon);
+    void iconExtracted(const QString& plugin, const QString& path, const QIcon& icon);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void reloadSkin();
     void exit();
