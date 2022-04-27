@@ -56,7 +56,7 @@ CharListWidget::CharListWidget(QWidget* parent)
 
 void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset) {
     // Now resize and reposition the list
-    int numViewable = g_settings->value(OPSTION_NUMVIEWABLE, OPSTION_NUMVIEWABLE_DEFAULT).toInt();
+    int numViewable = g_settings->value(OPTION_NUMVIEWABLE, OPTION_NUMVIEWABLE_DEFAULT).toInt();
     int min = count() < numViewable ? count() : numViewable;
 
     // The stylesheet doesn't load immediately, so we cache the placement rectangle here

@@ -71,8 +71,8 @@ void CommandHistory::addItem(const InputDataList& item) {
         return;
     }
 
-    int historyMax = g_settings->value(OPSTION_MAXITEMSINHISTORY,
-                                       OPSTION_MAXITEMSINHISTORY_DEFAULT).toInt();
+    int historyMax = g_settings->value(OPTION_MAXITEMSINHISTORY,
+                                       OPTION_MAXITEMSINHISTORY_DEFAULT).toInt();
     if (historyMax <= 0) {
         m_history.clear();
         return;

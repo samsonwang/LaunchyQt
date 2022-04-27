@@ -75,11 +75,11 @@ void SettingsManager::load() {
 
     QString iniPath = configDirectory(m_portable) + iniName;
     g_settings.reset(new QSettings(iniPath, QSettings::IniFormat));
-    int nVersion = g_settings->value(OPSTION_VERSION, OPSTION_VERSION_DEFAULT).toInt();
+    int nVersion = g_settings->value(OPTION_VERSION, OPTION_VERSION_DEFAULT).toInt();
 
-    if (!QFile::exists(iniPath) || nVersion == OPSTION_VERSION_DEFAULT) {
+    if (!QFile::exists(iniPath) || nVersion == OPTION_VERSION_DEFAULT) {
         // Ini file doesn't exist, create some defaults and save them to disk
-        g_settings->setValue(OPSTION_VERSION, OPSTION_VERSION_DEFAULT);
+        g_settings->setValue(OPTION_VERSION, OPTION_VERSION_DEFAULT);
         QList<Directory> directories = g_app->getDefaultCatalogDirectories();
         writeCatalogDirectories(directories);
     }

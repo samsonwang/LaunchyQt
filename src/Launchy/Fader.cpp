@@ -34,10 +34,10 @@ Fader::~Fader() {
 }
 
 void Fader::fadeIn(bool quick) {
-    int time = g_settings->value(OPSTION_FADEIN, OPSTION_FADEIN_DEFAULT).toInt();
+    int time = g_settings->value(OPTION_FADEIN, OPTION_FADEIN_DEFAULT).toInt();
 
     m_mutex.lock();
-    m_targetLevel = g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
+    m_targetLevel = g_settings->value(OPTION_OPAQUENESS, OPTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
     m_delta = 0.05;
     m_delay = quick ? 0 : (int)(time * m_delta / m_targetLevel);
     if (m_delay > 10) {
@@ -59,8 +59,8 @@ void Fader::fadeIn(bool quick) {
 }
 
 void Fader::fadeOut(bool quick) {
-    int time = g_settings->value(OPSTION_FADEOUT, OPSTION_FADEOUT_DEFAULT).toInt();
-    double opaqueness = g_settings->value(OPSTION_OPAQUENESS, OPSTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
+    int time = g_settings->value(OPTION_FADEOUT, OPTION_FADEOUT_DEFAULT).toInt();
+    double opaqueness = g_settings->value(OPTION_OPAQUENESS, OPTION_OPAQUENESS_DEFAULT).toInt() / 100.0;
 
     m_mutex.lock();
     m_targetLevel = 0;

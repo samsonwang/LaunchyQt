@@ -22,23 +22,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace launchy {
 
 // general
-extern const char*      OPSTION_ALWAYSSHOW;
-extern const bool       OPSTION_ALWAYSSHOW_DEFAULT;
+extern const char*      OPTION_ALWAYSSHOW;
+extern const bool       OPTION_ALWAYSSHOW_DEFAULT;
 
-extern const char*      OPSTION_ALWAYSTOP;
-extern const bool       OPSTION_ALWAYSTOP_DEFAULT;
+extern const char*      OPTION_ALWAYSTOP;
+extern const bool       OPTION_ALWAYSTOP_DEFAULT;
 
-extern const char*      OPSTION_DECORATETEXT;
-extern const bool       OPSTION_DECORATETEXT_DEFAULT;
+extern const char*      OPTION_DECORATETEXT;
+extern const bool       OPTION_DECORATETEXT_DEFAULT;
 
-extern const char*      OPSTION_HIDEIFLOSTFOCUS;
-extern const bool       OPSTION_HIDEIFLOSTFOCUS_DEFAULT;
+extern const char*      OPTION_HIDEIFLOSTFOCUS;
+extern const bool       OPTION_HIDEIFLOSTFOCUS_DEFAULT;
 
-extern const char*      OPSTION_ALWAYSCENTER;
-extern const int        OPSTION_ALWAYSCENTER_DEFAULT;
+extern const char*      OPTION_ALWAYSCENTER;
+extern const int        OPTION_ALWAYSCENTER_DEFAULT;
 
-extern const char*      OPSTION_DRAGMODE;
-extern const bool       OPSTION_DRAGMODE_DEFAULT;
+extern const char*      OPTION_DRAGMODE;
+extern const bool       OPTION_DRAGMODE_DEFAULT;
 
 static const char*      OPTION_HIDE_TRAY_ICON = "GenOps/HideTrayIcon";
 static const bool       OPTION_HIDE_TRAY_ICON_DEFAULT = false;
@@ -46,47 +46,47 @@ static const bool       OPTION_HIDE_TRAY_ICON_DEFAULT = false;
 extern const char*      OPTION_APPSTYLE;
 extern const char*      OPTION_APPSTYLE_DEFAULT;
 
-extern const char*      OPSTION_AUTOSUGGESTDELAY;
-extern const int        OPSTION_AUTOSUGGESTDELAY_DEFAULT;
+extern const char*      OPTION_AUTOSUGGESTDELAY;
+extern const int        OPTION_AUTOSUGGESTDELAY_DEFAULT;
 
-extern const char*      OPSTION_NUMVIEWABLE;
-extern const int        OPSTION_NUMVIEWABLE_DEFAULT;
+extern const char*      OPTION_NUMVIEWABLE;
+extern const int        OPTION_NUMVIEWABLE_DEFAULT;
 
-extern const char*      OPSTION_NUMRESULT;
-extern const int        OPSTION_NUMRESULT_DEFAULT;
+extern const char*      OPTION_NUMRESULT;
+extern const int        OPTION_NUMRESULT_DEFAULT;
 
-extern const char*      OPSTION_MAXITEMSINHISTORY;
-extern const int        OPSTION_MAXITEMSINHISTORY_DEFAULT;
+extern const char*      OPTION_MAXITEMSINHISTORY;
+extern const int        OPTION_MAXITEMSINHISTORY_DEFAULT;
 
-extern const char*      OPSTION_OPAQUENESS;
-extern const int        OPSTION_OPAQUENESS_DEFAULT;
+extern const char*      OPTION_OPAQUENESS;
+extern const int        OPTION_OPAQUENESS_DEFAULT;
 
-extern const char*      OPSTION_FADEIN;
-extern const int        OPSTION_FADEIN_DEFAULT;
+extern const char*      OPTION_FADEIN;
+extern const int        OPTION_FADEIN_DEFAULT;
 
-extern const char*      OPSTION_FADEOUT;
-extern const int        OPSTION_FADEOUT_DEFAULT;
+extern const char*      OPTION_FADEOUT;
+extern const int        OPTION_FADEOUT_DEFAULT;
 
-extern const char*      OPSTION_SKIN;
-extern const char*      OPSTION_SKIN_DEFAULT;
+extern const char*      OPTION_SKIN;
+extern const char*      OPTION_SKIN_DEFAULT;
 
-extern const char*      OPSTION_CONDENSEDVIEW;
-extern const int        OPSTION_CONDENSEDVIEW_DEFAULT;
+extern const char*      OPTION_CONDENSEDVIEW;
+extern const int        OPTION_CONDENSEDVIEW_DEFAULT;
 
-extern const char*      OPSTION_HOTKEY;
-extern const int        OPSTION_HOTKEY_DEFAULT;
+extern const char*      OPTION_HOTKEY;
+extern const int        OPTION_HOTKEY_DEFAULT;
 
-extern const char*      OPSTION_HOTKEYMOD;
-extern const int        OPSTION_HOTKEYMOD_DEFAULT;
+extern const char*      OPTION_HOTKEYMOD;
+extern const int        OPTION_HOTKEYMOD_DEFAULT;
 
-extern const char*      OPSTION_HOTKEYKEY;
-extern const int        OPSTION_HOTKEYKEY_DEFAULT;
+extern const char*      OPTION_HOTKEYKEY;
+extern const int        OPTION_HOTKEYKEY_DEFAULT;
 
-extern const char*      OPSTION_VERSION;
-extern const int        OPSTION_VERSION_DEFAULT;
+extern const char*      OPTION_VERSION;
+extern const int        OPTION_VERSION_DEFAULT;
 
-extern const char*      OPSTION_POS;
-extern const QPoint     OPSTION_POS_DEFAULT;
+extern const char*      OPTION_POS;
+extern const QPoint     OPTION_POS_DEFAULT;
 
 // update
 extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP;
@@ -135,4 +135,5 @@ extern const int        OPTION_LOGLEVEL_DEFAULT;
 
 extern const char*      OPTION_LANGUAGE;
 extern const char*      OPTION_LANGUAGE_DEFAULT;
-}
+
+} // namespace launchy

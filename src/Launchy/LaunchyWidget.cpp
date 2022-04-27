@@ -129,7 +129,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     m_outputIcon->setGeometry(QRect());
 
     m_alternativeList->setObjectName("alternatives");
-    setAlternativeListMode(g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt());
+    setAlternativeListMode(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
     connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
     connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
     connect(m_alternativeList, SIGNAL(focusOut()), this, SLOT(onAlternativeListFocusOut()));
@@ -178,17 +178,17 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
     // If this is the first time running or a new version, call updateVersion
-    int version = g_settings->value(OPSTION_VERSION, OPSTION_VERSION_DEFAULT).toInt();
+    int version = g_settings->value(OPTION_VERSION, OPTION_VERSION_DEFAULT).toInt();
     if (version != LAUNCHY_VERSION) {
         updateVersion(version);
         command |= ShowLaunchy;
     }
 
     // Set the general options
-    if (setAlwaysShow(g_settings->value(OPSTION_ALWAYSSHOW, OPSTION_ALWAYSSHOW_DEFAULT).toBool())) {
+    if (setAlwaysShow(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool())) {
         command |= ShowLaunchy;
     }
-    setAlwaysTop(g_settings->value(OPSTION_ALWAYSTOP, OPSTION_ALWAYSTOP_DEFAULT).toBool());
+    setAlwaysTop(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
 
     // Set the hotkey
     QKeySequence hotkey = getHotkey();
@@ -216,10 +216,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     basicSkinFile.open(QFile::ReadOnly);
     qApp->setStyleSheet(basicSkinFile.readAll());
     // Load skin
-    applySkin(g_settings->value(OPSTION_SKIN, OPSTION_SKIN_DEFAULT).toString());
+    applySkin(g_settings->value(OPTION_SKIN, OPTION_SKIN_DEFAULT).toString());
 
     // Move to saved position
-    loadPosition(g_settings->value(OPSTION_POS, OPSTION_POS_DEFAULT).toPoint());
+    loadPosition(g_settings->value(OPTION_POS, OPTION_POS_DEFAULT).toPoint());
 
     connect(g_app, &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
@@ -342,7 +342,7 @@ bool LaunchyWidget::setHotkey(const QKeySequence& hotkey) {
 // Repopulate the alternatives list with the current search results
 // and set its size and position accordingly.
 void LaunchyWidget::updateAlternativeList(bool resetSelection) {
-    int mode = g_settings->value(OPSTION_CONDENSEDVIEW, OPSTION_CONDENSEDVIEW_DEFAULT).toInt();
+    int mode = g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt();
 
     int i = 0;
     for (; i < m_searchResult.size(); ++i) {
@@ -642,7 +642,7 @@ void LaunchyWidget::onAlternativeListFocusOut() {
     qDebug() << "LaunchyWidget::onAlternativeListFocusOut,"
              << "is main widget activeWindow:" << isActiveWindow()
              << ", is alternative list active window:" << m_alternativeList->isActiveWindow();
-    if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
+    if (g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
         && !m_optionsOpen
@@ -912,7 +912,7 @@ void LaunchyWidget::updateOutputItem(const CatItem& item) {
 }
 
 void LaunchyWidget::startDropTimer() {
-    int delay = g_settings->value(OPSTION_AUTOSUGGESTDELAY, OPSTION_AUTOSUGGESTDELAY_DEFAULT).toInt();
+    int delay = g_settings->value(OPTION_AUTOSUGGESTDELAY, OPTION_AUTOSUGGESTDELAY_DEFAULT).toInt();
     if (delay > 0) {
         m_dropTimer->start(delay);
         qDebug() << "LaunchyWidget::startDropTimer, timer start, delay =" << delay;
@@ -1000,11 +1000,11 @@ void LaunchyWidget::setSkin(const QString& name) {
 
 void LaunchyWidget::updateVersion(int oldVersion) {
     if (oldVersion < 249) {
-        g_settings->setValue(OPSTION_SKIN, OPSTION_SKIN_DEFAULT);
+        g_settings->setValue(OPTION_SKIN, OPTION_SKIN_DEFAULT);
     }
 
     if (oldVersion < LAUNCHY_VERSION) {
-        g_settings->setValue(OPSTION_VERSION, LAUNCHY_VERSION);
+        g_settings->setValue(OPTION_VERSION, LAUNCHY_VERSION);
     }
 }
 
@@ -1030,7 +1030,7 @@ void LaunchyWidget::loadPosition(const QPoint& pt) {
         ptTarget.setY(rtScreen.bottom() - rtWidget.height());
     }
 
-    int centerOption = g_settings->value(OPSTION_ALWAYSCENTER, OPSTION_ALWAYSCENTER_DEFAULT).toInt();
+    int centerOption = g_settings->value(OPTION_ALWAYSCENTER, OPTION_ALWAYSCENTER_DEFAULT).toInt();
     if (centerOption & 1) {
         ptTarget.setX(rtScreen.center().x() - rtWidget.width() / 2);
     }
@@ -1042,7 +1042,7 @@ void LaunchyWidget::loadPosition(const QPoint& pt) {
 }
 
 void LaunchyWidget::savePosition() {
-    g_settings->setValue(OPSTION_POS, pos());
+    g_settings->setValue(OPTION_POS, pos());
 }
 
 void LaunchyWidget::saveSettings() {
@@ -1143,7 +1143,7 @@ void LaunchyWidget::exit() {
 }
 
 void LaunchyWidget::onInputBoxFocusOut() {
-    if (g_settings->value(OPSTION_HIDEIFLOSTFOCUS, OPSTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
+    if (g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool()
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
         && !m_optionsOpen
@@ -1186,7 +1186,7 @@ void LaunchyWidget::applySkin(const QString& name) {
         if (skinPath.isEmpty())
             return;
 
-        g_settings->setValue(OPSTION_SKIN, defaultSkin);
+        g_settings->setValue(OPTION_SKIN, defaultSkin);
     }
 
     // Set a few defaults
@@ -1259,7 +1259,7 @@ void LaunchyWidget::applySkin(const QString& name) {
 
 void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton) {
-        if (!g_settings->value(OPSTION_DRAGMODE, OPSTION_DRAGMODE_DEFAULT).toBool()
+        if (!g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool()
             || (event->modifiers() & Qt::ShiftModifier)) {
             m_dragging = true;
             m_dragStartPoint = event->pos();
@@ -1412,10 +1412,10 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
 }
 
 int LaunchyWidget::getHotkey() const {
-    int hotkey = g_settings->value(OPSTION_HOTKEY, -1).toInt();
+    int hotkey = g_settings->value(OPTION_HOTKEY, -1).toInt();
     if (hotkey == -1) {
-        hotkey = g_settings->value(OPSTION_HOTKEYMOD, OPSTION_HOTKEYMOD_DEFAULT).toInt()
-            | g_settings->value(OPSTION_HOTKEYKEY, OPSTION_HOTKEYKEY_DEFAULT).toInt();
+        hotkey = g_settings->value(OPTION_HOTKEYMOD, OPTION_HOTKEYMOD_DEFAULT).toInt()
+            | g_settings->value(OPTION_HOTKEYKEY, OPTION_HOTKEYKEY_DEFAULT).toInt();
     }
     return hotkey;
 }

@@ -146,7 +146,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
     }
 
     // Load up the results
-    int max = g_settings->value(OPSTION_NUMRESULT, OPSTION_NUMRESULT_DEFAULT).toInt();
+    int max = g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt();
     for (int i = 0; i < max && i < catMatches.count(); i++) {
         result.push_back(*catMatches[i]);
     }
@@ -175,7 +175,7 @@ void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list
 }
 
 QString Catalog::decorateText(const QString& text, const QString& match, bool outputRichText) {
-    if (!g_settings->value(OPSTION_DECORATETEXT, OPSTION_DECORATETEXT_DEFAULT).toBool())
+    if (!g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool())
         return text;
     QString decoratedText;
     int matchLength = match.count();
