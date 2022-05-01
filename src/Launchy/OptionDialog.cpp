@@ -312,15 +312,15 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
 
     m_pUi->plugBox->setTitle(tr("Plugin options"));
     QLayout* pLayout = m_pUi->plugBox->layout();
-    if (pLayout != NULL) {
+    if (pLayout != nullptr) {
         while (QLayoutItem* child = pLayout->takeAt(0)) {
             delete child;
         }
     }
-
-    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, item->data(Qt::UserRole).toString());
-    if (win != NULL) {
-        if (pLayout != NULL) {
+    QString pluginName = item->data(Qt::UserRole).toString();
+    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, pluginName);
+    if (win != nullptr) {
+        if (pLayout != nullptr) {
             pLayout->addWidget(win);
         }
 

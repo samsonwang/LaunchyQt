@@ -157,16 +157,15 @@ public:
                                                  "doDialog");
         if (overload) {
             PyObject* pw = PyLong_FromVoidPtr(parentWidget);
-            auto pwo = py::handle(pw);
-            py::object result;
-            auto o = overload(pwo);
+            py::object result = overload(py::handle(pw));
 
+            // py::object result;
             if (py::detail::cast_is_temporary_value_reference<py::object>::value) {
                 static py::detail::overload_caster_t<py::object> caster;
-                result = py::detail::cast_ref<py::object>(std::move(o), caster);
+                result = py::detail::cast_ref<py::object>(std::move(result), caster);
             }
             else {
-                result = py::detail::cast_safe<py::object>(std::move(o));
+                result = py::detail::cast_safe<py::object>(std::move(result));
             }
 
             PyObject* resultPtr = result.ptr();

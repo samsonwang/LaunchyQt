@@ -61,18 +61,19 @@ def setSettingsObject():
     # Set the launchy.settings object
     try:
         # Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
-        from PyQt6 import QtCore, sip
-        from PyQt6.sip import wrapinstance
+        from PySide6 import QtCore
+        from shiboken6 import wrapInstance
+        log.debug("launchy_util::setSettingsObject, succeed to import pyside and shiboken")
         import launchy
         log.debug("launchy_util::setSettingsObject, launchy dir: %s" % dir(launchy))
-        launchy.settings = wrapinstance(launchy.__settings, QtCore.QSettings)
+        launchy.settings = wrapInstance(launchy.__settings, QtCore.QSettings)
         log.debug("launchy_util::setSettingsObject, launchy.settings: %s" % launchy.settings)
     except ImportError as err:
         log.warning("launchy_util::setSettingsObject, ImportError, %s" % err)
     except NameError as err:
         log.warning("launchy_util::setSettingsObject, NameError, %s" % err)
     except Exception as err:
-        log.warning("launchy_util, setSettingsObject, Exception, %s" % err)
+        log.warning("launchy_util::setSettingsObject, Exception, %s" % err)
 
 
 def initPipPackage():

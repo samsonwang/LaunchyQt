@@ -26,7 +26,7 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
 if (WIN32)
-  set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.2.3/msvc2019_64")
+  set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.2.4/msvc2019_64")
   find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
 else ()
   find_package (Qt6 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)
@@ -187,6 +187,7 @@ add_custom_command (TARGET PluginPy POST_BUILD
 add_custom_target (PluginPy.Util
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python
+  COMMENT "copy launchy_util.py to target directory"
   SOURCES ${SRC_DIR}/PluginPy/launchy_util.py)
 
 ##################################################

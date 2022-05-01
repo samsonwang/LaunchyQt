@@ -16,14 +16,11 @@
 
 import logging as log
 
-from PyQt6 import QtCore, QtGui, QtWidgets, sip
-from PyQt6.QtCore import QVariant
-from PyQt6.QtCore import QLocale
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QApplication
-from PyQt6.sip import wrapinstance, unwrapinstance
+from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import QLocale
+from PySide6.QtWidgets import QWidget, QApplication
+from shiboken6 import wrapInstance, getCppPointer
 
-import launchy
 from launchy import Plugin, CatItem
 from launchy import settings as lSettings
 
@@ -132,10 +129,10 @@ class CalcyPy(Plugin):
 
     def doDialog(self, parentWidgetPtr):
         log.debug('CalcyPy::doDialog ...')
-        parentWidget = wrapinstance(parentWidgetPtr, QtWidgets.QWidget)
+        parentWidget = wrapInstance(parentWidgetPtr, QWidget)
         self.widget = CalcyGui.CalcyOption(parentWidget, self.setting_dir, self.settings)
         self.widget.show()
-        return unwrapinstance(self.widget)
+        return getCppPointer(self.widget)[0]
 
     def endDialog(self, accept):
         log.debug('CalcyPy::endDialog ...')

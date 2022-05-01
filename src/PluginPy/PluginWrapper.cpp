@@ -184,6 +184,8 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
             << "msgId:" << msgId << "error info:" << errInfo;
     }
     catch (const std::runtime_error& e) {
+        PyErr_Print();
+        PyErr_Clear();
         const char* errInfo = e.what();
         qWarning() << "pluginpy::PluginWrapper::msg, std::runtime_error catched on dispatchMsg,"
             << "msgId:" << msgId << "error info:" << errInfo;
