@@ -1,7 +1,7 @@
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QFileDialog
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import QVariant
+from PyQt6.QtWidgets import QApplication, QWidget, QDialog, QFileDialog
 
 from .ui_calcy import *
 

@@ -44,10 +44,6 @@ PluginWrapper::~PluginWrapper() {
     m_plugin = nullptr;
 }
 
-void PluginWrapper::getID(uint* id) {
-    *id = m_plugin->getID();
-}
-
 void PluginWrapper::getName(QString* name) {
     std::string pluginName = m_plugin->getName();
     *name = QString::fromStdString(pluginName);
@@ -132,7 +128,7 @@ void PluginWrapper::launchyHide() {
 
 int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     if (!m_plugin) {
-        qDebug() << "Called PluginWrapper, but it has no script plugin";
+        qDebug() << "pluginpy::PluginWrapper::msg, Called PluginWrapper, but it has no python plugin";
         return false;
     }
 
@@ -168,33 +164,33 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     // python GIL
 //     const bool inPython = !s_inPythonLock.tryLock();
 //     if (inPython) {
-//         qDebug() << "PluginWrapper::dispatchFunction, wait for python lock"
+//         qDebug() << "PluginWrapper::dispatchMsg, wait for python lock"
 //             << "msgId:" << msgId;
 //         return 0;
 //     }
 
-    qDebug() << "PluginWrapper::dispatchFunction, lock mutex, msgId:"
-        << msgId;
+    qDebug() << "pluginpy::PluginWrapper::msg, lock mutex, msgId:" << msgId;
     // Disptach the actual Python function
     int result = 0;
+
     try {
-        result = dispatchFunction(msgId, wParam, lParam);
+        result = dispatchMsg(msgId, wParam, lParam);
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
-        qWarning() << "PluginWrapper::msg, py::error_already_set catched on dispatchFunction,"
+        qWarning() << "pluginpy::PluginWrapper::msg, py::error_already_set catched on dispatchMsg,"
             << "msgId:" << msgId << "error info:" << errInfo;
     }
     catch (const std::runtime_error& e) {
         const char* errInfo = e.what();
-        qWarning() << "PluginWrapper::msg, std::runtime_error catched on dispatchFunction,"
+        qWarning() << "pluginpy::PluginWrapper::msg, std::runtime_error catched on dispatchMsg,"
             << "msgId:" << msgId << "error info:" << errInfo;
     }
 
-    qDebug() << "PluginWrapper::dispatchFunction, unlock mutex, msgId:"
-        << msgId;
+    qDebug() << "pluginpy::PluginWrapper::msg, unlock mutex, msgId:" << msgId;
+
     //s_inPythonLock.unlock();
     return result;
 }
@@ -212,7 +208,7 @@ bool PluginWrapper::isInPythonFunction() const {
 }
 */
 
-int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
+int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
     int handled = false;
 
     switch (msgId) {
@@ -220,53 +216,61 @@ int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
         init();
         handled = true;
         break;
-    case MSG_GET_ID:
-        getID((uint*)wParam);
-        handled = true;
-        break;
+
     case MSG_GET_NAME:
         getName((QString*)wParam);
         handled = true;
         break;
+
     case MSG_PATH:
         setPath((const QString*)wParam);
         break;
+
     case MSG_GET_LABELS:
         getLabels((QList<launchy::InputData>*) wParam);
         handled = true;
         break;
+
     case MSG_GET_RESULTS:
         getResults((QList<launchy::InputData>*) wParam, (QList<launchy::CatItem>*) lParam);
         handled = true;
         break;
+
     case MSG_GET_CATALOG:
         getCatalog((QList<launchy::CatItem>*) wParam);
         handled = true;
         break;
+
     case MSG_LAUNCH_ITEM:
         launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         handled = true;
         break;
+
     case MSG_HAS_DIALOG:
         // Set to true if you provide a gui
         handled = hasDialog();
         break;
+
     case MSG_DO_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
         doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
+
     case MSG_END_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
         endDialog((bool)wParam);
         break;
+
     case MSG_LAUNCHY_SHOW:
         handled = true;
         launchyShow();
         break;
+
     case MSG_LAUNCHY_HIDE:
         handled = true;
         launchyHide();
         break;
+
     default:
         break;
     }
@@ -274,4 +278,4 @@ int PluginWrapper::dispatchFunction(int msgId, void* wParam, void* lParam) {
     return handled;
 }
 
-}
+} // namespace pluginpy

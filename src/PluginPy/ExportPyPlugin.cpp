@@ -9,7 +9,6 @@ void ExportPlugin(const pybind11::module& m) {
     py::class_<Plugin, PluginHelper>(m, "Plugin")
         .def(py::init<>())
         .def("init", &exportpy::Plugin::init)
-        .def("getID", &exportpy::Plugin::getID)
         .def("getName", &exportpy::Plugin::getName)
         .def("setPath", &exportpy::Plugin::setPath)
         .def("getLabels", &exportpy::Plugin::getLabels)
@@ -23,4 +22,4 @@ void ExportPlugin(const pybind11::module& m) {
         .def("launchyHide", &exportpy::Plugin::launchyHide);
 }
 
-}
+} // namespace exportpy

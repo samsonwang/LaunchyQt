@@ -393,7 +393,14 @@ add_custom_command (TARGET Plugin.Verby POST_BUILD
 # plugin: CalcPy
 add_custom_target (PluginPy.CalcPy
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${SRC_DIR}/Plugins/CalcyPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/CalcyPy)
+  ${SRC_DIR}/Plugins/CalcyPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/CalcyPy
+  COMMENT "copy calcpy to plugin directory")
+target_sources (PluginPy.CalcPy PRIVATE
+  ${SRC_DIR}/Plugins/CalcyPy/CalcyPy.py
+  ${SRC_DIR}/Plugins/CalcyPy/Calculator.py
+  ${SRC_DIR}/Plugins/CalcyPy/Calcy/CalcyGui.py
+  ${SRC_DIR}/Plugins/CalcyPy/Calcy/calcy.ui
+  ${SRC_DIR}/Plugins/CalcyPy/Calcy/ui_calcy.py)
 
 ##################################################
 # plugin: PydiryPy

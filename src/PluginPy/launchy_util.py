@@ -61,8 +61,8 @@ def setSettingsObject():
     # Set the launchy.settings object
     try:
         # Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
-        from PyQt5 import QtCore
-        from sip import wrapinstance
+        from PyQt6 import QtCore, sip
+        from PyQt6.sip import wrapinstance
         import launchy
         log.debug("launchy_util::setSettingsObject, launchy dir: %s" % dir(launchy))
         launchy.settings = wrapinstance(launchy.__settings, QtCore.QSettings)

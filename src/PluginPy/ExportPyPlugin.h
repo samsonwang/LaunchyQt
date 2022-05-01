@@ -26,8 +26,6 @@ public:
 public:
     virtual void init() = 0;
 
-    virtual unsigned int getID() = 0;
-
     virtual std::string getName() = 0;
 
     virtual void setPath(const std::string& path) = 0;
@@ -75,14 +73,6 @@ public:
             void,           /* Return type */
             Plugin,         /* Parent class */
             init            /* Name of function in C++ (must match Python name) */
-        );
-    }
-
-    unsigned int getID() override {
-        PYBIND11_OVERLOAD_PURE(
-            unsigned int,
-            Plugin,
-            getID
         );
     }
 
@@ -216,4 +206,4 @@ public:
     }
 };
 
-}
+} // namespace exportpy

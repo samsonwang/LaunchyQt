@@ -163,7 +163,7 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     qDebug() << "PluginHandler::loadPythonPlugin, plugin loaded:" << pluginFullPath;
 
     PluginInfo info;
-    info.path = pluginFullPath;
+    info.path = pluginPath;
     info.loaded = false;
     info.obj = plugin;
 
@@ -203,7 +203,7 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
     qDebug() << "PluginHandler::loadCppPlugin, plugin loaded:" << pluginFullPath;
 
     PluginInfo info;
-    info.path = pluginFullPath;
+    info.path = pluginPath;
     info.loaded = false;
     info.obj = plugin;
 

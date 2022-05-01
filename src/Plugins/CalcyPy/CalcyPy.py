@@ -16,17 +16,15 @@
 
 import logging as log
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QVariant
-from PyQt5.QtCore import QLocale
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QApplication
-from sip import wrapinstance, unwrapinstance
+from PyQt6 import QtCore, QtGui, QtWidgets, sip
+from PyQt6.QtCore import QVariant
+from PyQt6.QtCore import QLocale
+from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QApplication
+from PyQt6.sip import wrapinstance, unwrapinstance
 
 import launchy
-from launchy import Plugin
-from launchy import CatItem
-from launchy import hash as lHash
+from launchy import Plugin, CatItem
 from launchy import settings as lSettings
 
 from Calculator import Calculator
@@ -38,19 +36,16 @@ class CalcyPy(Plugin):
 
     def __init__(self):
         Plugin.__init__(self)
-        self.hash = lHash(self.getName())
 
     def init(self):
         self.__readSettings()
-
-    def getID(self):
-        return int(self.hash)
 
     def getName(self):
         return "CalcyPy"
 
     def setPath(self, path):
         self.path = path
+        log.debug("CalcyPy.setPath, path = {}".format(self.path))
 
     def getIcon(self):
         return self.path + "/calcpy.ico"
@@ -101,37 +96,37 @@ class CalcyPy(Plugin):
 
         if retInFloat is not None:
             item = CatItem("float.calcypy", retInFloat,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(50000)
             resultsList.append(item)
 
         if retInDec is not None:
             item = CatItem("dec.calcpy", retInDec,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(50000)
             resultsList.append(item)
 
         if retInHex is not None:
             item = CatItem("hex.calcpy", retInHex,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(40000)
             resultsList.append(item)
 
         if retInOct is not None:
             item = CatItem("oct.calcpy", retInOct,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(30000)
             resultsList.append(item)
 
         if retInBin is not None:
             item = CatItem("bin.calcpy", retInBin,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(20000)
             resultsList.append(item)
 
         if retInSize is not None:
             item = CatItem("size.calcpy", retInSize,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(10000)
             resultsList.append(item)
 

@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDir>
 #include <QApplication>
 
+#include "LaunchyLib/LaunchyLib.h"
 #include "LaunchyLib/InputData.h"
 
 #include "ExportPyPlugin.h"
@@ -132,9 +133,16 @@ PluginMgr::PluginMgr()
 
     py::initialize_interpreter();
 
-    QString pythonLibPath = qApp->applicationDirPath() + "/python";
+    QString pythonPkgPath = qApp->applicationDirPath() + "/python";
     py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
-    pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pythonLibPath)));
+    pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pythonPkgPath)));
+
+    // load system pypi package path
+    QString externalPkgPath = launchy::g_settings->value("Python/ExternalPackagePath", "").toString();
+    if (!externalPkgPath.isEmpty()) {
+        pathObj.append(qUtf8Printable(QDir::toNativeSeparators(externalPkgPath)));
+        qDebug() << "pluginpy::PluginMgr::PluginMgr, external package path:" << externalPkgPath;
+    }
 
     try {
         // import pluginconf.py
@@ -160,4 +168,5 @@ PluginMgr::~PluginMgr() {
     py::finalize_interpreter();
 }
 
-}
+} // namesapce pluginpy
+
