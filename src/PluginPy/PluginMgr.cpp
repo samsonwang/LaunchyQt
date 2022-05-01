@@ -93,13 +93,13 @@ bool PluginMgr::unloadPlugin(const QString& pluginName) {
 
 void PluginMgr::initSettings(QSettings* setting) {
     if (!setting) {
-        qWarning("PluginMgr::initSettings, setting is nullptr");
+        qWarning("pluginpy::PluginMgr::initSettings, setting is nullptr");
         return;
     }
 
     // avoid multiple pybind11 import
     if (setting == m_pSettings) {
-        qDebug("PluginMgr::initSettings, setting is already set");
+        qDebug("pluginpy::PluginMgr::initSettings, setting is already set");
         return;
     }
     m_pSettings = setting;
@@ -111,15 +111,17 @@ void PluginMgr::initSettings(QSettings* setting) {
         PyObject* settingPyObj = PyLong_FromVoidPtr(m_pSettings);
         launchyDict["__settings"] = py::handle(settingPyObj);
 
-        // run setQSetting from launchy_util
+        // run launchy_util initSettings
+        qDebug() << "pluginpy::PluginMgr::initSettings, import launchy_util";
         py::object launchyUtilModule = py::module::import("launchy_util");
-        launchyUtilModule.attr("setSettingsObject")();
+        py::object launchyUtilInitSettings = launchyUtilModule.attr("initSettings");
+        launchyUtilInitSettings();
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
         qWarning() << "pluginpy::PluginMgr::initSettings,"
-            << "fail to init QSetting," << e.what();
+            "fail to init QSetting," << e.what();
     }
 }
 
@@ -141,18 +143,22 @@ PluginMgr::PluginMgr()
     QString externalPkgPath = launchy::g_settings->value("Python/ExternalPackagePath", "").toString();
     if (!externalPkgPath.isEmpty()) {
         pathObj.append(qUtf8Printable(QDir::toNativeSeparators(externalPkgPath)));
-        qDebug() << "pluginpy::PluginMgr::PluginMgr, external package path:" << externalPkgPath;
+        qDebug() << "pluginpy::PluginMgr::PluginMgr, external package path:"
+            << externalPkgPath;
     }
 
     try {
-        // import pluginconf.py
-        py::module::import("launchy_util");
+        // run launchy_util main (init logging and pypi package)
+        qDebug() << "pluginpy::PluginMgr::PluginMgr, import launchy_util";
+        py::object launchyUtilModule = py::module::import("launchy_util");
+        py::object launchyUtilMain = launchyUtilModule.attr("main");
+        launchyUtilMain();
     }
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
-        const char* errInfo = e.what();
-        qDebug() << "pluginpy::PluginMgr::PluginMgr, launchy_util module not imported," << errInfo;
+        qWarning() << "pluginpy::PluginMgr::PluginMgr, fail to init QSetting,"
+            << e.what();
     }
 }
 
@@ -165,7 +171,10 @@ PluginMgr::~PluginMgr() {
     m_pSettings = nullptr;
     m_pluginInterface.clear();
     m_pluginObject.clear();
-    py::finalize_interpreter();
+
+    // !! can not call this function,
+    // python is still running in this destructor
+    // py::finalize_interpreter();
 }
 
 } // namesapce pluginpy

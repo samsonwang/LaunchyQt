@@ -2,7 +2,33 @@
 import sys, os
 import logging as log
 
-def init_logging():
+def main():
+    redirectOutput()
+    initLogging()
+    initPipPackage()
+
+
+def initSettings():
+    "Set the launchy.settings object"
+    #Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
+    try:
+        log.info("launchy_util::initSettings, called")
+        from PySide6 import QtCore
+        from shiboken6 import wrapInstance
+        log.debug("launchy_util::initSettings, succeed to import pyside and shiboken")
+        import launchy
+        log.debug("launchy_util::initSettings, launchy dir: %s" % dir(launchy))
+        launchy.settings = wrapInstance(launchy.__settings, QtCore.QSettings)
+        log.debug("launchy_util::initSettings, launchy.settings: %s" % launchy.settings)
+    except ImportError as err:
+        log.warning("launchy_util::initSettings, ImportError, %s" % err)
+    except NameError as err:
+        log.warning("launchy_util::initSettings, NameError, %s" % err)
+    except Exception as err:
+        log.warning("launchy_util::initSettings, Exception, %s" % err)
+
+
+def initLogging():
     try:
         import launchy
         log_file_name = os.path.join(launchy.getAppTempPath(), 'launchypy.log')
@@ -10,13 +36,13 @@ def init_logging():
         import pathlib
         log_file_name = os.path.join(pathlib.Path(__file__).parent.resolve(), 'launchypy.log')
     finally:
-        print('launchy_util::init_logging, log file name:', log_file_name)
+        print('launchy_util::initLogging, log file name:', log_file_name)
         log.basicConfig(filename=log_file_name,
                         filemode='w',
                         format='%(asctime)s.%(msecs)03d [%(levelname).1s] %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S',
                         level=log.DEBUG)
-        log.info('launchy_util::init_logging, log init')
+        log.info('launchy_util::initLogging, log init')
 
 
 def redirectOutput():
@@ -43,7 +69,7 @@ def redirectOutput():
                 self.file.flush()
                 return getattr(self.terminal, attr)
             except Exception as err:
-                print("launchy_util, FlashedFile.__getattr__,", err)
+                print("launchy_util::redirectOutput, FlashedFile.__getattr__,", err)
 
     # Redirect stdout and stderr
     try:
@@ -53,30 +79,12 @@ def redirectOutput():
     except:
         sys.stdout = FlushedFile('python/py_stdout.log')
         sys.stderr = FlushedFile('python/py_stderr.log')
-    print("launchy_util, redirect output finished")
-
-
-def setSettingsObject():
-    log.info("launchy_util::setSettingsObject, called")
-    # Set the launchy.settings object
-    try:
-        # Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
-        from PySide6 import QtCore
-        from shiboken6 import wrapInstance
-        log.debug("launchy_util::setSettingsObject, succeed to import pyside and shiboken")
-        import launchy
-        log.debug("launchy_util::setSettingsObject, launchy dir: %s" % dir(launchy))
-        launchy.settings = wrapInstance(launchy.__settings, QtCore.QSettings)
-        log.debug("launchy_util::setSettingsObject, launchy.settings: %s" % launchy.settings)
-    except ImportError as err:
-        log.warning("launchy_util::setSettingsObject, ImportError, %s" % err)
-    except NameError as err:
-        log.warning("launchy_util::setSettingsObject, NameError, %s" % err)
-    except Exception as err:
-        log.warning("launchy_util::setSettingsObject, Exception, %s" % err)
+    print("launchy_util::redirectOutput, redirect output finished")
 
 
 def initPipPackage():
+    log.debug("launchy_util::initPipPackage, sys.path: %s" % sys.path)
+    log.debug("launchy_util::initPipPackage, env.path: %s" % os.environ.get('PATH', ''))
     log.info('launchy_util::initPipPackage, sys.prefix: %s' % sys.prefix)
 
     # print ("launchy_util::initPipPackage, env.path:", os.environ.get('PATH', ''))
@@ -111,13 +119,6 @@ def initPipPackage():
     else:
         log.info('launchy_util::initPipPackage, Lib path not found, skip init site')
 
-try:
-    redirectOutput()
-    init_logging()
-    log.debug("launchy_util, sys.path: %s" % sys.path)
-    log.debug("launchy_util, env.path: %s" % os.environ.get('PATH', ''))
-    initPipPackage()
-    log.info("launchy_util, sys.path: %s" % sys.path)
-    log.info("launchy_util, env.path: %s" % os.environ.get('PATH', ''))
-except Exception as err:
-    log.warning("launchy_util, catched exception: %s" % err)
+    log.info("launchy_util::initPipPackage, sys.path: %s" % sys.path)
+    log.info("launchy_util::initPipPackage, env.path: %s" % os.environ.get('PATH', ''))
+

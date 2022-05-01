@@ -55,7 +55,7 @@ endif ()
 ##################################################
 # Python
 if (WIN32)
-  set (ENV{Python_ROOT_DIR} "C:/Program Files/Python310")
+  #set (ENV{Python_ROOT_DIR} "C:/Program Files/Python310")
 endif ()
 find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
@@ -75,6 +75,7 @@ if (MSVC)
   add_compile_definitions (NOMINMAX)
   # add_compile_definitions (WIN32_LEAN_AND_MEAN)
 
+  add_link_options (/DEBUG)
 #  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 #  set (CMAKE_EXE_LINKER_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 
