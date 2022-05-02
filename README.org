@@ -29,12 +29,9 @@ Checkout detailed info and download latest binary at [[https://github.com/samson
 
 ** Credits
 - [[https://sourceforge.net/projects/launchy][Launchy]]                                - GPLv2
-- [[https://github.com/Skycoder42/QHotkey][Qhotkey]]                                - BSD-3
+- [[https://github.com/Skycoder42/QHotkey][QHotkey]]                                - BSD-3
 - [[https://github.com/itay-grudev/SingleApplication][singleapplication]]                      - MIT
-- [[https://sourceforge.net/projects/tasky-launchy/][tasky]]                                  - N/A
-- [[https://github.com/kshahar/pylaunchy][pylaunchy (develop plugin in python)]]   - GPLv2
-- CalcyPy (from [[https://github.com/kshahar/pylaunchy][pylaunchy]])               - GPLv2
 - [[https://github.com/pybind/pybind11][pybind11]]                               - [[https://github.com/pybind/pybind11/blob/master/LICENSE][LICENSE]]
-- [[https://github.com/ArashPartow/exprtk][exprtk]]                                 - MIT
+- [[https://github.com/kshahar/pylaunchy][pylaunchy]]                              - GPLv2
 - WebSearchPy (from [[https://github.com/j5shi/Thruster][Thruster]])            - GPLv2
-- PyDiryPy (from [[https://github.com/kshahar/pylaunchy][pylaunchy]])              - GPLv2
+- [[https://sourceforge.net/projects/tasky-launchy/][tasky]]                                  - N/A
