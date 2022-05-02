@@ -20,12 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // qt defines "slots" macro
 // python.h must include before qt header files
-#include <Python.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/pytypes.h>
-#include <pybind11/stl.h>
-#include <pybind11/embed.h>
-#include <pybind11/eval.h>
 
 #include <QString>
 #include <QSettings>
@@ -54,8 +49,8 @@ private:
 
 private:
     QSettings* m_pSettings;
-    QHash<QString, py::object> m_pluginObject;
-    QHash<QString, launchy::PluginInterface*> m_pluginInterface;
+    QMap<QString, py::object> m_pluginObject;
+    QMap<QString, launchy::PluginInterface*> m_pluginInterface;
 };
 
 } // namespace pluginpy

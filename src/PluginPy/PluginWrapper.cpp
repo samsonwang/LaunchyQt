@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Python.h"
+
 #include "PluginWrapper.h"
 
 #include <QDebug>
@@ -26,17 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ExportPyPlugin.h"
 
-
 namespace py = pybind11;
 
 namespace pluginpy {
 
 QMutex PluginWrapper::s_inPythonLock;
 
-PluginWrapper::PluginWrapper(exportpy::Plugin* plugin)
-    //ScriptPluginsSynchronizer& scriptPluginsSynchronizer)
-    : m_plugin(plugin) {
-    //m_scriptPluginsSynchronizer(scriptPluginsSynchronizer)
+PluginWrapper::PluginWrapper(exportpy::Plugin* plugin, const QString& pluginName)
+    : m_plugin(plugin),
+      m_pluginName(pluginName) {
 
 }
 
@@ -101,7 +101,6 @@ bool PluginWrapper::hasDialog() {
 }
 
 void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
-    //m_scriptPluginsSynchronizer.enteringDoDialog();
 
     void* result = m_plugin->doDialog((void*)parent);
 
@@ -115,7 +114,6 @@ void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
 
 void PluginWrapper::endDialog(bool accept) {
     m_plugin->endDialog(accept);
-    // m_scriptPluginsSynchronizer.finishedEndDialog();
 }
 
 void PluginWrapper::launchyShow() {
@@ -169,7 +167,10 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
 //         return 0;
 //     }
 
-    qDebug() << "pluginpy::PluginWrapper::msg, lock mutex, msgId:" << msgId;
+    s_inPythonLock.lock();
+    qDebug() << "pluginpy::PluginWrapper::msg, lock mutex, plugin name:"
+        << m_pluginName << "msgId:" << msgId;
+
     // Disptach the actual Python function
     int result = 0;
 
@@ -179,36 +180,22 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
-        const char* errInfo = e.what();
-        qWarning() << "pluginpy::PluginWrapper::msg, py::error_already_set catched on dispatchMsg,"
-            << "msgId:" << msgId << "error info:" << errInfo;
+        qWarning() << "pluginpy::PluginWrapper::msg, py::error_already_set catched in dispatchMsg,"
+            " plugin name:" << m_pluginName << "msgId:" << msgId << "error info:" << e.what();
     }
     catch (const std::runtime_error& e) {
         PyErr_Print();
         PyErr_Clear();
-        const char* errInfo = e.what();
-        qWarning() << "pluginpy::PluginWrapper::msg, std::runtime_error catched on dispatchMsg,"
-            << "msgId:" << msgId << "error info:" << errInfo;
+        qWarning() << "pluginpy::PluginWrapper::msg, std::runtime_error catched in dispatchMsg,"
+            " plugin name:" << m_pluginName << "msgId:" << msgId << "error info:" << e.what();
     }
 
-    qDebug() << "pluginpy::PluginWrapper::msg, unlock mutex, msgId:" << msgId;
+    s_inPythonLock.unlock();
+    qDebug() << "pluginpy::PluginWrapper::msg, unlock mutex, plugin name:"
+        << m_pluginName << "msgId:" << msgId;
 
-    //s_inPythonLock.unlock();
     return result;
 }
-
-/*
-bool PluginWrapper::isInPythonFunction() const {
-    const bool waitingForPythonFunctionToReturn =
-        !m_scriptPluginsSynchronizer.tryLockInPythonMutex();
-
-    if (waitingForPythonFunctionToReturn) {
-        m_scriptPluginsSynchronizer.unlockInPythonMutex();
-    }
-    return waitingForPythonFunctionToReturn;
-    return false;
-}
-*/
 
 int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
     int handled = false;

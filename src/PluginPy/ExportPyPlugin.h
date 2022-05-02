@@ -5,14 +5,13 @@
 #include <vector>
 
 #include <Python.h>
+
 #include <pybind11/pybind11.h>
-#include <pybind11/pytypes.h>
-#include <pybind11/stl.h>
-#include <pybind11/embed.h>
-#include <pybind11/eval.h>
 
 #include "ExportPyInputData.h"
 #include "ExportPyCatItem.h"
+
+namespace py = pybind11;
 
 namespace exportpy {
 
@@ -51,10 +50,6 @@ public:
     virtual void launchyHide() = 0;
 };
 
-// do not throw std::runtime_error when function is not overrided
-#define PYBIND11_OVERLOAD_PURE_NOEXCEPT(ret_type, cname, fn, ...) \
-        PYBIND11_OVERLOAD_INT(ret_type, cname, #fn, __VA_ARGS__)
-
 class PluginHelper : public Plugin {
 public:
     /* Inherit the constructors */
@@ -69,7 +64,7 @@ public:
 
     /* Trampoline (need one for each virtual function) */
     void init() override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,           /* Return type */
             Plugin,         /* Parent class */
             init            /* Name of function in C++ (must match Python name) */
@@ -85,7 +80,7 @@ public:
     }
 
     void setPath(const std::string& path) override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             setPath,
@@ -94,7 +89,7 @@ public:
     }
 
     void getLabels(const std::vector<InputData>& inputDataList) override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             getLabels,
@@ -104,7 +99,7 @@ public:
 
     void getResults(const std::vector<InputData>& inputDataList,
                     const CatItemList& resultsList) override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             getResults,
@@ -115,7 +110,9 @@ public:
 
     void getCatalog(const CatItemList& resultsList) override {
 
-        //pybind11::gil_scoped_acquire gil;
+        // this function runs in another thread
+        // pybind11::gil_scoped_acquire gil;
+
         py::function overload = py::get_overload(static_cast<const Plugin*>(this),
                                                  "getCatalog");
         if (overload) {
@@ -134,7 +131,7 @@ public:
 
     void launchItem(const std::vector<InputData>& inputDataList,
                     const CatItem& item) override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             launchItem,
@@ -161,8 +158,8 @@ public:
 
             // py::object result;
             if (py::detail::cast_is_temporary_value_reference<py::object>::value) {
-                static py::detail::overload_caster_t<py::object> caster;
-                result = py::detail::cast_ref<py::object>(std::move(result), caster);
+                static py::detail::override_caster_t<py::object> s_caster;
+                result = py::detail::cast_ref<py::object>(std::move(result), s_caster);
             }
             else {
                 result = py::detail::cast_safe<py::object>(std::move(result));
@@ -179,8 +176,7 @@ public:
     }
 
     void endDialog(bool accept) override {
-        //PYBIND11_OVERLOAD_PURE
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             endDialog,
@@ -189,7 +185,7 @@ public:
     }
 
     void launchyShow() override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             launchyShow
@@ -197,7 +193,7 @@ public:
     }
 
     void launchyHide() override {
-        PYBIND11_OVERLOAD_PURE_NOEXCEPT(
+        PYBIND11_OVERLOAD_PURE(
             void,
             Plugin,
             launchyHide

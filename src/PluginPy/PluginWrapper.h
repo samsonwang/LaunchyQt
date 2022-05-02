@@ -1,20 +1,23 @@
 
 #pragma once
 
+#include <QString>
+#include <QList>
+#include <QWidget>
 #include <QMutex>
-
-#include "ExportPyPlugin.h"
 
 #include "LaunchyLib/InputData.h"
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/PluginInterface.h"
+
+namespace exportpy { class Plugin; }
 
 namespace pluginpy {
 
 class PluginWrapper : public launchy::PluginInterface {
 
 public:
-    PluginWrapper(exportpy::Plugin* plugin);
+    PluginWrapper(exportpy::Plugin* plugin, const QString& pluginName);
     virtual ~PluginWrapper();
 
 public:
@@ -50,6 +53,7 @@ private:
 
 private:
     exportpy::Plugin* m_plugin;
+    QString m_pluginName;
     static QMutex s_inPythonLock;
 };
 

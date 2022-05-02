@@ -44,8 +44,8 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
         << "path:" << pluginPath;
 
     if (m_pluginInterface.contains(pluginName)) {
-        qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin alread loaded, name:" << pluginName
-            << "path:" << pluginPath;
+        qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin alread loaded, name:"
+            << pluginName << "path:" << pluginPath;
         return m_pluginInterface[pluginName];
     }
 
@@ -61,12 +61,14 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
     py::object& pluginObject = m_pluginObject[pluginName];
 
     if (py::isinstance<exportpy::Plugin>(pluginObject)) {
-        qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin load succeed";
+        qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin load succeed, plugin name:"
+            << pluginName;
         exportpy::Plugin* pluginPtr = pluginObject.cast<exportpy::Plugin*>();
         if (pluginPtr) {
             std::string name = pluginPtr->getName();
-            qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin name:" << name.c_str();
-            launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr);
+            qDebug() << "pluginpy::PluginMgr::loadPlugin, plugin name:"
+                << name.c_str() << pluginName;
+            launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr, pluginName);
             // store this pointer in manager
             m_pluginInterface.insert(pluginName, intf);
             return intf;
@@ -120,8 +122,8 @@ void PluginMgr::initSettings(QSettings* setting) {
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
-        qWarning() << "pluginpy::PluginMgr::initSettings,"
-            "fail to init QSetting," << e.what();
+        qWarning() << "pluginpy::PluginMgr::initSettings, fail to init QSetting,"
+            << e.what();
     }
 }
 
@@ -163,11 +165,11 @@ PluginMgr::PluginMgr()
 }
 
 PluginMgr::~PluginMgr() {
-    QHashIterator<QString, launchy::PluginInterface*> it(m_pluginInterface);
-    while (it.hasNext()) {
-        it.next();
-        delete it.value();
+    for (auto plugin : m_pluginInterface)
+    {
+        delete plugin;
     }
+
     m_pSettings = nullptr;
     m_pluginInterface.clear();
     m_pluginObject.clear();

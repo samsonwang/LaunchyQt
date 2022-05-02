@@ -1,8 +1,6 @@
 
 #include "ExportPyPlugin.h"
 
-namespace py = pybind11;
-
 namespace exportpy {
 
 void ExportPlugin(const pybind11::module& m) {
