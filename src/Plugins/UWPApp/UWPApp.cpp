@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <atlbase.h>
 #include <propvarutil.h>
 
-#include <QtGui>
 #include <QFile>
+#include <QDir>
 #include <QDebug>
 
 #include "LaunchyLib/PluginMsg.h"
@@ -33,11 +33,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_GUID(BHID_EnumItems, 0x94f60519, 0x2850, 0x4924, 0xaa, 0x5a, 0xd1, 0x5e, 0x84, 0x86, 0x80, 0x39);
 DEFINE_GUID(BHID_PropertyStore, 0x0384e1a4, 0x1523, 0x439c, 0xa4, 0xc8, 0xab, 0x91, 0x10, 0x52, 0xf5, 0x86);
 
+static const char* PLUGIN_NAME = "UWPApp";
 
-#define PLUGIN_NAME "UWPApp"
-
-UWPApp::UWPApp()
-    : HASH_UWPAPP(qHash(QString(PLUGIN_NAME))) {
+UWPApp::UWPApp() {
 
 }
 
@@ -52,42 +50,42 @@ int UWPApp::msg(int msgId, void* wParam, void* lParam) {
         init();
         handled = 1;
         break;
+
     case MSG_GET_LABELS:
         getLabels((QList<launchy::InputData>*) wParam);
         handled = 1;
         break;
-    case MSG_GET_ID:
-        getID((uint*)wParam);
-        handled = 1;
-        break;
+
     case MSG_GET_NAME:
         getName((QString*)wParam);
         handled = 1;
         break;
+
     case MSG_GET_RESULTS:
         getResults((QList<launchy::InputData>*) wParam, (QList<launchy::CatItem>*) lParam);
         handled = 1;
         break;
+
     case MSG_GET_CATALOG:
         getCatalog((QList<launchy::CatItem>*) wParam);
         handled = 1;
         break;
+
     case MSG_LAUNCH_ITEM:
         launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
         handled = 1;
         break;
-   //case MSG_EXTRACT_ICON:
-        // extractIcon((launchy::CatItem*)wParam, (QIcon*)lParam);
-        // handled = 1;
-        //break;
+
     case MSG_HAS_DIALOG:
         // Set to true if you provide a gui
         // handled = 1;
         break;
+
     case MSG_DO_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
         // doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
+
     case MSG_END_DIALOG:
         // This isn't called unless you return true to MSG_HAS_DIALOG
         // endDialog((bool)wParam);
@@ -104,16 +102,8 @@ void UWPApp::init() {
 
 }
 
-void UWPApp::getID(uint* id) {
-    *id = HASH_UWPAPP;
-}
-
 void UWPApp::getName(QString* str) {
     *str = PLUGIN_NAME;
-}
-
-void UWPApp::setPath(const QString* path) {
-
 }
 
 void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
@@ -218,12 +208,12 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
                 qDebug() << " logo: " << iconPath;
                 iconPath = installPath + QDir::separator() + iconPath;
                 iconPath = validateIconPath(iconPath);
-                qDebug() << " logo(valiate): " << iconPath;
+                qDebug() << " logo(validate): " << iconPath;
             }
 
             items->push_back(launchy::CatItem(fullPath,
                                               shortName,
-                                              HASH_UWPAPP,
+                                              PLUGIN_NAME,
                                               iconPath));
         }
 
@@ -242,7 +232,7 @@ void UWPApp::getResults(QList<launchy::InputData>* inputData, QList<launchy::Cat
 
 }
 
-void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
+void UWPApp::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item) {
     // Specify the appropriate COM threading model
 
     CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
@@ -253,7 +243,7 @@ void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
                                   CLSCTX_INPROC_SERVER,
                                   IID_PPV_ARGS(&pAAM));
     if (FAILED(hr)) {
-        qWarning() << "UWPApp::launchItem, Error creating CoCreateInstance & HR is" << hr;
+        qWarning() << "UWPApp::launchItem, fail to create CoCreateInstance, HR is" << hr;
         return;
     }
 
@@ -272,6 +262,10 @@ void UWPApp::launchItem(QList<launchy::InputData>* id, launchy::CatItem* item) {
 }
 
 void UWPApp::extractIcon(launchy::CatItem* item, QIcon* icon) {
+    // !! obsolete function
+    // UWP icon is extracted as png file
+
+    /*
     QColor background;
     QStringList iconPaths = item->iconPath.split('\t');
     QString backgroundColor;
@@ -308,6 +302,7 @@ void UWPApp::extractIcon(launchy::CatItem* item, QIcon* icon) {
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter.drawPixmap(0, 0, iconPixmap);
     icon->addPixmap(QPixmap::fromImage(iconImage));
+    */
 }
 
 void UWPApp::doDialog(QWidget* parent, QWidget** dialog) {
@@ -320,17 +315,47 @@ void UWPApp::endDialog(bool accept) {
 
 QString UWPApp::validateIconPath(const QString& iconPath) {
 
-    static const char* scales[] = {".scale-200.", ".scale-100.", ".scale-300.", ".scale-400."};
+    static const char* scales[] = {
+        ".scale-200.",
+        ".scale-100.",
+        ".scale-300.",
+        ".scale-400.",
+        ".targetsize-48.",
+        ".targetsize-16.",
+        ".targetsize-24.",
+        ".targetsize-256."
+    };
 
     QString iconPathBase = iconPath.section('.', 0, -2);
     QString iconPathExt = iconPath.section('.', -1);
 
-    for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
+    for (std::size_t i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
         QString path = iconPathBase + scales[i] + iconPathExt;
         if (QFile::exists(path)) {
             return path;
         }
     }
 
-    return iconPath;
+    // icon not matched, list all files and find the shortest one
+    QString iconDir = iconPath.section('\\', 0, -2);
+    QString iconPrefix = iconPath.section('\\', -1).section('.', 0, -2);
+
+    QDir dir(iconDir);
+    QStringList listIconPath = dir.entryList(QStringList() << "*.png");
+
+    QString result;
+    for (const auto& path : listIconPath) {
+        // find the shortest one with icon prefix
+        if (path.startsWith(iconPrefix)
+            && (result.isEmpty()
+                || result.length() > path.length())) {
+            result = path;
+        }
+    }
+
+    if (!result.isEmpty()) {
+        return iconDir + QDir::separator() + result;
+    }
+
+    return "";
 }

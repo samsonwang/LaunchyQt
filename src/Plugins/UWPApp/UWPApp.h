@@ -38,11 +38,7 @@ public:
 private:
     void init();
 
-    void getID(uint* id);
-
     void getName(QString* name);
-
-    void setPath(const QString* path);
 
     void getCatalog(QList<launchy::CatItem>* items);
 
@@ -62,7 +58,4 @@ private:
 
 private:
     QString validateIconPath(const QString& iconPath);
-
-public:
-    const uint HASH_UWPAPP;
 };
