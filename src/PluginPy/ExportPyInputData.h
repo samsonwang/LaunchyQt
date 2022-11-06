@@ -38,11 +38,11 @@ public:
     InputData(launchy::InputData* data);
 
     /** Apply a label to this query segment */
-    void setLabel(unsigned int l);
+    void setLabel(const std::string& label);
     /** Remove a label from this query segment */
-    void removeLabel(unsigned int l);
+    void removeLabel(const std::string& label);
     /** Check if it has the given label applied to it */
-    bool hasLabel(unsigned int l);
+    bool hasLabel(const std::string& label);
 
     /** Set the id of this query
 

@@ -43,14 +43,14 @@ public:
 
 public:
     /** Get the labels applied to this query segment */
-    const QSet<uint>& getLabels() const;
+    const QSet<QString>& getLabels() const;
     /** Apply a label to this query segment */
-    void setLabel(uint l);
+    void setLabel(const QString& label);
     /** Remove label from this query segment */
-    void removeLabel(uint l);
+    void removeLabel(const QString& label);
     void clearLabel();
     /** Check if it has the given label applied to it */
-    bool hasLabel(uint l);
+    bool hasLabel(const QString& label);
 
     /** Set plugin name of this query
     This can be used to override the owner of the selected catalog item, so that
@@ -78,15 +78,16 @@ public:
     /** Change the best catalog match for this segment */
     void setTopResult(const CatItem& sr);
 
-    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const InputData& inputData);
-    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, InputData& inputData);
+    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out,
+                                                  const InputData& inputData);
+    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in,
+                                                  InputData& inputData);
 
 private:
     /** The user's entry */
     QString m_text;
     /** Any assigned labels to this query segment */
-    // CODE REVIEW: consider change uint to QString
-    QSet<uint> m_labels;
+    QSet<QString> m_labels;
     /** A pointer to the best catalog match for this segment of the query */
     CatItem m_topResult;
     /** The plugin name of this query's owner */

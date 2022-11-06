@@ -30,24 +30,24 @@ InputData::InputData(const QString& str)
     : m_text(str) {
 }
 
-const QSet<uint>& InputData::getLabels() const {
+const QSet<QString>& InputData::getLabels() const {
     return m_labels;
 }
 
-void InputData::setLabel(uint l) {
-    m_labels.insert(l);
+void InputData::setLabel(const QString& label) {
+    m_labels.insert(label);
 }
 
-void InputData::removeLabel(uint l) {
-    m_labels.remove(l);
+void InputData::removeLabel(const QString& label) {
+    m_labels.remove(label);
 }
 
 void InputData::clearLabel() {
     m_labels.clear();
 }
 
-bool InputData::hasLabel(uint l) {
-    return m_labels.contains(l);
+bool InputData::hasLabel(const QString& label) {
+    return m_labels.contains(label);
 }
 
 void InputData::setPlugin(const QString& plugin) {

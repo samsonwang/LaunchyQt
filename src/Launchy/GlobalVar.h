@@ -31,9 +31,9 @@ extern const QString NAME_LAUNCHY;
 extern const QString NAME_HISTORY;
 extern const QString NAME_LAUNCHYFILE;
 
-extern const uint LABEL_FILE;
-extern const uint LABEL_AUTOSUGGEST;
-extern const uint LABEL_HISTORY;
+extern const QString LABEL_FILE;
+extern const QString LABEL_AUTOSUGGEST;
+extern const QString LABEL_HISTORY;
 
 extern QString g_searchText;
 

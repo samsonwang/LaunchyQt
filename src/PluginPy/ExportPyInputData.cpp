@@ -29,16 +29,16 @@ InputData::InputData(launchy::InputData* data)
 
 }
 
-void InputData::setLabel(unsigned int l) {
-    m_data->setLabel(l);
+void InputData::setLabel(const std::string& label) {
+    m_data->setLabel(QString::fromStdString(label));
 }
 
-void InputData::removeLabel(unsigned int l) {
-    m_data->removeLabel(l);
+void InputData::removeLabel(const std::string& label) {
+    m_data->removeLabel(QString::fromStdString(label));
 }
 
-bool InputData::hasLabel(unsigned int l) {
-    return m_data->hasLabel(l);
+bool InputData::hasLabel(const std::string& label) {
+    return m_data->hasLabel(QString::fromStdString(label));
 }
 
 void InputData::setPlugin(const std::string& plugin) {
