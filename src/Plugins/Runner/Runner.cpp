@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QUrl>
 #include <QDebug>
+#include <QRegularExpression>
 
 #include "LaunchyLib/PluginMsg.h"
 
@@ -68,12 +69,8 @@ void Runner::init() {
     g_settings->endArray();
 }
 
-void Runner::getID(uint* id) {
-    *id = HASH_RUNNER;
-}
-
-void Runner::getName(QString* str) {
-    *str = "Runner";
+void Runner::getName(QString* name) {
+    *name = HASH_RUNNER;
 }
 
 QString Runner::getIcon() const {
@@ -83,8 +80,8 @@ QString Runner::getIcon() const {
 QString Runner::getIcon(QString file) const {
     Q_UNUSED(file);
 #ifdef Q_OS_WIN
-    QRegExp rx("\\.(exe|lnk)$", Qt::CaseInsensitive);
-    if (rx.indexIn(file) != -1) {
+    QRegularExpression rx("\\.(exe|lnk)$", QRegularExpression::CaseInsensitiveOption);
+    if (rx.match(file).hasMatch()) {
         return file;
     }
 #endif
@@ -107,7 +104,7 @@ void Runner::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     }
 
     CatItem& catItem = inputData->first().getTopResult();
-    if (catItem.pluginId == HASH_RUNNER && inputData->last().hasText()) {
+    if (catItem.pluginName == HASH_RUNNER && inputData->last().hasText()) {
         const QString & text = inputData->last().getText();
         // This is user search text, create an entry for it
         results->push_front(CatItem(text,
@@ -174,7 +171,7 @@ void Runner::setPath(const QString* path) {
 }
 
 Runner::Runner()
-    : HASH_RUNNER(qHash(QString("Runner"))) {
+    : HASH_RUNNER("Runner") {
     m_gui.reset();
 }
 
@@ -187,10 +184,6 @@ int Runner::msg(int msgId, void* wParam, void* lParam) {
     switch (msgId) {
     case MSG_INIT:
         init();
-        handled = true;
-        break;
-    case MSG_GET_ID:
-        getID((uint*)wParam);
         handled = true;
         break;
     case MSG_GET_NAME:

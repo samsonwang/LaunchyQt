@@ -278,11 +278,11 @@ void Verby::endDialog(bool accept) {
 Verby::Verby()
     : m_gui(nullptr),
       m_pluginName("Verby"),
-      HASH_VERBY(qHash(QString("verby"))),
-      HASH_DIR(qHash(QString("verbydirectory"))),
-      HASH_FILE(qHash(QString("verbyfile"))),
-      HASH_LINK(qHash(QString("verbylink"))),
-      HASH_EXEC(qHash(QString("verbyexec"))) {
+      HASH_VERBY("verby"),
+      HASH_DIR("verby_directory"),
+      HASH_FILE("verby_file"),
+      HASH_LINK("verby_link"),
+      HASH_EXEC("verby_exec") {
 }
 
 Verby::~Verby() {

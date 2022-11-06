@@ -34,7 +34,6 @@ class Runner : public QObject, public launchy::PluginInterface {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
     Q_INTERFACES(launchy::PluginInterface)
-
 public:
     Runner();
     virtual ~Runner();
@@ -42,7 +41,6 @@ public:
     virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
 
 private:
-    void getID(uint* id);
     void getName(QString* name);
     void init();
 
@@ -60,7 +58,7 @@ private:
     QString getIcon(QString file) const;
 
 private:
-    uint HASH_RUNNER;
+    QString HASH_RUNNER;
     QList<runnerCmd> m_cmds;
     QString m_libPath;
     QSharedPointer<Gui> m_gui;
