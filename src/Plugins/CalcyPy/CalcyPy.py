@@ -42,7 +42,7 @@ class CalcyPy(Plugin):
 
     def setPath(self, path):
         self.path = path
-        log.debug("CalcyPy.setPath, path = {}".format(self.path))
+        log.debug("CalcyPy::setPath, path = {}".format(self.path))
 
     def getIcon(self):
         return self.path + "/calcpy.ico"

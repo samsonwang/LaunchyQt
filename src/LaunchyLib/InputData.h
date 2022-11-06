@@ -85,10 +85,13 @@ private:
     /** The user's entry */
     QString m_text;
     /** Any assigned labels to this query segment */
+    // CODE REVIEW: consider change uint to QString
     QSet<uint> m_labels;
     /** A pointer to the best catalog match for this segment of the query */
     CatItem m_topResult;
     /** The plugin name of this query's owner */
     QString m_pluginName;
 };
-}
+
+} // namespace launchy
+

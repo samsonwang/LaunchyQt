@@ -38,7 +38,6 @@ public:
     virtual int msg(int msgId, void* wParam, void* lParam);
 
 private:
-    void getID(uint* id);
     void getName(QString* name);
     void init();
     void setPath(const QString* path);
@@ -55,8 +54,10 @@ private:
 
     //void getCatalog(QList<CatItem>* items);
 private:
+    QString m_pluginName;
     QString m_libPath;
     Gui* m_gui;
+
     const uint HASH_VERBY;
     const uint HASH_FILE;
     const uint HASH_DIR;

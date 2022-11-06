@@ -48,10 +48,6 @@ void Verby::setPath(const QString* path) {
     qDebug() << "Verby::setPath, m_libPath:" << m_libPath;
 }
 
-void Verby::getID(uint* id) {
-    *id = HASH_VERBY;
-}
-
 void Verby::getName(QString* str) {
     *str = "Verby";
 }
@@ -68,8 +64,7 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
     // If it's not an item from Launchy's built in catalog,
     // i.e. a file or directory or something added 
     // by a plugin, don't add verbs.
-    if (inputData->first().getID() != 0
-        && inputData->first().getID() != HASH_VERBY) {
+    if (inputData->first().getPlugin() != "Verby") {
         return;
     }
 
@@ -110,7 +105,7 @@ bool Verby::isMatch(const QString& text1, const QString& text2) {
 void Verby::addCatItem(QString text, QList<CatItem>* results,
                        QString fullName, QString shortName, QString iconName) {
     if (text.isEmpty() || isMatch(shortName, text)) {
-        CatItem item(fullName, shortName, HASH_VERBY, m_libPath + "/" + iconName);
+        CatItem item(fullName, shortName, m_pluginName, m_libPath + "/" + iconName);
         item.usage = launchy::g_settings->value("Verby/" + shortName.replace(" ", ""), 0).toInt();
         results->push_back(item);
     }
@@ -154,13 +149,13 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     }
 
     // Mark the item as a Verby item so that Verby has a chance to process it before Launchy
-    inputData->first().setID(HASH_VERBY);
-    inputData->first().getTopResult().pluginId = HASH_VERBY;
+    inputData->first().setPlugin(m_pluginName);
+    inputData->first().getTopResult().pluginName = m_pluginName;
 
     // ensure there's always an item at the top of the list for launching with parameters.
     results->push_front(CatItem("Run " + inputData->first().getText(),
                                 inputData->last().getText(),
-                                UINT_MAX,
+                                m_pluginName,
                                 m_libPath + "/verby_run.png"));
 
 }
@@ -259,7 +254,8 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
 
 
 void Verby::doDialog(QWidget* parent, QWidget** newDlg) {
-    if (m_gui == NULL) {
+    if (m_gui == nullptr) {
+        qDebug() << "Verby::doDialog, create gui";
         m_gui = new Gui(parent);
         *newDlg = m_gui;
     }
@@ -280,7 +276,8 @@ void Verby::endDialog(bool accept) {
 }
 
 Verby::Verby()
-    : m_gui(NULL),
+    : m_gui(nullptr),
+      m_pluginName("Verby"),
       HASH_VERBY(qHash(QString("verby"))),
       HASH_DIR(qHash(QString("verbydirectory"))),
       HASH_FILE(qHash(QString("verbyfile"))),
@@ -296,10 +293,6 @@ int Verby::msg(int msgId, void* wParam, void* lParam) {
     switch (msgId) {
     case MSG_INIT:
         init();
-        handled = true;
-        break;
-    case MSG_GET_ID:
-        getID((uint*)wParam);
         handled = true;
         break;
     case MSG_GET_NAME:
