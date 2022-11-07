@@ -16,11 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ExportPy.h"
-
 #include <iostream>
 
-#include <QHash>
+#include <Python.h>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
+#include <pybind11/stl.h>
+#include <pybind11/embed.h>
+#include <pybind11/eval.h>
+
 #include <QDebug>
 #include <QApplication>
 #include <QDir>
@@ -32,36 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ExportPyCatItem.h"
 #include "PluginMgr.h"
 
+namespace py = pybind11;
+
 static int add_five(int x) {
     return x+5;
-}
-
-PYBIND11_MODULE(launchy, m) {
-    m.doc() = "launchy plugin module for python";
-
-    // Export our basic testing function
-    m.def("add_five", &add_five, "function which increase number by 5");
-
-    m.def("getAppPath", &exportpy::getAppPath,
-          "get launchy application path",
-          py::arg("toNative") = true);
-
-    m.def("getAppTempPath", &exportpy::getAppTempPath,
-          "get launchy application temp path",
-          py::arg("toNative") = true);
-
-    m.def("runProgram", &exportpy::runProgram,
-          "run program by launchy");
-
-    m.def("setNeedRebuildCatalog", &exportpy::setNeedRebuildCatalog,
-          "set need rebuild catalog after settings changed");
-
-    // for testing
-    m.def("objectReceiver", &exportpy::objectReceiver);
-
-    exportpy::ExportPlugin(m);
-    exportpy::ExportCatItem(m);
-    exportpy::ExportInputData(m);
 }
 
 namespace exportpy {
@@ -119,3 +98,68 @@ void objectReceiver(py::object obj) {
 }
 
 } // namespace exportpy
+
+
+PYBIND11_MODULE(launchy, m) {
+    m.doc() = "launchy plugin module for python";
+
+    // Export our basic testing function
+    m.def("add_five", &add_five, "function which increase number by 5");
+
+    m.def("getAppPath", &exportpy::getAppPath,
+          "get launchy application path",
+          py::arg("toNative") = true);
+
+    m.def("getAppTempPath", &exportpy::getAppTempPath,
+          "get launchy application temp path",
+          py::arg("toNative") = true);
+
+    m.def("runProgram", &exportpy::runProgram,
+          "run program by launchy");
+
+    m.def("setNeedRebuildCatalog", &exportpy::setNeedRebuildCatalog,
+          "set need rebuild catalog after settings changed");
+
+    // for testing
+    // m.def("objectReceiver", &exportpy::objectReceiver);
+
+    py::class_<exportpy::Plugin, exportpy::PluginHelper>(m, "Plugin")
+        .def(py::init<>())
+        .def("init", &exportpy::Plugin::init)
+        .def("getName", &exportpy::Plugin::getName)
+        .def("setPath", &exportpy::Plugin::setPath)
+        .def("getLabels", &exportpy::Plugin::getLabels)
+        .def("getResults", &exportpy::Plugin::getResults)
+        .def("getCatalog", &exportpy::Plugin::getCatalog)
+        .def("launchItem", &exportpy::Plugin::launchItem)
+        .def("hasDialog", &exportpy::Plugin::hasDialog)
+        .def("doDialog", &exportpy::Plugin::doDialog)
+        .def("endDialog", &exportpy::Plugin::endDialog)
+        .def("launchyShow", &exportpy::Plugin::launchyShow)
+        .def("launchyHide", &exportpy::Plugin::launchyHide);
+
+    py::class_<exportpy::CatItem>(m, "CatItem")
+        .def(py::init<const std::string&, const std::string&,
+             const std::string&, const std::string&>())
+        .def("fullPath", &exportpy::CatItem::fullPath)
+        .def("shortName", &exportpy::CatItem::shortName)
+        .def("iconPath", &exportpy::CatItem::iconPath)
+        .def("setUsage", &exportpy::CatItem::setUsage);
+
+    py::class_<exportpy::CatItemList>(m, "CatItemList")
+        //.def(py::init<>())
+        .def("append", &exportpy::CatItemList::append)
+        .def("prepend", &exportpy::CatItemList::prepend)
+        .def("push_front", &exportpy::CatItemList::push_front)
+        .def("push_back", &exportpy::CatItemList::push_back);
+
+    py::class_<exportpy::InputData>(m, "InputData")
+        .def("setLabel", &exportpy::InputData::setLabel)
+        .def("removeLabel", &exportpy::InputData::removeLabel)
+        .def("hasLabel", &exportpy::InputData::hasLabel)
+        .def("setPlugin", &exportpy::InputData::setPlugin)
+        .def("getPlugin", &exportpy::InputData::getPlugin)
+        .def("getText", &exportpy::InputData::getText)
+        .def("setText", &exportpy::InputData::setText)
+        .def("getTopResult", &exportpy::InputData::getTopResult);
+}

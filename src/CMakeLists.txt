@@ -62,6 +62,7 @@ find_package (Python COMPONENTS Interpreter Development REQUIRED)
 message ("Python_FOUND: ${Python_FOUND}")
 message ("Python_VERSION: ${Python_VERSION}")
 message ("Python_Development_FOUND: ${Python_Development_FOUND}")
+message ("Python_INCLUDE_DIRS:" ${Python_INCLUDE_DIRS})
 message ("Python_LIBRARIES: ${Python_LIBRARIES}")
 
 ##################################################
@@ -151,12 +152,20 @@ add_library (LaunchyLib SHARED)
 set_target_properties(LaunchyLib PROPERTIES
   OUTPUT_NAME "Launchy")
 
-file (GLOB SOURCES_LAUNCHYLIB
-  ${SRC_DIR}/LaunchyLib/*.h
-  ${SRC_DIR}/LaunchyLib/*.cpp)
-
 target_sources (LaunchyLib
-  PRIVATE ${SOURCES_LAUNCHYLIB})
+  PRIVATE
+  ${SRC_DIR}/LaunchyLib/CatalogItem.h
+  ${SRC_DIR}/LaunchyLib/CatalogItem.cpp
+  ${SRC_DIR}/LaunchyLib/InputData.h
+  ${SRC_DIR}/LaunchyLib/InputData.cpp
+  ${SRC_DIR}/LaunchyLib/LaunchyLib.h
+  ${SRC_DIR}/LaunchyLib/LaunchyLib.cpp
+  ${SRC_DIR}/LaunchyLib/PluginInfo.h
+  ${SRC_DIR}/LaunchyLib/PluginInfo.cpp
+  ${SRC_DIR}/LaunchyLib/PluginInterface.h
+  ${SRC_DIR}/LaunchyLib/PluginInterface.cpp
+  ${SRC_DIR}/LaunchyLib/PluginMsg.h
+  ${SRC_DIR}/LaunchyLib/UnicodeTable.cpp)
 
 target_link_libraries (LaunchyLib
   PRIVATE Qt6::Core Qt6::Widgets)
@@ -165,12 +174,21 @@ target_link_libraries (LaunchyLib
 # PluginPy
 add_library (PluginPy SHARED)
 
-file (GLOB SOURCES_PLUGINPY
-  ${SRC_DIR}/PluginPy/*.h
-  ${SRC_DIR}/PluginPy/*.cpp)
-
 target_sources (PluginPy
-  PRIVATE ${SOURCES_PLUGINPY})
+  PRIVATE
+  ${SRC_DIR}/PluginPy/ExportPy.cpp
+  ${SRC_DIR}/PluginPy/ExportPyCatItem.h
+  ${SRC_DIR}/PluginPy/ExportPyCatItem.cpp
+  ${SRC_DIR}/PluginPy/ExportPyInputData.h
+  ${SRC_DIR}/PluginPy/ExportPyInputData.cpp
+  ${SRC_DIR}/PluginPy/ExportPyPlugin.h
+  ${SRC_DIR}/PluginPy/PluginLoader.h
+  ${SRC_DIR}/PluginPy/PluginLoader.cpp
+  ${SRC_DIR}/PluginPy/PluginMgr.h
+  ${SRC_DIR}/PluginPy/PluginMgr.cpp
+  ${SRC_DIR}/PluginPy/PluginPy.h
+  ${SRC_DIR}/PluginPy/PluginWrapper.h
+  ${SRC_DIR}/PluginPy/PluginWrapper.cpp)
 
 target_include_directories (PluginPy
   PRIVATE ${Python_INCLUDE_DIRS})

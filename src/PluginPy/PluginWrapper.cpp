@@ -61,7 +61,6 @@ void PluginWrapper::setPath(const QString* path) {
 void PluginWrapper::getLabels(QList<launchy::InputData>* inputData) {
     std::vector<exportpy::InputData> inputDataList;
     for (auto it = inputData->begin(); it != inputData->end(); ++it) {
-        //inputDataList.push_back(exportpy::InputData(&(*it)));
         inputDataList.emplace_back(&(*it));
     }
 
@@ -71,7 +70,6 @@ void PluginWrapper::getLabels(QList<launchy::InputData>* inputData) {
 void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launchy::CatItem>* result) {
     std::vector<exportpy::InputData> inputDataList;
     for (auto it = inputData->begin(); it != inputData->end(); ++it) {
-        //inputDataList.push_back(exportpy::InputData(&(*it)));
         inputDataList.emplace_back(&(*it));
     }
 
@@ -216,22 +214,22 @@ int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
         break;
 
     case MSG_GET_LABELS:
-        getLabels((QList<launchy::InputData>*) wParam);
+        getLabels((QList<launchy::InputData>*)wParam);
         handled = true;
         break;
 
     case MSG_GET_RESULTS:
-        getResults((QList<launchy::InputData>*) wParam, (QList<launchy::CatItem>*) lParam);
+        getResults((QList<launchy::InputData>*)wParam, (QList<launchy::CatItem>*)lParam);
         handled = true;
         break;
 
     case MSG_GET_CATALOG:
-        getCatalog((QList<launchy::CatItem>*) wParam);
+        getCatalog((QList<launchy::CatItem>*)wParam);
         handled = true;
         break;
 
     case MSG_LAUNCH_ITEM:
-        launchItem((QList<launchy::InputData>*) wParam, (launchy::CatItem*)lParam);
+        launchItem((QList<launchy::InputData>*)wParam, (launchy::CatItem*)lParam);
         handled = true;
         break;
 

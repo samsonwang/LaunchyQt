@@ -18,11 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // qt defines "slots" macro
 // python.h must include before qt header files
-#include <Python.h>
+#include <pybind11/pybind11.h>
 
 #include "PluginLoader.h"
 
-#include <QHash>
 #include <QDebug>
 
 #include "LaunchyLib/PluginInterface.h"

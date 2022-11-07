@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ExportPyCatItem.h"
 
-#include "LaunchyLib/CatalogItem.h"
-
 namespace exportpy {
 
 CatItem::CatItem(const std::string& full,
@@ -55,23 +53,6 @@ std::string CatItem::iconPath() const {
 
 void CatItem::setUsage(int usage) {
     m_data.usage = usage;
-}
-
-void ExportCatItem(const py::module& m) {
-    py::class_<exportpy::CatItem>(m, "CatItem")
-        .def(py::init<const std::string&, const std::string&,
-             const std::string&, const std::string&>())
-        .def("fullPath", &exportpy::CatItem::fullPath)
-        .def("shortName", &exportpy::CatItem::shortName)
-        .def("iconPath", &exportpy::CatItem::iconPath)
-        .def("setUsage", &exportpy::CatItem::setUsage);
-
-    py::class_<exportpy::CatItemList>(m, "CatItemList")
-        //.def(py::init<>())
-        .def("append", &exportpy::CatItemList::append)
-        .def("prepend", &exportpy::CatItemList::prepend)
-        .def("push_front", &exportpy::CatItemList::push_front)
-        .def("push_back", &exportpy::CatItemList::push_back);
 }
 
 CatItemList::CatItemList(QList<launchy::CatItem>* data)

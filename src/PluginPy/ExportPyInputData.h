@@ -20,21 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
-#include <pybind11/pybind11.h>
-
 namespace launchy { class InputData; }
-
-namespace py = pybind11;
 
 namespace exportpy {
 
 class CatItem;
 
-void ExportInputData(const py::module& m);
-
 class InputData {
 public:
-    //InputData() = default;
     InputData(launchy::InputData* data);
 
     /** Apply a label to this query segment */
@@ -45,11 +38,9 @@ public:
     bool hasLabel(const std::string& label);
 
     /** Set the id of this query
-
     This can be used to override the owner of the selected catalog item, so that
     no matter what item is chosen from the catalog, the given plugin will be the one
     to execute it.
-
     \param i The plugin id of the plugin to execute the query's best match from the catalog
     */
     void setPlugin(const std::string& plugin);

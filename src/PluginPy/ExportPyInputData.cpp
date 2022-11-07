@@ -66,18 +66,4 @@ CatItem InputData::getTopResult() {
     return CatItem(item);
 }
 
-void ExportInputData(const py::module& m) {
-
-    py::class_<exportpy::InputData>(m, "InputData")
-        .def("setLabel", &exportpy::InputData::setLabel)
-        .def("removeLabel", &exportpy::InputData::removeLabel)
-        .def("hasLabel", &exportpy::InputData::hasLabel)
-        .def("setPlugin", &exportpy::InputData::setPlugin)
-        .def("getPlugin", &exportpy::InputData::getPlugin)
-        .def("getText", &exportpy::InputData::getText)
-        .def("setText", &exportpy::InputData::setText)
-        .def("getTopResult", &exportpy::InputData::getTopResult);
-
-}
-
 } // namespace exportpy
