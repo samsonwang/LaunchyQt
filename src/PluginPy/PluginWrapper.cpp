@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDebug>
 
+#include <Python.h>
 #include <pybind11/pybind11.h>
 
 #include "LaunchyLib/PluginMsg.h"
