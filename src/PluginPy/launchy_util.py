@@ -122,3 +122,10 @@ def initPipPackage():
     log.info("launchy_util::initPipPackage, sys.path: %s" % sys.path)
     log.info("launchy_util::initPipPackage, env.path: %s" % os.environ.get('PATH', ''))
 
+def testLaunchy():
+    import launchy
+    log.debug('launchy_util::testLaunchy, %s' % launchy)
+
+if __name__ == '__main__':
+    initLogging()
+    testLaunchy()
