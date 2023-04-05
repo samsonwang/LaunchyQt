@@ -9,7 +9,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set (CMAKE_BUILD_PARALLEL_LEVEL 4)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 get_filename_component (SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ ABSOLUTE)
 get_filename_component (DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../deps/ ABSOLUTE)
@@ -30,9 +30,10 @@ if (WIN32)
   find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
 else ()
   find_package (Qt6 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(X11 x11 xcb REQUIRED)
+  find_package (PkgConfig REQUIRED)
+  pkg_check_modules (X11 x11 xcb REQUIRED)
 endif ()
+
 set (CMAKE_AUTOUIC ON)
 set (CMAKE_AUTOMOC ON)
 set (CMAKE_AUTORCC ON)

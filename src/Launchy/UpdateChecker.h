@@ -25,6 +25,7 @@ class QTimer;
 class QNetworkReply;
 
 namespace launchy {
+
 class UpdateChecker : public QObject {
     Q_OBJECT
 public:
@@ -47,4 +48,4 @@ private:
     bool m_manualCheck;
 };
 
-}
+} // namespace launchy

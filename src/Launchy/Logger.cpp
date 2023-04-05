@@ -1,10 +1,12 @@
 
 #include "Logger.h"
+
 #include <QDir>
 #include <QString>
 #include <QDateTime>
 
 namespace launchy {
+
 FILE* Logger::s_logFile = nullptr;
 QtMsgType Logger::s_logLevel;
 
@@ -79,4 +81,5 @@ void Logger::messageHandler(QtMsgType type,
     }
     fflush(s_logFile);
 }
+
 } // namespace launchy

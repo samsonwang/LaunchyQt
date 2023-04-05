@@ -1,8 +1,11 @@
 
 #pragma once
+
 #include <QtGlobal>
 #include <cstdio>
+
 namespace launchy {
+
 class Logger {
 public:
     static void stopLogging();
@@ -19,4 +22,5 @@ private:
     static FILE* s_logFile;
     static QtMsgType s_logLevel;
 };
-}
+
+} // namespace launchy
