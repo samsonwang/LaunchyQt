@@ -84,8 +84,8 @@ def redirectOutput():
 
 def initPipPackage():
     log.debug("launchy_util::initPipPackage, sys.path: %s" % sys.path)
-    log.debug("launchy_util::initPipPackage, env.path: %s" % os.environ.get('PATH', ''))
-    log.info('launchy_util::initPipPackage, sys.prefix: %s' % sys.prefix)
+    log.debug("launchy_util::initPipPackage, env.path: %s" % os.environ.get("PATH", ""))
+    log.info("launchy_util::initPipPackage, sys.prefix: %s" % sys.prefix)
 
     # print ("launchy_util::initPipPackage, env.path:", os.environ.get('PATH', ''))
     # print ("launchy_util::initPipPackage, sys.path:", sys.path)

@@ -77,7 +77,8 @@ if (MSVC)
   add_compile_definitions (NOMINMAX)
   # add_compile_definitions (WIN32_LEAN_AND_MEAN)
 
-  add_link_options (/DEBUG)
+#  add_link_options (/DEBUG) # generate debug info in release config
+
 #  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 #  set (CMAKE_EXE_LINKER_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 
