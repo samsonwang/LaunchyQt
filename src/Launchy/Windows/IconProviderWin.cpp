@@ -62,16 +62,6 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
         retIcon = QIcon(QPixmap::fromImage(QImage::fromHICON(hIcon)));
         DestroyIcon(hIcon);
     }
-    else if (fileExtension == QStringLiteral("lnk")
-             || info.isSymLink()) {
-
-        QString targetPath = linkTargetPathTo64(info);
-
-        qDebug() << "IconProviderWin::icon, lnk, target path:" << targetPath
-                 << ", info target path:" << info.symLinkTarget();
-
-        retIcon = icon(QFileInfo(targetPath));
-    }
     else {
 
         unsigned int flags = SHGFI_ICON | SHGFI_SYSICONINDEX | SHGFI_ICONLOCATION;
@@ -91,7 +81,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 
         QString filePath = QDir::toNativeSeparators(info.filePath());
 
-        qDebug() << "IconProviderWin::icon, exe, file path:" << filePath
+        qDebug() << "IconProviderWin::icon, file path:" << filePath
             << ", flags:" << flags;
 
         SHFILEINFOW sfi;
@@ -107,7 +97,7 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             }
         }
         else {
-            qDebug() << "IconProviderWin::icon, exe, fail to extract by SHGetFileInfo, use qt default";
+            qDebug() << "IconProviderWin::icon, fail to extract by SHGetFileInfo, use qt default";
             retIcon = QFileIconProvider::icon(info);
         }
     }
