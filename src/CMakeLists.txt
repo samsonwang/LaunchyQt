@@ -26,7 +26,10 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
 if (WIN32)
-  set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.2.4/msvc2019_64")
+  if (NOT DEFINED ENV{CMAKE_PREFIX_PATH})
+    set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.2.4/msvc2019_64")
+  endif ()
+  message (STATUS "CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH}")
   find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
 else ()
   find_package (Qt6 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)

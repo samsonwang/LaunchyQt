@@ -1013,6 +1013,16 @@ void LaunchyWidget::loadPosition(const QPoint& pt) {
     QRect rtWidget = geometry();
     QPoint ptCenter = pt + QPoint(rtWidget.width()/2, rtWidget.height()/2);
     QScreen* screen = qApp->screenAt(ptCenter);
+    if (!screen) {
+        QList<QScreen*> listScreen = qApp->screens();
+        if (!listScreen.isEmpty()) {
+            screen = listScreen.front();
+        }
+    }
+    if (!screen) {
+        return;
+    }
+
     QRect rtScreen = screen->availableGeometry();
 
     QPoint ptTarget(pt);
