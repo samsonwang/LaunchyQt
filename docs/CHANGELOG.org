@@ -1,4 +1,8 @@
 
+* 3.1.5 (2023-04-11)
+- fix bug #92
+- fix bug #86
+
 * 3.1.4 (2023-04-05)
 - update Qt version to 6.2.4
 - use PySide instead of PyQt
