@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Logger.h"
 #include "OptionItem.h"
 #include "TranslationManager.h"
+#include "LaunchyVersion.h"
 
 static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";

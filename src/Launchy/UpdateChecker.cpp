@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GlobalVar.h"
 #include "OptionItem.h"
 #include "LaunchyWidget.h"
+#include "LaunchyVersion.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)

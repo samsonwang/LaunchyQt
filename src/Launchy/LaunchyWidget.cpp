@@ -56,6 +56,7 @@
 #include "CatalogBuilder.h"
 #include "PluginHandler.h"
 #include "UpdateChecker.h"
+#include "LaunchyVersion.h"
 
 namespace launchy {
 

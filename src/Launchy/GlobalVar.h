@@ -23,10 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 
-extern const int LAUNCHY_VERSION;
-extern const char* LAUNCHY_VERSION_STRING;
-extern const char* LAUNCHY_BIT_STRING;
-
 extern const QString NAME_LAUNCHY;
 extern const QString NAME_HISTORY;
 extern const QString NAME_LAUNCHYFILE;

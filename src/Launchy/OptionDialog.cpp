@@ -29,8 +29,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDragEnterEvent>
 #include <QDropEvent>
 
-#include "AppBase.h"
+#include "LaunchyLib/LaunchyLib.h"
+
 #include "ui_OptionDialog.h"
+
+#include "AppBase.h"
 #include "LaunchyWidget.h"
 #include "GlobalVar.h"
 #include "PluginHandler.h"
@@ -42,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "OptionItem.h"
 #include "UpdateChecker.h"
 #include "TranslationManager.h"
-#include "LaunchyLib/LaunchyLib.h"
+#include "LaunchyVersion.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)

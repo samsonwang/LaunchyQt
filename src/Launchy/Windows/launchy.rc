@@ -1,6 +1,8 @@
 
 #include <windows.h>
 
+#include "LaunchyVersion.h"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -15,35 +17,35 @@ IDI_ICON1               ICON          DISCARDABLE           "launchy.ico"
 //
 // Version
 //
-
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,3,0
- PRODUCTVERSION 3,1,3,0
-//  FILEFLAGSMASK 0x3fL
-// #ifdef _DEBUG
-//  FILEFLAGS 0x1L
-// #else
-//  FILEFLAGS 0x0L
-// #endif
-//  FILEOS 0x4L
-//  FILETYPE 0x1L
-//  FILESUBTYPE 0x0L
+  FILEVERSION LAUNCHY_VERSION_MAJOR, LAUNCHY_VERSION_MINOR, LAUNCHY_VERSION_PATCH, 0
+  PRODUCTVERSION LAUNCHY_VERSION_MAJOR, LAUNCHY_VERSION_MINOR, LAUNCHY_VERSION_PATCH, 0
+  FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+  FILEFLAGS 0x1L
+#else
+  FILEFLAGS 0x0L
+#endif
+  FILEOS 0x4L
+  FILETYPE 0x1L
+  FILESUBTYPE 0x0L
 BEGIN
-    BLOCK "StringFileInfo"
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
     BEGIN
-        BLOCK "040904E4"
-        BEGIN
-            VALUE "FileDescription",        "LaunchyQt"
-            VALUE "FileVersion",            "3.1.3.0"
-            VALUE "InternalName",           "Launchy.exe"
-            VALUE "LegalCopyright",         "GPLv3"
-            VALUE "OriginalFilename",       "Launchy.exe"
-            VALUE "ProductName",            "Launchy"
-            VALUE "ProductVersion",         "3.1.3.0"
-        END
+      VALUE "FileDescription",        "LaunchyQt"
+      VALUE "FileVersion",            LAUNCHY_VERSION_STRING
+      VALUE "InternalName",           "Launchy.exe"
+      VALUE "LegalCopyright",         "GPLv3"
+      VALUE "OriginalFilename",       "Launchy.exe"
+      VALUE "ProductName",            "Launchy"
+      VALUE "ProductVersion",         LAUNCHY_VERSION_STRING
     END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1252
-    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
 END

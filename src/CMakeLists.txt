@@ -102,9 +102,63 @@ endif ()
 add_executable (Launchy)
 
 # source files
-file (GLOB SOURCES_LAUNCHY
-  ${SRC_DIR}/Launchy/*.h
-  ${SRC_DIR}/Launchy/*.cpp)
+set (SOURCES_LAUNCHY
+  ${SRC_DIR}/Launchy/AnimationLabel.h
+  ${SRC_DIR}/Launchy/AnimationLabel.cpp
+  ${SRC_DIR}/Launchy/AppBase.h
+  ${SRC_DIR}/Launchy/AppBase.cpp
+  ${SRC_DIR}/Launchy/Catalog.h
+  ${SRC_DIR}/Launchy/Catalog.cpp
+  ${SRC_DIR}/Launchy/CatalogBuilder.h
+  ${SRC_DIR}/Launchy/CatalogBuilder.cpp
+  ${SRC_DIR}/Launchy/CharLineEdit.h
+  ${SRC_DIR}/Launchy/CharLineEdit.cpp
+  ${SRC_DIR}/Launchy/CharListWidget.h
+  ${SRC_DIR}/Launchy/CharListWidget.cpp
+  ${SRC_DIR}/Launchy/CommandHistory.h
+  ${SRC_DIR}/Launchy/CommandHistory.cpp
+  ${SRC_DIR}/Launchy/Directory.h
+  ${SRC_DIR}/Launchy/Directory.cpp
+  ${SRC_DIR}/Launchy/DropListWidget.h
+  ${SRC_DIR}/Launchy/DropListWidget.cpp
+  ${SRC_DIR}/Launchy/Fader.h
+  ${SRC_DIR}/Launchy/Fader.cpp
+  ${SRC_DIR}/Launchy/FileBrowser.h
+  ${SRC_DIR}/Launchy/FileBrowser.cpp
+  ${SRC_DIR}/Launchy/FileBrowserDelegate.h
+  ${SRC_DIR}/Launchy/FileBrowserDelegate.cpp
+  ${SRC_DIR}/Launchy/FileSearch.h
+  ${SRC_DIR}/Launchy/FileSearch.cpp
+  ${SRC_DIR}/Launchy/GlobalVar.h
+  ${SRC_DIR}/Launchy/GlobalVar.cpp
+  ${SRC_DIR}/Launchy/IconDelegate.h
+  ${SRC_DIR}/Launchy/IconDelegate.cpp
+  ${SRC_DIR}/Launchy/IconExtractor.h
+  ${SRC_DIR}/Launchy/IconExtractor.cpp
+  ${SRC_DIR}/Launchy/IconProviderBase.h
+  ${SRC_DIR}/Launchy/IconProviderBase.cpp
+  ${SRC_DIR}/Launchy/InputDataList.h
+  ${SRC_DIR}/Launchy/InputDataList.cpp
+  ${SRC_DIR}/Launchy/LaunchyVersion.h
+  ${SRC_DIR}/Launchy/LaunchyWidget.h
+  ${SRC_DIR}/Launchy/LaunchyWidget.cpp
+  ${SRC_DIR}/Launchy/Logger.h
+  ${SRC_DIR}/Launchy/Logger.cpp
+  ${SRC_DIR}/Launchy/main.cpp
+  ${SRC_DIR}/Launchy/OptionDialog.h
+  ${SRC_DIR}/Launchy/OptionDialog.cpp
+  ${SRC_DIR}/Launchy/OptionItem.h
+  ${SRC_DIR}/Launchy/OptionItem.cpp
+  ${SRC_DIR}/Launchy/PluginHandler.h
+  ${SRC_DIR}/Launchy/PluginHandler.cpp
+  ${SRC_DIR}/Launchy/SettingsManager.h
+  ${SRC_DIR}/Launchy/SettingsManager.cpp
+  ${SRC_DIR}/Launchy/TranslationManager.h
+  ${SRC_DIR}/Launchy/TranslationManager.cpp
+  ${SRC_DIR}/Launchy/UpdateChecker.h
+  ${SRC_DIR}/Launchy/UpdateChecker.cpp
+)
+
 
 # sources files for operation system
 if (WIN32)
@@ -120,6 +174,7 @@ else ()
     ${SRC_DIR}/Launchy/Linux/*.cpp)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Linux)
 endif (WIN32)
+
 list (APPEND SOURCES_LAUNCHY ${SOURCES_PLATFORM_LAUNCHY})
 target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy)
 
