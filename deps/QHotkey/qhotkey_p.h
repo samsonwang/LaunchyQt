@@ -1,7 +1,7 @@
 #ifndef QHOTKEY_P_H
 #define QHOTKEY_P_H
 
-#include "qhotkey.h"
+#include "QHotkey.h"
 #include <QAbstractNativeEventFilter>
 #include <QMultiHash>
 #include <QMutex>
