@@ -32,7 +32,7 @@ if (WIN32)
   message (STATUS "CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH}")
   find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
 else ()
-  find_package (Qt6 COMPONENTS Widgets X11Extras Network LinguistTools REQUIRED)
+  find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
   find_package (PkgConfig REQUIRED)
   pkg_check_modules (X11 x11 xcb REQUIRED)
 endif ()
@@ -201,7 +201,7 @@ else ()
 target_link_libraries (Launchy
   LaunchyLib PluginPy
   SingleApplication QHotKey
-  Qt6::Widgets Qt6::X11Extras Qt6::Network)
+  Qt6::Widgets Qt6::Network Qt6::GuiPrivate)
 endif ()
 
 ##################################################
@@ -300,7 +300,7 @@ add_subdirectory(${DEPS_DIR}/SingleApplication SingleApplication)
 # QHotKey
 add_library (QHotKey STATIC)
 
-target_sources (QHotKey PRIVATE ${DEPS_DIR}/QHotkey/qhotkey.cpp)
+target_sources (QHotKey PRIVATE ${DEPS_DIR}/QHotkey/QHotkey.cpp)
 
 if (WIN32)
   target_sources(QHotKey PRIVATE ${DEPS_DIR}/QHotkey/qhotkey_win.cpp)

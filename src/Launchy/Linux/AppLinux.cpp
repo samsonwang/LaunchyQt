@@ -23,8 +23,9 @@
 #include <X11/Xlib.h>
 #include <QtGui>
 #include <QApplication>
-#include <QX11Info>
 #include <QFileIconProvider>
+#include <QRegularExpression>
+#include <private/qtx11extras_p.h>
 #include "AppBase.h"
 #include "Catalog.h"
 #include "LaunchyWidget.h"
@@ -167,8 +168,8 @@ void AppLinux::alterItem(CatItem* item) {
 
     if (name.size() >= item->shortName.size() - 8) {
         item->shortName = name;
-        item->searchName[CatItem::LOWER] = item->shortName.toLower();
-        item->searchName[CatItem::TRANS] = CatItem::convertSearchName(item->searchName[CatItem::LOWER]);
+//        item->searchName[CatItem::LOWER] = item->shortName.toLower();
+//        item->searchName[CatItem::TRANS] = CatItem::convertSearchName(item->searchName[CatItem::LOWER]);
     }
 
     // Don't index desktop items wthout icons
@@ -181,7 +182,7 @@ void AppLinux::alterItem(CatItem* item) {
     exe.replace("%c", name);
     exe.replace("%k", item->fullPath);
 
-    QStringList allExe = exe.trimmed().split(" ", QString::SkipEmptyParts);
+    QStringList allExe = exe.trimmed().split(" ", Qt::SkipEmptyParts);
     if (allExe.isEmpty() || allExe[0].isEmpty()) {
         return;
     }
@@ -193,7 +194,7 @@ void AppLinux::alterItem(CatItem* item) {
     /* if an absolute or relative path is supplied we can just skip this
        everything else should be checked to avoid picking up [unwanted]
        stuff from the working directory - if it doesnt exsist, use it anyway */
-    if(!exe.contains(QRegExp("^.?.?/"))) {
+    if(!exe.contains(QRegularExpression("^.?.?/"))) {
         foreach(QString line, QProcess::systemEnvironment()) {
             if (!line.startsWith("Path", Qt::CaseInsensitive)) {
                 continue;

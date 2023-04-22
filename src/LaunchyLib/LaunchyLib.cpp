@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QLocale>
 #include <QProcess>
 #include <QProcessEnvironment>
+#include <QRegularExpression>
 
 #include "PluginMsg.h"
 
@@ -191,7 +192,7 @@ void runProgram(const QString& file, const QString& args, bool translateSeparato
         path.replace("%F", arg);
         path.replace("%f", arg);
         /* remove specifiers either not yet supported or depricated */
-        path.remove(QRegExp("%."));
+        path.remove(QRegularExpression("%."));
         arg = "";
     }
 

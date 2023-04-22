@@ -1,4 +1,4 @@
-#include "qhotkey.h"
+#include "QHotkey.h"
 #include "qhotkey_p.h"
 #include <QCoreApplication>
 #include <QAbstractEventDispatcher>
