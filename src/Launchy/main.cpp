@@ -74,6 +74,8 @@ int main(int argc, char* argv[]) {
 
     int exitCode = qApp->exec();
 
+    qDebug() << "app exec exit code:" << exitCode;
+
     launchy::cleanupGlobalVar();
 
     if (exitCode == launchy::Restart) {

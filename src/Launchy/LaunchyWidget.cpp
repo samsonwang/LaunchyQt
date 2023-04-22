@@ -118,10 +118,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
             this, &LaunchyWidget::iconExtracted);
 
     m_inputBox->setObjectName("input");
-    connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
-    connect(m_inputBox, SIGNAL(focusOut()), this, SLOT(onInputBoxFocusOut()));
-    connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)), this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
-
+    connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)),
+            this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
+    connect(m_inputBox, SIGNAL(focusOut()),
+            this, SLOT(onInputBoxFocusOut()));
+    connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)),
+            this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
 
     m_outputBox->setObjectName("output");
     m_outputBox->setAlignment(Qt::AlignHCenter);
@@ -131,19 +133,24 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     m_alternativeList->setObjectName("alternatives");
     setAlternativeListMode(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
-    connect(m_alternativeList, SIGNAL(currentRowChanged(int)), this, SLOT(onAlternativeListRowChanged(int)));
-    connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
-    connect(m_alternativeList, SIGNAL(focusOut()), this, SLOT(onAlternativeListFocusOut()));
+    connect(m_alternativeList, SIGNAL(currentRowChanged(int)),
+            this, SLOT(onAlternativeListRowChanged(int)));
+    connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)),
+            this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
+    connect(m_alternativeList, SIGNAL(focusOut()),
+            this, SLOT(onAlternativeListFocusOut()));
 
     m_optionButton->setObjectName("opsButton");
     m_optionButton->setToolTip(tr("Options"));
     m_optionButton->setGeometry(QRect());
-    connect(m_optionButton, SIGNAL(clicked()), this, SLOT(showOptionDialog()));
+    connect(m_optionButton, SIGNAL(clicked()),
+            this, SLOT(showOptionDialog()));
 
     m_closeButton->setObjectName("closeButton");
     m_closeButton->setToolTip(tr("Close"));
     m_closeButton->setGeometry(QRect());
-    connect(m_closeButton, SIGNAL(clicked()), qApp, SLOT(quit()));
+    connect(m_closeButton, SIGNAL(clicked()),
+            qApp, SLOT(quit()));
 
     m_workingAnimation->setObjectName("workingAnimation");
     m_workingAnimation->setGeometry(QRect());
@@ -1147,10 +1154,11 @@ void LaunchyWidget::reloadSkin() {
 }
 
 void LaunchyWidget::exit() {
+    qInfo() << "LaunchyWidget::exit, ...";
     m_fader->stop();
     hideTrayIcon();
     saveSettings();
-    qApp->quit();
+    qApp->exit();
 }
 
 void LaunchyWidget::onInputBoxFocusOut() {
@@ -1335,6 +1343,8 @@ void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) 
     case QSystemTrayIcon::DoubleClick:
     case QSystemTrayIcon::MiddleClick:
         break;
+    default:
+        break;
     }
 }
 
@@ -1466,7 +1476,8 @@ void LaunchyWidget::createActions() {
     });
 
     m_actExit = new QAction(tr("Exit"), this);
-    connect(m_actExit, SIGNAL(triggered()), this, SLOT(exit()));
+    connect(m_actExit, SIGNAL(triggered()),
+            this, SLOT(exit()), Qt::QueuedConnection);
 }
 
 } // namespace launchy
