@@ -347,11 +347,11 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     }
 
     // Write out the new config
-    g_settings->beginWriteArray("plugins");
+    g_settings->beginWriteArray("Plugin");
     for (int i = 0; i < m_pUi->plugList->count(); i++) {
         QListWidgetItem* item = m_pUi->plugList->item(i);
         g_settings->setArrayIndex(i);
-        g_settings->setValue("id", item->data(Qt::UserRole).toUInt());
+        g_settings->setValue("name", item->data(Qt::UserRole).toString());
         if (item->checkState() == Qt::Checked) {
             g_settings->setValue("load", true);
         }

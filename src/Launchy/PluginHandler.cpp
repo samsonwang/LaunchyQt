@@ -40,7 +40,7 @@ PluginHandler& PluginHandler::instance() {
 void PluginHandler::loadPlugins() {
     // Get the list of loadable plugins
     m_loadable.clear();
-    int size = g_settings->beginReadArray("plugins");
+    int size = g_settings->beginReadArray("Plugin");
     for (int i = 0; i < size; ++i) {
         g_settings->setArrayIndex(i);
         QString name = g_settings->value("name").toString();
