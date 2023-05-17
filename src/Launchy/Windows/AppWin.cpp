@@ -161,4 +161,4 @@ AppBase* createApplication(int& argc, char** argv) {
     return new AppWin(argc, argv);
 }
 
-}
+} // namespace launchy

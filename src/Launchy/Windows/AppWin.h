@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class CrashDumper;
 
 namespace launchy {
+
 class AppWin : public AppBase {
 public:
     AppWin(int& argc, char** argv);
@@ -43,4 +44,6 @@ private:
     HANDLE globalMutex;
     CrashDumper* m_crashDumper;
 };
-}
+
+} // namespace launchy
+

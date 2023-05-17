@@ -1017,21 +1017,24 @@ void LaunchyWidget::updateVersion(int oldVersion) {
 }
 
 void LaunchyWidget::loadPosition(const QPoint& pt) {
-    // Get the dimensions of the screen containing the new center point
-    QRect rtWidget = geometry();
-    QPoint ptCenter = pt + QPoint(rtWidget.width()/2, rtWidget.height()/2);
-    QScreen* screen = qApp->screenAt(ptCenter);
-    if (!screen) {
-        QList<QScreen*> listScreen = qApp->screens();
-        if (!listScreen.isEmpty()) {
-            screen = listScreen.front();
-        }
+    // move to selected screen
+    QList<QScreen*> listScreen = QApplication::screens();
+    QScreen* screen = nullptr;
+    int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
+    if (nScreenIndex < listScreen.size()) {
+        screen = listScreen.at(nScreenIndex);
     }
-    if (!screen) {
-        return;
+    else {
+        screen = listScreen.front();
     }
 
     QRect rtScreen = screen->availableGeometry();
+    QRect rtWidget = geometry();
+
+    qDebug() << "LaunchyWidget::loadPosition, pos:" << pt
+        << "screen:" << rtScreen << "widget:" << rtWidget;
+
+    QPoint ptCenter = pt + QPoint(rtWidget.width() / 2, rtWidget.height() / 2);
 
     QPoint ptTarget(pt);
     // See if the new position is within the screen dimensions, if not pull it inside
@@ -1368,7 +1371,32 @@ void LaunchyWidget::showOptionDialog() {
             m_optionDialog = new OptionDialog(nullptr);
         }
 
+        // move to selected screen center
+        QList<QScreen*> listScreen = QApplication::screens();
+        QScreen* pScreen = nullptr;
+        int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
+        if (nScreenIndex < listScreen.size()) {
+            pScreen = listScreen.at(nScreenIndex);
+        }
+        else {
+            pScreen = listScreen.front();
+        }
+
+        QRect rectScreenGeometry = pScreen->geometry();
+        QRect rectDialogGeometry = m_optionDialog->geometry();
+
+        qDebug() << "LaunchyWidget::showOptionDialog, screen:" << rectScreenGeometry
+            << "dialog:" << rectDialogGeometry;
+
+        // dialog target position
+        QPoint pointDialog;
+        pointDialog.setX(rectScreenGeometry.x() + rectScreenGeometry.width() / 2 - rectDialogGeometry.width() / 2);
+        pointDialog.setY(rectScreenGeometry.y() + rectScreenGeometry.height() / 2 - rectDialogGeometry.height() / 2);
+
+        m_optionDialog->move(pointDialog);
+
         m_optionDialog->exec();
+
         delete m_optionDialog;
         m_optionDialog = nullptr;
 

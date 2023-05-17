@@ -460,7 +460,6 @@ void OptionDialog::catDirItemChanged(QListWidgetItem* item) {
     ++g_needRebuildCatalog;
 }
 
-
 void OptionDialog::catDirDragEnter(QDragEnterEvent *event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData && mimeData->hasUrls())
@@ -529,31 +528,7 @@ void OptionDialog::catDirPlusClicked(bool c) {
 }
 
 void OptionDialog::initGeneralWidget() {
-    // Load General Options
-    m_pUi->genAlwaysShow->setChecked(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool());
-    m_pUi->genAlwaysTop->setChecked(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
-    m_pUi->genHideFocus->setChecked(g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
-    m_pUi->genDecorateText->setChecked(g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool());
-    m_pUi->genHideTray->setChecked(g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool());
-
-    int center = g_settings->value(OPTION_ALWAYSCENTER, OPTION_ALWAYSCENTER_DEFAULT).toInt();
-    m_pUi->genHCenter->setChecked((center & 1) != 0);
-    m_pUi->genVCenter->setChecked((center & 2) != 0);
-
-    m_pUi->genShiftDrag->setChecked(g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool());
-
-    m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
-    m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPTION_AUTOSUGGESTDELAY, OPTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
-
-    m_pUi->genMaxViewable->setValue(g_settings->value(OPTION_NUMVIEWABLE, OPTION_NUMVIEWABLE_DEFAULT).toInt());
-    m_pUi->genNumResults->setValue(g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt());
-    m_pUi->genNumHistory->setValue(g_settings->value(OPTION_MAXITEMSINHISTORY, OPTION_MAXITEMSINHISTORY_DEFAULT).toInt());
-    m_pUi->genOpaqueness->setValue(g_settings->value(OPTION_OPAQUENESS, OPTION_OPAQUENESS_DEFAULT).toInt());
-    m_pUi->genFadeIn->setValue(g_settings->value(OPTION_FADEIN, OPTION_FADEIN_DEFAULT).toInt());
-    m_pUi->genFadeOut->setValue(g_settings->value(OPTION_FADEOUT, OPTION_FADEOUT_DEFAULT).toInt());
-
-    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
-
+    // hot key
 #ifdef Q_OS_MAC
     m_metaKeys << QString("") << QString("Alt") << QString("Command") << QString("Shift") << QString("Control")
         << QString("Command+Alt") << QString("Command+Shift")
@@ -603,7 +578,7 @@ void OptionDialog::initGeneralWidget() {
         << Qt::Key(']') << Qt::Key(';') << Qt::Key('\'') << Qt::Key('#')
         << Qt::Key('\\') << Qt::Key(',') << Qt::Key('.') << Qt::Key('/');
 
-    // Find the current hotkey
+    // find the current hotkey
     int hotkey = g_mainWidget->getHotkey();
     int meta = hotkey & (Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
     hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
@@ -620,25 +595,56 @@ void OptionDialog::initGeneralWidget() {
             m_pUi->genKeyBox->setCurrentIndex(i);
     }
 
+    // general options
+    m_pUi->genAlwaysShow->setChecked(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool());
+
+    m_pUi->genHideFocus->setChecked(g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
+
+    m_pUi->genAlwaysTop->setChecked(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
+
+    int center = g_settings->value(OPTION_ALWAYSCENTER, OPTION_ALWAYSCENTER_DEFAULT).toInt();
+    m_pUi->genHCenter->setChecked((center & 1) != 0);
+    m_pUi->genVCenter->setChecked((center & 2) != 0);
+
+    m_pUi->genShiftDrag->setChecked(g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool());
+
+    assert(qApp);
+    QList<QScreen*> listScreen = qApp->screens();
+    for (int i = 0; i < listScreen.size(); ++i) {
+        QScreen* pScreen = listScreen[i];
+        assert(pScreen);
+
+        QString strScreen = tr("Screen %1: ").arg(i + 1);
+        strScreen += pScreen->name();
+        strScreen += " ";
+        strScreen += pScreen->manufacturer();
+        strScreen += pScreen->model();
+        m_pUi->comboBoxScreenNumber->addItem(strScreen);
+
+        qDebug() << "OptionDialog::initGeneralWidget, screen:"
+            << i << pScreen->name()
+            << ", geometry:" << pScreen->geometry()
+            << ", virtual geometry:" << pScreen->virtualGeometry()
+            << ", size:" << pScreen->size()
+            << ", virtual size:" << pScreen->virtualSize();
+    }
+    int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
+    if (nScreenIndex < listScreen.size()) {
+        m_pUi->comboBoxScreenNumber->setCurrentIndex(nScreenIndex);
+    }
+
+    m_pUi->pushButtonRescanScreen->setVisible(false);
+
+    m_pUi->genHideTray->setChecked(g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool());
+
+    // application style
     QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
 
     QStringList styles = QStyleFactory::keys();
     foreach (QString style, styles) {
         m_pUi->cbAppStyle->addItem(style, style.toLower());
     }
-    /*
-    m_pUi->cbAppStyle->addItem(tr("Fusion"), "fusion");
-#if defined(Q_OS_WIN)
-    m_pUi->cbAppStyle->addItem(tr("Windows"), "windows");
-    m_pUi->cbAppStyle->addItem(tr("WindowsVista"), "windowsvista");
-#elif defined(Q_OS_MAC)
-    m_pUi->cbAppStyle->addItem(tr("Maciontosh"), "maciontosh");
-#elif defined(Q_OS_LINUX)
-    m_pUi->cbAppStyle->addItem(tr("Plastique"), "plastique");
-    m_pUi->cbAppStyle->addItem(tr("GTK"), "GTK");
-    m_pUi->cbAppStyle->addItem(tr("Cleanlooks"), "cleanlooks");
-#endif
-*/
+
     int appStyleIndex = 0;
     int appStyleCount = m_pUi->cbAppStyle->count();
     for (int i = 0; i < appStyleCount; ++i) {
@@ -652,6 +658,22 @@ void OptionDialog::initGeneralWidget() {
 
     connect(m_pUi->cbAppStyle, SIGNAL(currentIndexChanged(int)),
             this, SLOT(onAppStyleChanged(int)));
+
+    // suggestion list
+    m_pUi->genDecorateText->setChecked(g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool());
+
+    m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
+    m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPTION_AUTOSUGGESTDELAY, OPTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
+
+    m_pUi->genMaxViewable->setValue(g_settings->value(OPTION_NUMVIEWABLE, OPTION_NUMVIEWABLE_DEFAULT).toInt());
+    m_pUi->genNumResults->setValue(g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt());
+    m_pUi->genNumHistory->setValue(g_settings->value(OPTION_MAXITEMSINHISTORY, OPTION_MAXITEMSINHISTORY_DEFAULT).toInt());
+
+    m_pUi->genOpaqueness->setValue(g_settings->value(OPTION_OPAQUENESS, OPTION_OPAQUENESS_DEFAULT).toInt());
+    m_pUi->genFadeIn->setValue(g_settings->value(OPTION_FADEIN, OPTION_FADEIN_DEFAULT).toInt());
+    m_pUi->genFadeOut->setValue(g_settings->value(OPTION_FADEOUT, OPTION_FADEOUT_DEFAULT).toInt());
+
+    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
 }
 
 bool OptionDialog::saveGeneralSettings() {
@@ -674,6 +696,7 @@ bool OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
     g_settings->setValue(OPTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
     g_settings->setValue(OPTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
+    g_settings->setValue(OPTION_SCREEN_INDEX, m_pUi->comboBoxScreenNumber->currentIndex());
     g_settings->setValue(OPTION_HIDE_TRAY_ICON, m_pUi->genHideTray->isChecked());
 
     g_settings->setValue(OPTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
@@ -933,7 +956,6 @@ void OptionDialog::saveProxySettings() {
     }
 
     QNetworkProxy::setApplicationProxy(proxy);
-
 }
 
 void OptionDialog::initSystemWidget() {
@@ -1073,4 +1095,4 @@ void OptionDialog::catDepthChanged(int d) {
     ++g_needRebuildCatalog;
 }
 
-}
+} // namespace launchy

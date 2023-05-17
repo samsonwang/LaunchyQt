@@ -22,14 +22,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace launchy {
 
 // general
+extern const char*      OPTION_VERSION;
+extern const int        OPTION_VERSION_DEFAULT;
+
+extern const char*      OPTION_POS;
+extern const QPoint     OPTION_POS_DEFAULT;
+
+extern const char*      OPTION_HOTKEY;
+extern const int        OPTION_HOTKEY_DEFAULT;
+
+extern const char*      OPTION_HOTKEYMOD;
+extern const int        OPTION_HOTKEYMOD_DEFAULT;
+
+extern const char*      OPTION_HOTKEYKEY;
+extern const int        OPTION_HOTKEYKEY_DEFAULT;
+
 extern const char*      OPTION_ALWAYSSHOW;
 extern const bool       OPTION_ALWAYSSHOW_DEFAULT;
 
 extern const char*      OPTION_ALWAYSTOP;
 extern const bool       OPTION_ALWAYSTOP_DEFAULT;
-
-extern const char*      OPTION_DECORATETEXT;
-extern const bool       OPTION_DECORATETEXT_DEFAULT;
 
 extern const char*      OPTION_HIDEIFLOSTFOCUS;
 extern const bool       OPTION_HIDEIFLOSTFOCUS_DEFAULT;
@@ -40,11 +52,17 @@ extern const int        OPTION_ALWAYSCENTER_DEFAULT;
 extern const char*      OPTION_DRAGMODE;
 extern const bool       OPTION_DRAGMODE_DEFAULT;
 
+static const char*      OPTION_SCREEN_INDEX = "General/ScreenIndex";
+static const int        OPTION_SCREEN_INDEX_DEFAULT = 0;
+
 static const char*      OPTION_HIDE_TRAY_ICON = "GenOps/HideTrayIcon";
 static const bool       OPTION_HIDE_TRAY_ICON_DEFAULT = false;
 
 extern const char*      OPTION_APPSTYLE;
 extern const char*      OPTION_APPSTYLE_DEFAULT;
+
+extern const char*      OPTION_DECORATETEXT;
+extern const bool       OPTION_DECORATETEXT_DEFAULT;
 
 extern const char*      OPTION_AUTOSUGGESTDELAY;
 extern const int        OPTION_AUTOSUGGESTDELAY_DEFAULT;
@@ -58,6 +76,9 @@ extern const int        OPTION_NUMRESULT_DEFAULT;
 extern const char*      OPTION_MAXITEMSINHISTORY;
 extern const int        OPTION_MAXITEMSINHISTORY_DEFAULT;
 
+extern const char*      OPTION_CONDENSEDVIEW;
+extern const int        OPTION_CONDENSEDVIEW_DEFAULT;
+
 extern const char*      OPTION_OPAQUENESS;
 extern const int        OPTION_OPAQUENESS_DEFAULT;
 
@@ -67,26 +88,9 @@ extern const int        OPTION_FADEIN_DEFAULT;
 extern const char*      OPTION_FADEOUT;
 extern const int        OPTION_FADEOUT_DEFAULT;
 
+// skin
 extern const char*      OPTION_SKIN;
 extern const char*      OPTION_SKIN_DEFAULT;
-
-extern const char*      OPTION_CONDENSEDVIEW;
-extern const int        OPTION_CONDENSEDVIEW_DEFAULT;
-
-extern const char*      OPTION_HOTKEY;
-extern const int        OPTION_HOTKEY_DEFAULT;
-
-extern const char*      OPTION_HOTKEYMOD;
-extern const int        OPTION_HOTKEYMOD_DEFAULT;
-
-extern const char*      OPTION_HOTKEYKEY;
-extern const int        OPTION_HOTKEYKEY_DEFAULT;
-
-extern const char*      OPTION_VERSION;
-extern const int        OPTION_VERSION_DEFAULT;
-
-extern const char*      OPTION_POS;
-extern const QPoint     OPTION_POS_DEFAULT;
 
 // update
 extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP;
