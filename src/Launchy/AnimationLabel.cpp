@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "AnimationLabel.h"
+
 namespace launchy {
 
 AnimationLabel::AnimationLabel(QWidget* parent)
@@ -26,11 +27,9 @@ AnimationLabel::AnimationLabel(QWidget* parent)
     animation->setCacheMode(QMovie::CacheAll);
 }
 
-
 AnimationLabel::~AnimationLabel() {
     animation->deleteLater();
 }
-
 
 void AnimationLabel::LoadAnimation(const QString& animationPath) {
     // Ensure the animation continues to run after loading a new graphic
@@ -45,7 +44,6 @@ void AnimationLabel::LoadAnimation(const QString& animationPath) {
     }
 }
 
-
 void AnimationLabel::Start() {
     // If the animation isn't already running, start it
     if (!animation.isNull() &&
@@ -58,7 +56,6 @@ void AnimationLabel::Start() {
     }
 }
 
-
 void AnimationLabel::Stop() {
     // If the animation is running, stop it
     if (!animation.isNull()
@@ -67,4 +64,6 @@ void AnimationLabel::Stop() {
         animation->stop();
     }
 }
-}
+
+} // namespace launchy
+

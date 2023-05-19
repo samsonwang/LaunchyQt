@@ -182,7 +182,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         showTrayIcon();
     }
 
-
     connect(m_fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
 
     // If this is the first time running or a new version, call updateVersion
@@ -231,6 +230,13 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     connect(g_app, &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
+
+    // reload skin after new screen is added or removed
+    connect(g_app, &QGuiApplication::screenAdded,
+            this, &LaunchyWidget::onScreenChanged);
+
+    connect(g_app, &QGuiApplication::screenRemoved,
+            this, &LaunchyWidget::onScreenChanged);
 
     // Set the timers
     m_dropTimer->setSingleShot(true);
@@ -1193,6 +1199,17 @@ void LaunchyWidget::onSecondInstance() {
     trayNotify(tr("Launchy is already running!"));
 }
 
+void LaunchyWidget::onScreenChanged(QScreen* screen) {
+    qDebug() << "LaunchyWidget::onScreenChanged, screen:" << screen->name();
+    // reload screen after screen is changed
+    if (isVisible()) {
+        reloadSkin();
+    }
+    else {
+        applySkin(m_currentSkin);
+    }
+}
+
 void LaunchyWidget::applySkin(const QString& name) {
     m_currentSkin = name;
     m_skinChanged = true;
@@ -1205,8 +1222,9 @@ void LaunchyWidget::applySkin(const QString& name) {
         QString defaultSkin = SettingsManager::instance().directory("defSkin")[0];
         skinPath = SettingsManager::instance().skinPath(defaultSkin);
         // If still no good then fail with an ugly default
-        if (skinPath.isEmpty())
+        if (skinPath.isEmpty()) {
             return;
+        }
 
         g_settings->setValue(OPTION_SKIN, defaultSkin);
     }
@@ -1293,19 +1311,44 @@ void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
 }
 
 void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() == Qt::LeftButton && m_dragging) {
+    if (event->buttons() == Qt::LeftButton
+        && m_dragging) {
+
+        hideAlternativeList();
+
         QPoint pt = event->globalPosition().toPoint() - m_dragStartPoint;
         move(pt);
-        hideAlternativeList();
+
+        // qDebug() << "LaunchyWidget::mouseMoveEvent, pos:" << pt;
+
         m_inputBox->setFocus();
     }
 }
 
 void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
-    Q_UNUSED(event);
+
     m_dragging = false;
+
     hideAlternativeList();
     m_inputBox->setFocus();
+
+    int screenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
+
+    QPoint pt = event->globalPosition().toPoint();
+
+    QList<QScreen*> listScreens = qApp->screens();
+    for (int i = 0; i < listScreens.size(); ++i) {
+        QScreen* pScreen = listScreens.at(i);
+
+        if (pScreen->geometry().contains(pt)) {
+            g_settings->setValue(OPTION_SCREEN_INDEX, i);
+
+            if (screenIndex != i) {
+                reloadSkin();
+            }
+            break;
+        }
+    }
 }
 
 void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event) {

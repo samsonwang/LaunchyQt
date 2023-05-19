@@ -95,7 +95,7 @@ protected:
     virtual void focusLaunchy();
 
 protected:
-    // singlton
+    // singleton
     LaunchyWidget(CommandFlags command);
     Q_DISABLE_COPY(LaunchyWidget)
     virtual ~LaunchyWidget();
@@ -143,6 +143,7 @@ protected slots:
     void onInputBoxInputMethod(QInputMethodEvent* event);
     void onInputBoxTextEdited(const QString& str);
     void onSecondInstance();
+    void onScreenChanged(QScreen* screen);
 
 protected:
     QString m_currentSkin;
@@ -195,4 +196,4 @@ void createLaunchyWidget(CommandFlags command);
 
 #define g_mainWidget launchy::LaunchyWidget::instance()
 
-}
+} // namespace launchy

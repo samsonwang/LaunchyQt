@@ -41,4 +41,4 @@ private:
     QPointer<QMovie> animation;
 };
 
-}
+} // namespace launchy
