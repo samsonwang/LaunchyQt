@@ -1,4 +1,12 @@
 
+* 3.1.6 (2023-05-19)
+- fix bug #65
+- fix bug #93
+- fix bug #94
+- fix bug #96
+- fix bug #97
+- fix bug #98
+
 * 3.1.5 (2023-04-11)
 - fix bug #92
 - fix bug #86
@@ -7,12 +15,12 @@
 - update Qt version to 6.2.4
 - use PySide instead of PyQt
 
-* 3.1.3 (2022-2-28)
+* 3.1.3 (2022-02-28)
 - add option to hide tray icon #62
 - support Ctrl+Alt+Shift hotkey #66
 - update japanese translation #71
 
-* 3.1.2 (2021-7-20)
+* 3.1.2 (2021-07-20)
 - new feature #23 #37: UWPApp plugin for indexing UWP applications
 - translation: add Portuguese and Italian translation
 - fix bug #53: fail to open nested folder
@@ -21,13 +29,13 @@
 - move python plugin log into system temp folder
 - use Qt5.12.10 and Python3.9.6
 
-* 3.1.1 (2020-1-29)
+* 3.1.1 (2020-01-29)
 - fix bug #21, crash when backspace key is pressed
 - fix bug #22, fail to paste clipboard to excel
 - fix bug #29, crash in chinese path
 - fix bug, fail to open alternative list widget on input method
 
-* 3.1.0 (2019-8-17)
+* 3.1.0 (2019-08-17)
 - fix bug #15, fix bulid error in linux
 - new feature: search command history with arguments
 - fix bug #19, improve portable mode detection method
