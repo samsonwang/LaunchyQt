@@ -30,9 +30,9 @@ const QString NAME_LAUNCHY = QStringLiteral("launchy");
 const QString NAME_HISTORY = QStringLiteral("launchy_history");
 const QString NAME_LAUNCHYFILE = QStringLiteral("launchy_file");
 
-const QString LABEL_FILE = "launchy_file";
-const QString LABEL_AUTOSUGGEST = "launchy_auto_suggest";
-const QString LABEL_HISTORY = "launchy_history";
+const QString LABEL_FILE = QStringLiteral("launchy_file");
+const QString LABEL_AUTOSUGGEST = QStringLiteral("launchy_auto_suggest");
+const QString LABEL_HISTORY = QStringLiteral("launchy_history");
 
 QString g_searchText;
 

@@ -27,7 +27,7 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
 if (WIN32)
   if (NOT DEFINED ENV{CMAKE_PREFIX_PATH})
-    set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.2.4/msvc2019_64")
+    set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.5.1/msvc2019_64")
   endif ()
   message (STATUS "CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH}")
   find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)

@@ -790,21 +790,38 @@ void OptionDialog::initCatalogWidget() {
 
     m_pUi->catDirectories->setCurrentRow(-1);
 
-    connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)), this, SLOT(dirRowChanged(int)));
-    connect(m_pUi->catDirectories, SIGNAL(dragEnter(QDragEnterEvent*)), this, SLOT(catDirDragEnter(QDragEnterEvent*)));
-    connect(m_pUi->catDirectories, SIGNAL(drop(QDropEvent*)), this, SLOT(catDirDrop(QDropEvent*)));
-    connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catDirItemChanged(QListWidgetItem*)));
-    //connect(m_pUi->catDirectories, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onCatDirItemActivated(QListWidgetItem*)));
+    connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)),
+            this, SLOT(dirRowChanged(int)));
+    connect(m_pUi->catDirectories, SIGNAL(dragEnter(QDragEnterEvent*)),
+            this, SLOT(catDirDragEnter(QDragEnterEvent*)));
+    connect(m_pUi->catDirectories, SIGNAL(drop(QDropEvent*)),
+            this, SLOT(catDirDrop(QDropEvent*)));
+    connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)),
+            this, SLOT(catDirItemChanged(QListWidgetItem*)));
+    //connect(m_pUi->catDirectories, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+    // this, SLOT(onCatDirItemActivated(QListWidgetItem*)));
 
-    connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)), this, SLOT(catDirPlusClicked(bool)));
-    connect(m_pUi->catDirMinus, SIGNAL(clicked(bool)), this, SLOT(catDirMinusClicked(bool)));
-    connect(m_pUi->catTypes, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(catTypesItemChanged(QListWidgetItem*)));
-    connect(m_pUi->catTypesPlus, SIGNAL(clicked(bool)), this, SLOT(catTypesPlusClicked(bool)));
-    connect(m_pUi->catTypesMinus, SIGNAL(clicked(bool)), this, SLOT(catTypesMinusClicked(bool)));
-    connect(m_pUi->catCheckDirs, SIGNAL(stateChanged(int)), this, SLOT(catTypesDirChanged(int)));
-    connect(m_pUi->catCheckBinaries, SIGNAL(stateChanged(int)), this, SLOT(catTypesExeChanged(int)));
-    connect(m_pUi->catDepth, SIGNAL(valueChanged(int)), this, SLOT(catDepthChanged(int)));
-    connect(m_pUi->catRescan, SIGNAL(clicked(bool)), this, SLOT(catRescanClicked(bool)));
+    connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)),
+            this, SLOT(catDirPlusClicked(bool)));
+    connect(m_pUi->catDirMinus, SIGNAL(clicked(bool)),
+            this, SLOT(catDirMinusClicked(bool)));
+
+    connect(m_pUi->catTypes, SIGNAL(itemChanged(QListWidgetItem*)),
+            this, SLOT(catTypesItemChanged(QListWidgetItem*)));
+    connect(m_pUi->catTypesPlus, SIGNAL(clicked(bool)),
+            this, SLOT(catTypesPlusClicked(bool)));
+    connect(m_pUi->catTypesMinus, SIGNAL(clicked(bool)),
+            this, SLOT(catTypesMinusClicked(bool)));
+
+    connect(m_pUi->catCheckDirs, SIGNAL(stateChanged(int)),
+            this, SLOT(catTypesDirChanged(int)));
+    connect(m_pUi->catCheckBinaries, SIGNAL(stateChanged(int)),
+            this, SLOT(catTypesExeChanged(int)));
+    connect(m_pUi->catDepth, SIGNAL(valueChanged(int)),
+            this, SLOT(catDepthChanged(int)));
+
+    connect(m_pUi->catRescan, SIGNAL(clicked(bool)),
+            this, SLOT(catRescanClicked(bool)));
 
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
@@ -1033,7 +1050,6 @@ void OptionDialog::addDirectory(const QString& directory, bool edit) {
 
     ++g_needRebuildCatalog;
 }
-
 
 void OptionDialog::catTypesItemChanged(QListWidgetItem* item) {
     Q_UNUSED(item);

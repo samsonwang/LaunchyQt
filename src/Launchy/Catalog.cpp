@@ -96,7 +96,7 @@ void Catalog::incrementTimestamp() {
 
 // Return true if the specified catalog item matches the specified string
 bool Catalog::matches(CatItem* item, const QString& match) {
-    int matchLength = match.count();
+    int matchLength = match.size();
     int curChar = 0;
 
     foreach(QChar c, item->searchName) {
@@ -178,7 +178,7 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
     if (!g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool())
         return text;
     QString decoratedText;
-    int matchLength = match.count();
+    int matchLength = match.size();
     int curChar = 0;
 
     int index = text.toLower().indexOf(match);
@@ -187,7 +187,7 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
     else
         index = 0;
     bool highlighted = false;
-    for (; index < text.count(); ++index) {
+    for (; index < text.size(); ++index) {
         QChar c = text[index];
         // prefix based rendering is buggy with lots of underlines limit it to 15
         // until we get round to replacing the list widget delegate with a rich text delegate
@@ -369,7 +369,7 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
     int otherFind = std::min(b->searchName.indexOf(g_searchText),
                              b->searchNameTrans.indexOf(g_searchText));
 
-    if (g_searchText.count() == 1) {
+    if (g_searchText.size() == 1) {
         // Match at the start
         if (localFind == 0 && otherFind != 0)
             return true;
@@ -411,8 +411,8 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
             return false;
     }
 
-    int localLen = a->shortName.count();
-    int otherLen = b->shortName.count();
+    int localLen = a->shortName.size();
+    int otherLen = b->shortName.size();
 
     // Favour shorter item names
     if (localLen < otherLen)

@@ -1155,8 +1155,14 @@ p, li { white-space: pre-wrap; }
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
+              <property name="lineWidth">
+               <number>1</number>
+              </property>
               <property name="spacing">
                <number>1</number>
+              </property>
+              <property name="sortingEnabled">
+               <bool>false</bool>
               </property>
              </widget>
             </item>

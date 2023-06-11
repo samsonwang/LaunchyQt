@@ -1007,9 +1007,14 @@ void LaunchyWidget::catalogBuilt() {
 }
 
 void LaunchyWidget::setSkin(const QString& name) {
-    hideLaunchy(true);
-    applySkin(name);
-    showLaunchy(false);
+    if (isVisible()) {
+        hideLaunchy(true);
+        applySkin(name);
+        showLaunchy(false);
+    }
+    else {
+        applySkin(name);
+    }
 }
 
 void LaunchyWidget::updateVersion(int oldVersion) {
@@ -1202,12 +1207,7 @@ void LaunchyWidget::onSecondInstance() {
 void LaunchyWidget::onScreenChanged(QScreen* screen) {
     qDebug() << "LaunchyWidget::onScreenChanged, screen:" << screen->name();
     // reload screen after screen is changed
-    if (isVisible()) {
-        reloadSkin();
-    }
-    else {
-        applySkin(m_currentSkin);
-    }
+    reloadSkin();
 }
 
 void LaunchyWidget::applySkin(const QString& name) {
@@ -1374,7 +1374,6 @@ void LaunchyWidget::changeEvent(QEvent* event) {
 }
 
 void LaunchyWidget::focusLaunchy() {
-    qApp->setActiveWindow(this);
     activateWindow();
     raise();
 }
