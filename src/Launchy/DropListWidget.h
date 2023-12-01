@@ -17,17 +17,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DROPLISTWIDGET_H
-#define DROPLISTWIDGET_H
-
+#pragma once
 
 #include <QListWidget>
 
 namespace launchy {
+
 class DropListWidget : public QListWidget {
     Q_OBJECT
 public:
-    DropListWidget(QWidget* pParent = NULL);
+    DropListWidget(QWidget* pParent = nullptr);
     virtual ~DropListWidget();
 
 protected:
@@ -40,6 +39,7 @@ signals:
     void dragMove(QDragMoveEvent *event);
     void drop(QDropEvent *event);
 };
-}
 
-#endif
+} // namespace launchy
+
+

@@ -16,22 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef FILEBROWSERDELEGATE_H
-#define FILEBROWSERDELEGATE_H
+
+#pragma once
 
 #include "FileBrowser.h"
+
 #include <QStyledItemDelegate>
 #include <QModelIndex>
 #include <QObject>
 #include <QSize>
 
 namespace launchy {
+
 class FileBrowserDelegate : public QStyledItemDelegate {
     Q_OBJECT
-
 public:
-    FileBrowserDelegate(QObject* parent = 0,
+    FileBrowserDelegate(QObject* parent = nullptr,
                         FileBrowser::BrowseType browseType = FileBrowser::File);
+
+    virtual QSize sizeHint(const QStyleOptionViewItem& option,
+                   const QModelIndex& index) const override;
 
     virtual QWidget* createEditor(QWidget* parent,
                                   const QStyleOptionViewItem& option,
@@ -48,6 +52,6 @@ public:
 private:
     FileBrowser::BrowseType m_browseType;
 };
-}
 
-#endif
+} // namespace launchy
+

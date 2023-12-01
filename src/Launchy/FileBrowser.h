@@ -14,7 +14,6 @@
 #include <QWidget>
 
 namespace launchy {
-class Filename;
 
 /**
  *  A widget to allow the user to browse for files.
@@ -26,6 +25,7 @@ class Filename;
  *  QFileDialog::getSaveFileName() method.  Selecting a file through the file
  *  selection dialog will populate the text field.
  */
+
 class FileBrowser : public QWidget {
     Q_OBJECT
 public:
@@ -56,16 +56,6 @@ public:
      *           The name of the file.
      */
     void setFilename(const QString& filename);
-
-    /**
-     *  Sets the name of the file.
-     *
-     *  This method sets the name of the file to be displayed in the FileBrowser.
-     *
-     *  @param   filename
-     *           The name of the file.
-     */
-    void setFilename(const Filename& filename);
 
     /**
      *  Gets the name of the file.
@@ -192,6 +182,8 @@ protected:
     bool eventFilter(QObject* pObject, QEvent* pEvent);
 
 protected slots:
+    void onFileEditTextChanged(const QString& str);
+
     /**
      *  Calls QFileDialog::getOpenFileName to allow the user to specify a file.
      *  If no browse directory has been set, then the current file's directory will be used as the initial directory.

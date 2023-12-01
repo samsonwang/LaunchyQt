@@ -19,33 +19,6 @@
 
 namespace launchy {
 
-// Browse button
-static const char* const FileOpenIcon[] =
-{
-    "16 16 5 1",
-    "# c #000000",
-    "c c #808000",
-    ". c #c0c0c0",
-    "b c #ffff00",
-    "a c #ffffff",
-    "................",
-    "..........###...",
-    ".........#...#.#",
-    "..............##",
-    "..###........###",
-    ".#aba#######....",
-    ".#babababab#....",
-    ".#ababababa#....",
-    ".#baba##########",
-    ".#aba#ccccccccc#",
-    ".#ba#ccccccccc#.",
-    ".#a#ccccccccc#..",
-    ".##ccccccccc#...",
-    ".###########....",
-    "................",
-    "................"
-};
-
 FileBrowser::FileBrowser(QWidget* pParent)
     : QWidget(pParent),
       mExistingFile(true),
@@ -54,36 +27,37 @@ FileBrowser::FileBrowser(QWidget* pParent)
     // Filename edit
     QCompleter* pCompleter = new QCompleter(this);
     QFileSystemModel* pDirModel = new QFileSystemModel(this);
+    // pDirModel->setfilePath
     // (QStringList(), QDir::NoDotAndDotDot | QDir::AllDirs | QDir::AllEntries,
     //                                     QDir::Name | QDir::DirsFirst, pCompleter);
     pCompleter->setModel(pDirModel);
 
     mpFileEdit = new QLineEdit(this);
-    mpFileEdit->setCompleter(pCompleter);
-    mpFileEdit->installEventFilter(this);
+    // mpFileEdit->setCompleter(pCompleter);
+    // why we need this event filter, event filter process focus out event
+    // mpFileEdit->installEventFilter(this);
 
-    QPixmap pixOpen(FileOpenIcon);
-    pixOpen.setMask(pixOpen.createHeuristicMask());
-    QIcon icnBrowse(pixOpen);
-
-    mpBrowseButton = new QPushButton(icnBrowse, "", this);
-    mpBrowseButton->setFixedWidth(25);
-    mpBrowseButton->installEventFilter(this);
+    mpBrowseButton = new QPushButton("browse", this);
+    // mpBrowseButton->setFixedWidth(25);
+    // mpBrowseButton->installEventFilter(this);
 
     // Layout
     QHBoxLayout* pLayout = new QHBoxLayout(this);
-    pLayout->setSpacing(0);
-    pLayout->addWidget(mpFileEdit, 100);
+    // pLayout->setSpacing(0);
+    pLayout->setContentsMargins(1, 0, 0, 1);
+    pLayout->addWidget(mpFileEdit);
     pLayout->addWidget(mpBrowseButton);
 
     // Initialization
     setFocusPolicy(Qt::StrongFocus);
     setFocusProxy(mpFileEdit);
-    setAutoFillBackground(true);
+    // setAutoFillBackground(true);
 
     // Connections
-    connect(mpFileEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filenameChanged(const QString&)));
-    connect(mpBrowseButton, SIGNAL(clicked()), this, SLOT(browse()));
+    connect(mpFileEdit, SIGNAL(textChanged(const QString&)),
+            this, SLOT(onFileEditTextChanged(const QString&)));
+    connect(mpBrowseButton, SIGNAL(clicked()),
+            this, SLOT(browse()));
 }
 
 FileBrowser::~FileBrowser() {
@@ -197,7 +171,6 @@ FileBrowser::BrowseType FileBrowser::getBrowseType() const
     return mBrowseType;
 }
 
-
 bool FileBrowser::eventFilter(QObject* pObject, QEvent* pEvent)
 {
     if (pEvent != NULL)
@@ -214,6 +187,11 @@ bool FileBrowser::eventFilter(QObject* pObject, QEvent* pEvent)
     }
 
     return QWidget::eventFilter(pObject, pEvent);
+}
+
+void FileBrowser::onFileEditTextChanged(const QString& str)
+{
+    emit filenameChanged(str);
 }
 
 void FileBrowser::browse()
@@ -257,4 +235,6 @@ void FileBrowser::browse()
     // Reinstall the event filter
     mpBrowseButton->installEventFilter(this);
 }
-}
+
+} // namespace launchy
+
