@@ -267,7 +267,7 @@ QList<Directory> SettingsManager::readCatalogDirectories() {
 }
 
 void SettingsManager::writeCatalogDirectories(QList<Directory>& directories) {
-    g_settings->beginWriteArray("directories");
+    g_settings->beginWriteArray("directories", directories.count());
     for (int i = 0; i < directories.count(); ++i) {
         if (directories[i].name.length() > 0) {
             g_settings->setArrayIndex(i);

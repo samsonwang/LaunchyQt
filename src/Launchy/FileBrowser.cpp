@@ -35,11 +35,11 @@ FileBrowser::FileBrowser(QWidget* pParent)
     mpFileEdit = new QLineEdit(this);
     // mpFileEdit->setCompleter(pCompleter);
     // why we need this event filter, event filter process focus out event
-    // mpFileEdit->installEventFilter(this);
+    mpFileEdit->installEventFilter(this);
 
     mpBrowseButton = new QPushButton("browse", this);
     // mpBrowseButton->setFixedWidth(25);
-    // mpBrowseButton->installEventFilter(this);
+    mpBrowseButton->installEventFilter(this);
 
     // Layout
     QHBoxLayout* pLayout = new QHBoxLayout(this);
@@ -67,7 +67,8 @@ void FileBrowser::setFilename(const QString& filename)
 {
     if (filename != getFilename())
     {
-        mpFileEdit->setText(filename);
+        QString fileNameNative = QDir::toNativeSeparators(filename);
+        mpFileEdit->setText(fileNameNative);
     }
 }
 
@@ -173,16 +174,15 @@ FileBrowser::BrowseType FileBrowser::getBrowseType() const
 
 bool FileBrowser::eventFilter(QObject* pObject, QEvent* pEvent)
 {
-    if (pEvent != NULL)
+    if (pEvent != nullptr
+        && pEvent->type() == QEvent::FocusOut)
     {
-        if (pEvent->type() == QEvent::FocusOut)
+        QWidget* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget != mpFileEdit
+            && pFocusWidget != mpBrowseButton)
         {
-            QWidget* pFocusWidget = QApplication::focusWidget();
-            if ((pFocusWidget != mpFileEdit) && (pFocusWidget != mpBrowseButton))
-            {
-                QFocusEvent* pFocusEvent = static_cast<QFocusEvent*>(pEvent);
-                QApplication::sendEvent(this, pFocusEvent);
-            }
+            QFocusEvent* pFocusEvent = static_cast<QFocusEvent*>(pEvent);
+            QApplication::sendEvent(this, pFocusEvent);
         }
     }
 

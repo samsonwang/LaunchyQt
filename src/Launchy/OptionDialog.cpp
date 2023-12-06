@@ -801,8 +801,8 @@ void OptionDialog::initCatalogWidget() {
             this, SLOT(catDirDrop(QDropEvent*)));
     connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)),
             this, SLOT(catDirItemChanged(QListWidgetItem*)));
-    //connect(m_pUi->catDirectories, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-    // this, SLOT(onCatDirItemActivated(QListWidgetItem*)));
+    // connect(m_pUi->catDirectories, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+    //         this, SLOT(onCatDirItemActivated(QListWidgetItem*)));
 
     connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)),
             this, SLOT(catDirPlusClicked(bool)));
