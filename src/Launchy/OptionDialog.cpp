@@ -75,11 +75,6 @@ OptionDialog::OptionDialog(QWidget* parent)
     windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint;
     setWindowFlags(windowsFlags);
 
-    restoreGeometry(s_lastWindowGeometry);
-    m_pUi->tabWidget->setCurrentIndex(s_lastTab);
-    connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
-    connect(m_pUi->pbOk, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(m_pUi->pbCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
     initGeneralWidget();
 
@@ -96,12 +91,26 @@ OptionDialog::OptionDialog(QWidget* parent)
     initSystemWidget();
 
     initAboutWidget();
+
+
+    restoreGeometry(s_lastWindowGeometry);
+
+    m_pUi->tabWidget->setCurrentIndex(s_lastTab);
+
+    connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)),
+            this, SLOT(tabChanged(int)));
+    connect(m_pUi->pbOk, SIGNAL(clicked()),
+            this, SLOT(accept()));
+    connect(m_pUi->pbCancel, SIGNAL(clicked()),
+            this, SLOT(reject()));
 }
 
 OptionDialog::~OptionDialog() {
     if (g_builder) {
-        disconnect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-        disconnect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+        disconnect(g_builder, SIGNAL(catalogIncrement(int)),
+                   this, SLOT(catalogProgressUpdated(int)));
+        disconnect(g_builder, SIGNAL(catalogFinished()),
+                   this, SLOT(catalogBuilt()));
     }
 
     s_lastTab = m_pUi->tabWidget->currentIndex();
@@ -167,25 +176,16 @@ void OptionDialog::showEvent(QShowEvent* event) {
         skinChanged(pItem->text());
     }
 
-    connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
-            this, SLOT(skinChanged(const QString)));
-
     // plugin
     if (s_lastPlugin < 0 && m_pUi->plugList->count() > 0) {
         m_pUi->plugList->setCurrentRow(0);
     }
-
-    if (s_lastPlugin >= 0
-        && s_lastPlugin < m_pUi->plugList->count()) {
+    else if (s_lastPlugin >= 0
+             && s_lastPlugin < m_pUi->plugList->count()) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         loadPluginDialog(item);
         m_pUi->plugList->setCurrentRow(s_lastPlugin);
     }
-
-    pluginChanged(m_pUi->plugList->currentRow());
-
-    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)),
-            this, SLOT(pluginChanged(int)));
 
     QDialog::showEvent(event);
 }
@@ -311,42 +311,19 @@ void OptionDialog::pluginChanged(int row) {
     }
 }
 
-void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
-
-    m_pUi->plugBox->setTitle(tr("Plugin options"));
-    QLayout* pLayout = m_pUi->plugBox->layout();
-    if (pLayout != nullptr) {
-        while (QLayoutItem* child = pLayout->takeAt(0)) {
-            delete child;
-        }
-    }
-    QString pluginName = item->data(Qt::UserRole).toString();
-    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, pluginName);
-    if (win != nullptr) {
-        if (pLayout != nullptr) {
-            pLayout->addWidget(win);
-        }
-
-        win->show();
-        if (win->windowTitle() != "Form") {
-            m_pUi->plugBox->setTitle(win->windowTitle());
-        }
-    }
-}
-
 void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     int row = m_pUi->plugList->row(item);
     if (row == -1) {
         return;
     }
 
-    // Close current plugin dialogs
+    // close current plugin dialogs
     if (s_lastPlugin == row && item->checkState() != Qt::Checked) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 
-    // Write out the new config
+    // write out the new config
     g_settings->beginWriteArray("Plugin");
     for (int i = 0; i < m_pUi->plugList->count(); i++) {
         QListWidgetItem* item = m_pUi->plugList->item(i);
@@ -367,10 +344,32 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     if (row != m_pUi->plugList->currentRow()) {
         m_pUi->plugList->setCurrentRow(row);
     }
-    else {
-        // If enabled, reload the dialog
-        if (item->checkState() == Qt::Checked) {
-            loadPluginDialog(item);
+    else if (item->checkState() == Qt::Checked) {
+        // if enabled, reload the dialog
+        loadPluginDialog(item);
+    }
+}
+
+void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
+
+    m_pUi->plugBox->setTitle(tr("Plugin options"));
+    QLayout* pLayout = m_pUi->plugBox->layout();
+    if (pLayout != nullptr) {
+        while (QLayoutItem* child = pLayout->takeAt(0)) {
+            delete child;
+        }
+    }
+
+    QString pluginName = item->data(Qt::UserRole).toString();
+    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, pluginName);
+    if (win != nullptr) {
+        if (pLayout != nullptr) {
+            pLayout->addWidget(win);
+        }
+
+        win->show();
+        if (win->windowTitle() != "Form") {
+            m_pUi->plugBox->setTitle(win->windowTitle());
         }
     }
 }
@@ -488,6 +487,7 @@ void OptionDialog::dirRowChanged(int row) {
     foreach(QString str, m_memDirs[row].types) {
         QListWidgetItem* item = new QListWidgetItem(str, m_pUi->catTypes);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
+        item->setSizeHint(QSize(200, 20));
     }
     m_pUi->catTypes->blockSignals(false);
 
@@ -760,6 +760,9 @@ void OptionDialog::initSkinWidget() {
         }
     }
     m_pUi->skinList->setCurrentRow(skinRow);
+
+    connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
+            this, SLOT(skinChanged(const QString)));
 }
 
 void OptionDialog::saveSkinSettings() {
@@ -859,6 +862,10 @@ void OptionDialog::initPluginsWidget() {
     // plugin item check state change
     connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)),
             this, SLOT(pluginItemChanged(QListWidgetItem*)));
+
+    // plugin item current row change
+    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)),
+            this, SLOT(pluginChanged(int)));
 }
 
 void OptionDialog::savePluginsSettings() {
