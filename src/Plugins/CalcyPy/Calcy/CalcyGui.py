@@ -1,6 +1,8 @@
 
+import logging as log
+
 from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtWidgets import QApplication, QWidget, QDialog, QFileDialog
+from PySide6.QtWidgets import QApplication, QWidget
 
 from .ui_calcy import *
 
@@ -8,7 +10,7 @@ import launchy
 
 class CalcyOption(QWidget):
     def __init__(self, parent=None, setting_dir=None, settings=None):
-        QtWidgets.QWidget.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.ui = Ui_CalcyOption()
         self.ui.setupUi(self)
         self.setting_dir = setting_dir
@@ -16,7 +18,7 @@ class CalcyOption(QWidget):
         self.__initFromSettings()
 
     def __initFromSettings(self):
-        print('CalcyOption, __initFromsettings', self.settings)
+        log.debug('CalcyOption, __initFromsettings: %s' % self.settings)
         decPtGrpSep = self.settings['decimalPointGroupSeparator']
         if decPtGrpSep == 1:
             self.ui.radioButtonDecSepComa.setChecked(True)
@@ -49,8 +51,6 @@ class CalcyOption(QWidget):
             self.ui.radioButtonBW64.setChecked(True)
 
     def writeSettings(self):
-#        launchySettings = launchy.settings
-
         decPtGrpSep = 0
         if self.ui.radioButtonDecSepComa.isChecked():
             decPtGrpSep = 1
