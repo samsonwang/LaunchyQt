@@ -1043,6 +1043,8 @@ void OptionDialog::initAboutWidget() {
     // About
     m_pUi->aboutVer->setText(tr("Version %1").arg(LAUNCHY_VERSION_STRING));
     m_pUi->aboutBit->setText(tr("(%1-bit)").arg(LAUNCHY_BIT_STRING));
+    connect(m_pUi->pushButtonAboutQt, &QPushButton::clicked,
+            g_app, &QApplication::aboutQt);
 }
 
 void OptionDialog::addDirectory(const QString& directory, bool edit) {
