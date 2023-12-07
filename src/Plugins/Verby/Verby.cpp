@@ -64,23 +64,23 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
     // If it's not an item from Launchy's built in catalog,
     // i.e. a file or directory or something added 
     // by a plugin, don't add verbs.
-    if (inputData->first().getPlugin() != "Verby") {
+    if (!inputData->first().getPlugin().isEmpty()) {
         return;
     }
 
     QString path = inputData->first().getTopResult().fullPath;
     QFileInfo info(path);
     if (info.isSymLink()) {
-        inputData->first().setLabel(HASH_LINK);
+        inputData->first().setLabel(LABEL_LINK);
     }
     else if (info.isDir()) {
-        inputData->first().setLabel(HASH_DIR);
+        inputData->first().setLabel(LABEL_DIR);
     }
     else if (info.isExecutable()) {
-        inputData->first().setLabel(HASH_EXEC);
+        inputData->first().setLabel(LABEL_EXEC);
     }
     else if (info.isFile()) {
-        inputData->first().setLabel(HASH_FILE);
+        inputData->first().setLabel(LABEL_FILE);
     }
 }
 
@@ -89,7 +89,7 @@ const QString& Verby::getIconPath() const {
 }
 
 bool Verby::isMatch(const QString& text1, const QString& text2) {
-    int text2Length = text2.count();
+    int text2Length = text2.length();
     int curChar = 0;
     foreach(QChar c, text1) {
         if (c.toLower() == text2[curChar].toLower()) {
@@ -123,21 +123,21 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     }
     QString text = inputData->at(1).getText();
 
-    if (inputData->first().hasLabel(HASH_DIR)) {
+    if (inputData->first().hasLabel(LABEL_DIR)) {
         addCatItem(text, results, "Properties", "Directory properties", "verby_properties.png");
     }
-    else if (inputData->first().hasLabel(HASH_EXEC)) {
+    else if (inputData->first().hasLabel(LABEL_EXEC)) {
         addCatItem(text, results, "Run as", "Run as admin", "verby_run.png");
         addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
         addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
         addCatItem(text, results, "Properties", "File properties", "verby_properties.png");
     }
-    else if (inputData->first().hasLabel(HASH_FILE)) {
+    else if (inputData->first().hasLabel(LABEL_FILE)) {
         addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
         addCatItem(text, results, "Copy path", "Copy path to clipboard", "verby_copy.png");
         addCatItem(text, results, "Properties", "File properties", "verby_properties.png");
     }
-    else if (inputData->first().hasLabel(HASH_LINK)) {
+    else if (inputData->first().hasLabel(LABEL_LINK)) {
         addCatItem(text, results, "Run as", "Run as admin", "verby_run.png");
         addCatItem(text, results, "Open containing folder", "Open containing folder", "verby_opencontainer.png");
         addCatItem(text, results, "Open shortcut folder", "Open shortcut folder", "verby_opencontainer.png");
@@ -157,7 +157,6 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
                                 inputData->last().getText(),
                                 m_pluginName,
                                 m_libPath + "/verby_run.png"));
-
 }
 
 int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
@@ -252,7 +251,6 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     return true;
 }
 
-
 void Verby::doDialog(QWidget* parent, QWidget** newDlg) {
     if (m_gui == nullptr) {
         qDebug() << "Verby::doDialog, create gui";
@@ -260,7 +258,6 @@ void Verby::doDialog(QWidget* parent, QWidget** newDlg) {
         *newDlg = m_gui;
     }
 }
-
 
 void Verby::endDialog(bool accept) {
     if (accept && m_gui) {
@@ -278,11 +275,10 @@ void Verby::endDialog(bool accept) {
 Verby::Verby()
     : m_gui(nullptr),
       m_pluginName("Verby"),
-      HASH_VERBY("verby"),
-      HASH_DIR("verby_directory"),
-      HASH_FILE("verby_file"),
-      HASH_LINK("verby_link"),
-      HASH_EXEC("verby_exec") {
+      LABEL_DIR("verby_directory"),
+      LABEL_FILE("verby_file"),
+      LABEL_LINK("verby_link"),
+      LABEL_EXEC("verby_exec") {
 }
 
 Verby::~Verby() {

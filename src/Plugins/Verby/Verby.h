@@ -58,10 +58,9 @@ private:
     QString m_libPath;
     Gui* m_gui;
 
-    const QString HASH_VERBY;
-    const QString HASH_FILE;
-    const QString HASH_DIR;
-    const QString HASH_LINK;
-    const QString HASH_EXEC;
+    const QString LABEL_FILE;
+    const QString LABEL_DIR;
+    const QString LABEL_LINK;
+    const QString LABEL_EXEC;
 };
 
