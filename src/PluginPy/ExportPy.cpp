@@ -84,12 +84,10 @@ void objectReceiver(py::object obj) {
 
     else if (py::isinstance<exportpy::Plugin*>(obj)) {
         std::cout << "objectReceiver, got Plugin ptr" << std::endl;
-
     }
 
     else if (py::isinstance<exportpy::Plugin>(obj)) {
         std::cout << "objectReceiver, got Plugin" << std::endl;
-
     }
 
     else {
