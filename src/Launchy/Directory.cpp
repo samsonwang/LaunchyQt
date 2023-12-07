@@ -16,7 +16,8 @@ Directory::Directory(const QString& n)
       depth(5) {
 }
 
-Directory::Directory(const QString& n, const QStringList& t, bool d, bool e, int dep)
+Directory::Directory(const QString& n, const QStringList& t,
+                     bool d, bool e, int dep)
     : name(n),
       types(t),
       indexDirs(d),

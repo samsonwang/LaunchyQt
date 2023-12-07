@@ -229,8 +229,9 @@ void FileBrowser::browse()
     {
         // Set the edit box text
         setFilename(filename);
-        setFocus();
     }
+
+    setFocus();
 
     // Reinstall the event filter
     mpBrowseButton->installEventFilter(this);

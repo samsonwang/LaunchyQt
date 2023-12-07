@@ -487,7 +487,7 @@ void OptionDialog::dirRowChanged(int row) {
     foreach(QString str, m_memDirs[row].types) {
         QListWidgetItem* item = new QListWidgetItem(str, m_pUi->catTypes);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
-        item->setSizeHint(QSize(200, 20));
+        item->setSizeHint(QSize(200, 24));
     }
     m_pUi->catTypes->blockSignals(false);
 
@@ -753,6 +753,7 @@ void OptionDialog::initSkinWidget() {
                 continue;
 
             QListWidgetItem* item = new QListWidgetItem(d, m_pUi->skinList);
+            item->setSizeHint(QSize(100, 24));
             m_pUi->skinList->addItem(item);
 
             if (skinName.compare(d, Qt::CaseInsensitive) == 0)
@@ -790,8 +791,6 @@ void OptionDialog::initCatalogWidget() {
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         m_pUi->catDirectories->addItem(item);
     }
-
-    m_pUi->catDirectories->setCurrentRow(-1);
 
     connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)),
             this, SLOT(dirRowChanged(int)));
@@ -835,6 +834,8 @@ void OptionDialog::initCatalogWidget() {
         catalogProgressUpdated(g_builder->getProgress());
     }
     //m_pUi->catDirectories->installEventFilter(this);
+
+    m_pUi->catDirectories->setCurrentRow(0);
 }
 
 void OptionDialog::saveCatalogSettings() {
@@ -847,6 +848,7 @@ void OptionDialog::initPluginsWidget() {
     // PluginHandler::instance().loadPlugins();
     foreach(const PluginInfo& info, PluginHandler::instance().getPlugins()) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
+        item->setSizeHint(QSize(100, 24));
         m_pUi->plugList->addItem(item);
         item->setData(Qt::UserRole, info.name);
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -1005,7 +1007,8 @@ void OptionDialog::initSystemWidget() {
     }
     */
 
-    m_pUi->cbLanguage->addItem(QString("English"), QString("en")); // English is default
+    // English is default
+    m_pUi->cbLanguage->addItem(QString("English"), QString("en"));
     int indexLang = 0;
     // load language from directory
     QList<QLocale> locales = TranslationManager::instance().getAllLocales();

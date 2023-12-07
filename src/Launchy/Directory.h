@@ -23,15 +23,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QStringList>
 
 namespace launchy {
-struct Directory {
+
+class Directory {
+public:
     Directory();
     Directory(const QString& n);
-    Directory(const QString& n, const QStringList& t, bool d, bool e, int dep);
+    Directory(const QString& n, const QStringList& t,
+              bool d, bool e, int dep);
 
+public:
     QString name;
     QStringList types;
     bool indexDirs;
     bool indexExe;
     int depth;
 };
-}
+
+} // namespace launchy
