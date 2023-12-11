@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define LAUNCHY_VERSION_MAJOR 3
 #define LAUNCHY_VERSION_MINOR 1
-#define LAUNCHY_VERSION_PATCH 6
+#define LAUNCHY_VERSION_PATCH 7
 
 // auto generate version number and string below
 constexpr unsigned LAUNCHY_VERSION

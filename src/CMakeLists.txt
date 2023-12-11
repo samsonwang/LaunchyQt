@@ -274,7 +274,7 @@ add_custom_target (PluginPy.Util
 file (GLOB TS_FILES_LAUNCHY
   ${TRANS_DIR}/*.ts)
 
-qt6_create_translation (QM_FILES_LAUNCHY
+qt_create_translation (QM_FILES_LAUNCHY
   ${SRC_DIR}/Launchy
   ${SRC_DIR}/LaunchyLib
   ${SRC_DIR}/PluginPy
@@ -282,7 +282,7 @@ qt6_create_translation (QM_FILES_LAUNCHY
 
 set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
   OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
-qt6_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
+qt_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
 
 add_custom_target (LaunchyQM
   DEPENDS ${QM_FILES_LAUNCHY})

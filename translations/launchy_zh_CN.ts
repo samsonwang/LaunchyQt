@@ -91,12 +91,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="328"/>
         <source>Hide Tray Icon</source>
-        <translation type="unfinished"></translation>
+        <translation>隐藏托盘图标</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="358"/>
         <source>Application Style:</source>
-        <translation type="unfinished"></translation>
+        <translation>程序界面风格：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="456"/>
@@ -346,7 +346,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2208"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchy.wangzhl.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;launchy.wangzhl.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2289"/>
@@ -598,7 +598,7 @@ press %2 to activate</source>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>转换为%1模式失败，请检查%2目录的写入权限。</translation>
     </message>
 </context>
 <context>

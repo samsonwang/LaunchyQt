@@ -3,7 +3,7 @@
 
 * LaunchyQt
 [[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/release/samsonwang/LaunchyQt.svg]]
-[[https://doc.qt.io][file:https://img.shields.io/badge/Qt-6.2-41cd52.svg]]
+[[https://doc.qt.io][file:https://img.shields.io/badge/Qt-6.5-41cd52.svg]]
 [[https://www.python.org][file:https://img.shields.io/badge/python-3.9-blue.svg]]
 [[https://github.com/samsonwang/LaunchyQt/blob/master/LICENSE][file:https://img.shields.io/github/license/samsonwang/LaunchyQt.svg]]
 [[https://github.com/samsonwang/LaunchyQt/releases][file:https://img.shields.io/github/downloads/samsonwang/LaunchyQt/total.svg]]
