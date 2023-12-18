@@ -1,5 +1,5 @@
 
-cmake_minimum_required (VERSION 3.14.5)
+cmake_minimum_required (VERSION 3.18)
 
 project ("Launchy")
 
@@ -274,24 +274,34 @@ add_custom_target (PluginPy.Util
 file (GLOB TS_FILES_LAUNCHY
   ${TRANS_DIR}/*.ts)
 
-qt_create_translation (QM_FILES_LAUNCHY
-  ${SRC_DIR}/Launchy
-  ${SRC_DIR}/LaunchyLib
-  ${SRC_DIR}/PluginPy
-  ${TS_FILE_LAUNCHY})
+#qt_create_translation(QM_FILES_LAUNCHY
+#  ${SRC_DIR}/Launchy
+#  ${SRC_DIR}/LaunchyLib
+#  ${SRC_DIR}/PluginPy
+#  ${TS_FILE_LAUNCHY})
 
-set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
-  OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
-qt_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
+#qt_add_translations(Launchy
+#  TS_FILES ${TS_FILES_LAUNCHY}
+#  QM_FILES_OUTPUT_VARIABLE QM_FILES_LAUNCHY
+#  SOURCES ${SOURCES_LAUNCHY})
 
-qt_add_lupdate(Launchy TS_FILES ${TS_FILES_LAUNCHY})
-# qt_add_lrelease can not co-exist with qt_add_lupdate
-# qt_add_lrelease(Launchy TS_FILES ${TS_FILES_LAUNCHY})
+qt_add_lupdate(Launchy
+  TS_FILES ${TS_FILES_LAUNCHY}
+  OPTIONS NO_GLOBAL_TARGET)
 
-add_custom_target (LaunchyQM
-  DEPENDS ${QM_FILES_LAUNCHY})
+qt_add_lrelease(Launchy
+  TS_FILES ${TS_FILES_LAUNCHY}
+  QM_FILES_OUTPUT_VARIABLE QM_FILES_LAUNCHY
+  OPTIONS NO_GLOBAL_TARGET)
 
-add_custom_command (TARGET LaunchyQM POST_BUILD
+#set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
+#  OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
+
+# add_custom_target (LaunchyQM
+#  DEPENDS ${QM_FILES_LAUNCHY})
+
+message (STATUS "QM_FILES_LAUNCHY: ${QM_FILES_LAUNCHY}")
+add_custom_command (TARGET Launchy_lrelease POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${QM_FILES_LAUNCHY} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations)
 
