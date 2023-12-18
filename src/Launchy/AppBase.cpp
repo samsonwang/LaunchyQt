@@ -22,8 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QFileInfo>
 #include <QApplication>
 
-#include "Directory.h"
 #include "LaunchyLib/CatalogItem.h"
+
+#include "Directory.h"
 #include "IconProviderBase.h"
 
 namespace launchy {
@@ -83,7 +84,7 @@ void AppBase::sendInstanceCommand(int command) {
     Q_UNUSED(command)
 }
 
-void AppBase::alterItem(CatItem* item) {
+void AppBase::alterItem(CatItem* item) const {
     Q_UNUSED(item)
 }
 
@@ -94,6 +95,10 @@ bool AppBase::supportsAlphaBorder() const {
 bool AppBase::getComputers(QStringList& computers) const {
     Q_UNUSED(computers);
     return false;
+}
+
+bool AppBase::allowNotification() const {
+    return true;
 }
 
 } // namespace launchy

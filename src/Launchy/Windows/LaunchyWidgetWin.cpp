@@ -27,7 +27,9 @@ LaunchyWidgetWin::LaunchyWidgetWin(CommandFlags command)
     commandMessageId = RegisterWindowMessageW(L"LaunchyCommand");
 }
 
-bool LaunchyWidgetWin::nativeEvent(const QByteArray& eventType, void* message, intptr_t* result) {
+bool LaunchyWidgetWin::nativeEvent(const QByteArray& eventType,
+                                   void* message,
+                                   intptr_t* result) {
     MSG* msg = (MSG*)message;
     switch (msg->message) {
     case WM_SETTINGCHANGE:

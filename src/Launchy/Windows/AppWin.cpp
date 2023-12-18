@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <tchar.h>
 #include <ShlObj.h>
+#include <shellapi.h>
 #include <LM.h>
 
 #include "LaunchyWidgetWin.h"
@@ -57,26 +58,7 @@ AppWin::~AppWin() {
     }
 }
 
-QHash<QString, QList<QString> > AppWin::getDirectories() {
-    QHash<QString, QList<QString> > out;
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "Launchy", "Launchy");
-    QString iniFilename = settings.fileName();
-    QFileInfo info(iniFilename);
-    QString userDataPath = info.absolutePath();
-
-    out["config"] << userDataPath;
-    out["portableConfig"] << qApp->applicationDirPath() + "/config";
-    out["skins"] << qApp->applicationDirPath() + "/skins"
-        << userDataPath + "/skins";
-    out["plugins"] << qApp->applicationDirPath() + "/plugins"
-        << userDataPath + "/plugins";
-    out["defSkin"] << "Default";
-
-    return out;
-}
-
-
-QList<Directory> AppWin::getDefaultCatalogDirectories() {
+QList<Directory> AppWin::getDefaultCatalogDirectories() const {
     QList<Directory> list;
 
     Directory dir1;
@@ -109,14 +91,30 @@ QList<Directory> AppWin::getDefaultCatalogDirectories() {
     return list;
 }
 
+QHash<QString, QList<QString> > AppWin::getDirectories() const {
+    QHash<QString, QList<QString> > out;
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "Launchy", "Launchy");
+    QString iniFilename = settings.fileName();
+    QFileInfo info(iniFilename);
+    QString userDataPath = info.absolutePath();
 
-QString AppWin::expandEnvironmentVars(QString txt) {
+    out["config"] << userDataPath;
+    out["portableConfig"] << qApp->applicationDirPath() + "/config";
+    out["skins"] << qApp->applicationDirPath() + "/skins"
+        << userDataPath + "/skins";
+    out["plugins"] << qApp->applicationDirPath() + "/plugins"
+        << userDataPath + "/plugins";
+
+    return out;
+}
+
+QString AppWin::expandEnvironmentVars(const QString& vars) const {
     QString result;
 
-    DWORD size = ExpandEnvironmentStringsW((LPCWSTR)txt.utf16(), NULL, 0);
+    DWORD size = ExpandEnvironmentStringsW((LPCWSTR)vars.utf16(), NULL, 0);
     if (size > 0) {
         WCHAR* buffer = new WCHAR[size];
-        ExpandEnvironmentStringsW((LPCWSTR)txt.utf16(), buffer, size);
+        ExpandEnvironmentStringsW((LPCWSTR)vars.utf16(), buffer, size);
         result = QString::fromWCharArray(buffer);
         delete[] buffer;
         buffer = nullptr;
@@ -125,13 +123,13 @@ QString AppWin::expandEnvironmentVars(QString txt) {
     return result;
 }
 
+bool AppWin::supportsAlphaBorder() const {
+    return true;
+}
+
 void AppWin::sendInstanceCommand(int command) {
     UINT commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
     PostMessage(HWND_BROADCAST, commandMessageId, command, 0);
-}
-
-bool AppWin::supportsAlphaBorder() const {
-    return true;
 }
 
 bool AppWin::getComputers(QStringList& computers) const {
@@ -151,6 +149,16 @@ bool AppWin::getComputers(QStringList& computers) const {
     }
 
     return EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
+}
+
+bool AppWin::allowNotification() const {
+
+    QUERY_USER_NOTIFICATION_STATE state;
+    if (SHQueryUserNotificationState(&state) == S_OK) {
+        return state == QUNS_ACCEPTS_NOTIFICATIONS;
+    }
+
+    return true;
 }
 
 // Create the application object

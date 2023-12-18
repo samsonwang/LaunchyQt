@@ -32,12 +32,19 @@ public:
     AppWin(int& argc, char** argv);
     virtual ~AppWin();
 
-    virtual QHash<QString, QList<QString>> getDirectories();
-    virtual QList<Directory> getDefaultCatalogDirectories();
-    virtual QString expandEnvironmentVars(QString);
-    virtual bool supportsAlphaBorder() const;
+public:
+    virtual QHash<QString, QList<QString>> getDirectories() const;
+    virtual QList<Directory> getDefaultCatalogDirectories() const;
+    virtual QString expandEnvironmentVars(const QString& vars) const;
+
+public:
     virtual void sendInstanceCommand(int command);
+
+    virtual bool supportsAlphaBorder() const;
+
     virtual bool getComputers(QStringList& computers) const;
+
+    virtual bool allowNotification() const;
 
 private:
     HANDLE localMutex;

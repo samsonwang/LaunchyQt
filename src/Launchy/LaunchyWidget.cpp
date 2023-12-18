@@ -1109,11 +1109,19 @@ void LaunchyWidget::trayNotify(const QString& infoMsg) {
 }
 
 void LaunchyWidget::onHotkey() {
+
+    if (!g_app->allowNotification()) {
+        qDebug() << "LaunchyWidget::onHotkey, not allow notification";
+        return;
+    }
+
     qDebug() << "LaunchyWidget::onHotkey,"
-             << "m_alwaysShowLaunchy:" << m_alwaysShowLaunchy
-             << "isVisible()" << isVisible()
-             << "isFading():" << m_fader->isFading()
-             << "QApplication::activeWindow():" << QApplication::activeWindow();
+             << "always show launchy:" << m_alwaysShowLaunchy
+             << "visible" << isVisible()
+             << "fading:" << m_fader->isFading()
+             << "active window:" << QApplication::activeWindow();
+
+
 
     if (m_menuOpen || m_optionsOpen) {
         showLaunchy(true);
@@ -1219,14 +1227,13 @@ void LaunchyWidget::applySkin(const QString& name) {
     QString skinPath = SettingsManager::instance().skinPath(name);
     // Use default skin if this one doesn't exist or isn't valid
     if (skinPath.isEmpty()) {
-        QString defaultSkin = SettingsManager::instance().directory("defSkin")[0];
-        skinPath = SettingsManager::instance().skinPath(defaultSkin);
+        skinPath = SettingsManager::instance().skinPath(OPTION_SKIN_DEFAULT);
         // If still no good then fail with an ugly default
         if (skinPath.isEmpty()) {
             return;
         }
 
-        g_settings->setValue(OPTION_SKIN, defaultSkin);
+        g_settings->setValue(OPTION_SKIN, OPTION_SKIN_DEFAULT);
     }
 
     // Set a few defaults

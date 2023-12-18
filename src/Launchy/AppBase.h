@@ -39,24 +39,34 @@ class AppBase : public SingleApplication {
 public:
     AppBase(int& argc, char** argv);
     virtual ~AppBase();
+
+public:
     static void cleanup();
 
+public:
     QIcon icon(const QFileInfo& info);
     QIcon icon(const QString& path);
     QIcon icon(QFileIconProvider::IconType type);
     void setPreferredIconSize(int size);
 
-    virtual QList<Directory> getDefaultCatalogDirectories() = 0;
+public:
+    virtual QHash<QString, QList<QString>> getDirectories() const = 0;
+    virtual QList<Directory> getDefaultCatalogDirectories() const = 0;
+    virtual QString expandEnvironmentVars(const QString& vars) const = 0;
+
+public:
     virtual bool isAlreadyRunning() const;
     virtual void sendInstanceCommand(int command);
 
     // Need to alter an indexed item?  e.g. .desktop files
-    virtual void alterItem(CatItem* item);
-    virtual QHash<QString, QList<QString>> getDirectories() = 0;
-    virtual QString expandEnvironmentVars(QString txt) = 0;
+    virtual void alterItem(CatItem* item) const;
 
     virtual bool supportsAlphaBorder() const;
+
     virtual bool getComputers(QStringList& computers) const;
+
+    // detect current fullscreen mode
+    virtual bool allowNotification() const;
 
 protected:
     IconProviderBase* m_iconProvider;
@@ -66,4 +76,4 @@ AppBase* createApplication(int& argc, char** argv);
 
 #define g_app static_cast<launchy::AppBase*>(qApp)
 
-}
+} // namespace launchy
