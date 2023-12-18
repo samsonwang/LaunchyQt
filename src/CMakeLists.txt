@@ -284,6 +284,10 @@ set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
   OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
 qt_add_translation(QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
 
+qt_add_lupdate(Launchy TS_FILES ${TS_FILES_LAUNCHY})
+# qt_add_lrelease can not co-exist with qt_add_lupdate
+# qt_add_lrelease(Launchy TS_FILES ${TS_FILES_LAUNCHY})
+
 add_custom_target (LaunchyQM
   DEPENDS ${QM_FILES_LAUNCHY})
 
