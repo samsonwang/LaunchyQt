@@ -170,6 +170,13 @@
            </layout>
           </item>
           <item>
+           <widget class="QCheckBox" name="genIgnoreFullScreen">
+            <property name="text">
+             <string>Ignore hotkey in full-screen mode</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="genAlwaysShow">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">

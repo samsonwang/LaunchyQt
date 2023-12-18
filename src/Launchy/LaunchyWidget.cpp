@@ -1110,18 +1110,18 @@ void LaunchyWidget::trayNotify(const QString& infoMsg) {
 
 void LaunchyWidget::onHotkey() {
 
-    if (!g_app->allowNotification()) {
+    if (g_settings->value(OPTION_IGNORE_FULL_SCREEN,
+                          OPTION_IGNORE_FULL_SCREEN_DEFAULT).toBool()
+        && !g_app->allowNotification()) {
         qDebug() << "LaunchyWidget::onHotkey, not allow notification";
         return;
     }
 
     qDebug() << "LaunchyWidget::onHotkey,"
              << "always show launchy:" << m_alwaysShowLaunchy
-             << "visible" << isVisible()
+             << "visible:" << isVisible()
              << "fading:" << m_fader->isFading()
              << "active window:" << QApplication::activeWindow();
-
-
 
     if (m_menuOpen || m_optionsOpen) {
         showLaunchy(true);

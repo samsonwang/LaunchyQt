@@ -37,6 +37,9 @@ extern const int        OPTION_HOTKEYMOD_DEFAULT;
 extern const char*      OPTION_HOTKEYKEY;
 extern const int        OPTION_HOTKEYKEY_DEFAULT;
 
+extern const char*      OPTION_IGNORE_FULL_SCREEN;
+extern const bool       OPTION_IGNORE_FULL_SCREEN_DEFAULT;
+
 extern const char*      OPTION_ALWAYSSHOW;
 extern const bool       OPTION_ALWAYSSHOW_DEFAULT;
 

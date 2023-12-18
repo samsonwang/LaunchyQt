@@ -23,20 +23,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace launchy {
 
-const char*     OPTION_ALWAYSSHOW                               = "GenOps/alwaysshow";
-const bool      OPTION_ALWAYSSHOW_DEFAULT                       = false;
+const char*     OPTION_ALWAYSSHOW                             = "GenOps/alwaysshow";
+const bool      OPTION_ALWAYSSHOW_DEFAULT                     = false;
 
-const char*     OPTION_ALWAYSTOP                                = "GenOps/alwaystop";
-const bool      OPTION_ALWAYSTOP_DEFAULT                        = false;
+const char*     OPTION_ALWAYSTOP                              = "GenOps/alwaystop";
+const bool      OPTION_ALWAYSTOP_DEFAULT                      = false;
 
-const char*     OPTION_LOGLEVEL                                 = "GenOps/logLevel";
-const int       OPTION_LOGLEVEL_DEFAULT                         = 2;
+const char*     OPTION_LOGLEVEL                               = "GenOps/logLevel";
+const int       OPTION_LOGLEVEL_DEFAULT                       = 2;
 
-const char*     OPTION_DECORATETEXT                             = "GenOps/decoratetext";
-const bool      OPTION_DECORATETEXT_DEFAULT                     = false;
+const char*     OPTION_DECORATETEXT                           = "GenOps/decoratetext";
+const bool      OPTION_DECORATETEXT_DEFAULT                   = false;
 
-const char*     OPTION_HIDEIFLOSTFOCUS                          = "GenOps/hideiflostfocus";
-const bool      OPTION_HIDEIFLOSTFOCUS_DEFAULT                  = true;
+const char*     OPTION_HIDEIFLOSTFOCUS                        = "GenOps/hideiflostfocus";
+const bool      OPTION_HIDEIFLOSTFOCUS_DEFAULT                = true;
 
 const char*     OPTION_ALWAYSCENTER                           = "GenOps/alwayscenter";
 const int       OPTION_ALWAYSCENTER_DEFAULT                   = 3;
@@ -101,6 +101,9 @@ const int       OPTION_VERSION_DEFAULT                        = 0;
 
 const char*     OPTION_POS                                    = "Display/pos";
 const QPoint    OPTION_POS_DEFAULT                            = QPoint(0, 0);
+
+const char*     OPTION_IGNORE_FULL_SCREEN                     = "General/IgnoreFullScreen";
+const bool      OPTION_IGNORE_FULL_SCREEN_DEFAULT             = true;
 
 // Update
 const char*     OPTION_UPDATE_CHECK_ON_STARTUP                 = "Update/checkOnStartup";

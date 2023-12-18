@@ -596,6 +596,8 @@ void OptionDialog::initGeneralWidget() {
     }
 
     // general options
+    m_pUi->genIgnoreFullScreen->setChecked(g_settings->value(OPTION_IGNORE_FULL_SCREEN, OPTION_IGNORE_FULL_SCREEN_DEFAULT).toBool());
+
     m_pUi->genAlwaysShow->setChecked(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool());
 
     m_pUi->genHideFocus->setChecked(g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
@@ -688,7 +690,7 @@ bool OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPTION_HOTKEY, hotkey.isEmpty() ? OPTION_HOTKEY_DEFAULT : hotkey[0].toCombined());
 
     // Save General Options
-    // g_settings->setValue("GenOps/showtrayicon", genShowTrayIcon->isChecked());
+    g_settings->setValue(OPTION_IGNORE_FULL_SCREEN, m_pUi->genIgnoreFullScreen->isChecked());
     g_settings->setValue(OPTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
     g_settings->setValue(OPTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
 
