@@ -122,10 +122,19 @@ void PluginHandler::getCatalogs(Catalog* pCatalog, INotifyProgressStep* progress
 }
 
 int PluginHandler::launchItem(QList<InputData>* inputData, CatItem* result) {
-    if (!m_plugins.contains(result->pluginName) || !m_plugins[result->pluginName].loaded) {
+    assert(inputData);
+    assert(result);
+
+    auto it = m_plugins.find(result->pluginName);
+    if (it == m_plugins.end()) {
         return MSG_CONTROL_LAUNCHITEM;
     }
-    return m_plugins[result->pluginName].sendMsg(MSG_LAUNCH_ITEM, inputData, result);
+
+    if (!it->loaded) {
+        return MSG_CONTROL_LAUNCHITEM;
+    }
+
+    return it->sendMsg(MSG_LAUNCH_ITEM, inputData, result);
 }
 
 QWidget* PluginHandler::doDialog(QWidget* parent, const QString& name) {

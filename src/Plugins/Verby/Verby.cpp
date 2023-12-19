@@ -172,27 +172,7 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     QString verb = verbItem.shortName;
 
     qDebug() << "verby::launchItem:" << noun << verb;
-    if (verb == "Run") {
-        runProgram(noun, "");
-    }
-    else if (verb == "Open containing folder") {
-        QFileInfo info(noun);
-        if (info.isSymLink()) {
-            info.setFile(info.symLinkTarget());
-        }
-
-#ifdef Q_OS_WIN
-        runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
-#endif
-    }
-    else if (verb == "Open shortcut folder") {
-        QFileInfo info(noun);
-
-#ifdef Q_OS_WIN
-        runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
-#endif
-    }
-    else if (verb == "Run as admin") {
+    if (verb == "Run as admin") {
 #ifdef Q_OS_WIN
         SHELLEXECUTEINFOW shellExecInfo;
 
@@ -215,6 +195,31 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         ShellExecuteExW(&shellExecInfo);
 #endif
     }
+    else if (verb == "Open containing folder") {
+        QFileInfo info(noun);
+        if (info.isSymLink()) {
+            info.setFile(info.symLinkTarget());
+        }
+
+#ifdef Q_OS_WIN
+        runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
+#endif
+    }
+    else if (verb == "Open shortcut folder") {
+        QFileInfo info(noun);
+
+#ifdef Q_OS_WIN
+        runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
+#endif
+    }
+    else if (verb == "Copy path to clipboard") {
+        QFileInfo info(noun);
+        if (info.isSymLink()) {
+            info.setFile(info.symLinkTarget());
+        }
+        QClipboard* clipboard = QApplication::clipboard();
+        clipboard->setText(QDir::toNativeSeparators(info.canonicalFilePath()));
+    }
     else if (verb == "File properties") {
 #ifdef Q_OS_WIN
         SHELLEXECUTEINFOW shellExecInfo;
@@ -234,16 +239,9 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         ShellExecuteExW(&shellExecInfo);
 #endif
     }
-    else if (verb == "Copy path to clipboard") {
-        QFileInfo info(noun);
-        if (info.isSymLink()) {
-            info.setFile(info.symLinkTarget());
-        }
-        QClipboard *clipboard = QApplication::clipboard();
-        clipboard->setText(QDir::toNativeSeparators(info.canonicalFilePath()));
-    }
     else {
         // Tell Launchy to handle the command
+        qDebug() << "verby::launchItem, launchy should handle the item";
         return MSG_CONTROL_LAUNCHITEM;
     }
 

@@ -39,7 +39,7 @@ public:
 public:
     bool isValid() const;
 
-    bool sendMsg(int msgId, void* wParam = nullptr, void* lParam = nullptr);
+    int sendMsg(int msgId, void* wParam = nullptr, void* lParam = nullptr);
 };
 
 } // namespace launchy

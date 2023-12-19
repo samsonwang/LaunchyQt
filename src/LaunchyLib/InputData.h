@@ -68,7 +68,7 @@ public:
     /** Set the text of the query segment */
     void setText(const QString& t);
 
-    /** Get the text of the query segment */
+    /** Check if the text is empty */
     bool hasText() const;
 
     /** Get a pointer to the best catalog match for this segment of the query */

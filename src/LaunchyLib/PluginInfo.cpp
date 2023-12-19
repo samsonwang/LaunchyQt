@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 
 #include "PluginInterface.h"
+#include "PluginMsg.h"
 
 namespace launchy {
 
@@ -38,20 +39,22 @@ bool PluginInfo::isValid() const {
     return obj && !name.isEmpty();
 }
 
-bool PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
+int PluginInfo::sendMsg(int msgId, void* wParam, void* lParam) {
     // This should have some kind of exception guard to prevent
     // Launchy from crashing when a plugin is misbehaving.
     // This would consist of a try/catch block to handle C++ exceptions
     // and on Windows would also include a structured exception handler
 
-    int ret = 0;
+    int ret = MSG_CONTROL_LAUNCHITEM;
+
     try {
         ret = obj->msg(msgId, wParam, lParam);
     }
     catch (const std::exception& e) {
         qWarning() << "PluginInfo::sendMsg, exception catched:" << e.what();
     }
-    return ret != 0;
+
+    return ret;
 }
 
 } // namespace launchy
