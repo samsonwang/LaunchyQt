@@ -1,0 +1,69 @@
+{
+	"roots": {
+		"home": {
+			"children": [
+				{
+					"name": "?",
+					"url": "http://www.google.com/search?q=%1",
+					"default":"http://www.google.com"
+				},
+				{
+					"name": "wiki",
+					"url": "http://en.wikipedia.org/wiki/Special:Search?search=%1&fulltext=Search",
+					"default":"http://en.wikipedia.org"
+				},
+				{
+					"name":"@",
+					"url":"mailto:%1",
+					"default":"mailto:"
+				},
+				{
+					"name":"youtube",
+					"url":"http://www.youtube.com/results?search_query=%1",
+					"default":"http://www.youtube.com"
+				},
+				{
+					"name":"amazon",
+					"url": "http://www.amazon.it/gp/search?keywords=%1&index=blended",
+					"default":"http://www.amazon.it"
+					
+				},
+				{
+					"name": "gmaps",
+					"url": "http://maps.google.com/maps?f=q&hl=en&geocode=&q=%1&ie=UTF8&z=12&iwloc=addr&om=1",
+					"default":"http://maps.google.com"
+				},
+				{
+					"name": "translate",
+					"url": "https://translate.google.it/?sl=%1&tl=%2&text=%3&op=translate",
+					"default":"http://translate.google.com"
+				},
+				{
+					"name": "meaning",
+					"url": "http://dictionary.reference.com/browse/%1",
+					"default":"http://dictionary.reference.com"
+				}
+			]
+		},
+		"office": {
+			"children": [
+			]
+		},
+		"protocols":{
+			"children":[
+				{
+					"name":"Http Request",
+					"url":"http://"
+				},
+				{
+					"name":"Https Request",
+					"url":"https://"
+				},
+				{
+					"name":"Web Domain",
+					"url":"www."
+				}
+			]
+		}
+	}
+}
