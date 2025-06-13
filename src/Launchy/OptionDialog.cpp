@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDir>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QScreen>
 
 #include "LaunchyLib/LaunchyLib.h"
 
@@ -687,7 +688,11 @@ bool OptionDialog::saveGeneralSettings() {
         return false;
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    g_settings->setValue(OPTION_HOTKEY, hotkey.isEmpty() ? OPTION_HOTKEY_DEFAULT : hotkey[0]);
+#else
     g_settings->setValue(OPTION_HOTKEY, hotkey.isEmpty() ? OPTION_HOTKEY_DEFAULT : hotkey[0].toCombined());
+#endif // QT_VERSION
 
     // Save General Options
     g_settings->setValue(OPTION_IGNORE_FULL_SCREEN, m_pUi->genIgnoreFullScreen->isChecked());

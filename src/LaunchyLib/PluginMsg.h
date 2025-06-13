@@ -24,31 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DESKTOP_KDE 2
 #define DESKTOP_MAC 3
 
-/**
-	\brief This message asks the Plugin for its ID Number.
-
-	 Launchy needs an unsigned int identification value for each loaded plugin.  You supply your own here.
-	Typically, this is the result of hashing a string, as shown in the example below.
-	\param wParam (uint*) That stores the resulting ID number.
-	\warning Because we're hashing strings to integers.. it is theoretically possible that two plugin names will collide to the same plugin id.
-
-	\verbatim
-	int WebyPlugin::msg(int msgId, void* wParam, void* lParam)
-	{
-		bool handled = false;
-		switch (msgId)
-		{
-			case MSG_GET_ID:
-				*wParam = qHash(QString("Weby_Plugin"))
-				handled = true;
-				break;
-		}
-
-		return handled;
-	}
-	\endverbatim
-*/
-#define MSG_GET_ID 0
 
 /**
 	\brief This message asks the plugin if it would like to apply a label to the current search query.
@@ -105,8 +80,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	\endverbatim
 */
 #define MSG_GET_LABELS 1
-
-
 
 /**
 	\brief Asks the plugin for any results to a query

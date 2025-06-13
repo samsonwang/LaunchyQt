@@ -34,6 +34,7 @@
 #include <QCloseEvent>
 #include <QInputMethodEvent>
 #include <QMouseEvent>
+#include <QScreen>
 
 #include <QHotkey/QHotkey>
 
@@ -1323,7 +1324,12 @@ void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
 
         hideAlternativeList();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QPoint pt = event->globalPos() - m_dragStartPoint;
+#else
         QPoint pt = event->globalPosition().toPoint() - m_dragStartPoint;
+#endif
+
         move(pt);
 
         // qDebug() << "LaunchyWidget::mouseMoveEvent, pos:" << pt;
@@ -1341,7 +1347,11 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
 
     int screenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QPoint pt = event->globalPos();
+#else
     QPoint pt = event->globalPosition().toPoint();
+#endif
 
     QList<QScreen*> listScreens = qApp->screens();
     for (int i = 0; i < listScreens.size(); ++i) {

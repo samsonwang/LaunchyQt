@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #pragma once
 
 #include <windows.h>
@@ -28,35 +29,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Tasky : public QObject, public launchy::PluginInterface {
     Q_OBJECT
-        Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
-        Q_INTERFACES(launchy::PluginInterface)
+    Q_PLUGIN_METADATA(IID PLUGININTERFACE_IID)
+    Q_INTERFACES(launchy::PluginInterface)
 public:
     Tasky();
     virtual ~Tasky();
 
-    virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL);
+    virtual int msg(int msgId, void* wParam, void* lParam);
 
     QString getIconFromHWND(HWND hWnd);
 
 private:
+    void getName(QString* name);
+    void init();
     void setPath(const QString* path);
     void getLabels(QList<launchy::InputData>* inputList);
-    void getID(uint* id);
-    void getName(QString* name);
     void getResults(QList<launchy::InputData>* inputList, QList<launchy::CatItem>* result);
     void getCatalog(QList<launchy::CatItem>* item);
     void launchItem(QList<launchy::InputData>* inputList, launchy::CatItem* item);
     void doDialog(QWidget* parent, QWidget** dialog);
     void endDialog(bool accept);
-    void init();
     QString getIcon() const;
 
     void initIconDir();
 
 private:
-    uint HASH_TASKY;
     QString m_libPath;
-};
 
-extern Tasky* g_taskyInstance;
+    const QString LABEL_TASKY;
+};
 

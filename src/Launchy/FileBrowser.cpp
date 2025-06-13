@@ -106,7 +106,12 @@ void FileBrowser::setBrowseFileFilters(const QString& filters)
         // Update the filters in the completer
         QStringList dirFilters;
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QStringList filterList = mBrowseFilters.split(";;", QString::SkipEmptyParts);
+#else
         QStringList filterList = mBrowseFilters.split(";;", Qt::SkipEmptyParts);
+#endif // QT_VERSION
+
         if (filterList.empty() == false)
         {
             // Remove the All Files filter
@@ -130,7 +135,13 @@ void FileBrowser::setBrowseFileFilters(const QString& filters)
                     int numChars = filter.lastIndexOf(")") - startPos;
 
                     filter = filter.mid(startPos, numChars);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                    dirFilters += filter.split(' ', QString::SkipEmptyParts);
+#else
                     dirFilters += filter.split(' ', Qt::SkipEmptyParts);
+#endif // QT_VERSION
+
                 }
             }
         }

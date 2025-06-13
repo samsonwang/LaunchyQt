@@ -38,7 +38,11 @@ protected:
 protected:
     virtual bool nativeEvent(const QByteArray& eventType,
                              void* message,
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                             long* result);
+#else
                              intptr_t* result);
+#endif // QT_VERSION
 
     virtual void focusLaunchy();
 

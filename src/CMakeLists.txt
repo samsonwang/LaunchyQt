@@ -1,5 +1,5 @@
 
-cmake_minimum_required (VERSION 3.18)
+cmake_minimum_required (VERSION 3.14)
 
 project ("Launchy")
 
@@ -25,14 +25,19 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # Qt
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
+set (QT_MAJOR_VERSION 5)
 if (WIN32)
   if (NOT DEFINED ENV{CMAKE_PREFIX_PATH})
-    set (ENV{CMAKE_PREFIX_PATH} "d:/SDK/Qt/6.5.3/msvc2019_64")
+    if (QT_MAJOR_VERSION EQUAL 5)
+      set (ENV{CMAKE_PREFIX_PATH} "C:/Qt/Qt5.12.10/5.12.10/msvc2017_64")
+    else ()
+      set (ENV{CMAKE_PREFIX_PATH} "D:/SDK/Qt/6.5.3/msvc2019_64")
+    endif ()
   endif ()
   message (STATUS "CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH}")
-  find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
+  find_package (Qt${QT_MAJOR_VERSION} COMPONENTS Widgets Network LinguistTools WinExtras REQUIRED)
 else ()
-  find_package (Qt6 COMPONENTS Widgets Network LinguistTools REQUIRED)
+  find_package (Qt${QT_MAJOR_VERSION} COMPONENTS Widgets Network LinguistTools REQUIRED)
   find_package (PkgConfig REQUIRED)
   pkg_check_modules (X11 x11 xcb REQUIRED)
 endif ()
@@ -59,8 +64,10 @@ endif ()
 ##################################################
 # Python
 if (WIN32)
-  #set (ENV{Python_ROOT_DIR} "C:/Program Files/Python310")
+  # set (ENV{Python_ROOT_DIR} "C:/Program Files/Python310")
+  message (STATUS "Python_ROOT_DIR: $ENV{Python_ROOT_DIR}")
 endif ()
+
 find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
 message ("Python_FOUND: ${Python_FOUND}")
@@ -196,12 +203,12 @@ target_link_libraries (Launchy
   LaunchyLib PluginPy
   SingleApplication QHotKey
   userenv netapi32
-  Qt6::Widgets Qt6::Network)
+  Qt${QT_MAJOR_VERSION}::Widgets Qt${QT_MAJOR_VERSION}::Network Qt${QT_MAJOR_VERSION}::WinExtras)
 else ()
 target_link_libraries (Launchy
   LaunchyLib PluginPy
   SingleApplication QHotKey
-  Qt6::Widgets Qt6::Network Qt6::GuiPrivate)
+  Qt${QT_MAJOR_VERSION}::Widgets Qt${QT_MAJOR_VERSION}::Network Qt${QT_MAJOR_VERSION}::GuiPrivate)
 endif ()
 
 ##################################################
@@ -228,7 +235,7 @@ target_sources (LaunchyLib
   ${SRC_DIR}/LaunchyLib/UnicodeTable.cpp)
 
 target_link_libraries (LaunchyLib
-  PRIVATE Qt6::Core Qt6::Widgets)
+  PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets)
 
 ##################################################
 # PluginPy
@@ -255,7 +262,7 @@ target_include_directories (PluginPy
 
 target_link_libraries (PluginPy
   PUBLIC LaunchyLib
-  PRIVATE Qt6::Core Qt6::Widgets
+  PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE ${Python_LIBRARIES})
 
 add_custom_command (TARGET PluginPy POST_BUILD
@@ -285,6 +292,8 @@ file (GLOB TS_FILES_LAUNCHY
 #  QM_FILES_OUTPUT_VARIABLE QM_FILES_LAUNCHY
 #  SOURCES ${SOURCES_LAUNCHY})
 
+if (QT_MAJOR_VERSION EQUAL 6)
+
 qt_add_lupdate(Launchy
   TS_FILES ${TS_FILES_LAUNCHY}
   OPTIONS NO_GLOBAL_TARGET)
@@ -304,6 +313,8 @@ message (STATUS "QM_FILES_LAUNCHY: ${QM_FILES_LAUNCHY}")
 add_custom_command (TARGET Launchy_lrelease POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${QM_FILES_LAUNCHY} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations)
+
+endif () # QT_MAJOR_VERSION
 
 ##################################################
 # QSingleApplication
@@ -327,12 +338,12 @@ endif ()
 
 if (WIN32)
 target_link_libraries (QHotKey
-  PUBLIC Qt6::Core
-  PRIVATE Qt6::Widgets)
+  PUBLIC Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
 else ()
 target_link_libraries (QHotKey
-  PUBLIC Qt6::Core
-  PRIVATE Qt6::Widgets X11 xcb)
+  PUBLIC Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets X11 xcb)
 endif ()
 
 ##################################################
@@ -358,8 +369,8 @@ target_sources (Plugin.Runner
   PRIVATE ${SOURCES_RUNNER})
 
 target_link_libraries (Plugin.Runner
-  PUBLIC Qt6::Core
-  PRIVATE Qt6::Widgets
+  PUBLIC Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Runner PROPERTIES
@@ -397,8 +408,9 @@ target_sources (Plugin.Tasky
   PRIVATE ${SOURCES_TASKY})
 
 target_link_libraries (Plugin.Tasky
-  PUBLIC Qt6::Core
-  PRIVATE Qt6::Widgets
+  PUBLIC Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
+  PRIVATE Qt${QT_MAJOR_VERSION}::WinExtras
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Tasky PROPERTIES
@@ -436,8 +448,8 @@ target_sources (Plugin.UWPApp
   PRIVATE ${SOURCES_UWPAPP})
 
 target_link_libraries (Plugin.UWPApp
-  PUBLIC Qt6::Core
-  PRIVATE Qt6::Widgets
+  PUBLIC Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE LaunchyLib
   PRIVATE user32 shell32 propsys)
 
@@ -468,8 +480,8 @@ target_sources (Plugin.Verby
   PRIVATE ${SOURCES_VERBY})
 
 target_link_libraries (Plugin.Verby
-  PUBLIC Qt6::Core
-  PRIVATE Qt6::Widgets
+  PUBLIC Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Verby PROPERTIES
@@ -489,12 +501,6 @@ add_custom_target (PluginPy.CalcPy
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${SRC_DIR}/Plugins/CalcyPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/CalcyPy
   COMMENT "copy calcpy to plugin directory")
-target_sources (PluginPy.CalcPy PRIVATE
-  ${SRC_DIR}/Plugins/CalcyPy/CalcyPy.py
-  ${SRC_DIR}/Plugins/CalcyPy/Calculator.py
-  ${SRC_DIR}/Plugins/CalcyPy/Calcy/CalcyGui.py
-  ${SRC_DIR}/Plugins/CalcyPy/Calcy/calcy.ui
-  ${SRC_DIR}/Plugins/CalcyPy/Calcy/ui_calcy.py)
 
 ##################################################
 # plugin: PydiryPy
