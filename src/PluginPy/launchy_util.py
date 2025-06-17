@@ -13,8 +13,8 @@ def initSettings():
     #Based on http://lists.kde.org/?l=pykde&m=108947844203156&w=2
     try:
         log.info("launchy_util::initSettings, called")
-        from PySide6 import QtCore
-        from shiboken6 import wrapInstance
+        from PySide2 import QtCore
+        from shiboken2 import wrapInstance
         log.debug("launchy_util::initSettings, succeed to import pyside and shiboken")
         import launchy
         log.debug("launchy_util::initSettings, launchy dir: %s" % dir(launchy))

@@ -16,10 +16,13 @@
 
 import logging as log
 
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtCore import QLocale
-from PySide6.QtWidgets import QWidget, QApplication
-from shiboken6 import wrapInstance, getCppPointer
+try:
+    from PySide2 import QtCore, QtGui, QtWidgets
+    from PySide2.QtCore import QLocale
+    from PySide2.QtWidgets import QWidget, QApplication
+    from shiboken2 import wrapInstance, getCppPointer
+except Exception as ex:
+    print(f"CalcyPy, An error occurred: {ex}")
 
 from launchy import Plugin, CatItem
 from launchy import settings as lSettings
@@ -131,12 +134,12 @@ class CalcyPy(Plugin):
         log.debug('CalcyPy::doDialog ...')
         parentWidget = wrapInstance(parentWidgetPtr, QWidget)
         self.widget = CalcyGui.CalcyOption(parentWidget, self.setting_dir, self.settings)
-        self.widget.show()
+        # self.widget.show()
         return getCppPointer(self.widget)[0]
 
     def endDialog(self, accept):
         log.debug('CalcyPy::endDialog ...')
-        self.widget.hide()
+        # self.widget.hide()
         if accept:
             self.widget.writeSettings()
             self.__readSettings()
@@ -148,8 +151,19 @@ class CalcyPy(Plugin):
             QApplication.clipboard().setText(catItem.shortName())
 
     def __readSettings(self):
+        log.debug('CalcyPy::__readSettings, begin, {}, {}'.format(lSettings, self.setting_dir))
         # general
-        self.settings['decimalPointGroupSeparator'] = int(lSettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0))
+        # don't know why here QSetting fail to load default value
+        decPtGrpSep = lSettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0)
+        log.debug('CalcyPy::__readSettings, decPtGrpSep, {}'.format(decPtGrpSep));
+        if decPtGrpSep:
+            self.settings['decimalPointGroupSeparator'] = decPtGrpSep
+        else:
+            self.settings['decimalPointGroupSeparator'] = 0
+
+        outPrec = lSettings.value(self.setting_dir + 'outputPrecision', 0)
+        log.debug('CalcyPy::__readSettings, outputPrecision, {}'.format(outPrec));
+
         self.settings['outputPrecision'] = int(lSettings.value(self.setting_dir + 'outputPrecision', 3))
         self.settings['showGroupSeparator'] = lSettings.value(self.setting_dir + 'showGroupSeparator', False) in ['true', True]
         self.settings['copyToClipboard'] = lSettings.value(self.setting_dir + 'copyToClipboard', True) in ['true', True]
@@ -194,10 +208,25 @@ class CalcyPy(Plugin):
         return retText
 
     def __formatFloat(self, num):
-        if self.settings['outputPrecision']:
-            return str(round(num, self.settings['outputPrecision']))
+        integralPart = int(num);
+        fractionalPart = num - integralPart;
+        log.debug('integral part: {}, fractional part: {}'.format(integralPart, fractionalPart))
+        if self.settings['showGroupSeparator']:
+            integralStr = '{:,}'.format(integralPart)
+            if QLocale.system().groupSeparator() != ',':
+                integralStr = integralStr.replace(',', QLocale.system().groupSeparator())
+            log.debug('CalcyPy::__formatFloat, integral str, {}'.format(integralStr))
+            if self.settings['outputPrecision']:
+                fractionalStr = str(round(fractionalPart, self.settings['outputPrecision'])).lstrip('0')
+            else:
+                fractionalStr = str(fractionalPart).lstrip('0')
+
+            return integralStr + fractionalStr
         else:
-            return str(num)
+           if self.settings['outputPrecision']:
+               return str(round(num, self.settings['outputPrecision']))
+           else:
+               return str(num)
 
     def __formatHexadecimal(self, num):
         if self.settings['showHexOut']:
@@ -216,10 +245,10 @@ class CalcyPy(Plugin):
     def __formatDecimal(self, num):
         if self.settings['showGroupSeparator']:
             decStr = '{:,}'.format(num)
-            if self.__groupSeparator() == QLocale.system().groupSeparator():
+            log.debug('CalcyPy::__formatDecimal, {}, {}'.format(num, decStr))
+            if QLocale.system().groupSeparator() == ',':
                 return decStr
-            return decStr.replace(QLocale.system().groupSeparator(),
-                                  self.__groupSeparator())
+            return decStr.replace(',', QLocale.system().groupSeparator())
         else:
             return '%d' % num
 

@@ -1,8 +1,8 @@
 
 import logging as log
 
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtWidgets import QApplication, QWidget
 
 from .ui_calcy import *
 

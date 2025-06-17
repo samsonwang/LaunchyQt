@@ -1,273 +1,187 @@
 # -*- coding: utf-8 -*-
 
-################################################################################
-## Form generated from reading UI file 'calcy.ui'
-##
-## Created by: Qt User Interface Compiler version 6.2.4
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+# Form implementation generated from reading ui file 'calcy.ui',
+# licensing of 'calcy.ui' applies.
+#
+# Created: Fri Jun 13 22:31:45 2025
+#      by: pyside2-uic  running on PySide2 5.12.6
+#
+# WARNING! All changes made in this file will be lost!
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QFormLayout, QGroupBox,
-    QHBoxLayout, QLabel, QRadioButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QTabWidget, QVBoxLayout,
-    QWidget)
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_CalcyOption(object):
     def setupUi(self, CalcyOption):
-        if not CalcyOption.objectName():
-            CalcyOption.setObjectName(u"CalcyOption")
+        CalcyOption.setObjectName("CalcyOption")
         CalcyOption.resize(516, 262)
-        self.horizontalLayout_2 = QHBoxLayout(CalcyOption)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.tabWidget = QTabWidget(CalcyOption)
-        self.tabWidget.setObjectName(u"tabWidget")
-        font = QFont()
-        font.setFamilies([u"Verdana"])
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(CalcyOption)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.tabWidget = QtWidgets.QTabWidget(CalcyOption)
+        font = QtGui.QFont()
+        font.setFamily("Verdana")
         font.setPointSize(10)
         self.tabWidget.setFont(font)
-        self.tabOutput = QWidget()
-        self.tabOutput.setObjectName(u"tabOutput")
-        self.formLayout = QFormLayout(self.tabOutput)
-        self.formLayout.setObjectName(u"formLayout")
-        self.verticalLayout_5 = QVBoxLayout()
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.groupBox_2 = QGroupBox(self.tabOutput)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        self.verticalLayout_6 = QVBoxLayout(self.groupBox_2)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.radioButtonDecSepSystem = QRadioButton(self.groupBox_2)
-        self.radioButtonDecSepSystem.setObjectName(u"radioButtonDecSepSystem")
+        self.tabWidget.setObjectName("tabWidget")
+        self.tabOutput = QtWidgets.QWidget()
+        self.tabOutput.setObjectName("tabOutput")
+        self.formLayout = QtWidgets.QFormLayout(self.tabOutput)
+        self.formLayout.setObjectName("formLayout")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.groupBox_2 = QtWidgets.QGroupBox(self.tabOutput)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.radioButtonDecSepSystem = QtWidgets.QRadioButton(self.groupBox_2)
         self.radioButtonDecSepSystem.setChecked(True)
-
+        self.radioButtonDecSepSystem.setObjectName("radioButtonDecSepSystem")
         self.verticalLayout_6.addWidget(self.radioButtonDecSepSystem)
-
-        self.radioButtonDecSepComa = QRadioButton(self.groupBox_2)
-        self.radioButtonDecSepComa.setObjectName(u"radioButtonDecSepComa")
-
+        self.radioButtonDecSepComa = QtWidgets.QRadioButton(self.groupBox_2)
+        self.radioButtonDecSepComa.setObjectName("radioButtonDecSepComa")
         self.verticalLayout_6.addWidget(self.radioButtonDecSepComa)
-
-        self.radioButtonDecSepDot = QRadioButton(self.groupBox_2)
-        self.radioButtonDecSepDot.setObjectName(u"radioButtonDecSepDot")
-
+        self.radioButtonDecSepDot = QtWidgets.QRadioButton(self.groupBox_2)
+        self.radioButtonDecSepDot.setObjectName("radioButtonDecSepDot")
         self.verticalLayout_6.addWidget(self.radioButtonDecSepDot)
-
-
         self.verticalLayout_5.addWidget(self.groupBox_2)
-
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label = QLabel(self.tabOutput)
-        self.label.setObjectName(u"label")
-
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.label = QtWidgets.QLabel(self.tabOutput)
+        self.label.setObjectName("label")
         self.horizontalLayout_3.addWidget(self.label)
-
-        self.spinBoxOutputPrecision = QSpinBox(self.tabOutput)
-        self.spinBoxOutputPrecision.setObjectName(u"spinBoxOutputPrecision")
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.spinBoxOutputPrecision = QtWidgets.QSpinBox(self.tabOutput)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.spinBoxOutputPrecision.sizePolicy().hasHeightForWidth())
         self.spinBoxOutputPrecision.setSizePolicy(sizePolicy)
-        self.spinBoxOutputPrecision.setMinimumSize(QSize(55, 0))
-        self.spinBoxOutputPrecision.setMaximumSize(QSize(60, 30))
-        self.spinBoxOutputPrecision.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.spinBoxOutputPrecision.setMinimumSize(QtCore.QSize(55, 0))
+        self.spinBoxOutputPrecision.setMaximumSize(QtCore.QSize(60, 30))
+        self.spinBoxOutputPrecision.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.spinBoxOutputPrecision.setMinimum(1)
         self.spinBoxOutputPrecision.setMaximum(10)
-        self.spinBoxOutputPrecision.setValue(3)
-
+        self.spinBoxOutputPrecision.setProperty("value", 3)
+        self.spinBoxOutputPrecision.setObjectName("spinBoxOutputPrecision")
         self.horizontalLayout_3.addWidget(self.spinBoxOutputPrecision)
-
-
         self.verticalLayout_4.addLayout(self.horizontalLayout_3)
-
-        self.checkBoxShowGrpSep = QCheckBox(self.tabOutput)
-        self.checkBoxShowGrpSep.setObjectName(u"checkBoxShowGrpSep")
+        self.checkBoxShowGrpSep = QtWidgets.QCheckBox(self.tabOutput)
         self.checkBoxShowGrpSep.setChecked(False)
-
+        self.checkBoxShowGrpSep.setObjectName("checkBoxShowGrpSep")
         self.verticalLayout_4.addWidget(self.checkBoxShowGrpSep)
-
-        self.checkBoxCopyToClipboard = QCheckBox(self.tabOutput)
-        self.checkBoxCopyToClipboard.setObjectName(u"checkBoxCopyToClipboard")
+        self.checkBoxCopyToClipboard = QtWidgets.QCheckBox(self.tabOutput)
         self.checkBoxCopyToClipboard.setChecked(True)
-
+        self.checkBoxCopyToClipboard.setObjectName("checkBoxCopyToClipboard")
         self.verticalLayout_4.addWidget(self.checkBoxCopyToClipboard)
-
-
         self.verticalLayout_5.addLayout(self.verticalLayout_4)
-
-
-        self.formLayout.setLayout(0, QFormLayout.LabelRole, self.verticalLayout_5)
-
+        self.formLayout.setLayout(0, QtWidgets.QFormLayout.LabelRole, self.verticalLayout_5)
         self.tabWidget.addTab(self.tabOutput, "")
-        self.tabRadix = QWidget()
-        self.tabRadix.setObjectName(u"tabRadix")
-        self.horizontalLayout_6 = QHBoxLayout(self.tabRadix)
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.groupBox_3 = QGroupBox(self.tabRadix)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.horizontalLayout = QHBoxLayout(self.groupBox_3)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.checkBoxBinOut = QCheckBox(self.groupBox_3)
-        self.checkBoxBinOut.setObjectName(u"checkBoxBinOut")
+        self.tabRadix = QtWidgets.QWidget()
+        self.tabRadix.setObjectName("tabRadix")
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.tabRadix)
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.groupBox_3 = QtWidgets.QGroupBox(self.tabRadix)
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.groupBox_3)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.checkBoxBinOut = QtWidgets.QCheckBox(self.groupBox_3)
         self.checkBoxBinOut.setChecked(True)
-
+        self.checkBoxBinOut.setObjectName("checkBoxBinOut")
         self.horizontalLayout.addWidget(self.checkBoxBinOut)
-
-        self.checkBoxOctOut = QCheckBox(self.groupBox_3)
-        self.checkBoxOctOut.setObjectName(u"checkBoxOctOut")
+        self.checkBoxOctOut = QtWidgets.QCheckBox(self.groupBox_3)
         self.checkBoxOctOut.setChecked(True)
-
+        self.checkBoxOctOut.setObjectName("checkBoxOctOut")
         self.horizontalLayout.addWidget(self.checkBoxOctOut)
-
-        self.checkBoxHexOut = QCheckBox(self.groupBox_3)
-        self.checkBoxHexOut.setObjectName(u"checkBoxHexOut")
+        self.checkBoxHexOut = QtWidgets.QCheckBox(self.groupBox_3)
         self.checkBoxHexOut.setChecked(True)
-
+        self.checkBoxHexOut.setObjectName("checkBoxHexOut")
         self.horizontalLayout.addWidget(self.checkBoxHexOut)
-
-        self.checkBoxSizeOut = QCheckBox(self.groupBox_3)
-        self.checkBoxSizeOut.setObjectName(u"checkBoxSizeOut")
+        self.checkBoxSizeOut = QtWidgets.QCheckBox(self.groupBox_3)
         self.checkBoxSizeOut.setChecked(True)
-
+        self.checkBoxSizeOut.setObjectName("checkBoxSizeOut")
         self.horizontalLayout.addWidget(self.checkBoxSizeOut)
-
-
         self.verticalLayout_3.addWidget(self.groupBox_3)
-
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.checkBoxShowBasePrefix = QCheckBox(self.tabRadix)
-        self.checkBoxShowBasePrefix.setObjectName(u"checkBoxShowBasePrefix")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.checkBoxShowBasePrefix = QtWidgets.QCheckBox(self.tabRadix)
         self.checkBoxShowBasePrefix.setChecked(True)
-
+        self.checkBoxShowBasePrefix.setObjectName("checkBoxShowBasePrefix")
         self.verticalLayout.addWidget(self.checkBoxShowBasePrefix)
-
-        self.checkBoxShowLeadingZerosBin = QCheckBox(self.tabRadix)
-        self.checkBoxShowLeadingZerosBin.setObjectName(u"checkBoxShowLeadingZerosBin")
+        self.checkBoxShowLeadingZerosBin = QtWidgets.QCheckBox(self.tabRadix)
         self.checkBoxShowLeadingZerosBin.setChecked(True)
-
+        self.checkBoxShowLeadingZerosBin.setObjectName("checkBoxShowLeadingZerosBin")
         self.verticalLayout.addWidget(self.checkBoxShowLeadingZerosBin)
-
-        self.checkBoxShowLeadingZerosOct = QCheckBox(self.tabRadix)
-        self.checkBoxShowLeadingZerosOct.setObjectName(u"checkBoxShowLeadingZerosOct")
+        self.checkBoxShowLeadingZerosOct = QtWidgets.QCheckBox(self.tabRadix)
         self.checkBoxShowLeadingZerosOct.setChecked(True)
-
+        self.checkBoxShowLeadingZerosOct.setObjectName("checkBoxShowLeadingZerosOct")
         self.verticalLayout.addWidget(self.checkBoxShowLeadingZerosOct)
-
-        self.checkBoxShowLeadingZerosHex = QCheckBox(self.tabRadix)
-        self.checkBoxShowLeadingZerosHex.setObjectName(u"checkBoxShowLeadingZerosHex")
+        self.checkBoxShowLeadingZerosHex = QtWidgets.QCheckBox(self.tabRadix)
         self.checkBoxShowLeadingZerosHex.setChecked(True)
-
+        self.checkBoxShowLeadingZerosHex.setObjectName("checkBoxShowLeadingZerosHex")
         self.verticalLayout.addWidget(self.checkBoxShowLeadingZerosHex)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer_2)
-
-
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
         self.verticalLayout_3.addLayout(self.verticalLayout)
-
-
         self.horizontalLayout_6.addLayout(self.verticalLayout_3)
-
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.groupBoxBW = QGroupBox(self.tabRadix)
-        self.groupBoxBW.setObjectName(u"groupBoxBW")
-        self.horizontalLayout_5 = QHBoxLayout(self.groupBoxBW)
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.radioButtonBW64 = QRadioButton(self.groupBoxBW)
-        self.radioButtonBW64.setObjectName(u"radioButtonBW64")
-
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.groupBoxBW = QtWidgets.QGroupBox(self.tabRadix)
+        self.groupBoxBW.setObjectName("groupBoxBW")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.groupBoxBW)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.radioButtonBW64 = QtWidgets.QRadioButton(self.groupBoxBW)
+        self.radioButtonBW64.setObjectName("radioButtonBW64")
         self.horizontalLayout_5.addWidget(self.radioButtonBW64)
-
-        self.radioButtonBW32 = QRadioButton(self.groupBoxBW)
-        self.radioButtonBW32.setObjectName(u"radioButtonBW32")
-
+        self.radioButtonBW32 = QtWidgets.QRadioButton(self.groupBoxBW)
+        self.radioButtonBW32.setObjectName("radioButtonBW32")
         self.horizontalLayout_5.addWidget(self.radioButtonBW32)
-
-        self.radioButtonBW16 = QRadioButton(self.groupBoxBW)
-        self.radioButtonBW16.setObjectName(u"radioButtonBW16")
+        self.radioButtonBW16 = QtWidgets.QRadioButton(self.groupBoxBW)
         self.radioButtonBW16.setChecked(True)
-
+        self.radioButtonBW16.setObjectName("radioButtonBW16")
         self.horizontalLayout_5.addWidget(self.radioButtonBW16)
-
-        self.radioButtonBW8 = QRadioButton(self.groupBoxBW)
-        self.radioButtonBW8.setObjectName(u"radioButtonBW8")
-
+        self.radioButtonBW8 = QtWidgets.QRadioButton(self.groupBoxBW)
+        self.radioButtonBW8.setObjectName("radioButtonBW8")
         self.horizontalLayout_5.addWidget(self.radioButtonBW8)
-
-
         self.verticalLayout_2.addWidget(self.groupBoxBW)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout_2.addItem(self.verticalSpacer)
-
-
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_2.addItem(spacerItem1)
         self.horizontalLayout_6.addLayout(self.verticalLayout_2)
-
         self.tabWidget.addTab(self.tabRadix, "")
-
         self.horizontalLayout_2.addWidget(self.tabWidget)
 
-
         self.retranslateUi(CalcyOption)
-
         self.tabWidget.setCurrentIndex(0)
-
-
-        QMetaObject.connectSlotsByName(CalcyOption)
-    # setupUi
+        QtCore.QMetaObject.connectSlotsByName(CalcyOption)
 
     def retranslateUi(self, CalcyOption):
-        CalcyOption.setWindowTitle(QCoreApplication.translate("CalcyOption", u"CalcyPy - Simple calculator", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("CalcyOption", u"Decimal point and group separator", None))
-#if QT_CONFIG(tooltip)
-        self.radioButtonDecSepSystem.setToolTip(QCoreApplication.translate("CalcyOption", u"Use system locale settings", None))
-#endif // QT_CONFIG(tooltip)
-        self.radioButtonDecSepSystem.setText(QCoreApplication.translate("CalcyOption", u"System default", None))
-        self.radioButtonDecSepComa.setText(QCoreApplication.translate("CalcyOption", u"Coma as decimal point and dot as group separator", None))
-        self.radioButtonDecSepDot.setText(QCoreApplication.translate("CalcyOption", u"Dot as decimal point and coma as group separator", None))
-        self.label.setText(QCoreApplication.translate("CalcyOption", u"Decimal output Precision", None))
-#if QT_CONFIG(tooltip)
-        self.spinBoxOutputPrecision.setToolTip(QCoreApplication.translate("CalcyOption", u"<html><head/><body><p>Sets the maximal number of digits</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.checkBoxShowGrpSep.setText(QCoreApplication.translate("CalcyOption", u"Show group separator in result", None))
-#if QT_CONFIG(tooltip)
-        self.checkBoxCopyToClipboard.setToolTip(QCoreApplication.translate("CalcyOption", u"If this option is enabled, pressing enter key will copy calculation result to clipboard.", None))
-#endif // QT_CONFIG(tooltip)
-        self.checkBoxCopyToClipboard.setText(QCoreApplication.translate("CalcyOption", u"Use Enter key to Copy result to Clipboard", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabOutput), QCoreApplication.translate("CalcyOption", u"General", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("CalcyOption", u"Show result as", None))
-        self.checkBoxBinOut.setText(QCoreApplication.translate("CalcyOption", u"Bin", None))
-        self.checkBoxOctOut.setText(QCoreApplication.translate("CalcyOption", u"Oct", None))
-        self.checkBoxHexOut.setText(QCoreApplication.translate("CalcyOption", u"Hex", None))
-        self.checkBoxSizeOut.setText(QCoreApplication.translate("CalcyOption", u"Size", None))
-#if QT_CONFIG(tooltip)
-        self.checkBoxShowBasePrefix.setToolTip(QCoreApplication.translate("CalcyOption", u"Show prefix for given number base in results (i.e. \"0x\" for hexadecimal numbers)", None))
-#endif // QT_CONFIG(tooltip)
-        self.checkBoxShowBasePrefix.setText(QCoreApplication.translate("CalcyOption", u"Show base prefix in result", None))
-        self.checkBoxShowLeadingZerosBin.setText(QCoreApplication.translate("CalcyOption", u"Show leading zeros in bin output", None))
-        self.checkBoxShowLeadingZerosOct.setText(QCoreApplication.translate("CalcyOption", u"Show leading zeros in oct output", None))
-        self.checkBoxShowLeadingZerosHex.setText(QCoreApplication.translate("CalcyOption", u"Show leading zeros in hex output", None))
-        self.groupBoxBW.setTitle(QCoreApplication.translate("CalcyOption", u"Calculation bit width", None))
-        self.radioButtonBW64.setText(QCoreApplication.translate("CalcyOption", u"64", None))
-        self.radioButtonBW32.setText(QCoreApplication.translate("CalcyOption", u"32", None))
-        self.radioButtonBW16.setText(QCoreApplication.translate("CalcyOption", u"16", None))
-        self.radioButtonBW8.setText(QCoreApplication.translate("CalcyOption", u"8", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabRadix), QCoreApplication.translate("CalcyOption", u"Radix", None))
-    # retranslateUi
+        CalcyOption.setWindowTitle(QtWidgets.QApplication.translate("CalcyOption", "CalcyPy - Simple calculator", None, -1))
+        self.groupBox_2.setTitle(QtWidgets.QApplication.translate("CalcyOption", "Decimal point and group separator", None, -1))
+        self.radioButtonDecSepSystem.setToolTip(QtWidgets.QApplication.translate("CalcyOption", "Use system locale settings", None, -1))
+        self.radioButtonDecSepSystem.setText(QtWidgets.QApplication.translate("CalcyOption", "System default", None, -1))
+        self.radioButtonDecSepComa.setText(QtWidgets.QApplication.translate("CalcyOption", "Coma as decimal point and dot as group separator", None, -1))
+        self.radioButtonDecSepDot.setText(QtWidgets.QApplication.translate("CalcyOption", "Dot as decimal point and coma as group separator", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("CalcyOption", "Decimal output Precision", None, -1))
+        self.spinBoxOutputPrecision.setToolTip(QtWidgets.QApplication.translate("CalcyOption", "<html><head/><body><p>Sets the maximal number of digits</p></body></html>", None, -1))
+        self.checkBoxShowGrpSep.setText(QtWidgets.QApplication.translate("CalcyOption", "Show group separator in result", None, -1))
+        self.checkBoxCopyToClipboard.setToolTip(QtWidgets.QApplication.translate("CalcyOption", "If this option is enabled, pressing enter key will copy calculation result to clipboard.", None, -1))
+        self.checkBoxCopyToClipboard.setText(QtWidgets.QApplication.translate("CalcyOption", "Use Enter key to Copy result to Clipboard", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabOutput), QtWidgets.QApplication.translate("CalcyOption", "General", None, -1))
+        self.groupBox_3.setTitle(QtWidgets.QApplication.translate("CalcyOption", "Show result as", None, -1))
+        self.checkBoxBinOut.setText(QtWidgets.QApplication.translate("CalcyOption", "Bin", None, -1))
+        self.checkBoxOctOut.setText(QtWidgets.QApplication.translate("CalcyOption", "Oct", None, -1))
+        self.checkBoxHexOut.setText(QtWidgets.QApplication.translate("CalcyOption", "Hex", None, -1))
+        self.checkBoxSizeOut.setText(QtWidgets.QApplication.translate("CalcyOption", "Size", None, -1))
+        self.checkBoxShowBasePrefix.setToolTip(QtWidgets.QApplication.translate("CalcyOption", "Show prefix for given number base in results (i.e. \"0x\" for hexadecimal numbers)", None, -1))
+        self.checkBoxShowBasePrefix.setText(QtWidgets.QApplication.translate("CalcyOption", "Show base prefix in result", None, -1))
+        self.checkBoxShowLeadingZerosBin.setText(QtWidgets.QApplication.translate("CalcyOption", "Show leading zeros in bin output", None, -1))
+        self.checkBoxShowLeadingZerosOct.setText(QtWidgets.QApplication.translate("CalcyOption", "Show leading zeros in oct output", None, -1))
+        self.checkBoxShowLeadingZerosHex.setText(QtWidgets.QApplication.translate("CalcyOption", "Show leading zeros in hex output", None, -1))
+        self.groupBoxBW.setTitle(QtWidgets.QApplication.translate("CalcyOption", "Calculation bit width", None, -1))
+        self.radioButtonBW64.setText(QtWidgets.QApplication.translate("CalcyOption", "64", None, -1))
+        self.radioButtonBW32.setText(QtWidgets.QApplication.translate("CalcyOption", "32", None, -1))
+        self.radioButtonBW16.setText(QtWidgets.QApplication.translate("CalcyOption", "16", None, -1))
+        self.radioButtonBW8.setText(QtWidgets.QApplication.translate("CalcyOption", "8", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabRadix), QtWidgets.QApplication.translate("CalcyOption", "Radix", None, -1))
 
