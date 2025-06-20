@@ -139,7 +139,7 @@ class CalcyPy(Plugin):
 
     def endDialog(self, accept):
         log.debug('CalcyPy::endDialog ...')
-        # self.widget.hide()
+        self.widget.hide()
         if accept:
             self.widget.writeSettings()
             self.__readSettings()
