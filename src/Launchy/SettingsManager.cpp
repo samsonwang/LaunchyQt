@@ -93,6 +93,11 @@ void SettingsManager::load() {
     qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 
+    QString pluginExtraDir = g_settings->value(OPTION_PLUGIN_EXTRA_DIRECTORY).toString();
+    if (!pluginExtraDir.isEmpty()) {
+        m_dirs["plugins"].push_back(pluginExtraDir);
+    }
+
     // set application style
     QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
     qApp->setStyle(QStyleFactory::create(appStyle));

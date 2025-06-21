@@ -95,6 +95,9 @@ extern const int        OPTION_FADEOUT_DEFAULT;
 extern const char*      OPTION_SKIN;
 extern const char*      OPTION_SKIN_DEFAULT;
 
+// plugin
+extern const char*      OPTION_PLUGIN_EXTRA_DIRECTORY;
+
 // update
 extern const char*      OPTION_UPDATE_CHECK_ON_STARTUP;
 extern const bool       OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT;

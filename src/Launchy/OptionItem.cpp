@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace launchy {
 
-const char*     OPTION_ALWAYSSHOW                             = "GenOps/alwaysshow";
-const bool      OPTION_ALWAYSSHOW_DEFAULT                     = false;
+const char*     OPTION_ALWAYSSHOW                               = "GenOps/alwaysshow";
+const bool      OPTION_ALWAYSSHOW_DEFAULT                       = false;
 
 const char*     OPTION_ALWAYSTOP                              = "GenOps/alwaystop";
 const bool      OPTION_ALWAYSTOP_DEFAULT                      = false;
@@ -44,8 +44,8 @@ const int       OPTION_ALWAYSCENTER_DEFAULT                   = 3;
 const char*     OPTION_DRAGMODE                               = "GenOps/dragmode";
 const bool      OPTION_DRAGMODE_DEFAULT                       = false;
 
-const char*     OPTION_APPSTYLE                                = "GenOps/appStyle";
-const char*     OPTION_APPSTYLE_DEFAULT                        = "fusion";
+const char*     OPTION_APPSTYLE                               = "GenOps/appStyle";
+const char*     OPTION_APPSTYLE_DEFAULT                       = "fusion";
 
 const char*     OPTION_SHOWHIDDENFILES                        = "GenOps/showHiddenFiles";
 const bool      OPTION_SHOWHIDDENFILES_DEFAULT                = false;
@@ -80,8 +80,10 @@ const int       OPTION_FADEOUT_DEFAULT                        = 20;
 const char*     OPTION_SKIN                                   = "GenOps/skin";
 const char*     OPTION_SKIN_DEFAULT                           = "Default";
 
-const char*     OPTION_CONDENSEDVIEW                          = "GenOps/condensedView";
-const int       OPTION_CONDENSEDVIEW_DEFAULT                  = 2;
+const char*     OPTION_PLUGIN_EXTRA_DIRECTORY                   = "Plugin/ExtraDirectory";
+
+const char*     OPTION_CONDENSEDVIEW                            = "GenOps/condensedView";
+const int       OPTION_CONDENSEDVIEW_DEFAULT                    = 2;
 
 const char*     OPTION_HOTKEY                                 = "GenOps/hotkey";
 const int       OPTION_HOTKEY_DEFAULT                         = -1;
@@ -106,11 +108,11 @@ const char*     OPTION_IGNORE_FULL_SCREEN                     = "General/IgnoreF
 const bool      OPTION_IGNORE_FULL_SCREEN_DEFAULT             = true;
 
 // Update
-const char*     OPTION_UPDATE_CHECK_ON_STARTUP                 = "Update/checkOnStartup";
-const bool      OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT         = true;
+const char*     OPTION_UPDATE_CHECK_ON_STARTUP                = "Update/checkOnStartup";
+const bool      OPTION_UPDATE_CHECK_ON_STARTUP_DEFAULT        = true;
 
-const char*     OPTION_UPDATE_CHECK_ON_STARTUP_DELAY           = "Update/checkOnStartupDelay";
-const int       OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT   = 60;
+const char*     OPTION_UPDATE_CHECK_ON_STARTUP_DELAY          = "Update/checkOnStartupDelay";
+const int       OPTION_UPDATE_CHECK_ON_STARTUP_DELAY_DEFAULT  = 60;
 
 const char*     OPTION_UPDATE_CHECK_INTERVAL                   = "Update/checkInterval";
 const int       OPTION_UPDATE_CHECK_INTERVAL_DEFAULT           = 24;
