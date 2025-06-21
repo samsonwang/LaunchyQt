@@ -1,12 +1,12 @@
 
-import urllib
+import urllib.parse
 import webbrowser
 
 import logging as log
 
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtWidgets import QWidget, QApplication
-from shiboken6 import wrapInstance, getCppPointer
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtWidgets import QWidget, QApplication
+from shiboken2 import wrapInstance, getCppPointer
 
 from launchy import Plugin, CatItem
 from launchy import settings as lSettings

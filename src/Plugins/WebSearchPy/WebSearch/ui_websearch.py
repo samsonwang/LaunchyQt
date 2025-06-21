@@ -1,101 +1,67 @@
 # -*- coding: utf-8 -*-
 
-################################################################################
-## Form generated from reading UI file 'websearch.ui'
-##
-## Created by: Qt User Interface Compiler version 6.5.3
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+# Form implementation generated from reading ui file 'websearch.ui',
+# licensing of 'websearch.ui' applies.
+#
+# Created: Fri Jun 20 14:39:15 2025
+#      by: pyside2-uic  running on PySide2 5.12.6
+#
+# WARNING! All changes made in this file will be lost!
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QPushButton,
-    QSizePolicy, QSpacerItem, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_WebSearchWidget(object):
     def setupUi(self, WebSearchWidget):
-        if not WebSearchWidget.objectName():
-            WebSearchWidget.setObjectName(u"WebSearchWidget")
+        WebSearchWidget.setObjectName("WebSearchWidget")
         WebSearchWidget.resize(647, 360)
-        self.verticalLayout = QVBoxLayout(WebSearchWidget)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.entriesTable = QTableWidget(WebSearchWidget)
-        if (self.entriesTable.columnCount() < 3):
-            self.entriesTable.setColumnCount(3)
-        __qtablewidgetitem = QTableWidgetItem()
-        self.entriesTable.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        self.entriesTable.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.entriesTable.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        self.entriesTable.setObjectName(u"entriesTable")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.verticalLayout = QtWidgets.QVBoxLayout(WebSearchWidget)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.entriesTable = QtWidgets.QTableWidget(WebSearchWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.entriesTable.sizePolicy().hasHeightForWidth())
         self.entriesTable.setSizePolicy(sizePolicy)
+        self.entriesTable.setObjectName("entriesTable")
+        self.entriesTable.setColumnCount(3)
+        self.entriesTable.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.entriesTable.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.entriesTable.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.entriesTable.setHorizontalHeaderItem(2, item)
         self.entriesTable.horizontalHeader().setStretchLastSection(True)
         self.entriesTable.verticalHeader().setStretchLastSection(False)
-
         self.verticalLayout.addWidget(self.entriesTable)
-
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_4)
-
-        self.addEntryButton = QPushButton(WebSearchWidget)
-        self.addEntryButton.setObjectName(u"addEntryButton")
-
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.addEntryButton = QtWidgets.QPushButton(WebSearchWidget)
+        self.addEntryButton.setObjectName("addEntryButton")
         self.horizontalLayout.addWidget(self.addEntryButton)
-
-        self.horizontalSpacer = QSpacerItem(58, 17, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.removeEntryButton = QPushButton(WebSearchWidget)
-        self.removeEntryButton.setObjectName(u"removeEntryButton")
-
+        spacerItem1 = QtWidgets.QSpacerItem(58, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.removeEntryButton = QtWidgets.QPushButton(WebSearchWidget)
+        self.removeEntryButton.setObjectName("removeEntryButton")
         self.horizontalLayout.addWidget(self.removeEntryButton)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_5)
-
-
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem2)
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-
         self.retranslateUi(WebSearchWidget)
-        self.addEntryButton.clicked.connect(WebSearchWidget.addEntry_clicked)
-        self.removeEntryButton.clicked.connect(WebSearchWidget.removeEntry_clicked)
-
-        QMetaObject.connectSlotsByName(WebSearchWidget)
-    # setupUi
+        QtCore.QObject.connect(self.addEntryButton, QtCore.SIGNAL("clicked()"), WebSearchWidget.addEntry_clicked)
+        QtCore.QObject.connect(self.removeEntryButton, QtCore.SIGNAL("clicked()"), WebSearchWidget.removeEntry_clicked)
+        QtCore.QMetaObject.connectSlotsByName(WebSearchWidget)
 
     def retranslateUi(self, WebSearchWidget):
-        WebSearchWidget.setWindowTitle(QCoreApplication.translate("WebSearchWidget", u"WebSearchPy - Search items from web", None))
-        ___qtablewidgetitem = self.entriesTable.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("WebSearchWidget", u"Key", None));
-        ___qtablewidgetitem1 = self.entriesTable.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("WebSearchWidget", u"Name", None));
-        ___qtablewidgetitem2 = self.entriesTable.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("WebSearchWidget", u"Url", None));
-#if QT_CONFIG(tooltip)
-        self.addEntryButton.setToolTip(QCoreApplication.translate("WebSearchWidget", u"Add a new entry", None))
-#endif // QT_CONFIG(tooltip)
-        self.addEntryButton.setText(QCoreApplication.translate("WebSearchWidget", u"+", None))
-#if QT_CONFIG(tooltip)
-        self.removeEntryButton.setToolTip(QCoreApplication.translate("WebSearchWidget", u"Remove the selected entry", None))
-#endif // QT_CONFIG(tooltip)
-        self.removeEntryButton.setText(QCoreApplication.translate("WebSearchWidget", u"-", None))
-    # retranslateUi
+        WebSearchWidget.setWindowTitle(QtWidgets.QApplication.translate("WebSearchWidget", "WebSearchPy - Search items from web", None, -1))
+        self.entriesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Key", None, -1))
+        self.entriesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Name", None, -1))
+        self.entriesTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Url", None, -1))
+        self.addEntryButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Add a new entry", None, -1))
+        self.addEntryButton.setText(QtWidgets.QApplication.translate("WebSearchWidget", "+", None, -1))
+        self.removeEntryButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Remove the selected entry", None, -1))
+        self.removeEntryButton.setText(QtWidgets.QApplication.translate("WebSearchWidget", "-", None, -1))
 

@@ -1,9 +1,9 @@
 
 import logging as log
 
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QWidget, QTableWidgetItem
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtWidgets import QApplication
+from PySide2.QtWidgets import QWidget, QTableWidgetItem
 
 from .ui_websearch import *
 
