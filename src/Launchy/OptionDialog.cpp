@@ -9,7 +9,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
@@ -159,7 +159,6 @@ void OptionDialog::accept() {
 
     g_mainWidget->showLaunchy();
 }
-
 
 void OptionDialog::reject() {
     if (s_lastPlugin >= 0) {
@@ -360,6 +359,8 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
             delete child;
         }
     }
+
+    qDebug() << "OptionDialog::loadPluginDialog, layout:" << pLayout;
 
     QString pluginName = item->data(Qt::UserRole).toString();
     QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, pluginName);

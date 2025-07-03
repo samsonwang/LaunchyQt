@@ -44,6 +44,12 @@ const int       OPTION_ALWAYSCENTER_DEFAULT                   = 3;
 const char*     OPTION_DRAGMODE                               = "GenOps/dragmode";
 const bool      OPTION_DRAGMODE_DEFAULT                       = false;
 
+const char*     OPTION_SCREEN_INDEX                             = "GenOps/ScreenIndex";
+const int       OPTION_SCREEN_INDEX_DEFAULT                     = 0;
+
+const char*     OPTION_HIDE_TRAY_ICON                           = "GenOps/HideTrayIcon";
+const bool      OPTION_HIDE_TRAY_ICON_DEFAULT                   = false;
+
 const char*     OPTION_APPSTYLE                               = "GenOps/appStyle";
 const char*     OPTION_APPSTYLE_DEFAULT                       = "fusion";
 
@@ -104,7 +110,7 @@ const int       OPTION_VERSION_DEFAULT                        = 0;
 const char*     OPTION_POS                                    = "Display/pos";
 const QPoint    OPTION_POS_DEFAULT                            = QPoint(0, 0);
 
-const char*     OPTION_IGNORE_FULL_SCREEN                     = "General/IgnoreFullScreen";
+const char*     OPTION_IGNORE_FULL_SCREEN                     = "GenOps/IgnoreFullScreen";
 const bool      OPTION_IGNORE_FULL_SCREEN_DEFAULT             = true;
 
 // Update

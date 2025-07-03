@@ -318,6 +318,7 @@ QString UWPApp::validateIconPath(const QString& iconPath) {
     static const char* scales[] = {
         ".scale-200.",
         ".scale-100.",
+        ".", // empty defaults to scale-100
         ".scale-300.",
         ".scale-400.",
         ".targetsize-48.",

@@ -36,12 +36,12 @@ void Runner::init() {
     if (g_settings->value(RUNNER_VERSION, "").toString().isEmpty()) {
         g_settings->beginWriteArray(RUNNER_COMMANDS);
         g_settings->setArrayIndex(0);
+
 #ifdef Q_OS_WIN
         g_settings->setValue("name", "cmd");
         g_settings->setValue("file", "C:\\Windows\\System32\\cmd.exe");
         g_settings->setValue("args", "/K $$");
-#endif
-#ifdef Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
         g_settings->setValue("name", "cmd");
         g_settings->setValue("file", "/usr/bin/xterm");
         g_settings->setValue("args", "-hold -e $$");

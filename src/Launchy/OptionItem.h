@@ -55,11 +55,11 @@ extern const int        OPTION_ALWAYSCENTER_DEFAULT;
 extern const char*      OPTION_DRAGMODE;
 extern const bool       OPTION_DRAGMODE_DEFAULT;
 
-static const char*      OPTION_SCREEN_INDEX = "General/ScreenIndex";
-static const int        OPTION_SCREEN_INDEX_DEFAULT = 0;
+extern const char*      OPTION_SCREEN_INDEX;
+extern const int        OPTION_SCREEN_INDEX_DEFAULT;
 
-static const char*      OPTION_HIDE_TRAY_ICON = "GenOps/HideTrayIcon";
-static const bool       OPTION_HIDE_TRAY_ICON_DEFAULT = false;
+extern const char*      OPTION_HIDE_TRAY_ICON;
+extern const bool       OPTION_HIDE_TRAY_ICON_DEFAULT;
 
 extern const char*      OPTION_APPSTYLE;
 extern const char*      OPTION_APPSTYLE_DEFAULT;
