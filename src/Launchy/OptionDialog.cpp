@@ -613,6 +613,7 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genShiftDrag->setChecked(g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool());
 
     assert(qApp);
+
     QList<QScreen*> listScreen = qApp->screens();
     for (int i = 0; i < listScreen.size(); ++i) {
         QScreen* pScreen = listScreen[i];
@@ -623,7 +624,7 @@ void OptionDialog::initGeneralWidget() {
         strScreen += " ";
         strScreen += pScreen->manufacturer();
         strScreen += pScreen->model();
-        m_pUi->comboBoxScreenNumber->addItem(strScreen);
+        m_pUi->comboBoxScreenNumber->addItem(strScreen, i);
 
         qDebug() << "OptionDialog::initGeneralWidget, screen:"
             << i << pScreen->name()
@@ -632,8 +633,14 @@ void OptionDialog::initGeneralWidget() {
             << ", size:" << pScreen->size()
             << ", virtual size:" << pScreen->virtualSize();
     }
+
+    m_pUi->comboBoxScreenNumber->addItem(tr("Cursor screen"), -1);
+
     int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
-    if (nScreenIndex < listScreen.size()) {
+    if (nScreenIndex < 0) {
+        m_pUi->comboBoxScreenNumber->setCurrentIndex(listScreen.size());
+    }
+    else if (nScreenIndex < listScreen.size()) {
         m_pUi->comboBoxScreenNumber->setCurrentIndex(nScreenIndex);
     }
 
@@ -704,7 +711,7 @@ bool OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
     g_settings->setValue(OPTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
     g_settings->setValue(OPTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
-    g_settings->setValue(OPTION_SCREEN_INDEX, m_pUi->comboBoxScreenNumber->currentIndex());
+    g_settings->setValue(OPTION_SCREEN_INDEX, m_pUi->comboBoxScreenNumber->currentData().toInt());
     g_settings->setValue(OPTION_HIDE_TRAY_ICON, m_pUi->genHideTray->isChecked());
 
     g_settings->setValue(OPTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());

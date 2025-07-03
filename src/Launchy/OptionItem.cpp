@@ -104,7 +104,7 @@ const int       OPTION_HOTKEYMOD_DEFAULT                      = Qt::MetaModifier
 const char*     OPTION_HOTKEYKEY                              = "GenOps/hotkeyAction";
 const int       OPTION_HOTKEYKEY_DEFAULT                      = Qt::Key_Space;
 
-const char*     OPTION_VERSION                                = "version";
+const char*     OPTION_VERSION                                = "GenOps/Version";
 const int       OPTION_VERSION_DEFAULT                        = 0;
 
 const char*     OPTION_POS                                    = "Display/pos";

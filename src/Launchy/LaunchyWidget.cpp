@@ -1033,7 +1033,10 @@ void LaunchyWidget::loadPosition(const QPoint& pt) {
     QList<QScreen*> listScreen = QApplication::screens();
     QScreen* screen = nullptr;
     int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
-    if (nScreenIndex < listScreen.size()) {
+    if (nScreenIndex < 0) {
+        screen = QGuiApplication::screenAt(QCursor::pos());
+    }
+    else if (nScreenIndex < listScreen.size()) {
         screen = listScreen.at(nScreenIndex);
     }
     else {
@@ -1358,7 +1361,10 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
         QScreen* pScreen = listScreens.at(i);
 
         if (pScreen->geometry().contains(pt)) {
-            g_settings->setValue(OPTION_SCREEN_INDEX, i);
+            // skip when cursor screen is enabled
+            if (screenIndex != -1) {
+                g_settings->setValue(OPTION_SCREEN_INDEX, i);
+            }
 
             if (screenIndex != i) {
                 reloadSkin();
@@ -1432,16 +1438,19 @@ void LaunchyWidget::showOptionDialog() {
 
         // move to selected screen center
         QList<QScreen*> listScreen = QApplication::screens();
-        QScreen* pScreen = nullptr;
+        QScreen* screen = nullptr;
         int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
-        if (nScreenIndex < listScreen.size()) {
-            pScreen = listScreen.at(nScreenIndex);
+        if (nScreenIndex < 0) {
+            screen = QApplication::screenAt(QCursor::pos());
+        }
+        else if (nScreenIndex < listScreen.size()) {
+            screen = listScreen.at(nScreenIndex);
         }
         else {
-            pScreen = listScreen.front();
+            screen = listScreen.front();
         }
 
-        QRect rectScreenGeometry = pScreen->geometry();
+        QRect rectScreenGeometry = screen->geometry();
         QRect rectDialogGeometry = m_optionDialog->geometry();
 
         qDebug() << "LaunchyWidget::showOptionDialog, screen:" << rectScreenGeometry
