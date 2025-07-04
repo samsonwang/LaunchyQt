@@ -1308,47 +1308,48 @@ void LaunchyWidget::applySkin(const QString& name) {
     InputDataList::setSeparator(m_inputBox->separatorText());
 }
 
-void LaunchyWidget::mousePressEvent(QMouseEvent *event) {
-    if (event->buttons() == Qt::LeftButton) {
-        if (!g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool()
-            || (event->modifiers() & Qt::ShiftModifier)) {
-            m_dragging = true;
-            m_dragStartPoint = event->pos();
-        }
+void LaunchyWidget::mousePressEvent(QMouseEvent* event) {
+
+    if (event->buttons() == Qt::LeftButton
+        && (!g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool()
+            || (event->modifiers() & Qt::ShiftModifier))) {
+
+        m_dragging = true;
+        m_dragStartPos = event->pos();
+        m_dragStartGlobalPos = event->globalPos();
+
+        qDebug() << "LaunchyWidget::mousePressEvent, drag begin, global pos:"
+            << m_dragStartGlobalPos << "pos:" << m_dragStartPos;
     }
+
     hideAlternativeList();
     activateWindow();
     m_inputBox->setFocus();
 }
 
 void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() == Qt::LeftButton
-        && m_dragging) {
+    if (m_dragging && event->buttons() == Qt::LeftButton) {
 
         hideAlternativeList();
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QPoint pt = event->globalPos() - m_dragStartPoint;
+        QPoint pt = event->globalPos() - m_dragStartPos;
 #else
-        QPoint pt = event->globalPosition().toPoint() - m_dragStartPoint;
+        QPoint pt = event->globalPosition().toPoint() - m_dragStartPos;
 #endif
 
         move(pt);
-
-        // qDebug() << "LaunchyWidget::mouseMoveEvent, pos:" << pt;
 
         m_inputBox->setFocus();
     }
 }
 
 void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
+    if (m_dragging == false) {
+        return;
+    }
 
     m_dragging = false;
-
-    hideAlternativeList();
-    m_inputBox->setFocus();
-
-    int screenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QPoint pt = event->globalPos();
@@ -1356,17 +1357,33 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
     QPoint pt = event->globalPosition().toPoint();
 #endif
 
+    qDebug() << "LaunchyWidget::mouseReleaseEvent, drag end, global pos:" << pt;
+
+    hideAlternativeList();
+    m_inputBox->setFocus();
+
+    int prevScreenIndex = -1;
+    int currScreenIndex = -1;
+
     QList<QScreen*> listScreens = qApp->screens();
     for (int i = 0; i < listScreens.size(); ++i) {
-        QScreen* pScreen = listScreens.at(i);
+        QScreen* screen = listScreens.at(i);
 
-        if (pScreen->geometry().contains(pt)) {
-            // skip when cursor screen is enabled
-            if (screenIndex != -1) {
-                g_settings->setValue(OPTION_SCREEN_INDEX, i);
-            }
+        qDebug() << "LaunchyWidget::mouseReleaseEvent, screen:" << i
+            << " geometry:" << screen->geometry();
 
-            if (screenIndex != i) {
+        if (prevScreenIndex == -1 && screen->geometry().contains(m_dragStartGlobalPos)) {
+            prevScreenIndex = i;
+        }
+
+        if (currScreenIndex == -1 && screen->geometry().contains(pt)) {
+            currScreenIndex = i;
+        }
+
+        if (prevScreenIndex >= 0 && currScreenIndex >= 0) {
+            qDebug() << "LaunchyWidget::mouseReleaseEvent, prev screen:" << prevScreenIndex
+                << "curr screen:" << currScreenIndex;
+            if (prevScreenIndex != currScreenIndex) {
                 reloadSkin();
             }
             break;
@@ -1375,6 +1392,9 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void LaunchyWidget::contextMenuEvent(QContextMenuEvent* event) {
+    qDebug() << "LaunchyWidget::contextMenuEvent, global pos:"
+        << event->globalPos() << "pos:" << event->pos();
+
     QMenu menu(this);
     menu.addAction(m_actRebuild);
     menu.addAction(m_actReloadSkin);

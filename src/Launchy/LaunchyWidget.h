@@ -182,7 +182,8 @@ protected:
     bool m_alwaysShowLaunchy;
 
     bool m_dragging;
-    QPoint m_dragStartPoint;
+    QPoint m_dragStartPos;
+    QPoint m_dragStartGlobalPos;
     bool m_menuOpen;
 
     OptionDialog* m_optionDialog;
