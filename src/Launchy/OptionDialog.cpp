@@ -670,6 +670,9 @@ void OptionDialog::initGeneralWidget() {
     connect(m_pUi->cbAppStyle, SIGNAL(currentIndexChanged(int)),
             this, SLOT(onAppStyleChanged(int)));
 
+    m_pUi->genResolveSymLink->setChecked(g_settings->value(OPTION_RESOLVE_SYM_LINK,
+                                                           OPTION_RESOLVE_SYM_LINK_DEFAULT).toBool());
+
     // suggestion list
     m_pUi->genDecorateText->setChecked(g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool());
 
@@ -713,6 +716,7 @@ bool OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
     g_settings->setValue(OPTION_SCREEN_INDEX, m_pUi->comboBoxScreenNumber->currentData().toInt());
     g_settings->setValue(OPTION_HIDE_TRAY_ICON, m_pUi->genHideTray->isChecked());
+    g_settings->setValue(OPTION_RESOLVE_SYM_LINK, m_pUi->genResolveSymLink->isChecked());
 
     g_settings->setValue(OPTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
     g_settings->setValue(OPTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());

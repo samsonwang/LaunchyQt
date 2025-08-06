@@ -77,14 +77,13 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     }
     else {
 
-        bool bResolveSymLink
-            = g_settings->value(OPTION_RESOLVE_SYM_LINK_TARGET,
-                                OPTION_RESOLVE_SYM_LINK_TARGET_DEFAULT).toBool();
-
         QString filePath;
 
         // resolve sym link target
-        if (bResolveSymLink && info.isSymLink()) {
+        if (info.isSymLink()
+            && g_settings->value(OPTION_RESOLVE_SYM_LINK,
+                                 OPTION_RESOLVE_SYM_LINK_DEFAULT).toBool()) {
+
             filePath = QDir::toNativeSeparators(info.symLinkTarget());
 
             qDebug() << "IconProviderWin::icon, sym link, target path:" << filePath

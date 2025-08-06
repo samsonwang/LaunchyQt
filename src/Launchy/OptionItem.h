@@ -91,8 +91,8 @@ extern const int        OPTION_FADEIN_DEFAULT;
 extern const char*      OPTION_FADEOUT;
 extern const int        OPTION_FADEOUT_DEFAULT;
 
-extern const char*      OPTION_RESOLVE_SYM_LINK_TARGET;
-extern const bool       OPTION_RESOLVE_SYM_LINK_TARGET_DEFAULT;
+extern const char*      OPTION_RESOLVE_SYM_LINK;
+extern const bool       OPTION_RESOLVE_SYM_LINK_DEFAULT;
 
 // skin
 extern const char*      OPTION_SKIN;
