@@ -36,6 +36,9 @@
 
 #include <QProcessEnvironment>
 
+#include "LaunchyLib/LaunchyLib.h"
+
+#include "OptionItem.h"
 #include "UtilWin.h"
 
 namespace launchy {
@@ -74,6 +77,23 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     }
     else {
 
+        bool bResolveSymLink
+            = g_settings->value(OPTION_RESOLVE_SYM_LINK_TARGET,
+                                OPTION_RESOLVE_SYM_LINK_TARGET_DEFAULT).toBool();
+
+        QString filePath;
+
+        // resolve sym link target
+        if (bResolveSymLink && info.isSymLink()) {
+            filePath = QDir::toNativeSeparators(info.symLinkTarget());
+
+            qDebug() << "IconProviderWin::icon, sym link, target path:" << filePath
+                << "file path:" << info.filePath();
+        }
+        else {
+            filePath = QDir::toNativeSeparators(info.filePath());
+        }
+
         unsigned int flags = SHGFI_ICON | SHGFI_SYSICONINDEX | SHGFI_ICONLOCATION;
 
         if (m_preferredSize <= 16) {
@@ -89,7 +109,6 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             flags |= SHIL_JUMBO;
         }
 
-        QString filePath = QDir::toNativeSeparators(info.filePath());
 
         qDebug() << "IconProviderWin::icon, file path:" << filePath
             << ", flags:" << flags;

@@ -83,6 +83,9 @@ const int       OPTION_FADEIN_DEFAULT                         = 10;
 const char*     OPTION_FADEOUT                                = "GenOps/fadeout";
 const int       OPTION_FADEOUT_DEFAULT                        = 20;
 
+const char*     OPTION_RESOLVE_SYM_LINK_TARGET                = "GenOps/ResolveSymLinkTarget";
+const bool      OPTION_RESOLVE_SYM_LINK_TARGET_DEFAULT        = true;
+
 const char*     OPTION_SKIN                                   = "GenOps/skin";
 const char*     OPTION_SKIN_DEFAULT                           = "Default";
 
