@@ -59,7 +59,8 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     if (fileExtension == QStringLiteral("png")
         || fileExtension == QStringLiteral("bmp")
         || fileExtension == QStringLiteral("jpg")
-        || fileExtension == QStringLiteral("jpeg")) {
+        || fileExtension == QStringLiteral("jpeg")
+        || fileExtension == QStringLiteral("ico")) {
         retIcon = QIcon(info.filePath());
     }
     else if (fileExtension == QStringLiteral("cpl")) {
