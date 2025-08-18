@@ -1,7 +1,32 @@
 
 * How to build
 
-** Windows with Qt Creator
+** Windows
+*** Environments
+VS2017
+Qt5.12.10
+Python3.6.6 64-bit
+PySide2 5.12.6 (the lastest version for Qt5.12)
+CMake3.15 or higher version
+Tips:
+1. If you wants to build 64-bit Launchy, 64-bit Python is required.
+2. If you wants to debug Launchy python, debug version of python is required.
+
+*** Configuartion
+These steps is intended to help cmake locate Qt.
+Set =CMAKE_PREFIX_PATH= as Qt install directory, it is =C:/Qt/Qt5.12.10/5.12.10/msvc2017_64= by default.
+
+*** Build
+1. Generate VS2017 solution with cmake
+#+BEGIN_SRC bat
+cmake -B build .
+#+END_SRC
+
+2. Open solution with VS2017 and build
+
+
+
+** (obsolete) Windows with Qt Creator
 *** Environments
 - Visual Studio Community 2017
 - Qt 5.12.5
