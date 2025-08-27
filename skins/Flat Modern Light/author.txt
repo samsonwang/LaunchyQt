@@ -1,0 +1,6 @@
+Skin Title: Flat Modern Light
+Author: cndjonno
+Website: https://github.com/cndjonno/launchyskins
+
+Version: 1.0
+Date: 2020-06-17
