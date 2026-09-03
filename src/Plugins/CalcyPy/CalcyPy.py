@@ -130,15 +130,18 @@ class CalcyPy(Plugin):
             item.setUsage(10000)
             resultsList.append(item)
 
+    def getCatalog(self, catlogList):
+        log.debug('CalcyPy::getCatalog, ...')
+
     def doDialog(self, parentWidgetPtr):
-        log.debug('CalcyPy::doDialog ...')
+        log.debug('CalcyPy::doDialog, ...')
         parentWidget = wrapInstance(parentWidgetPtr, QWidget)
         self.widget = CalcyGui.CalcyOption(parentWidget, self.setting_dir, self.settings)
         # self.widget.show()
         return getCppPointer(self.widget)[0]
 
     def endDialog(self, accept):
-        log.debug('CalcyPy::endDialog ...')
+        log.debug('CalcyPy::endDialog, ...')
         self.widget.hide()
         if accept:
             self.widget.writeSettings()

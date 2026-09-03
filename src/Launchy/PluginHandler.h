@@ -36,6 +36,7 @@ public:
 
 public:
     void loadPlugins();
+    const QHash<QString, PluginInfo>& getPlugins() const;
 
     void showLaunchy();
     void hideLaunchy();
@@ -48,8 +49,6 @@ public:
 
     QWidget* doDialog(QWidget* parent, const QString& name);
     void endDialog(const QString& name, bool accept);
-
-    const QHash<QString, PluginInfo>& getPlugins() const;
 
 private:
     // load plugin written in python

@@ -83,6 +83,10 @@ if (MSVC)
   # add_compile_options (/wd4819) # disable warning C4819: unicode charset
   # add_compile_options (/MP) # multi-processor compilation
 
+  # generate debug info (pdb files)
+  add_compile_options (/Zi)
+  add_link_options (/DEBUG)
+
   add_compile_definitions (_CRT_SECURE_NO_WARNINGS)
   add_compile_definitions (NOMINMAX)
   # add_compile_definitions (WIN32_LEAN_AND_MEAN)

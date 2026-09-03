@@ -13,17 +13,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Python.h"
+// Python.h and Windows.h have conflicts
+// Must include Python.h before Windows.h
+// If include Python.h before pybind11.h, there will be a macro redefinition error
+// pybind11.h already include Python.h in itself.
+// #include <Python.h>
+#include <pybind11/pybind11.h>
 
 #include "PluginWrapper.h"
 
 #include <QDebug>
-
-#include <Python.h>
-#include <pybind11/pybind11.h>
 
 #include "LaunchyLib/PluginMsg.h"
 
@@ -170,7 +172,7 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     qDebug() << "pluginpy::PluginWrapper::msg, lock mutex, plugin name:"
         << m_pluginName << "msgId:" << msgId;
 
-    // Disptach the actual Python function
+    // Dispatch the actual Python function
     int result = 0;
 
     try {

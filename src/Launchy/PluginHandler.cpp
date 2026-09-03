@@ -71,6 +71,10 @@ void PluginHandler::loadPlugins() {
     }
 }
 
+const QHash<QString, launchy::PluginInfo>& PluginHandler::getPlugins() const {
+    return m_plugins;
+}
+
 void PluginHandler::showLaunchy() {
     foreach(PluginInfo info, m_plugins) {
         if (info.loaded)
@@ -153,9 +157,7 @@ void PluginHandler::endDialog(const QString& name, bool accept) {
     m_plugins[name].sendMsg(MSG_END_DIALOG, (void*)accept);
 }
 
-const QHash<QString, launchy::PluginInfo> & PluginHandler::getPlugins() const {
-    return m_plugins;
-}
+
 
 void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& pluginPath) {
     qDebug() << "PluginHandler::loadPythonPlugin, plugin:" << pluginName << "(" << pluginPath << ")";
