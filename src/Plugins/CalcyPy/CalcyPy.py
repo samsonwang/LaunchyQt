@@ -158,9 +158,9 @@ class CalcyPy(Plugin):
         # general
         # don't know why here QSetting fail to load default value
         decPtGrpSep = lSettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0)
-        log.debug('CalcyPy::__readSettings, decPtGrpSep, {}'.format(decPtGrpSep));
+        log.debug('CalcyPy::__readSettings, decPtGrpSep, {}'.format(decPtGrpSep))
         if decPtGrpSep:
-            self.settings['decimalPointGroupSeparator'] = decPtGrpSep
+            self.settings['decimalPointGroupSeparator'] = int(decPtGrpSep)
         else:
             self.settings['decimalPointGroupSeparator'] = 0
 
@@ -214,22 +214,37 @@ class CalcyPy(Plugin):
         integralPart = int(num);
         fractionalPart = num - integralPart;
         log.debug('integral part: {}, fractional part: {}'.format(integralPart, fractionalPart))
+
+        decimalPoint = self.__decimalPoint()
+        log.debug('CalcyPy::__formatFloat, decimal point, {}'.format(decimalPoint))
+
         if self.settings['showGroupSeparator']:
+            groupSeparator = self.__groupSeparator()
+            log.debug('CalcyPy::__formatFloat, group separator, {}'.format(groupSeparator))
+
             integralStr = '{:,}'.format(integralPart)
-            if QLocale.system().groupSeparator() != ',':
-                integralStr = integralStr.replace(',', QLocale.system().groupSeparator())
+            if groupSeparator != ',':
+                integralStr = integralStr.replace(',', groupSeparator)
             log.debug('CalcyPy::__formatFloat, integral str, {}'.format(integralStr))
+
             if self.settings['outputPrecision']:
                 fractionalStr = str(round(fractionalPart, self.settings['outputPrecision'])).lstrip('0')
             else:
                 fractionalStr = str(fractionalPart).lstrip('0')
+            if decimalPoint != '.':
+                fractionalStr = fractionalStr.replace('.', decimalPoint)
 
             return integralStr + fractionalStr
         else:
-           if self.settings['outputPrecision']:
-               return str(round(num, self.settings['outputPrecision']))
-           else:
-               return str(num)
+            if self.settings['outputPrecision']:
+                resultStr = str(round(num, self.settings['outputPrecision']))
+            else:
+                resultStr = str(num)
+
+            if decimalPoint != '.':
+                resultStr = resultStr.replace('.', decimalPoint)
+                
+            return resultStr
 
     def __formatHexadecimal(self, num):
         if self.settings['showHexOut']:
@@ -248,10 +263,12 @@ class CalcyPy(Plugin):
     def __formatDecimal(self, num):
         if self.settings['showGroupSeparator']:
             decStr = '{:,}'.format(num)
-            log.debug('CalcyPy::__formatDecimal, {}, {}'.format(num, decStr))
-            if QLocale.system().groupSeparator() == ',':
+
+            groupSeparator = self.__groupSeparator()
+            if groupSeparator is None:
                 return decStr
-            return decStr.replace(',', QLocale.system().groupSeparator())
+
+            return decStr.replace(',', groupSeparator)
         else:
             return '%d' % num
 
