@@ -1,0 +1,5 @@
+Hi from .\plugins\Shortie\virtual-keyboard.exe
+events: VK_SHIFT,VK_LWIN,C
+VK_SHIFT
+VK_LWIN
+C

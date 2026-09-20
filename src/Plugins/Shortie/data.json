@@ -1,0 +1,72 @@
+{
+	"roots": {
+		"shortcuts": {
+			"children": [
+				{
+					"name": "Snapshot",
+					"keys": "VK_SHIFT,VK_LWIN,S"
+				},
+				{
+					"name": "Lock Screen",
+					"keys": "VK_LWIN,L"
+				},
+				{
+					"name": "Desktop",
+					"keys": "VK_LWIN,D"
+				},
+				{
+					"name": "Pick Color",
+					"keys": "VK_SHIFT,VK_LWIN,C"
+				},
+				{
+					"name": "Ruler",
+					"keys": "VK_SHIFT,VK_CONTROL,VK_LWIN,M"
+				},
+				{
+					"name": "Text Extractor",
+					"keys": "VK_SHIFT,VK_LWIN,T"
+				},
+				{
+					"name": "Voice Input",
+					"keys": "VK_LWIN,H"
+				},
+				{
+					"name": "Mute/Unmute",
+					"keys": "VK_VOLUME_MUTE"
+				},
+				{
+					"name": "Play/Pause",
+					"keys": "VK_MEDIA_PLAY_PAUSE"
+				},
+				{
+					"name": "Mic Mute",
+					"keys": "VK_LWIN,VK_MENU,K"
+				}
+			]
+		},
+		"aliases": {
+			"children": [
+				{
+					"name": "per",
+					"keys": "×"
+				},
+				{	
+					"name": "tilde",
+					"keys": "~"
+				},
+				{
+					"name": "mail tag",
+					"keys": "<crusso></crusso>"
+				},
+				{
+					"name": "queque",
+					"keys": ";<"
+				},
+				{
+					"name": ">",
+					"keys":"»"
+				}
+			]
+		}
+	}
+}

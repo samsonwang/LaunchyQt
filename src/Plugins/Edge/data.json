@@ -1,5 +1,13 @@
 {
 	"roots": {
+		"edge": {
+				"children": [
+					{
+						"accountName": "chris",
+						"url": "C:\\Users\\chris\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks"
+					}
+				]
+		},
 		"home": {
 			"children": [
 				{

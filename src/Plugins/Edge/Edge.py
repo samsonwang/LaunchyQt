@@ -1,19 +1,6 @@
-# Copyright (c) 2022 Christian Russo
-#
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 3 of the License, or (at your option) any later
-# version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc.,
-# 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
 # !! README : This Version needs manual configuration at line 67 : a path needs to be updated
+# v.0.3 - Moved Edge Account URL path in data.json, allowed to add more Edge Account's URLs.
+# v.0.2 - Added Rescan Option to refresh the catalog
 
 import sys, os
 import launchy
@@ -43,7 +30,6 @@ def listFavorites(dictionary, names, urls, defs):
 class EdgePy(launchy.Plugin):
     def __init__(self):
         launchy.Plugin.__init__(self)
-        self.hash = launchy.hash(self.getName())
         self.loaded = False
         # Favorites Names and Favorites Urls
         self.fNames  = []
@@ -63,28 +49,44 @@ class EdgePy(launchy.Plugin):
             return False
         
         self.loaded = True
-        
-        with open('C:\\Users\\chris\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks', 'r')as bFile:
-            bookmarksDictionary = json.load(bFile)
-            listFavorites(bookmarksDictionary['roots']['synced']['children'], self.fNames, self.fUrls, self.fDefs)            
-            listFavorites(bookmarksDictionary['roots']['other']['children'], self.fNames, self.fUrls, self.fDefs)
-            listFavorites(bookmarksDictionary['roots']['bookmark_bar']['children'], self.fNames, self.fUrls, self.fDefs)       
-            bFile.close()
             
         with open(os.path.join(self.path, "data.json"), 'r')as bFile:
             bookmarksDictionary = json.load(bFile)
             listFavorites(bookmarksDictionary['roots']['home']['children'], self.tNames, self.tUrls, self.tDefs)
             listFavorites(bookmarksDictionary['roots']['office']['children'], self.tNames, self.tUrls, self.tDefs)
             listFavorites(bookmarksDictionary['roots']['protocols']['children'], self.pNames, self.pUrls, self.pDefs)
+            
+            for children in bookmarksDictionary['roots']['edge']['children']:
+                accountName = children.get('accountName')
+                filePath = children.get('url')
+                
+                with open( filePath , 'r')as eFile:
+                    edgeDictionary = json.load(eFile)
+                    listFavorites(edgeDictionary['roots']['synced']['children'], self.fNames, self.fUrls, self.fDefs)            
+                    listFavorites(edgeDictionary['roots']['other']['children'], self.fNames, self.fUrls, self.fDefs)
+                    listFavorites(edgeDictionary['roots']['bookmark_bar']['children'], self.fNames, self.fUrls, self.fDefs)       
+                    eFile.close()
+
             bFile.close()
 
+        return True
+    
+    def reloadData(self):
+        self.loaded = False
+        self.fNames  = []
+        self.fUrls   = []
+        self.fDefs   = []
+        self.tNames = []
+        self.tUrls = []
+        self.tDefs = []
+        self.pNames = []
+        self.pUrls = []
+        self.pDefs = []
+        self.loadData()
         return True
         
     def init(self):
         pass
-
-    def getID(self):
-        return int(self.hash)
 
     def getName(self):
         return "Edge"
@@ -123,22 +125,22 @@ class EdgePy(launchy.Plugin):
         return self.pDefs
     
     def getLabels(self, inputDataList):
-        condition = True
-        if condition == True:
-            inputDataList[-1].setLabel(self.hash)
+        inputDataList[-1].setLabel(self.getName())
 
     def getResults(self, inputDataList, resultsList):
-        if not inputDataList[-1].hasLabel(self.hash):
-            return
 
         # Load once data - see loadData function...
         self.loadData()
 
-        # Look for Edge Favorites
         inputText = inputDataList[0].getText()
+        # Look for Hardcoded Commands
+        if inputText and re.search(re.escape(inputText), "Edge.Rescan", re.IGNORECASE):
+              resultsList.push_back( launchy.CatItem("Edge.Rescan", "Edge.Rescan", self.getName(), self.getIcon()) )
+
+        # Look for Edge Favorites
         for(name,url) in zip(self.getFNames(),self.getFUrls()):
             if inputText and re.search(re.escape(inputText), name, re.IGNORECASE):
-                resultsList.push_back( launchy.CatItem(url, name, self.getID(), self.getIcon()))
+                resultsList.push_back( launchy.CatItem(url, name, self.getName(), self.getIcon()))
 
         # Look for Url Templates
         itemIndex = 0
@@ -167,13 +169,13 @@ class EdgePy(launchy.Plugin):
             itemIndex = itemIndex + 1
 
         if isTemplate == True:
-            resultsList.push_back( launchy.CatItem(finalUrl, finalName, self.getID(), self.getIcon()))
+            resultsList.push_back( launchy.CatItem(finalUrl, finalName, self.getName(), self.getIcon()))
         
         # Look for Protocols
         inputText = inputDataList[0].getText()
         for(name,url) in zip(self.getPNames(),self.getPUrls()):
             if inputText.startswith(url):
-                resultsList.push_back( launchy.CatItem(inputText, name, self.getID(), self.getIcon()))
+                resultsList.push_back( launchy.CatItem(inputText, name, self.getName(), self.getIcon()))
 
     def getCatalog(self, resultsList):
         pass
@@ -183,6 +185,10 @@ class EdgePy(launchy.Plugin):
 
         # In case this is a Template but not filled, replace with the default url
         finalUrl = catItem.fullPath()
+        
+        if (finalUrl == "Edge.Rescan"):
+            return self.reloadData()
+        
         for(url,default) in zip(self.getTUrls(),self.getTDefs()):
             if re.search(re.escape(catItem.fullPath()), url, re.IGNORECASE):
                 finalUrl = default
