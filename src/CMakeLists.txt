@@ -499,21 +499,3 @@ add_custom_command (TARGET Plugin.Verby POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${RESOURCES_VERBY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Verby)
 
-##################################################
-# plugin: CalcPy
-add_custom_target (PluginPy.CalcPy
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${SRC_DIR}/Plugins/CalcyPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/CalcyPy
-  COMMENT "copy calcpy to plugin directory")
-
-##################################################
-# plugin: PydiryPy
-add_custom_target (PluginPy.PydiryPy
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${SRC_DIR}/Plugins/PydiryPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/PydiryPy)
-
-##################################################
-# plugin: WebSearchPy
-add_custom_target (PluginPy.WebSearchPy
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${SRC_DIR}/Plugins/WebSearchPy ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/WebSearchPy)
