@@ -85,8 +85,8 @@ void SettingsManager::load() {
         writeCatalogDirectories(directories);
     }
 
-    int logLevel = g_settings->value(OPTION_LOGLEVEL, OPTION_LOGLEVEL_DEFAULT).toInt();
-    Logger::setLogLevel(logLevel);
+    bool debugLog = g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool();
+    Logger::setLogLevel(debugLog);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
         << "( build" << __DATE__ << __TIME__ << ")";

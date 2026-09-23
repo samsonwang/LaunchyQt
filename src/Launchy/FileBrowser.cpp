@@ -54,10 +54,10 @@ FileBrowser::FileBrowser(QWidget* pParent)
     // setAutoFillBackground(true);
 
     // Connections
-    connect(mpFileEdit, SIGNAL(textChanged(const QString&)),
-            this, SLOT(onFileEditTextChanged(const QString&)));
-    connect(mpBrowseButton, SIGNAL(clicked()),
-            this, SLOT(browse()));
+    connect(mpFileEdit, &QLineEdit::textChanged,
+            this, &FileBrowser::onFileEditTextChanged);
+    connect(mpBrowseButton, &QPushButton::clicked,
+            this, &FileBrowser::browse);
 }
 
 FileBrowser::~FileBrowser() {

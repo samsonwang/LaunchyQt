@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyWidget.h"
 #include "GlobalVar.h"
 #include "PluginHandler.h"
+#include "DropListWidget.h"
 #include "FileBrowserDelegate.h"
 #include "SettingsManager.h"
 #include "Logger.h"
@@ -98,20 +99,20 @@ OptionDialog::OptionDialog(QWidget* parent)
 
     m_pUi->tabWidget->setCurrentIndex(s_lastTab);
 
-    connect(m_pUi->tabWidget, SIGNAL(currentChanged(int)),
-            this, SLOT(tabChanged(int)));
-    connect(m_pUi->pbOk, SIGNAL(clicked()),
-            this, SLOT(accept()));
-    connect(m_pUi->pbCancel, SIGNAL(clicked()),
-            this, SLOT(reject()));
+    connect(m_pUi->tabWidget, &QTabWidget::currentChanged,
+            this, &OptionDialog::tabChanged);
+    connect(m_pUi->pbOk, &QPushButton::clicked,
+            this, &OptionDialog::accept);
+    connect(m_pUi->pbCancel, &QPushButton::clicked,
+            this, &OptionDialog::reject);
 }
 
 OptionDialog::~OptionDialog() {
     if (g_builder) {
-        disconnect(g_builder, SIGNAL(catalogIncrement(int)),
-                   this, SLOT(catalogProgressUpdated(int)));
-        disconnect(g_builder, SIGNAL(catalogFinished()),
-                   this, SLOT(catalogBuilt()));
+        disconnect(g_builder, &CatalogBuilder::catalogIncrement,
+                   this, &OptionDialog::catalogProgressUpdated);
+        disconnect(g_builder, &CatalogBuilder::catalogFinished,
+                   this, &OptionDialog::catalogBuilt);
     }
 
     s_lastTab = m_pUi->tabWidget->currentIndex();
@@ -216,15 +217,14 @@ void OptionDialog::tabChanged(int tab) {
 
 
 void OptionDialog::onAppStyleChanged(int index) {
-    QString appStyle = m_pUi->cbAppStyle->itemData(index).toString();
+    QString appStyle = m_pUi->comboBoxAppStyle->itemData(index).toString();
     qApp->setStyle(QStyleFactory::create(appStyle));
 }
 
-void OptionDialog::autoRebuildCheckChanged(int state) {
-    m_pUi->genRebuildMinutes->setEnabled(state > 0);
-    if (m_pUi->genRebuildMinutes->value() <= 0) {
-        m_pUi->genRebuildMinutes->setValue(OPTION_REBUILDTIMER_DEFAULT);
-    }
+void OptionDialog::autoRebuildCheckChanged(bool checked) {
+    // genRebuildMinutes has a minimum of 1 (see OptionDialog.ui), so its value
+    // is always valid: only the enabled state has to follow the check box.
+    m_pUi->genRebuildMinutes->setEnabled(checked);
 }
 
 void OptionDialog::skinChanged(const QString& newSkin) {
@@ -376,12 +376,17 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     }
 }
 
-void OptionDialog::logLevelChanged(int index) {
-    Logger::setLogLevel(index);
+void OptionDialog::onDebugLogToggled(bool checked) {
+    Logger::setLogLevel(checked);
 }
 
 void OptionDialog::languageChanged(int index) {
-    QString loc = m_pUi->cbLanguage->itemData(index).toString();
+    const QString loc = m_pUi->comboBoxLanguage->itemData(index).toString();
+    if (loc.isEmpty()) {
+        // index is out of range (itemData returned an invalid variant)
+        return;
+    }
+
     g_settings->setValue(OPTION_LANGUAGE, loc);
 
     qDebug() << "OptionDialog::languageChanged, loc =" << loc;
@@ -586,31 +591,31 @@ void OptionDialog::initGeneralWidget() {
     hotkey &= ~(Qt::AltModifier | Qt::MetaModifier | Qt::ShiftModifier | Qt::ControlModifier);
 
     for (int i = 0; i < m_metaKeys.count(); ++i) {
-        m_pUi->genModifierBox->addItem(m_metaKeys[i]);
+        m_pUi->comboBoxModifier->addItem(m_metaKeys[i]);
         if (m_iMetaKeys[i] == meta)
-            m_pUi->genModifierBox->setCurrentIndex(i);
+            m_pUi->comboBoxModifier->setCurrentIndex(i);
     }
 
     for (int i = 0; i < m_actionKeys.count(); ++i) {
-        m_pUi->genKeyBox->addItem(m_actionKeys[i]);
+        m_pUi->comboBoxKey->addItem(m_actionKeys[i]);
         if (m_iActionKeys[i] == hotkey)
-            m_pUi->genKeyBox->setCurrentIndex(i);
+            m_pUi->comboBoxKey->setCurrentIndex(i);
     }
 
     // general options
-    m_pUi->genIgnoreFullScreen->setChecked(g_settings->value(OPTION_IGNORE_FULL_SCREEN, OPTION_IGNORE_FULL_SCREEN_DEFAULT).toBool());
+    m_pUi->checkBoxIgnoreFullScreen->setChecked(g_settings->value(OPTION_IGNORE_FULL_SCREEN, OPTION_IGNORE_FULL_SCREEN_DEFAULT).toBool());
 
-    m_pUi->genAlwaysShow->setChecked(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool());
+    m_pUi->checkBoxAlwaysShow->setChecked(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool());
 
-    m_pUi->genHideFocus->setChecked(g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
+    m_pUi->checkBoxHideFocus->setChecked(g_settings->value(OPTION_HIDEIFLOSTFOCUS, OPTION_HIDEIFLOSTFOCUS_DEFAULT).toBool());
 
-    m_pUi->genAlwaysTop->setChecked(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
+    m_pUi->checkBoxAlwaysTop->setChecked(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
 
     int center = g_settings->value(OPTION_ALWAYSCENTER, OPTION_ALWAYSCENTER_DEFAULT).toInt();
-    m_pUi->genHCenter->setChecked((center & 1) != 0);
-    m_pUi->genVCenter->setChecked((center & 2) != 0);
+    m_pUi->checkBoxHCenter->setChecked((center & 1) != 0);
+    m_pUi->checkBoxVCenter->setChecked((center & 2) != 0);
 
-    m_pUi->genShiftDrag->setChecked(g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool());
+    m_pUi->checkBoxShiftDrag->setChecked(g_settings->value(OPTION_DRAGMODE, OPTION_DRAGMODE_DEFAULT).toBool());
 
     assert(qApp);
 
@@ -646,37 +651,37 @@ void OptionDialog::initGeneralWidget() {
 
     m_pUi->pushButtonRescanScreen->setVisible(false);
 
-    m_pUi->genHideTray->setChecked(g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool());
+    m_pUi->checkBoxHideTray->setChecked(g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool());
 
     // application style
     QString appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
 
     QStringList styles = QStyleFactory::keys();
     foreach (QString style, styles) {
-        m_pUi->cbAppStyle->addItem(style, style.toLower());
+        m_pUi->comboBoxAppStyle->addItem(style, style.toLower());
     }
 
     int appStyleIndex = 0;
-    int appStyleCount = m_pUi->cbAppStyle->count();
+    int appStyleCount = m_pUi->comboBoxAppStyle->count();
     for (int i = 0; i < appStyleCount; ++i) {
-        if (m_pUi->cbAppStyle->itemData(i).toString() == appStyle) {
+        if (m_pUi->comboBoxAppStyle->itemData(i).toString() == appStyle) {
             appStyleIndex = i;
             break;
         }
     }
 
-    m_pUi->cbAppStyle->setCurrentIndex(appStyleIndex);
+    m_pUi->comboBoxAppStyle->setCurrentIndex(appStyleIndex);
 
-    connect(m_pUi->cbAppStyle, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(onAppStyleChanged(int)));
+    connect(m_pUi->comboBoxAppStyle, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &OptionDialog::onAppStyleChanged);
 
-    m_pUi->genResolveSymLink->setChecked(g_settings->value(OPTION_RESOLVE_SYM_LINK,
+    m_pUi->checkBoxResolveSymLink->setChecked(g_settings->value(OPTION_RESOLVE_SYM_LINK,
                                                            OPTION_RESOLVE_SYM_LINK_DEFAULT).toBool());
 
     // suggestion list
-    m_pUi->genDecorateText->setChecked(g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool());
+    m_pUi->checkBoxDecorateText->setChecked(g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool());
 
-    m_pUi->genCondensed->setCurrentIndex(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
+    m_pUi->comboBoxCondensed->setCurrentIndex(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
     m_pUi->genAutoSuggestDelay->setValue(g_settings->value(OPTION_AUTOSUGGESTDELAY, OPTION_AUTOSUGGESTDELAY_DEFAULT).toInt());
 
     m_pUi->genMaxViewable->setValue(g_settings->value(OPTION_NUMVIEWABLE, OPTION_NUMVIEWABLE_DEFAULT).toInt());
@@ -687,12 +692,12 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genFadeIn->setValue(g_settings->value(OPTION_FADEIN, OPTION_FADEIN_DEFAULT).toInt());
     m_pUi->genFadeOut->setValue(g_settings->value(OPTION_FADEOUT, OPTION_FADEOUT_DEFAULT).toInt());
 
-    connect(m_pUi->genOpaqueness, SIGNAL(sliderMoved(int)), g_mainWidget, SLOT(setOpaqueness(int)));
+    connect(m_pUi->genOpaqueness, &QSlider::sliderMoved, g_mainWidget, &LaunchyWidget::setOpaqueness);
 }
 
 bool OptionDialog::saveGeneralSettings() {
     // See if the new hotkey works, if not we're not leaving the dialog.
-    QKeySequence hotkey(m_iMetaKeys[m_pUi->genModifierBox->currentIndex()] | m_iActionKeys[m_pUi->genKeyBox->currentIndex()]);
+    QKeySequence hotkey(m_iMetaKeys[m_pUi->comboBoxModifier->currentIndex()] | m_iActionKeys[m_pUi->comboBoxKey->currentIndex()]);
     if (!g_mainWidget->setHotkey(hotkey)) {
         QMessageBox::warning(this, tr("Launchy"),
                              tr("The hotkey %1 is already in use, please select another.").arg(hotkey.toString()));
@@ -706,19 +711,19 @@ bool OptionDialog::saveGeneralSettings() {
 #endif // QT_VERSION
 
     // Save General Options
-    g_settings->setValue(OPTION_IGNORE_FULL_SCREEN, m_pUi->genIgnoreFullScreen->isChecked());
-    g_settings->setValue(OPTION_ALWAYSSHOW, m_pUi->genAlwaysShow->isChecked());
-    g_settings->setValue(OPTION_ALWAYSTOP, m_pUi->genAlwaysTop->isChecked());
+    g_settings->setValue(OPTION_IGNORE_FULL_SCREEN, m_pUi->checkBoxIgnoreFullScreen->isChecked());
+    g_settings->setValue(OPTION_ALWAYSSHOW, m_pUi->checkBoxAlwaysShow->isChecked());
+    g_settings->setValue(OPTION_ALWAYSTOP, m_pUi->checkBoxAlwaysTop->isChecked());
 
-    g_settings->setValue(OPTION_DECORATETEXT, m_pUi->genDecorateText->isChecked());
-    g_settings->setValue(OPTION_HIDEIFLOSTFOCUS, m_pUi->genHideFocus->isChecked());
-    g_settings->setValue(OPTION_ALWAYSCENTER, (m_pUi->genHCenter->isChecked() ? 1 : 0) | (m_pUi->genVCenter->isChecked() ? 2 : 0));
-    g_settings->setValue(OPTION_DRAGMODE, m_pUi->genShiftDrag->isChecked());
+    g_settings->setValue(OPTION_DECORATETEXT, m_pUi->checkBoxDecorateText->isChecked());
+    g_settings->setValue(OPTION_HIDEIFLOSTFOCUS, m_pUi->checkBoxHideFocus->isChecked());
+    g_settings->setValue(OPTION_ALWAYSCENTER, (m_pUi->checkBoxHCenter->isChecked() ? 1 : 0) | (m_pUi->checkBoxVCenter->isChecked() ? 2 : 0));
+    g_settings->setValue(OPTION_DRAGMODE, m_pUi->checkBoxShiftDrag->isChecked());
     g_settings->setValue(OPTION_SCREEN_INDEX, m_pUi->comboBoxScreenNumber->currentData().toInt());
-    g_settings->setValue(OPTION_HIDE_TRAY_ICON, m_pUi->genHideTray->isChecked());
-    g_settings->setValue(OPTION_RESOLVE_SYM_LINK, m_pUi->genResolveSymLink->isChecked());
+    g_settings->setValue(OPTION_HIDE_TRAY_ICON, m_pUi->checkBoxHideTray->isChecked());
+    g_settings->setValue(OPTION_RESOLVE_SYM_LINK, m_pUi->checkBoxResolveSymLink->isChecked());
 
-    g_settings->setValue(OPTION_CONDENSEDVIEW, m_pUi->genCondensed->currentIndex());
+    g_settings->setValue(OPTION_CONDENSEDVIEW, m_pUi->comboBoxCondensed->currentIndex());
     g_settings->setValue(OPTION_AUTOSUGGESTDELAY, m_pUi->genAutoSuggestDelay->value());
 
     g_settings->setValue(OPTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
@@ -730,18 +735,18 @@ bool OptionDialog::saveGeneralSettings() {
 
     // Apply General Options
     g_mainWidget->startRebuildTimer();
-    g_mainWidget->setAlternativeListMode(m_pUi->genCondensed->currentIndex());
+    g_mainWidget->setAlternativeListMode(m_pUi->comboBoxCondensed->currentIndex());
 
-    QString appStyle = m_pUi->cbAppStyle->currentData().toString();
+    QString appStyle = m_pUi->comboBoxAppStyle->currentData().toString();
     g_settings->setValue(OPTION_APPSTYLE, appStyle);
 
     // Now save the options that require launchy to be shown or redrawed
-    g_mainWidget->setAlwaysShow(m_pUi->genAlwaysShow->isChecked());
-    g_mainWidget->setAlwaysTop(m_pUi->genAlwaysTop->isChecked());
+    g_mainWidget->setAlwaysShow(m_pUi->checkBoxAlwaysShow->isChecked());
+    g_mainWidget->setAlwaysTop(m_pUi->checkBoxAlwaysTop->isChecked());
 
     g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
 
-    if (m_pUi->genHideTray->isChecked()) {
+    if (m_pUi->checkBoxHideTray->isChecked()) {
         g_mainWidget->hideTrayIcon();
     }
     else {
@@ -781,8 +786,8 @@ void OptionDialog::initSkinWidget() {
     }
     m_pUi->skinList->setCurrentRow(skinRow);
 
-    connect(m_pUi->skinList, SIGNAL(currentTextChanged(const QString)),
-            this, SLOT(skinChanged(const QString)));
+    connect(m_pUi->skinList, &QListWidget::currentTextChanged,
+            this, &OptionDialog::skinChanged);
 }
 
 void OptionDialog::saveSkinSettings() {
@@ -811,44 +816,45 @@ void OptionDialog::initCatalogWidget() {
         m_pUi->catDirectories->addItem(item);
     }
 
-    connect(m_pUi->catDirectories, SIGNAL(currentRowChanged(int)),
-            this, SLOT(dirRowChanged(int)));
-    connect(m_pUi->catDirectories, SIGNAL(dragEnter(QDragEnterEvent*)),
-            this, SLOT(catDirDragEnter(QDragEnterEvent*)));
-    connect(m_pUi->catDirectories, SIGNAL(drop(QDropEvent*)),
-            this, SLOT(catDirDrop(QDropEvent*)));
-    connect(m_pUi->catDirectories, SIGNAL(itemChanged(QListWidgetItem*)),
-            this, SLOT(catDirItemChanged(QListWidgetItem*)));
-    // connect(m_pUi->catDirectories, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-    //         this, SLOT(onCatDirItemActivated(QListWidgetItem*)));
+    connect(m_pUi->catDirectories, &QListWidget::currentRowChanged,
+            this, &OptionDialog::dirRowChanged);
+    connect(m_pUi->catDirectories, &DropListWidget::dragEnter,
+            this, &OptionDialog::catDirDragEnter);
+    connect(m_pUi->catDirectories, &DropListWidget::drop,
+            this, &OptionDialog::catDirDrop);
+    connect(m_pUi->catDirectories, &QListWidget::itemChanged,
+            this, &OptionDialog::catDirItemChanged);
+    // connect(m_pUi->catDirectories, &QListWidget::itemDoubleClicked,
+    //         this, &OptionDialog::onCatDirItemActivated);
 
-    connect(m_pUi->catDirPlus, SIGNAL(clicked(bool)),
-            this, SLOT(catDirPlusClicked(bool)));
-    connect(m_pUi->catDirMinus, SIGNAL(clicked(bool)),
-            this, SLOT(catDirMinusClicked(bool)));
+    connect(m_pUi->catDirPlus, &QPushButton::clicked,
+            this, &OptionDialog::catDirPlusClicked);
+    connect(m_pUi->catDirMinus, &QPushButton::clicked,
+            this, &OptionDialog::catDirMinusClicked);
 
-    connect(m_pUi->catTypes, SIGNAL(itemChanged(QListWidgetItem*)),
-            this, SLOT(catTypesItemChanged(QListWidgetItem*)));
-    connect(m_pUi->catTypesPlus, SIGNAL(clicked(bool)),
-            this, SLOT(catTypesPlusClicked(bool)));
-    connect(m_pUi->catTypesMinus, SIGNAL(clicked(bool)),
-            this, SLOT(catTypesMinusClicked(bool)));
+    connect(m_pUi->catTypes, &QListWidget::itemChanged,
+            this, &OptionDialog::catTypesItemChanged);
+    connect(m_pUi->catTypesPlus, &QPushButton::clicked,
+            this, &OptionDialog::catTypesPlusClicked);
+    connect(m_pUi->catTypesMinus, &QPushButton::clicked,
+            this, &OptionDialog::catTypesMinusClicked);
 
-    connect(m_pUi->catCheckDirs, SIGNAL(stateChanged(int)),
-            this, SLOT(catTypesDirChanged(int)));
-    connect(m_pUi->catCheckBinaries, SIGNAL(stateChanged(int)),
-            this, SLOT(catTypesExeChanged(int)));
-    connect(m_pUi->catDepth, SIGNAL(valueChanged(int)),
-            this, SLOT(catDepthChanged(int)));
+    connect(m_pUi->catCheckDirs, &QCheckBox::stateChanged,
+            this, &OptionDialog::catTypesDirChanged);
+    connect(m_pUi->catCheckBinaries, &QCheckBox::stateChanged,
+            this, &OptionDialog::catTypesExeChanged);
+    // QSpinBox::valueChanged is overloaded in Qt5 (int / QString)
+    connect(m_pUi->catDepth, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &OptionDialog::catDepthChanged);
 
-    connect(m_pUi->catRescan, SIGNAL(clicked(bool)),
-            this, SLOT(catRescanClicked(bool)));
+    connect(m_pUi->catRescan, &QPushButton::clicked,
+            this, &OptionDialog::catRescanClicked);
 
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
     m_pUi->catProgress->setVisible(false);
-    connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    connect(g_builder, &CatalogBuilder::catalogIncrement, this, &OptionDialog::catalogProgressUpdated);
+    connect(g_builder, &CatalogBuilder::catalogFinished, this, &OptionDialog::catalogBuilt);
     if (g_builder->isRunning()) {
         catalogProgressUpdated(g_builder->getProgress());
     }
@@ -881,12 +887,12 @@ void OptionDialog::initPluginsWidget() {
     m_pUi->plugList->sortItems();
 
     // plugin item check state change
-    connect(m_pUi->plugList, SIGNAL(itemChanged(QListWidgetItem*)),
-            this, SLOT(pluginItemChanged(QListWidgetItem*)));
+    connect(m_pUi->plugList, &QListWidget::itemChanged,
+            this, &OptionDialog::pluginItemChanged);
 
     // plugin item current row change
-    connect(m_pUi->plugList, SIGNAL(currentRowChanged(int)),
-            this, SLOT(pluginChanged(int)));
+    connect(m_pUi->plugList, &QListWidget::currentRowChanged,
+            this, &OptionDialog::pluginChanged);
 }
 
 void OptionDialog::savePluginsSettings() {
@@ -921,17 +927,17 @@ void OptionDialog::saveUpdateSettings() {
 
 void OptionDialog::initProxyWidget() {
 
-    m_pUi->cbProxyType->addItem(tr("No Proxy"), QNetworkProxy::NoProxy);
-    m_pUi->cbProxyType->addItem(tr("System Proxy"), QNetworkProxy::DefaultProxy);
-    m_pUi->cbProxyType->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
-    m_pUi->cbProxyType->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
+    m_pUi->comboBoxProxyType->addItem(tr("No Proxy"), QNetworkProxy::NoProxy);
+    m_pUi->comboBoxProxyType->addItem(tr("System Proxy"), QNetworkProxy::DefaultProxy);
+    m_pUi->comboBoxProxyType->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
+    m_pUi->comboBoxProxyType->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
     QValidator* validator = new QIntValidator(0, 65535, m_pUi->leProxyServerPort);
     m_pUi->leProxyServerPort->setValidator(validator);
 
-    connect(m_pUi->cbProxyType, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(onProxyTypeChanged(int)));
-    connect(m_pUi->cbProxyRequiresPassword, SIGNAL(toggled(bool)),
-            this, SLOT(onProxyRequiresPasswordToggled(bool)));
+    connect(m_pUi->comboBoxProxyType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &OptionDialog::onProxyTypeChanged);
+    connect(m_pUi->cbProxyRequiresPassword, &QCheckBox::toggled,
+            this, &OptionDialog::onProxyRequiresPasswordToggled);
 
     // Proxy
     QNetworkProxy::ProxyType proxyType
@@ -956,7 +962,7 @@ void OptionDialog::initProxyWidget() {
     default:
         break;
     }
-    m_pUi->cbProxyType->setCurrentIndex(proxyIndex);
+    m_pUi->comboBoxProxyType->setCurrentIndex(proxyIndex);
 
     if (proxyType == QNetworkProxy::NoProxy || proxyType == QNetworkProxy::DefaultProxy) {
         return;
@@ -982,7 +988,7 @@ void OptionDialog::initProxyWidget() {
 
 void OptionDialog::saveProxySettings() {
     // Proxy
-    QNetworkProxy::ProxyType proxyType = m_pUi->cbProxyType->currentData().value<QNetworkProxy::ProxyType>();
+    QNetworkProxy::ProxyType proxyType = m_pUi->comboBoxProxyType->currentData().value<QNetworkProxy::ProxyType>();
     g_settings->setValue(OPTION_PROXY_TYPE, proxyType);
     g_settings->setValue(OPTION_PROXY_SERVER_NAME, m_pUi->leProxyServerName->text());
     g_settings->setValue(OPTION_PROXY_SERVER_PORT, m_pUi->leProxyServerPort->text());
@@ -1006,16 +1012,20 @@ void OptionDialog::saveProxySettings() {
 void OptionDialog::initSystemWidget() {
     int rebuildInterval = g_settings->value(OPTION_REBUILDTIMER, OPTION_REBUILDTIMER_DEFAULT).toInt();
     m_pUi->genRebuildMinutes->setValue(rebuildInterval);
-    m_pUi->genRebuildCatalog->setChecked(rebuildInterval > 0);
-    connect(m_pUi->genRebuildCatalog, SIGNAL(stateChanged(int)), this, SLOT(autoRebuildCheckChanged(int)));
+    connect(m_pUi->checkBoxRebuildCatalog, &QCheckBox::toggled,
+            this, &OptionDialog::autoRebuildCheckChanged);
+    // Connect before setting the state (and sync once afterwards) so that the
+    // spin box enabled state is correct as soon as the dialog is shown.
+    m_pUi->checkBoxRebuildCatalog->setChecked(rebuildInterval > 0);
+    autoRebuildCheckChanged(m_pUi->checkBoxRebuildCatalog->isChecked());
 
-    m_pUi->genShowHidden->setChecked(g_settings->value(OPTION_SHOWHIDDENFILES, OPTION_SHOWHIDDENFILES_DEFAULT).toBool());
-    m_pUi->genShowNetwork->setChecked(g_settings->value(OPTION_SHOWNETWORK, OPTION_SHOWNETWORK_DEFAULT).toBool());
+    m_pUi->checkBoxShowHidden->setChecked(g_settings->value(OPTION_SHOWHIDDENFILES, OPTION_SHOWHIDDENFILES_DEFAULT).toBool());
+    m_pUi->checkBoxShowNetwork->setChecked(g_settings->value(OPTION_SHOWNETWORK, OPTION_SHOWNETWORK_DEFAULT).toBool());
 
-    m_pUi->genPortable->setChecked(SettingsManager::instance().isPortable());
+    m_pUi->checkBoxPortable->setChecked(SettingsManager::instance().isPortable());
 
-    m_pUi->cbLogLevel->setCurrentIndex(g_settings->value(OPTION_LOGLEVEL, OPTION_LOGLEVEL_DEFAULT).toInt());
-    connect(m_pUi->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(logLevelChanged(int)));
+    m_pUi->checkBoxDebugLog->setChecked(g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool());
+    connect(m_pUi->checkBoxDebugLog, &QCheckBox::toggled, this, &OptionDialog::onDebugLogToggled);
 
     // language
     QString lang = TranslationManager::instance().getLocale().name();
@@ -1027,35 +1037,35 @@ void OptionDialog::initSystemWidget() {
     */
 
     // English is default
-    m_pUi->cbLanguage->addItem(QString("English"), QString("en"));
+    m_pUi->comboBoxLanguage->addItem(QString("English"), QString("en"));
     int indexLang = 0;
     // load language from directory
     QList<QLocale> locales = TranslationManager::instance().getAllLocales();
     for (int i = 0; i < locales.size(); ++i) {
         const QLocale& loc = locales.at(i);
-        m_pUi->cbLanguage->addItem(loc.nativeLanguageName(), loc.name());
+        m_pUi->comboBoxLanguage->addItem(loc.nativeLanguageName(), loc.name());
         if (lang == loc.name()) {
             indexLang = i + 1;
         }
     }
 
     // set combo box language from setting file
-    m_pUi->cbLanguage->setCurrentIndex(indexLang);
+    m_pUi->comboBoxLanguage->setCurrentIndex(indexLang);
 
-    connect(m_pUi->cbLanguage, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
+    connect(m_pUi->comboBoxLanguage, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &OptionDialog::languageChanged);
 }
 
 void OptionDialog::saveSystemSettings() {
     g_settings->setValue(OPTION_REBUILDTIMER,
-                         m_pUi->genRebuildCatalog->isChecked() ? m_pUi->genRebuildMinutes->value() : 0);
+                         m_pUi->checkBoxRebuildCatalog->isChecked() ? m_pUi->genRebuildMinutes->value() : 0);
 
-    g_settings->setValue(OPTION_SHOWHIDDENFILES, m_pUi->genShowHidden->isChecked());
-    g_settings->setValue(OPTION_SHOWNETWORK, m_pUi->genShowNetwork->isChecked());
-    SettingsManager::instance().setPortable(m_pUi->genPortable->isChecked());
+    g_settings->setValue(OPTION_SHOWHIDDENFILES, m_pUi->checkBoxShowHidden->isChecked());
+    g_settings->setValue(OPTION_SHOWNETWORK, m_pUi->checkBoxShowNetwork->isChecked());
+    SettingsManager::instance().setPortable(m_pUi->checkBoxPortable->isChecked());
 
-    g_settings->setValue(OPTION_LOGLEVEL, m_pUi->cbLogLevel->currentIndex());
+    g_settings->setValue(OPTION_DEBUG_LOG, m_pUi->checkBoxDebugLog->isChecked());
 
-    g_settings->setValue(OPTION_LANGUAGE, m_pUi->cbLanguage->currentData().toString());
+    g_settings->setValue(OPTION_LANGUAGE, m_pUi->comboBoxLanguage->currentData().toString());
 }
 
 void OptionDialog::initAboutWidget() {

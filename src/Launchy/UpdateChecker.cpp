@@ -42,12 +42,12 @@ UpdateChecker::UpdateChecker()
       m_timerStartup(new QTimer(this)),
       m_manualCheck(false) {
 
-    connect(m_mgr, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(replyFinished(QNetworkReply*)));
+    connect(m_mgr, &QNetworkAccessManager::finished,
+            this, &UpdateChecker::replyFinished);
 
     m_timerStartup->setSingleShot(true);
-    connect(m_timerStartup, SIGNAL(timeout()),
-            this, SLOT(getVersionInfo()));
+    connect(m_timerStartup, &QTimer::timeout,
+            this, &UpdateChecker::getVersionInfo);
 }
 
 UpdateChecker& UpdateChecker::instance() {

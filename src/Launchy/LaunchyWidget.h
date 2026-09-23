@@ -122,13 +122,16 @@ protected:
     void searchOnInput();
     void launchItem();
     void startDropTimer();
+    // Re-applies the translated texts to the actions, the tool tips and the
+    // tray icon. Called from changeEvent() on QEvent::LanguageChange.
     void retranslateUi();
 
 protected slots:
-    void showOptionDialog();
-    void onHotkey();
-    void dropTimeout();
-    void catalogProgressUpdated(int);
+    // Handlers of the signals emitted by the objects owned by this class.
+    void showOptionDialog();                   // m_optionButton, m_actOptions
+    void onHotkey();                           // m_pHotKey
+    void dropTimeout();                        // m_dropTimer
+    void catalogProgressUpdated(int progress); // g_builder
     void catalogBuilt();
     void setFadeLevel(double level);
     void iconExtracted(const QString& plugin, const QString& path, const QIcon& icon);

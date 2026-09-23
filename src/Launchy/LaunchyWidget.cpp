@@ -119,12 +119,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
             this, &LaunchyWidget::iconExtracted);
 
     m_inputBox->setObjectName("input");
-    connect(m_inputBox, SIGNAL(keyPressed(QKeyEvent*)),
-            this, SLOT(onInputBoxKeyPressed(QKeyEvent*)));
-    connect(m_inputBox, SIGNAL(focusOut()),
-            this, SLOT(onInputBoxFocusOut()));
-    connect(m_inputBox, SIGNAL(inputMethod(QInputMethodEvent*)),
-            this, SLOT(onInputBoxInputMethod(QInputMethodEvent*)));
+    connect(m_inputBox, &CharLineEdit::keyPressed,
+            this, &LaunchyWidget::onInputBoxKeyPressed);
+    connect(m_inputBox, &CharLineEdit::focusOut,
+            this, &LaunchyWidget::onInputBoxFocusOut);
+    connect(m_inputBox, &CharLineEdit::inputMethod,
+            this, &LaunchyWidget::onInputBoxInputMethod);
 
     m_outputBox->setObjectName("output");
     m_outputBox->setAlignment(Qt::AlignHCenter);
@@ -134,24 +134,24 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     m_alternativeList->setObjectName("alternatives");
     setAlternativeListMode(g_settings->value(OPTION_CONDENSEDVIEW, OPTION_CONDENSEDVIEW_DEFAULT).toInt());
-    connect(m_alternativeList, SIGNAL(currentRowChanged(int)),
-            this, SLOT(onAlternativeListRowChanged(int)));
-    connect(m_alternativeList, SIGNAL(keyPressed(QKeyEvent*)),
-            this, SLOT(onAlternativeListKeyPressed(QKeyEvent*)));
-    connect(m_alternativeList, SIGNAL(focusOut()),
-            this, SLOT(onAlternativeListFocusOut()));
+    connect(m_alternativeList, &QListWidget::currentRowChanged,
+            this, &LaunchyWidget::onAlternativeListRowChanged);
+    connect(m_alternativeList, &CharListWidget::keyPressed,
+            this, &LaunchyWidget::onAlternativeListKeyPressed);
+    connect(m_alternativeList, &CharListWidget::focusOut,
+            this, &LaunchyWidget::onAlternativeListFocusOut);
 
     m_optionButton->setObjectName("opsButton");
     m_optionButton->setToolTip(tr("Options"));
     m_optionButton->setGeometry(QRect());
-    connect(m_optionButton, SIGNAL(clicked()),
-            this, SLOT(showOptionDialog()));
+    connect(m_optionButton, &QPushButton::clicked,
+            this, &LaunchyWidget::showOptionDialog);
 
     m_closeButton->setObjectName("closeButton");
     m_closeButton->setToolTip(tr("Close"));
     m_closeButton->setGeometry(QRect());
-    connect(m_closeButton, SIGNAL(clicked()),
-            qApp, SLOT(quit()));
+    connect(m_closeButton, &QPushButton::clicked,
+            qApp, &QApplication::quit);
 
     m_workingAnimation->setObjectName("workingAnimation");
     m_workingAnimation->setGeometry(QRect());
@@ -173,8 +173,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     m_trayIcon->setIcon(QIcon(":/resources/launchy16.png"));
 
-    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(m_trayIcon, &QSystemTrayIcon::activated,
+            this, &LaunchyWidget::trayIconActivated);
 
     if (g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool()) {
         hideTrayIcon();
@@ -183,7 +183,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         showTrayIcon();
     }
 
-    connect(m_fader, SIGNAL(fadeLevel(double)), this, SLOT(setFadeLevel(double)));
+    connect(m_fader, &Fader::fadeLevel, this, &LaunchyWidget::setFadeLevel);
 
     // If this is the first time running or a new version, call updateVersion
     int version = g_settings->value(OPTION_VERSION, OPTION_VERSION_DEFAULT).toInt();
@@ -209,8 +209,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Load the catalog
-    connect(g_builder, SIGNAL(catalogIncrement(int)), this, SLOT(catalogProgressUpdated(int)));
-    connect(g_builder, SIGNAL(catalogFinished()), this, SLOT(catalogBuilt()));
+    connect(g_builder, &CatalogBuilder::catalogIncrement,
+            this, &LaunchyWidget::catalogProgressUpdated);
+    connect(g_builder, &CatalogBuilder::catalogFinished, this, &LaunchyWidget::catalogBuilt);
 
     if (!g_catalog->load(SettingsManager::instance().catalogFilename())) {
         command |= Rescan;
@@ -241,10 +242,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // Set the timers
     m_dropTimer->setSingleShot(true);
-    connect(m_dropTimer, SIGNAL(timeout()), this, SLOT(dropTimeout()));
+    connect(m_dropTimer, &QTimer::timeout, this, &LaunchyWidget::dropTimeout);
 
     m_rebuildTimer->setSingleShot(true);
-    connect(m_rebuildTimer, SIGNAL(timeout()), this, SLOT(buildCatalog()));
+    connect(m_rebuildTimer, &QTimer::timeout, this, &LaunchyWidget::buildCatalog);
     startRebuildTimer();
 
     // start update checker
@@ -991,8 +992,10 @@ void LaunchyWidget::iconExtracted(const QString& pluginName, const QString& path
     }
 }
 
-void LaunchyWidget::catalogProgressUpdated(int value) {
-    if (value == 0) {
+void LaunchyWidget::catalogProgressUpdated(int progress) {
+    // The catalog builder reports progress 0 whenever a new scan starts, so
+    // start the "working" animation here; catalogBuilt() stops it again.
+    if (progress == 0) {
         m_workingAnimation->Start();
     }
 }
@@ -1559,21 +1562,21 @@ int LaunchyWidget::getHotkey() const {
 
 void LaunchyWidget::createActions() {
     m_actShow = new QAction(tr("Show Launchy"), this);
-    connect(m_actShow, SIGNAL(triggered()), this, SLOT(showLaunchy()));
+    connect(m_actShow, &QAction::triggered, this, &LaunchyWidget::showLaunchy);
 
     m_actReloadSkin = new QAction(tr("Reload skin"), this);
     m_actReloadSkin->setShortcut(QKeySequence(Qt::Key_F5 | Qt::SHIFT));
-    connect(m_actReloadSkin, SIGNAL(triggered()), this, SLOT(reloadSkin()));
+    connect(m_actReloadSkin, &QAction::triggered, this, &LaunchyWidget::reloadSkin);
     addAction(m_actReloadSkin);
 
     m_actRebuild = new QAction(tr("Rebuild catalog"), this);
     m_actRebuild->setShortcut(QKeySequence(Qt::Key_F5));
-    connect(m_actRebuild, SIGNAL(triggered()), this, SLOT(buildCatalog()));
+    connect(m_actRebuild, &QAction::triggered, this, &LaunchyWidget::buildCatalog);
     addAction(m_actRebuild);
 
     m_actOptions = new QAction(tr("Options"), this);
     m_actOptions->setShortcut(QKeySequence(Qt::Key_Comma | Qt::CTRL));
-    connect(m_actOptions, SIGNAL(triggered()), this, SLOT(showOptionDialog()));
+    connect(m_actOptions, &QAction::triggered, this, &LaunchyWidget::showOptionDialog);
     addAction(m_actOptions);
 
     m_actCheckUpdate = new QAction(tr("Check for updates"), this);
@@ -1592,8 +1595,8 @@ void LaunchyWidget::createActions() {
     });
 
     m_actExit = new QAction(tr("Exit"), this);
-    connect(m_actExit, SIGNAL(triggered()),
-            this, SLOT(exit()), Qt::QueuedConnection);
+    connect(m_actExit, &QAction::triggered,
+            this, &LaunchyWidget::exit, Qt::QueuedConnection);
 }
 
 } // namespace launchy

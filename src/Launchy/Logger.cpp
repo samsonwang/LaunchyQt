@@ -19,17 +19,12 @@ void Logger::stopLogging() {
     }
 }
 
-void Logger::setLogLevel(int index) {
-    switch (index) {
-    case 0:
-        stopLogging();
-        break;
-    case 1:
+void Logger::setLogLevel(bool debug) {
+    if (debug) {
         setLogLevel(QtDebugMsg);
-        break;
-    default:
+    }
+    else {
         setLogLevel(QtWarningMsg);
-        break;
     }
 }
 

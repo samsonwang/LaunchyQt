@@ -106,8 +106,8 @@ private slots:
     void onProxyTypeChanged(int index);
     void onProxyRequiresPasswordToggled(bool checked);
     // system
-    void autoRebuildCheckChanged(int state);
-    void logLevelChanged(int index);
+    void autoRebuildCheckChanged(bool checked);
+    void onDebugLogToggled(bool checked);
     void languageChanged(int index);
 
 private:

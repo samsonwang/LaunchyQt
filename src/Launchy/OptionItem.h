@@ -143,8 +143,8 @@ extern const bool       OPTION_SHOWHIDDENFILES_DEFAULT;
 extern const char*      OPTION_SHOWNETWORK;
 extern const bool       OPTION_SHOWNETWORK_DEFAULT;
 
-extern const char*      OPTION_LOGLEVEL;
-extern const int        OPTION_LOGLEVEL_DEFAULT;
+extern const char*      OPTION_DEBUG_LOG;
+extern const bool       OPTION_DEBUG_LOG_DEFAULT;
 
 extern const char*      OPTION_LANGUAGE;
 extern const char*      OPTION_LANGUAGE_DEFAULT;

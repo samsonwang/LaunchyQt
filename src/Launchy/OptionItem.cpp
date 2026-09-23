@@ -29,9 +29,6 @@ const bool      OPTION_ALWAYSSHOW_DEFAULT                       = false;
 const char*     OPTION_ALWAYSTOP                              = "GenOps/alwaystop";
 const bool      OPTION_ALWAYSTOP_DEFAULT                      = false;
 
-const char*     OPTION_LOGLEVEL                               = "GenOps/logLevel";
-const int       OPTION_LOGLEVEL_DEFAULT                       = 2;
-
 const char*     OPTION_DECORATETEXT                           = "GenOps/decoratetext";
 const bool      OPTION_DECORATETEXT_DEFAULT                   = false;
 
@@ -149,6 +146,9 @@ const char*     OPTION_PROXY_PASSWORD                          = "Proxy/password
 const char*     OPTION_PROXY_PASSWORD_DEFAULT                  = "";
 
 // System
+const char*     OPTION_DEBUG_LOG                               = "System/DebugLog";
+const bool      OPTION_DEBUG_LOG_DEFAULT                       = false;
+
 const char*     OPTION_LANGUAGE                                = "System/Language";
 const char*     OPTION_LANGUAGE_DEFAULT                        = "";
 

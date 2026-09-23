@@ -93,12 +93,12 @@
                <string>Hotkey:</string>
               </property>
               <property name="buddy">
-               <cstring>genModifierBox</cstring>
+               <cstring>comboBoxModifier</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="genModifierBox">
+             <widget class="QComboBox" name="comboBoxModifier">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -127,7 +127,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="genKeyBox">
+             <widget class="QComboBox" name="comboBoxKey">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -158,14 +158,14 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="genIgnoreFullScreen">
+           <widget class="QCheckBox" name="checkBoxIgnoreFullScreen">
             <property name="text">
              <string>Ignore hotkey in full-screen mode</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="genAlwaysShow">
+           <widget class="QCheckBox" name="checkBoxAlwaysShow">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -178,7 +178,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="genHideFocus">
+           <widget class="QCheckBox" name="checkBoxHideFocus">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -191,7 +191,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="genAlwaysTop">
+           <widget class="QCheckBox" name="checkBoxAlwaysTop">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -229,12 +229,12 @@
                <string>Always center</string>
               </property>
               <property name="buddy">
-               <cstring>genHCenter</cstring>
+               <cstring>checkBoxHCenter</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="genHCenter">
+             <widget class="QCheckBox" name="checkBoxHCenter">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -253,7 +253,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="genVCenter">
+             <widget class="QCheckBox" name="checkBoxVCenter">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -287,7 +287,7 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="genShiftDrag">
+           <widget class="QCheckBox" name="checkBoxShiftDrag">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -356,7 +356,7 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="genHideTray">
+           <widget class="QCheckBox" name="checkBoxHideTray">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -405,7 +405,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="cbAppStyle">
+             <widget class="QComboBox" name="comboBoxAppStyle">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -436,7 +436,7 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="genResolveSymLink">
+           <widget class="QCheckBox" name="checkBoxResolveSymLink">
             <property name="text">
              <string>Resolve symbol link</string>
             </property>
@@ -479,7 +479,7 @@
            <number>3</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="genDecorateText">
+           <widget class="QCheckBox" name="checkBoxDecorateText">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -535,7 +535,7 @@
                <string>Suggestions display</string>
               </property>
               <property name="buddy">
-               <cstring>genCondensed</cstring>
+               <cstring>comboBoxCondensed</cstring>
               </property>
              </widget>
             </item>
@@ -553,7 +553,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QComboBox" name="genCondensed">
+             <widget class="QComboBox" name="comboBoxCondensed">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1634,7 +1634,7 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_13">
               <item>
-               <widget class="QComboBox" name="cbProxyType">
+               <widget class="QComboBox" name="comboBoxProxyType">
                 <property name="minimumSize">
                  <size>
                   <width>120</width>
@@ -1855,7 +1855,7 @@ p, li { white-space: pre-wrap; }
              <number>2</number>
             </property>
             <item>
-             <widget class="QCheckBox" name="genRebuildCatalog">
+             <widget class="QCheckBox" name="checkBoxRebuildCatalog">
               <property name="text">
                <string>Auto rescan catalog every</string>
               </property>
@@ -1907,89 +1907,32 @@ p, li { white-space: pre-wrap; }
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="genShowHidden">
+           <widget class="QCheckBox" name="checkBoxShowHidden">
             <property name="text">
              <string>Show hidden files in browse mode</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="genShowNetwork">
+           <widget class="QCheckBox" name="checkBoxShowNetwork">
             <property name="text">
              <string>Show network in browse mode</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="genPortable">
+           <widget class="QCheckBox" name="checkBoxPortable">
             <property name="text">
              <string>Portable mode (USB stick)</string>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <property name="spacing">
-             <number>12</number>
+           <widget class="QCheckBox" name="checkBoxDebugLog">
+            <property name="text">
+             <string>Enable debug logging</string>
             </property>
-            <property name="topMargin">
-             <number>2</number>
-            </property>
-            <property name="bottomMargin">
-             <number>2</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="label_14">
-              <property name="text">
-               <string>Logging level</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cbLogLevel">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>26</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>22</height>
-               </size>
-              </property>
-              <item>
-               <property name="text">
-                <string>Off</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Debug</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Normal</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
+           </widget>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -2020,7 +1963,7 @@ p, li { white-space: pre-wrap; }
              </spacer>
             </item>
             <item>
-             <widget class="QComboBox" name="cbLanguage">
+             <widget class="QComboBox" name="comboBoxLanguage">
               <property name="minimumSize">
                <size>
                 <width>100</width>
@@ -2391,15 +2334,15 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>genAlwaysShow</tabstop>
-  <tabstop>genHideFocus</tabstop>
-  <tabstop>genAlwaysTop</tabstop>
-  <tabstop>genHCenter</tabstop>
-  <tabstop>genVCenter</tabstop>
-  <tabstop>genShiftDrag</tabstop>
-  <tabstop>genModifierBox</tabstop>
-  <tabstop>genDecorateText</tabstop>
-  <tabstop>genCondensed</tabstop>
+  <tabstop>checkBoxAlwaysShow</tabstop>
+  <tabstop>checkBoxHideFocus</tabstop>
+  <tabstop>checkBoxAlwaysTop</tabstop>
+  <tabstop>checkBoxHCenter</tabstop>
+  <tabstop>checkBoxVCenter</tabstop>
+  <tabstop>checkBoxShiftDrag</tabstop>
+  <tabstop>comboBoxModifier</tabstop>
+  <tabstop>checkBoxDecorateText</tabstop>
+  <tabstop>comboBoxCondensed</tabstop>
   <tabstop>genAutoSuggestDelay</tabstop>
   <tabstop>genMaxViewable</tabstop>
   <tabstop>genNumResults</tabstop>
