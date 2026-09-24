@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QScreen>
+#include <QUrl>
+#include <QDesktopServices>
 
 #include "LaunchyLib/LaunchyLib.h"
 
@@ -913,6 +915,36 @@ void OptionDialog::initUpdateWidget() {
     connect(m_pUi->pbCheckForUpdates, &QPushButton::clicked, []() {
         UpdateChecker::instance().manualCheck();
     });
+
+    // show detected new version, click version number
+    // to open release page in browser
+    connect(&UpdateChecker::instance(), &UpdateChecker::updateAvailable,
+            this, &OptionDialog::onUpdateAvailable);
+    connect(m_pUi->labelNewVersion, &QLabel::linkActivated,
+            this, [](const QString& link) {
+                qInfo() << "OptionDialog::initUpdateWidget, open url:" << link;
+                QDesktopServices::openUrl(QUrl(link));
+            });
+
+    if (UpdateChecker::instance().hasNewVersion()) {
+        onUpdateAvailable(UpdateChecker::instance().latestVersionTag(),
+                          UpdateChecker::instance().releaseUrl());
+    }
+    else {
+        m_pUi->labelNewVersionTitle->hide();
+        m_pUi->labelNewVersion->hide();
+    }
+}
+
+void OptionDialog::onUpdateAvailable(const QString& versionTag, const QUrl& releaseUrl) {
+    // link label text is not set in .ui file, so retranslateUi() keeps it
+    m_pUi->labelNewVersion->setText(
+        QString("<a href=\"%1\">%2</a>")
+            .arg(releaseUrl.toString().toHtmlEscaped(),
+                 versionTag.toHtmlEscaped()));
+    m_pUi->labelNewVersion->setToolTip(releaseUrl.toString());
+    m_pUi->labelNewVersionTitle->show();
+    m_pUi->labelNewVersion->show();
 }
 
 void OptionDialog::saveUpdateSettings() {

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <QObject>
+#include <QUrl>
 
 class QNetworkAccessManager;
 class QTimer;
@@ -34,6 +35,15 @@ public:
     void reloadConfig();
     void manualCheck();
 
+    // latest version detected by update check
+    bool hasNewVersion() const;
+    QString latestVersionTag() const;
+    QUrl releaseUrl() const;
+
+signals:
+    // emitted when a version newer than the current one is detected
+    void updateAvailable(const QString& versionTag, const QUrl& releaseUrl);
+
 private:
     UpdateChecker();
     Q_DISABLE_COPY(UpdateChecker)
@@ -46,6 +56,9 @@ private:
     QNetworkAccessManager* m_mgr;
     QTimer* m_timerStartup;
     bool m_manualCheck;
+    bool m_hasNewVersion;
+    QString m_latestVersionTag;
+    QUrl m_releaseUrl;
 };
 
 } // namespace launchy

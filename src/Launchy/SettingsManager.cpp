@@ -87,6 +87,7 @@ void SettingsManager::load() {
 
     bool debugLog = g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool();
     log::setDebugLogEnabled(debugLog);
+    g_settings->setValue(OPTION_DEBUG_LOG, debugLog);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
         << "( build" << __DATE__ << __TIME__ << ")";
@@ -219,7 +220,6 @@ void SettingsManager::setPortable(bool makePortable) {
                              .arg(makePortable ? "portable" : "installed")
                              .arg(newDir));
 
-
     }
 
     m_portable = makePortable;
@@ -285,4 +285,4 @@ void SettingsManager::writeCatalogDirectories(QList<Directory>& directories) {
     }
     g_settings->endArray();
 }
-}
+} // namespace launchy

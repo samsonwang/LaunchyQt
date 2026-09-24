@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QDialog>
+#include <QUrl>
 
 #include "Directory.h"
 
@@ -102,6 +103,8 @@ private slots:
     // plugins
     void pluginChanged(int row);
     void pluginItemChanged(QListWidgetItem* item);
+    // update
+    void onUpdateAvailable(const QString& versionTag, const QUrl& releaseUrl);
     // proxy
     void onProxyTypeChanged(int index);
     void onProxyRequiresPasswordToggled(bool checked);

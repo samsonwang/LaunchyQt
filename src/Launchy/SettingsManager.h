@@ -33,13 +33,16 @@ public:
     void load();
 
     bool isPortable() const;
+    void setPortable(bool makePortable);
+
     QList<QString> directory(QString name) const;
     QString catalogFilename() const;
     QString historyFilename() const;
     QString skinPath(const QString& skinName) const;
-    void setPortable(bool makePortable);
     void removeAll();
+
     void setProfileName(const QString& name);
+    
     QList<Directory> readCatalogDirectories();
     void writeCatalogDirectories(QList<Directory>& directories);
 

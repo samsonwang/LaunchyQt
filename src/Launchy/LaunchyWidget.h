@@ -22,6 +22,7 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 #include <QLabel>
+#include <QUrl>
 
 #include "LaunchyLib/CatalogItem.h"
 #include "LaunchyLib/InputData.h"
@@ -72,7 +73,8 @@ public:
 
     void showTrayIcon();
     void hideTrayIcon();
-    void trayNotify(const QString& infoMsg);
+    // show a tray notification, clicking it opens url in browser when url is valid
+    void trayNotify(const QString& infoMsg, const QUrl& url = QUrl());
 
 public slots:
     void showLaunchy(bool noFade = false);
@@ -136,6 +138,7 @@ protected slots:
     void setFadeLevel(double level);
     void iconExtracted(const QString& plugin, const QString& path, const QIcon& icon);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+    void trayMessageClicked();
     void reloadSkin();
     void exit();
     void onAlternativeListRowChanged(int index);
@@ -160,6 +163,7 @@ protected:
     QPushButton* m_closeButton;
     AnimationLabel* m_workingAnimation;
     QSystemTrayIcon* m_trayIcon;
+    QUrl m_notifyUrl;
     Fader* m_fader;
     QPixmap m_frameGraphic;
 

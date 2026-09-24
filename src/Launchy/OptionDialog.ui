@@ -1532,7 +1532,7 @@ p, li { white-space: pre-wrap; }
       <attribute name="title">
        <string>Update</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="2,3">
          <item>
@@ -1797,6 +1797,20 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="text">
             <string>Check for updates</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelNewVersionTitle">
+           <property name="text">
+            <string>New version:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelNewVersion">
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
            </property>
           </widget>
          </item>

@@ -35,6 +35,8 @@
 #include <QInputMethodEvent>
 #include <QMouseEvent>
 #include <QScreen>
+#include <QUrl>
+#include <QDesktopServices>
 
 #include <QHotkey/QHotkey>
 
@@ -175,6 +177,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     connect(m_trayIcon, &QSystemTrayIcon::activated,
             this, &LaunchyWidget::trayIconActivated);
+
+    connect(m_trayIcon, &QSystemTrayIcon::messageClicked,
+            this, &LaunchyWidget::trayMessageClicked);
 
     if (g_settings->value(OPTION_HIDE_TRAY_ICON, OPTION_HIDE_TRAY_ICON_DEFAULT).toBool()) {
         hideTrayIcon();
@@ -1026,7 +1031,7 @@ void LaunchyWidget::updateVersion(int oldVersion) {
         g_settings->setValue(OPTION_SKIN, OPTION_SKIN_DEFAULT);
     }
 
-    if (oldVersion < LAUNCHY_VERSION) {
+    if (oldVersion != LAUNCHY_VERSION) {
         g_settings->setValue(OPTION_VERSION, LAUNCHY_VERSION);
     }
 }
@@ -1110,9 +1115,19 @@ void LaunchyWidget::hideTrayIcon() {
     m_trayIcon->hide();
 }
 
-void LaunchyWidget::trayNotify(const QString& infoMsg) {
+void LaunchyWidget::trayNotify(const QString& infoMsg, const QUrl& url) {
+    m_notifyUrl = url;
     m_trayIcon->showMessage(tr("Launchy"), infoMsg,
                             QIcon(":/resources/launchy128.png"));
+}
+
+void LaunchyWidget::trayMessageClicked() {
+    if (!m_notifyUrl.isValid() || m_notifyUrl.isEmpty()) {
+        return;
+    }
+    qDebug() << "LaunchyWidget::trayMessageClicked, open url:" << m_notifyUrl;
+    QDesktopServices::openUrl(m_notifyUrl);
+    m_notifyUrl.clear();
 }
 
 void LaunchyWidget::onHotkey() {

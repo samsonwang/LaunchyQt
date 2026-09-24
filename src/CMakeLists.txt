@@ -216,6 +216,34 @@ target_link_libraries (Launchy
 endif ()
 
 ##################################################
+# OpenSSL runtime for Qt Network (https update checker)
+# Qt 5.12 loads OpenSSL at runtime (libssl-1_1-x64.dll / libcrypto-1_1-x64.dll),
+# without them https requests fail with "network error 99: TLS initialization failed"
+if (WIN32)
+  set (OPENSSL_RUNTIME_DIR ${DEPS_DIR}/openssl)
+  set (OPENSSL_RUNTIME_DLLS
+    ${OPENSSL_RUNTIME_DIR}/libssl-1_1-x64.dll
+    ${OPENSSL_RUNTIME_DIR}/libcrypto-1_1-x64.dll)
+
+  set (OPENSSL_RUNTIME_MISSING FALSE)
+  foreach (OPENSSL_RUNTIME_DLL ${OPENSSL_RUNTIME_DLLS})
+    if (NOT EXISTS ${OPENSSL_RUNTIME_DLL})
+      set (OPENSSL_RUNTIME_MISSING TRUE)
+    endif ()
+  endforeach ()
+
+  if (OPENSSL_RUNTIME_MISSING)
+    message (WARNING "OpenSSL runtime DLLs not found in ${OPENSSL_RUNTIME_DIR}, "
+      "https update check will fail with: TLS initialization failed")
+  else ()
+    add_custom_command (TARGET Launchy POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${OPENSSL_RUNTIME_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>
+      COMMENT "copy OpenSSL runtime DLLs to target directory")
+  endif ()
+endif ()
+
+##################################################
 # LaunchyLib
 # source files
 add_library (LaunchyLib SHARED)
