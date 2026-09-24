@@ -377,7 +377,7 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
 }
 
 void OptionDialog::onDebugLogToggled(bool checked) {
-    Logger::setLogLevel(checked);
+    log::setDebugLogEnabled(checked);
 }
 
 void OptionDialog::languageChanged(int index) {
@@ -432,7 +432,6 @@ void OptionDialog::catRescanClicked(bool val) {
     m_pUi->catRescan->setEnabled(false);
     g_mainWidget->buildCatalog();
 }
-
 
 void OptionDialog::catTypesDirChanged(int state) {
     Q_UNUSED(state)

@@ -2,25 +2,16 @@
 #pragma once
 
 #include <QtGlobal>
-#include <cstdio>
 
 namespace launchy {
+namespace log {
 
-class Logger {
-public:
-    static void stopLogging();
-    static void setLogLevel(bool debug);
-    static void setLogLevel(QtMsgType type);
-    static void messageHandler(QtMsgType type,
-                               const QMessageLogContext& context,
-                               const QString& msg);
-private:
-    Logger();
-    Q_DISABLE_COPY(Logger)
+// Uninstall the custom message handler and close the log file.
+void stopLogging();
 
-private:
-    static FILE* s_logFile;
-    static QtMsgType s_logLevel;
-};
+// Enable or disable debug logging:
+// true -> QtDebugMsg (log everything), false -> QtWarningMsg and above.
+void setDebugLogEnabled(bool enabled);
 
+} // namespace log
 } // namespace launchy

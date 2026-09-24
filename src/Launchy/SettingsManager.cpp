@@ -86,7 +86,7 @@ void SettingsManager::load() {
     }
 
     bool debugLog = g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool();
-    Logger::setLogLevel(debugLog);
+    log::setDebugLogEnabled(debugLog);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
         << "( build" << __DATE__ << __TIME__ << ")";

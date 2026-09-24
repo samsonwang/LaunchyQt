@@ -1,34 +1,83 @@
 
 #include "Logger.h"
 
+#include <cstdio>
+
 #include <QDir>
 #include <QString>
 #include <QDateTime>
+#include <QByteArray>
 
 namespace launchy {
+namespace log {
 
-FILE* Logger::s_logFile = nullptr;
-QtMsgType Logger::s_logLevel;
+static FILE* s_logFile = nullptr;
+static QtMsgType s_logLevel = QtWarningMsg;
 
-void Logger::stopLogging() {
-    qInstallMessageHandler(0);
-    if (s_logFile) {
-        fflush(s_logFile);
-        fclose(s_logFile);
-        s_logFile = nullptr;
+// QtMsgType values are not ordered by severity (QtInfoMsg was appended
+// after QtFatalMsg), so map each type to a monotonic severity rank.
+static int severity(QtMsgType type) {
+    switch (type) {
+    case QtDebugMsg:
+        return 0;
+    case QtInfoMsg:
+        return 1;
+    case QtWarningMsg:
+        return 2;
+    case QtCriticalMsg:
+        return 3;
+    case QtFatalMsg:
+        return 4;
+    default:
+        return 0;
     }
 }
 
-void Logger::setLogLevel(bool debug) {
-    if (debug) {
-        setLogLevel(QtDebugMsg);
+// single-letter severity tag used in log lines
+static const char* levelTag(QtMsgType type) {
+    switch (type) {
+    case QtDebugMsg:
+        return "D";
+    case QtInfoMsg:
+        return "I";
+    case QtWarningMsg:
+        return "W";
+    case QtCriticalMsg:
+        return "C";
+    case QtFatalMsg:
+        return "F";
+    default:
+        return "U";
+    }
+}
+
+// installed via qInstallMessageHandler, implementation detail of this module
+static void messageHandler(QtMsgType type,
+                           const QMessageLogContext& context,
+                           const QString& msg) {
+    if (s_logFile == nullptr || severity(type) < severity(s_logLevel)) {
+        return;
+    }
+
+    const QByteArray timeStr = QDateTime::currentDateTime()
+        .toString("yyyy-MM-dd hh:mm:ss.zzz")
+        .toLocal8Bit();
+    const QByteArray localMsg = msg.toLocal8Bit();
+
+    // source context is null in release builds, hide it there
+    if (context.file != nullptr && context.function != nullptr) {
+        fprintf(s_logFile, "%s [%s] %s (%s:%u, %s)\n",
+                timeStr.constData(), levelTag(type), localMsg.constData(),
+                context.file, context.line, context.function);
     }
     else {
-        setLogLevel(QtWarningMsg);
+        fprintf(s_logFile, "%s [%s] %s\n",
+                timeStr.constData(), levelTag(type), localMsg.constData());
     }
+    fflush(s_logFile);
 }
 
-void Logger::setLogLevel(QtMsgType type) {
+static void setLogLevel(QtMsgType type) {
     s_logLevel = type;
     if (s_logFile == nullptr) {
         QString tempPath = QDir::tempPath() + QString("/Launchy");
@@ -37,44 +86,30 @@ void Logger::setLogLevel(QtMsgType type) {
             tempDir.mkpath(".");
         }
         QString logFileName = tempPath + QString("/launchy.log");
-        s_logFile = fopen(logFileName.toUtf8(), "w");
+        s_logFile = fopen(logFileName.toUtf8().constData(), "w");
         if (s_logFile) {
-            qInstallMessageHandler(Logger::messageHandler);
+            qInstallMessageHandler(messageHandler);
         }
     }
 }
 
-void Logger::messageHandler(QtMsgType type,
-                            const QMessageLogContext& context,
-                            const QString& msg) {
-    if (type < s_logLevel || s_logFile == nullptr) {
-        return;
+void stopLogging() {
+    qInstallMessageHandler(nullptr);
+    if (s_logFile) {
+        fflush(s_logFile);
+        fclose(s_logFile);
+        s_logFile = nullptr;
     }
-    QDateTime time = QDateTime::currentDateTime();
-    QByteArray timeStr = time.toString("yyyy-MM-dd hh:mm:ss.zzz").toLocal8Bit();
-    QByteArray localMsg = msg.toLocal8Bit();
-    switch (type) {
-        // refactor here
-        // hide context info in release mode
-    case QtDebugMsg:
-        fprintf(s_logFile, "%s [D] %s (%s:%u, %s)\n", timeStr.constData(), localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtInfoMsg:
-        fprintf(s_logFile, "%s [I] %s (%s:%u, %s)\n", timeStr.constData(), localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtWarningMsg:
-        fprintf(s_logFile, "%s [W] %s (%s:%u, %s)\n", timeStr.constData(), localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtCriticalMsg:
-        fprintf(s_logFile, "%s [C] %s (%s:%u, %s)\n", timeStr.constData(), localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtFatalMsg:
-        fprintf(s_logFile, "%s [F] %s (%s:%u, %s)\n", timeStr.constData(), localMsg.constData(), context.file, context.line, context.function);
-        break;
-    default:
-        break;
-    }
-    fflush(s_logFile);
 }
 
+void setDebugLogEnabled(bool enabled) {
+    if (enabled) {
+        setLogLevel(QtDebugMsg);
+    }
+    else {
+        setLogLevel(QtWarningMsg);
+    }
+}
+
+} // namespace log
 } // namespace launchy

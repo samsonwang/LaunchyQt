@@ -59,8 +59,8 @@ int main(int argc, char* argv[]) {
             else if (arg.compare("exit", Qt::CaseInsensitive) == 0) {
                 command |= launchy::Exit;
             }
-            else if (arg.compare("log", Qt::CaseInsensitive) == 0) {
-                launchy::Logger::setLogLevel(QtDebugMsg);
+            else if (arg.compare("debug", Qt::CaseInsensitive) == 0) {
+                launchy::log::setDebugLogEnabled(true);
             }
             else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
                 if (++i < args.length()) {
@@ -84,4 +84,6 @@ int main(int argc, char* argv[]) {
         args.pop_front();
         QProcess::startDetached(program, args);
     }
+
+    launchy::log::stopLogging();
 }
