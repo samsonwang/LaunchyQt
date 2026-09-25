@@ -61,32 +61,35 @@ AppWin::~AppWin() {
 QList<Directory> AppWin::getDefaultCatalogDirectories() const {
     QList<Directory> list;
 
-    Directory dir1;
-    dir1.name = GetShellDirectory(CSIDL_COMMON_STARTMENU);
-    dir1.types << "*.lnk";
-    dir1.indexDirs = false;
-    list.append(dir1);
+    Directory dir;
+    dir.types << "*.lnk";
+    dir.indexDirs = false;
+
+    dir.name = GetShellDirectory(CSIDL_COMMON_STARTMENU);
+    list.append(dir);
+
+    dir.name = GetShellDirectory(CSIDL_STARTMENU);
+    list.append(dir);
+
+    dir.name = GetShellDirectory(CSIDL_COMMON_DESKTOPDIRECTORY);
+    dir.indexExe = true;
+    list.append(dir);
+
+    dir.name = GetShellDirectory(CSIDL_DESKTOPDIRECTORY);
+    dir.indexExe = true;
+    list.append(dir);
+
+    dir.name = GetShellDirectory(CSIDL_RECENT);
+    dir.indexDirs = true;
+    list.append(dir);
 
     Directory dir2;
-    dir2.name = GetShellDirectory(CSIDL_STARTMENU);
+    dir2.name = "utilities\\";
     dir2.types << "*.lnk";
+    dir2.types << "*.cmd";
+    dir2.types << "*.vbs";
     dir2.indexDirs = false;
     list.append(dir2);
-
-    Directory dir3;
-    dir3.name = "utilities\\";
-    dir3.types << "*.lnk";
-    dir3.types << "*.cmd";
-    dir3.types << "*.vbs";
-    dir3.indexDirs = false;
-    list.append(dir3);
-
-    /*
-    Directory dir4;
-    dir4.name = "%appdata%\\Microsoft\\Internet Explorer\\Quick Launch";
-    dir4.types << "*.*";
-    list.append(dir4);
-    */
 
     return list;
 }

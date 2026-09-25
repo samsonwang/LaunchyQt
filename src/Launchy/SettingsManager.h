@@ -52,10 +52,12 @@ private:
 
 private:
     QString configDirectory(bool portable) const;
+    void fixCatalogUserPaths();
+    void ensureDefaultCatalogDirectories();
 
 private:
     bool m_portable;
     QString m_profileName;
     QHash<QString, QList<QString>> m_dirs;
 };
-}
+} // namespace launchy

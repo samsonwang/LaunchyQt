@@ -216,9 +216,14 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // Load the catalog
     connect(g_builder, &CatalogBuilder::catalogIncrement,
             this, &LaunchyWidget::catalogProgressUpdated);
-    connect(g_builder, &CatalogBuilder::catalogFinished, this, &LaunchyWidget::catalogBuilt);
+    connect(g_builder, &CatalogBuilder::catalogFinished,
+            this, &LaunchyWidget::catalogBuilt);
 
-    if (!g_catalog->load(SettingsManager::instance().catalogFilename())) {
+    // Rescan if the catalog is missing or if catalog directories were
+    // rewritten because the user home directory changed (account rename
+    // or settings migrated to another machine)
+    if (!g_catalog->load(SettingsManager::instance().catalogFilename())
+        || g_needRebuildCatalog.fetchAndStoreRelaxed(0) > 0) {
         command |= Rescan;
     }
 
