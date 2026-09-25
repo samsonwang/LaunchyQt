@@ -13,12 +13,10 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QVariant
-from PyQt5.QtCore import QLocale
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QApplication
-from sip import wrapinstance, unwrapinstance
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtCore import QLocale
+from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QApplication
 
 import launchy
 from launchy import CatItem
@@ -31,16 +29,11 @@ class TranslatorPy(launchy.Plugin):
 
     def __init__(self):
         launchy.Plugin.__init__(self)
-        self.hash = launchy.hash(self.getName())
 
     def init(self):
         self.__readSettings()
 
-    def getID(self):
-        return int(self.hash)
-
-    @classmethod
-    def getName(cls):
+    def getName(self):
         return "TranslatorPy"
 
     def setPath(self, path):

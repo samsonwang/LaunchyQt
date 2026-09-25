@@ -1,7 +1,7 @@
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QFileDialog
+from PySide2 import QtCore, QtGui, QtWidgets
+# from PySide2.QtCore import QVariant
+from PySide2.QtWidgets import QApplication, QWidget, QDialog, QFileDialog
 
 import launchy
 
@@ -104,8 +104,8 @@ class PyDiryUi(QWidget):
         settings.beginWriteArray(self.setting_dir)
         for i in range(0, table.rowCount()):
             settings.setArrayIndex(i)
-            settings.setValue("name", QVariant(table.item(i,0).text()))
-            settings.setValue("path", QVariant(table.item(i,1).text()))
+            settings.setValue("name", table.item(i,0).text())
+            settings.setValue("path", table.item(i,1).text())
         settings.endArray()
 
         if self.cell_changed == True:

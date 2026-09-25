@@ -182,13 +182,13 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
         PyErr_Print();
         PyErr_Clear();
         qWarning() << "pluginpy::PluginWrapper::msg, py::error_already_set catched in dispatchMsg,"
-            " plugin name:" << m_pluginName << "msgId:" << msgId << "error info:" << e.what();
+            " plugin name:" << m_pluginName << "msg id:" << msgId << "error info:" << e.what();
     }
     catch (const std::runtime_error& e) {
         PyErr_Print();
         PyErr_Clear();
         qWarning() << "pluginpy::PluginWrapper::msg, std::runtime_error catched in dispatchMsg,"
-            " plugin name:" << m_pluginName << "msgId:" << msgId << "error info:" << e.what();
+            " plugin name:" << m_pluginName << "msg id:" << msgId << "error info:" << e.what();
     }
 
     s_inPythonLock.unlock();

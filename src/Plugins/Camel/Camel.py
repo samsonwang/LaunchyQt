@@ -18,7 +18,6 @@ try:
     from PySide2 import QtCore, QtGui, QtWidgets
     from PySide2.QtCore import QLocale
     from PySide2.QtWidgets import QWidget, QApplication
-    from shiboken2 import wrapInstance, getCppPointer
 except Exception as ex:
     try:
         from PySide6.QtWidgets import QWidget, QApplication

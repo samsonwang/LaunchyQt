@@ -20,35 +20,30 @@ import launchy
 from CaselessDict import CaselessDict
 from future_ntpath import expandvars
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QVariant
-from sip import wrapinstance, unwrapinstance
+from PySide2 import QtCore, QtGui, QtWidgets
+from shiboken2 import wrapInstance, getCppPointer
 
 from PyDiry import PyDiryGui
 
-class PyDiry(launchy.Plugin):
+class DiryPy(launchy.Plugin):
     __version__ = "1.0"
-    setting_dir = "PyDiryPy"
+    setting_dir = "DiryPy"
 
     def __init__(self):
         launchy.Plugin.__init__(self)
-        self.hash = launchy.hash(self.getName())
         self.dirs = CaselessDict()
 
     def init(self):
         self.__readConfig()
 
-    def getID(self):
-        return int(self.hash)
-
     def getName(self):
-        return "PyDiryPy"
+        return "DiryPy"
 
     def setPath(self, path):
         self.path = path
 
     def getIcon(self):
-        return self.path + "/pydiry.ico"
+        return self.path + "/DiryPy.ico"
 
     def getLabels(self, inputDataList):
         pass
@@ -82,14 +77,14 @@ class PyDiry(launchy.Plugin):
 
     def getCatalog(self, resultsList):
         for name,path in self.dirs.items():
-            resultsList.push_back( launchy.CatItem( name + ".pydiry",
+            resultsList.push_back( launchy.CatItem( name + ".dirypy",
                                                     name,
                                                     self.getID(),
                                                     self.getIcon() ) )
 
     def launchItem(self, inputDataList, catItemOrig):
         catItem = inputDataList[-1].getTopResult()
-        if catItem.fullPath().endswith(".pydiry"):
+        if catItem.fullPath().endswith(".dirypy"):
             # Launch the directory itself
             try:
                 path = self.dirs[catItem.shortName]
@@ -101,12 +96,12 @@ class PyDiry(launchy.Plugin):
             launchy.runProgram(catItem.fullPath(), "" )
 
     def doDialog(self, parentWidgetPtr):
-        parentWidget = wrapinstance(parentWidgetPtr, QtWidgets.QWidget)
+        parentWidget = wrapInstance(parentWidgetPtr, QtWidgets.QWidget)
 
         self.widget = PyDiryGui.PyDiryUi(parentWidget, self.setting_dir)
         self.widget.show()
 
-        return unwrapinstance(self.widget)
+        return getCppPointer(self.widget)[0]
 
     def endDialog(self, accept):
         self.widget.hide()
@@ -137,4 +132,4 @@ class PyDiry(launchy.Plugin):
             return itemPath
 
 def getPlugin():
-    return PyDiry
+    return DiryPy

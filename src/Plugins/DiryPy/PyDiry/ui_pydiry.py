@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pydiry.ui'
+# Form implementation generated from reading ui file 'pydiry.ui',
+# licensing of 'pydiry.ui' applies.
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created: Fri Sep 25 14:09:12 2026
+#      by: pyside2-uic  running on PySide2 5.12.6
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_PyDiryWidget(object):
     def setupUi(self, PyDiryWidget):
@@ -47,19 +49,16 @@ class Ui_PyDiryWidget(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(PyDiryWidget)
-        self.addEntryButton.clicked.connect(PyDiryWidget.addEntry_clicked)
-        self.removeEntryButton.clicked.connect(PyDiryWidget.removeEntry_clicked)
+        QtCore.QObject.connect(self.addEntryButton, QtCore.SIGNAL("clicked()"), PyDiryWidget.addEntry_clicked)
+        QtCore.QObject.connect(self.removeEntryButton, QtCore.SIGNAL("clicked()"), PyDiryWidget.removeEntry_clicked)
         QtCore.QMetaObject.connectSlotsByName(PyDiryWidget)
 
     def retranslateUi(self, PyDiryWidget):
-        _translate = QtCore.QCoreApplication.translate
-        PyDiryWidget.setWindowTitle(_translate("PyDiryWidget", "PyDiryPy - Launch items from directories"))
-        item = self.entriesTable.horizontalHeaderItem(0)
-        item.setText(_translate("PyDiryWidget", "Name"))
-        item = self.entriesTable.horizontalHeaderItem(1)
-        item.setText(_translate("PyDiryWidget", "Path"))
-        self.addEntryButton.setToolTip(_translate("PyDiryWidget", "Add a new entry"))
-        self.addEntryButton.setText(_translate("PyDiryWidget", "+"))
-        self.removeEntryButton.setToolTip(_translate("PyDiryWidget", "Remove the selected entry"))
-        self.removeEntryButton.setText(_translate("PyDiryWidget", "-"))
+        PyDiryWidget.setWindowTitle(QtWidgets.QApplication.translate("PyDiryWidget", "PyDiryPy - Launch items from directories", None, -1))
+        self.entriesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("PyDiryWidget", "Name", None, -1))
+        self.entriesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("PyDiryWidget", "Path", None, -1))
+        self.addEntryButton.setToolTip(QtWidgets.QApplication.translate("PyDiryWidget", "Add a new entry", None, -1))
+        self.addEntryButton.setText(QtWidgets.QApplication.translate("PyDiryWidget", "+", None, -1))
+        self.removeEntryButton.setToolTip(QtWidgets.QApplication.translate("PyDiryWidget", "Remove the selected entry", None, -1))
+        self.removeEntryButton.setText(QtWidgets.QApplication.translate("PyDiryWidget", "-", None, -1))
 

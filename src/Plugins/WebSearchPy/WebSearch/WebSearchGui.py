@@ -75,7 +75,7 @@ class WebSearchGui(QWidget):
             keyItem = table.item(i, 0)
             nameItem = table.item(i, 1)
             urlItem = table.item(i, 2)
-            if keyItem == None or nameItem == None or urlItem == None:
+            if keyItem is None or nameItem is None or urlItem is None:
                 itemsToRemove.append(i)
             elif keyItem.text() == "" or nameItem.text() == "" or urlItem == "":
                 itemsToRemove.append(i)

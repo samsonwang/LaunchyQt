@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pydiry_new_entry.ui'
+# Form implementation generated from reading ui file 'pydiry_new_entry.ui',
+# licensing of 'pydiry_new_entry.ui' applies.
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created: Fri Sep 25 14:09:31 2026
+#      by: pyside2-uic  running on PySide2 5.12.6
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_NewDirectoryEntryDialog(object):
     def setupUi(self, NewDirectoryEntryDialog):
@@ -47,16 +49,15 @@ class Ui_NewDirectoryEntryDialog(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(NewDirectoryEntryDialog)
-        self.buttonBox.accepted.connect(NewDirectoryEntryDialog.accept)
-        self.buttonBox.rejected.connect(NewDirectoryEntryDialog.reject)
-        self.selectDirectoryButton.clicked.connect(NewDirectoryEntryDialog.selectDirectory_clicked)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), NewDirectoryEntryDialog.accept)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), NewDirectoryEntryDialog.reject)
+        QtCore.QObject.connect(self.selectDirectoryButton, QtCore.SIGNAL("clicked()"), NewDirectoryEntryDialog.selectDirectory_clicked)
         QtCore.QMetaObject.connectSlotsByName(NewDirectoryEntryDialog)
 
     def retranslateUi(self, NewDirectoryEntryDialog):
-        _translate = QtCore.QCoreApplication.translate
-        NewDirectoryEntryDialog.setWindowTitle(_translate("NewDirectoryEntryDialog", "New directory entry"))
-        self.label.setText(_translate("NewDirectoryEntryDialog", "Directory:"))
-        self.selectDirectoryButton.setText(_translate("NewDirectoryEntryDialog", "..."))
-        self.label_2.setText(_translate("NewDirectoryEntryDialog", "Name:"))
-        self.label_3.setText(_translate("NewDirectoryEntryDialog", "<b>Tip</b>: You can use envrionement variables, e.g. %USERPROFILE%\\My Documents"))
+        NewDirectoryEntryDialog.setWindowTitle(QtWidgets.QApplication.translate("NewDirectoryEntryDialog", "New directory entry", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("NewDirectoryEntryDialog", "Directory:", None, -1))
+        self.selectDirectoryButton.setText(QtWidgets.QApplication.translate("NewDirectoryEntryDialog", "...", None, -1))
+        self.label_2.setText(QtWidgets.QApplication.translate("NewDirectoryEntryDialog", "Name:", None, -1))
+        self.label_3.setText(QtWidgets.QApplication.translate("NewDirectoryEntryDialog", "<b>Tip</b>: You can use envrionement variables, e.g. %USERPROFILE%\\My Documents", None, -1))
 

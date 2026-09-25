@@ -16,7 +16,6 @@ try:
     from PySide2 import QtCore, QtGui, QtWidgets
     from PySide2.QtCore import QLocale
     from PySide2.QtWidgets import QWidget, QApplication
-    from shiboken2 import wrapInstance, getCppPointer
 except Exception as ex:
     try:
         from PySide6.QtWidgets import QWidget, QApplication
@@ -69,7 +68,7 @@ class WeekNum(launchy.Plugin):
         pass
 
     def getName(self):
-        return "Week Number"
+        return "WeekNum"
 
     def setPath(self, path):
         self.path = path
@@ -77,7 +76,7 @@ class WeekNum(launchy.Plugin):
     def getIcon(self):
         return self.path + "/week-num.png"
 
-    def getLabels(self, inputDataList, format_type):
+    def getLabels(self, inputDataList):
         inputDataList[-1].setLabel(self.getName())
         
     def is_year_starting_week_0(self, year_str):
