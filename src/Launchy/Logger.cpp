@@ -7,12 +7,17 @@
 #include <QString>
 #include <QDateTime>
 #include <QByteArray>
+#include <QMutex>
+#include <QMutexLocker>
 
 namespace launchy {
 namespace log {
 
 static FILE* s_logFile = nullptr;
 static QtMsgType s_logLevel = QtWarningMsg;
+// The handler runs on the GUI and the catalog worker thread, guard the
+// shared FILE* so lines are not interleaved or written after close
+static QMutex s_logMutex;
 
 // QtMsgType values are not ordered by severity (QtInfoMsg was appended
 // after QtFatalMsg), so map each type to a monotonic severity rank.
@@ -55,7 +60,7 @@ static const char* levelTag(QtMsgType type) {
 static void messageHandler(QtMsgType type,
                            const QMessageLogContext& context,
                            const QString& msg) {
-    if (s_logFile == nullptr || severity(type) < severity(s_logLevel)) {
+    if (severity(type) < severity(s_logLevel)) {
         return;
     }
 
@@ -63,6 +68,11 @@ static void messageHandler(QtMsgType type,
         .toString("yyyy-MM-dd hh:mm:ss.zzz")
         .toLocal8Bit();
     const QByteArray localMsg = msg.toLocal8Bit();
+
+    QMutexLocker locker(&s_logMutex);
+    if (s_logFile == nullptr) {
+        return;
+    }
 
     // source context is null in release builds, hide it there
     if (context.file != nullptr && context.function != nullptr) {
@@ -74,7 +84,12 @@ static void messageHandler(QtMsgType type,
         fprintf(s_logFile, "%s [%s] %s\n",
                 timeStr.constData(), levelTag(type), localMsg.constData());
     }
-    fflush(s_logFile);
+    // Flush warnings and above immediately; flushing every debug line caused
+    // heavy disk churn and made other threads stall on the file lock
+    if (severity(type) >= severity(QtWarningMsg)
+        || s_logLevel == QtDebugMsg) {
+        fflush(s_logFile);
+    }
 }
 
 static void setLogLevel(QtMsgType type) {
@@ -95,6 +110,7 @@ static void setLogLevel(QtMsgType type) {
 
 void stopLogging() {
     qInstallMessageHandler(nullptr);
+    QMutexLocker locker(&s_logMutex);
     if (s_logFile) {
         fflush(s_logFile);
         fclose(s_logFile);

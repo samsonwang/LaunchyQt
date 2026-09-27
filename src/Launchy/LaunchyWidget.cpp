@@ -1011,8 +1011,8 @@ void LaunchyWidget::catalogProgressUpdated(int progress) {
 }
 
 void LaunchyWidget::catalogBuilt() {
-    // Save settings and updated catalog, stop the "working" animation
-    saveSettings();
+    qDebug() << "LaunchyWidget::catalogBuilt, catalog built, updating search results";
+
     m_workingAnimation->Stop();
 
     // Now do a search using the updated catalog
@@ -1461,11 +1461,10 @@ void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) 
 
 void LaunchyWidget::buildCatalog() {
     m_rebuildTimer->stop();
-    saveSettings();
 
-    // Use the catalog builder to refresh the catalog in a worker thread
-    // QMetaObject::invokeMethod(g_builder, &CatalogBuilder::buildCatalog);
-    QMetaObject::invokeMethod(g_builder, "buildCatalog");
+    // Ask the worker thread to rebuild the catalog; requests received
+    // while a rebuild is running are ignored by the builder
+    g_builder->requestBuild();
 
     startRebuildTimer();
 }

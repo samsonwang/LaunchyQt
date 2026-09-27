@@ -854,8 +854,10 @@ void OptionDialog::initCatalogWidget() {
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
     m_pUi->catProgress->setVisible(false);
-    connect(g_builder, &CatalogBuilder::catalogIncrement, this, &OptionDialog::catalogProgressUpdated);
-    connect(g_builder, &CatalogBuilder::catalogFinished, this, &OptionDialog::catalogBuilt);
+    connect(g_builder, &CatalogBuilder::catalogIncrement,
+            this, &OptionDialog::catalogProgressUpdated);
+    connect(g_builder, &CatalogBuilder::catalogFinished,
+            this, &OptionDialog::catalogBuilt);
     if (g_builder->isRunning()) {
         catalogProgressUpdated(g_builder->getProgress());
     }

@@ -45,7 +45,7 @@ class TranslatorPy(launchy.Plugin):
     def getCatalog(self, resultsList):
         resultsList.push_back( CatItem("translatorpy",
                                        "tr",
-                                       self.getID(),
+                                       self.getName(),
                                        self.getIcon() ) )
 
     def getLabels(self, inputDataList):

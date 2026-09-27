@@ -20,6 +20,8 @@
 #pragma once
 
 #include <QObject>
+#include <QAtomicInt>
+#include <QElapsedTimer>
 #include "PluginHandler.h"
 class QThread;
 
@@ -36,6 +38,10 @@ public:
     int isRunning() const;
     virtual bool progressStep(int newStep);
 
+    // Thread-safe. Request a catalog rebuild; requests that arrive while a
+    // rebuild is queued or running are ignored
+    void requestBuild();
+
 public slots:
     void buildCatalog();
 
@@ -46,6 +52,8 @@ signals:
 private:
     void indexDirectory(const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
+    // Briefly yield the CPU so the scan does not starve other applications
+    void throttle();
 private:
     CatalogBuilder();
     Q_DISABLE_COPY(CatalogBuilder)
@@ -59,6 +67,9 @@ private:
     int m_progress;
     int m_currentItem;
     int m_totalItems;
+
+    QElapsedTimer m_throttleTimer;
+    QAtomicInt m_rebuildScheduled{0}; // a rebuild is queued or running
 
 private:
     static CatalogBuilder* s_instance;

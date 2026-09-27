@@ -20,6 +20,7 @@
 #pragma once
 
 #include <QVector>
+#include <QSet>
 #include <QMutex>
 
 #include "LaunchyLib/CatalogItem.h"
@@ -68,6 +69,13 @@ public:
 };
 
 
+// QSet<CatalogItem> needs a hash that is consistent with the equality
+// used by the set, see CatItem::operator== (fullPath and shortName)
+inline uint qHash(const CatalogItem& item, uint seed = 0) {
+    return qHash(item.shortName, qHash(item.fullPath, seed));
+}
+
+
 /** This class does not pertain to plugins */
 // The slow catalog searches slowly but
 // adding items is fast and uses less memory
@@ -89,6 +97,44 @@ protected:
 
 private:
     QVector<CatalogItem> m_catalogItems;
+};
+
+
+/** This class does not pertain to plugins */
+// The fast catalog keeps the items themselves in a QSet, so addItem()
+// finds and replaces duplicates in O(1) without SlowCatalog's separate
+// key -> position index. QSet hands out its elements unordered and const
+// only, therefore a flat copy of the items is kept for getItem() and
+// search(); it is rebuilt on demand after a change and makes the catalog
+// use more memory than SlowCatalog
+class FastCatalog : public Catalog {
+public:
+    FastCatalog();
+    virtual int count();
+    virtual void clear();
+    virtual void addItem(const CatItem& item);
+    virtual void purgeOldItems();
+
+    virtual void incrementUsage(const CatItem& item);
+    virtual void demoteItem(const CatItem& item);
+
+protected:
+    virtual const CatItem& getItem(int i);
+    virtual QList<CatItem*> search(const QString& searchText);
+
+private:
+    // Refresh m_snapshot from m_catalogItems when it is stale,
+    // must be called with m_mutex held
+    void rebuildSnapshot();
+
+private:
+    QSet<CatalogItem> m_catalogItems;
+    // Flat copy of the set: save() needs getItem(i) and search() hands
+    // out pointers into the catalog, neither of which a QSet supports.
+    // The pointers stay valid until the catalog changes again, callers
+    // use them with m_mutex held
+    QVector<CatalogItem> m_snapshot;
+    bool m_snapshotDirty;
 };
 
 bool CatLessPtr(CatItem* left, CatItem* right);

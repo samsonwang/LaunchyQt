@@ -29,6 +29,13 @@
 
 #define CATALOG_PROGRESS_MIN 0
 #define CATALOG_PROGRESS_MAX 100
+// The scan runs in a duty cycle: after CATALOG_THROTTLE_WORK_MS of continuous
+// work it briefly sleeps, so a rebuild never hogs a whole core and other
+// applications stay responsive
+#define CATALOG_THROTTLE_WORK_MS 10
+#define CATALOG_THROTTLE_SLEEP_MS 1
+// Check the duty cycle every this many entries while iterating large dirs
+#define CATALOG_THROTTLE_ENTRIES 1024
 
 namespace launchy {
 
@@ -42,7 +49,16 @@ CatalogBuilder::CatalogBuilder()
     m_thread->start(QThread::IdlePriority);
 }
 
+void CatalogBuilder::requestBuild() {
+    // Ignore the request when a rebuild is already queued or running
+    if (m_rebuildScheduled.testAndSetOrdered(0, 1)) {
+        QMetaObject::invokeMethod(this, "buildCatalog", Qt::QueuedConnection);
+    }
+}
+
 void CatalogBuilder::buildCatalog() {
+    m_throttleTimer.start();
+
     m_progress = CATALOG_PROGRESS_MIN;
     emit catalogIncrement(m_progress);
     m_catalog->incrementTimestamp();
@@ -55,22 +71,60 @@ void CatalogBuilder::buildCatalog() {
     m_currentItem = 0;
 
     while (m_currentItem < catDirs.count()) {
+
+        qDebug() << "CatalogBuilder::buildCatalog, total items:"
+                 << m_totalItems << "current item:" << m_currentItem;
+
         QString currentDir = g_app->expandEnvironmentVars(catDirs[m_currentItem].name);
         indexDirectory(currentDir,
                        catDirs[m_currentItem].types,
                        catDirs[m_currentItem].indexDirs,
                        catDirs[m_currentItem].indexExe,
                        catDirs[m_currentItem].depth);
+
         progressStep(m_currentItem);
+
+        ++m_currentItem;
     }
+
+    // The file scan is done, free the scan-time path set right away
+    m_indexed.clear();
 
     // Don't call the pluginhandler to request catalog because we need to track progress
     pluginHandler.getCatalogs(m_catalog, this);
 
+    qDebug() << "CatalogBuilder::buildCatalog, purget old item";
+
     m_catalog->purgeOldItems();
-    m_indexed.clear();
+
+    qDebug() << "CatalogBuilder::buildCatalog, saving catalog";
+    // Save the catalog here on the worker thread: serializing and
+    // compressing it in the GUI thread froze the interface and caused
+    // a large memory spike there
+    m_catalog->save(SettingsManager::instance().catalogFilename());
+
+    qDebug() << "CatalogBuilder::buildCatalog, catalog rebuild finished";
+
     m_progress = CATALOG_PROGRESS_MAX;
     emit catalogFinished();
+
+    // The rebuild is complete, requests received while it was running
+    // were ignored
+    m_rebuildScheduled.storeRelease(0);
+}
+
+
+// Briefly give the CPU back so other applications stay responsive while
+// the catalog is being rebuilt
+void CatalogBuilder::throttle() {
+    if (!m_throttleTimer.isValid()) {
+        m_throttleTimer.start();
+        return;
+    }
+    if (m_throttleTimer.elapsed() >= CATALOG_THROTTLE_WORK_MS) {
+        QThread::msleep(CATALOG_THROTTLE_SLEEP_MS);
+        m_throttleTimer.restart();
+    }
 }
 
 void CatalogBuilder::indexDirectory(const QString& directory,
@@ -78,6 +132,8 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                                     bool fDirs,
                                     bool fBin,
                                     int depth) {
+    throttle();
+
     QString dir = QDir::toNativeSeparators(directory);
     QDir qDir(dir);
     dir = qDir.absolutePath();
@@ -105,6 +161,9 @@ void CatalogBuilder::indexDirectory(const QString& directory,
 
     if (fDirs) {
         for (int i = 0; i < dirs.count(); ++i) {
+            if ((i % CATALOG_THROTTLE_ENTRIES) == 0) {
+                throttle();
+            }
             if (!dirs[i].startsWith(".") && !m_indexed.contains(dir + "/" + dirs[i])) {
                 bool isShortcut = dirs[i].endsWith(".lnk", Qt::CaseInsensitive);
 
@@ -132,6 +191,9 @@ void CatalogBuilder::indexDirectory(const QString& directory,
     if (fBin) {
         QStringList bins = qDir.entryList(QDir::Files | QDir::Executable);
         for (int i = 0; i < bins.count(); ++i) {
+            if ((i % CATALOG_THROTTLE_ENTRIES) == 0) {
+                throttle();
+            }
             if (!m_indexed.contains(dir + "/" + bins[i])) {
                 CatItem item(dir + "/" + bins[i]);
                 m_catalog->addItem(item);
@@ -147,6 +209,9 @@ void CatalogBuilder::indexDirectory(const QString& directory,
 
     QStringList files = qDir.entryList(filters, QDir::Files | QDir::System, QDir::Unsorted);
     for (int i = 0; i < files.count(); ++i) {
+        if ((i % CATALOG_THROTTLE_ENTRIES) == 0) {
+            throttle();
+        }
         if (!m_indexed.contains(dir + "/" + files[i])) {
             CatItem item(dir + "/" + files[i]);
             g_app->alterItem(&item);
@@ -207,7 +272,6 @@ int CatalogBuilder::isRunning() const {
 bool CatalogBuilder::progressStep(int newStep) {
     newStep = newStep;
 
-    ++m_currentItem;
     int newProgress = (int)(CATALOG_PROGRESS_MAX * (float)m_currentItem / m_totalItems);
     if (newProgress != m_progress) {
         m_progress = newProgress;

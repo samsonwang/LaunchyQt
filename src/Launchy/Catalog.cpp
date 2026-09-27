@@ -67,16 +67,20 @@ bool Catalog::load(const QString& filename) {
 
 // Save the catalog to the specified filename
 bool Catalog::save(const QString& filename) {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
     QByteArray ba;
+    {
+        // Snapshot the catalog under the lock; compression and file I/O
+        // happen outside so that searches are only blocked for the short
+        // serialization step instead of the whole save
+        QMutexLocker locker(&m_mutex);
+
     QDataStream out(&ba, QIODevice::ReadWrite);
     out.setVersion(QDataStream::Qt_4_2);
 
     for (int i = 0; i < count(); i++) {
         CatItem item = getItem(i);
         out << item;
+        }
     }
 
     // Compress and write the catalog to the specified file
@@ -233,6 +237,9 @@ int SlowCatalog::count() {
 
 
 void SlowCatalog::clear() {
+    // Prevent other threads accessing the catalog
+    QMutexLocker locker(&m_mutex);
+
     m_catalogItems.clear();
 }
 
@@ -333,6 +340,186 @@ QList<CatItem*> SlowCatalog::search(const QString& searchText) {
     }
 
     return result;
+}
+
+
+FastCatalog::FastCatalog()
+    : Catalog(),
+      m_snapshotDirty(true) {
+
+}
+
+int FastCatalog::count() {
+    return m_catalogItems.count();
+}
+
+
+void FastCatalog::clear() {
+    // Prevent other threads accessing the catalog
+    QMutexLocker locker(&m_mutex);
+
+    m_catalogItems.clear();
+    m_snapshot.clear();
+    m_snapshotDirty = true;
+}
+
+void FastCatalog::addItem(const CatItem& item) {
+    // Prevent other threads accessing the catalog
+    QMutexLocker locker(&m_mutex);
+
+    // The set itself provides the duplicate detection that SlowCatalog
+    // needs a key -> position index for: only fullPath and shortName are
+    // hashed and compared (see qHash in Catalog.h), so an equal item is
+    // found in O(1) even while a rebuild adds tens of thousands of items
+    const CatalogItem stored(item, m_timestamp);
+    auto it = m_catalogItems.find(stored);
+
+    if (it != m_catalogItems.end()) {
+        if (m_timestamp > 0) {
+            // Rebuild phase: refresh every field of the existing item but
+            // keep its usage count, exactly like SlowCatalog does.
+            // QSet::insert keeps the old key object of an equal item, so
+            // the stale entry has to be removed before inserting again
+            CatalogItem refreshed = stored;
+            refreshed.usage = it->usage;
+            m_catalogItems.erase(it);
+            m_catalogItems.insert(refreshed);
+            m_snapshotDirty = true;
+        }
+        // While loading the catalog (timestamp == 0) the first entry of
+        // an equal pair wins, the set cannot keep the duplicates that
+        // SlowCatalog appends in this phase
+        return;
+    }
+
+    m_catalogItems.insert(stored);
+    m_snapshotDirty = true;
+}
+
+
+void FastCatalog::purgeOldItems() {
+    // Prevent other threads accessing the catalog
+    QMutexLocker locker(&m_mutex);
+
+    // Collect the stale items first, removing entries while iterating
+    // the set would invalidate the iterator
+    QSet<CatalogItem> stale;
+    for (const CatalogItem& item : m_catalogItems) {
+        if (item.m_timestamp < m_timestamp) {
+            // Don't log every removed path: a changed directory would emit
+            // tens of thousands of messages while the mutex is held,
+            // blocking searches in the GUI thread
+            stale.insert(item);
+        }
+    }
+
+    const int removed = stale.count();
+    if (removed == 0) {
+        return;
+    }
+    for (const CatalogItem& item : stale) {
+        m_catalogItems.remove(item);
+    }
+    // Give the memory of the stale entries back to the system
+    m_catalogItems.squeeze();
+    m_snapshotDirty = true;
+    qInfo() << "FastCatalog::purgeOldItems, removed" << removed
+        << "stale items";
+}
+
+
+void FastCatalog::incrementUsage(const CatItem& item) {
+    // Prevent other threads accessing the catalog
+    QMutexLocker locker(&m_mutex);
+
+    // Only fullPath and shortName take part in the comparison
+    auto it = m_catalogItems.find(CatalogItem(item, 0));
+    if (it == m_catalogItems.end()) {
+        return;
+    }
+
+    // The set hands out its elements const only, so replace the entry
+    // with an updated copy instead of modifying it in place
+    CatalogItem updated = *it;
+    // If an item is currently demoted, return it to a usage count of 1
+    if (updated.usage < 0) {
+        updated.usage = 1;
+    }
+    else {
+        ++updated.usage;
+    }
+    m_catalogItems.erase(it);
+    m_catalogItems.insert(updated);
+    m_snapshotDirty = true;
+}
+
+
+void FastCatalog::demoteItem(const CatItem& item) {
+    // Prevent catalog refreshes whilst searching
+    QMutexLocker locker(&m_mutex);
+
+    // Only fullPath and shortName take part in the comparison
+    auto it = m_catalogItems.find(CatalogItem(item, 0));
+    if (it == m_catalogItems.end()) {
+        return;
+    }
+
+    CatalogItem updated = *it;
+    // If an item is not demoted, demote it
+    if (updated.usage > 0) {
+        updated.usage = -1;
+    }
+    else { // otherwise demote it further
+        --updated.usage;
+    }
+    m_catalogItems.erase(it);
+    m_catalogItems.insert(updated);
+    m_snapshotDirty = true;
+}
+
+
+const CatItem& FastCatalog::getItem(int i) {
+    rebuildSnapshot();
+    return m_snapshot[i];
+}
+
+// Return a list of catalog items that match searchText
+// this method should only be called from within a QMutexLocker protected section
+QList<CatItem*> FastCatalog::search(const QString& searchText) {
+    QList<CatItem*> result;
+    if (searchText.isEmpty()) {
+        return result;
+    }
+
+    // Search the flat copy: the set only offers const elements but the
+    // caller reads through CatItem* pointers (and sorts them)
+    rebuildSnapshot();
+
+    QString lowSearch = searchText.toLower();
+    for (int i = 0; i < m_snapshot.count(); ++i) {
+        if (matches(&m_snapshot[i], lowSearch)) {
+            result.push_back(&m_snapshot[i]);
+        }
+    }
+
+    return result;
+}
+
+
+// Rebuild the flat copy of the set, must be called with m_mutex held
+void FastCatalog::rebuildSnapshot() {
+    if (!m_snapshotDirty) {
+        return;
+    }
+
+    // resize() keeps the allocated capacity of the previous snapshot
+    m_snapshot.resize(m_catalogItems.count());
+    int i = 0;
+    for (const CatalogItem& item : m_catalogItems) {
+        m_snapshot[i] = item;
+        ++i;
+    }
+    m_snapshotDirty = false;
 }
 
 bool CatLessRef(CatItem& a, CatItem& b) {

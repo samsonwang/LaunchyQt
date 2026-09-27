@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CatalogItem.h"
 #include <QDataStream>
-#include <QDebug>
 #include "UnicodeTable.h"
 
 namespace launchy {
@@ -125,8 +124,8 @@ QString CatItem::convertSearchName(const QString& shortName) {
         }
 
     }
-    qDebug() << "CatItem::convertSearchName, shortName:" << shortName
-        << ", result:" << result;
+    // Logging here would emit one line per constructed item, which flooded
+    // the log (and the disk when debug logging is on) during a rebuild
     return result;
 }
 
