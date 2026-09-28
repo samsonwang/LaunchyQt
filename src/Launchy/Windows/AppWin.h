@@ -46,6 +46,8 @@ public:
 
     virtual bool allowNotification() const;
 
+    virtual int systemIdleSeconds() const;
+
 private:
     HANDLE localMutex;
     HANDLE globalMutex;

@@ -101,4 +101,10 @@ bool AppBase::allowNotification() const {
     return true;
 }
 
+int AppBase::systemIdleSeconds() const {
+    // idle time is unknown on this platform, callers should fall back
+    // to the behavior used before idle detection was introduced
+    return -1;
+}
+
 } // namespace launchy

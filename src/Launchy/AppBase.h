@@ -68,6 +68,10 @@ public:
     // detect current fullscreen mode
     virtual bool allowNotification() const;
 
+    // seconds elapsed since the last keyboard/mouse input,
+    // or a negative value if the platform can not report idle time
+    virtual int systemIdleSeconds() const;
+
 protected:
     IconProviderBase* m_iconProvider;
 };

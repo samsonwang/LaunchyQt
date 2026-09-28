@@ -64,9 +64,9 @@ bool Catalog::load(const QString& filename) {
     return true;
 }
 
-
 // Save the catalog to the specified filename
 bool Catalog::save(const QString& filename) {
+
     QByteArray ba;
     {
         // Snapshot the catalog under the lock; compression and file I/O
@@ -74,12 +74,12 @@ bool Catalog::save(const QString& filename) {
         // serialization step instead of the whole save
         QMutexLocker locker(&m_mutex);
 
-    QDataStream out(&ba, QIODevice::ReadWrite);
-    out.setVersion(QDataStream::Qt_4_2);
+        QDataStream out(&ba, QIODevice::ReadWrite);
+        out.setVersion(QDataStream::Qt_4_2);
 
-    for (int i = 0; i < count(); i++) {
-        CatItem item = getItem(i);
-        out << item;
+        for (int i = 0; i < count(); i++) {
+            CatItem item = getItem(i);
+            out << item;
         }
     }
 
@@ -92,7 +92,6 @@ bool Catalog::save(const QString& filename) {
     file.write(qCompress(ba));
     return true;
 }
-
 
 void Catalog::incrementTimestamp() {
     ++m_timestamp;
@@ -124,7 +123,6 @@ bool Catalog::matches(CatItem* item, const QString& match) {
     return false;
 }
 
-
 // Search the catalog, for items matching the text parameter and
 // populate the out parameter
 void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
@@ -151,7 +149,7 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
 
     // Load up the results
     int max = g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt();
-    for (int i = 0; i < max && i < catMatches.count(); i++) {
+    for (int i = 0; i < max && i < catMatches.count(); ++i) {
         result.push_back(*catMatches[i]);
     }
 }
@@ -225,16 +223,16 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
     return decoratedText;
 }
 
-
 SlowCatalog::SlowCatalog()
     : Catalog() {
 
 }
 
 int SlowCatalog::count() {
+    QMutexLocker locker(&m_mutex);
+
     return m_catalogItems.count();
 }
-
 
 void SlowCatalog::clear() {
     // Prevent other threads accessing the catalog
@@ -270,7 +268,6 @@ void SlowCatalog::addItem(const CatItem& item) {
     }
 }
 
-
 void SlowCatalog::purgeOldItems() {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
@@ -302,7 +299,6 @@ void SlowCatalog::incrementUsage(const CatItem& item) {
     }
 }
 
-
 void SlowCatalog::demoteItem(const CatItem& item) {
     // Prevent catalog refreshes whilst searching
     QMutexLocker locker(&m_mutex);
@@ -321,14 +317,17 @@ void SlowCatalog::demoteItem(const CatItem& item) {
     }
 }
 
-
 const CatItem& SlowCatalog::getItem(int i) {
+    QMutexLocker locker(&m_mutex);
+
     return m_catalogItems[i];
 }
 
 // Return a list of catalog items that match searchText
 // this method should only be called from within a QMutexLocker protected section
 QList<CatItem*> SlowCatalog::search(const QString& searchText) {
+    QMutexLocker locker(&m_mutex);
+
     QList<CatItem*> result;
     if (!searchText.isEmpty()) {
         QString lowSearch = searchText.toLower();
@@ -352,7 +351,6 @@ FastCatalog::FastCatalog()
 int FastCatalog::count() {
     return m_catalogItems.count();
 }
-
 
 void FastCatalog::clear() {
     // Prevent other threads accessing the catalog
@@ -396,7 +394,6 @@ void FastCatalog::addItem(const CatItem& item) {
     m_snapshotDirty = true;
 }
 
-
 void FastCatalog::purgeOldItems() {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
@@ -427,7 +424,6 @@ void FastCatalog::purgeOldItems() {
         << "stale items";
 }
 
-
 void FastCatalog::incrementUsage(const CatItem& item) {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
@@ -453,7 +449,6 @@ void FastCatalog::incrementUsage(const CatItem& item) {
     m_snapshotDirty = true;
 }
 
-
 void FastCatalog::demoteItem(const CatItem& item) {
     // Prevent catalog refreshes whilst searching
     QMutexLocker locker(&m_mutex);
@@ -476,7 +471,6 @@ void FastCatalog::demoteItem(const CatItem& item) {
     m_catalogItems.insert(updated);
     m_snapshotDirty = true;
 }
-
 
 const CatItem& FastCatalog::getItem(int i) {
     rebuildSnapshot();
@@ -504,7 +498,6 @@ QList<CatItem*> FastCatalog::search(const QString& searchText) {
 
     return result;
 }
-
 
 // Rebuild the flat copy of the set, must be called with m_mutex held
 void FastCatalog::rebuildSnapshot() {

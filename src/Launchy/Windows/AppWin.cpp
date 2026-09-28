@@ -164,6 +164,19 @@ bool AppWin::allowNotification() const {
     return true;
 }
 
+int AppWin::systemIdleSeconds() const {
+    LASTINPUTINFO lastInputInfo;
+    lastInputInfo.cbSize = sizeof(LASTINPUTINFO);
+    if (!GetLastInputInfo(&lastInputInfo)) {
+        return -1;
+    }
+
+    // both values come from GetTickCount() and wrap around together,
+    // so the unsigned subtraction stays correct after the 49.7 day wrap
+    DWORD idleMillis = GetTickCount() - lastInputInfo.dwTime;
+    return static_cast<int>(idleMillis / 1000);
+}
+
 // Create the application object
 AppBase* createApplication(int& argc, char** argv) {
     if (qApp) {

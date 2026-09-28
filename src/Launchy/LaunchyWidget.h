@@ -141,6 +141,8 @@ protected slots:
     void trayMessageClicked();
     void reloadSkin();
     void exit();
+    // m_rebuildTimer, gated by the system idle time
+    void scheduledBuildCatalog();
     void onAlternativeListRowChanged(int index);
     void onAlternativeListKeyPressed(QKeyEvent* event);
     void onAlternativeListFocusOut();

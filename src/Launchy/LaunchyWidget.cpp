@@ -67,6 +67,13 @@ namespace launchy {
 // check this page https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
 
+// minimum system idle time (in seconds) required before a scheduled
+// catalog rebuild is allowed to start
+const int SCHEDULED_REBUILD_MIN_IDLE_SECONDS = 10 * 60;
+// interval (in milliseconds) used to re-check the idle condition when a
+// scheduled catalog rebuild is postponed because the system is still in use
+const int SCHEDULED_REBUILD_CHECK_INTERVAL = 60 * 1000;
+
 LaunchyWidget* LaunchyWidget::s_instance = nullptr;
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
@@ -255,7 +262,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_dropTimer, &QTimer::timeout, this, &LaunchyWidget::dropTimeout);
 
     m_rebuildTimer->setSingleShot(true);
-    connect(m_rebuildTimer, &QTimer::timeout, this, &LaunchyWidget::buildCatalog);
+    connect(m_rebuildTimer, &QTimer::timeout,
+            this, &LaunchyWidget::scheduledBuildCatalog);
     startRebuildTimer();
 
     // start update checker
@@ -1457,6 +1465,24 @@ void LaunchyWidget::trayIconActivated(QSystemTrayIcon::ActivationReason reason) 
     default:
         break;
     }
+}
+
+void LaunchyWidget::scheduledBuildCatalog() {
+    // Only scheduled rebuilds are gated by the idle condition, manual
+    // requests (F5, tray menu, options dialog, startup rescan) call
+    // buildCatalog() directly and always rebuild immediately
+    const int idleSeconds = g_app->systemIdleSeconds();
+    if (idleSeconds < 0 || idleSeconds >= SCHEDULED_REBUILD_MIN_IDLE_SECONDS) {
+        // system has been idle long enough, or the platform can not
+        // report idle time, rebuild the catalog now
+        buildCatalog();
+        return;
+    }
+
+    // the system is still in use, check again in one minute
+    qDebug() << "LaunchyWidget::scheduledBuildCatalog, system idle for"
+             << idleSeconds << "seconds, rebuild catalog postponed";
+    m_rebuildTimer->start(SCHEDULED_REBUILD_CHECK_INTERVAL);
 }
 
 void LaunchyWidget::buildCatalog() {
