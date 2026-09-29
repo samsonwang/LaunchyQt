@@ -155,6 +155,8 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/LaunchyWidget.cpp
   ${SRC_DIR}/Launchy/Logger.h
   ${SRC_DIR}/Launchy/Logger.cpp
+  ${SRC_DIR}/Launchy/MemProfiler.h
+  ${SRC_DIR}/Launchy/MemProfiler.cpp
   ${SRC_DIR}/Launchy/main.cpp
   ${SRC_DIR}/Launchy/OptionDialog.h
   ${SRC_DIR}/Launchy/OptionDialog.cpp

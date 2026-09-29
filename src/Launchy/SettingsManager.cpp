@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "OptionItem.h"
 #include "TranslationManager.h"
 #include "LaunchyVersion.h"
+#include "MemProfiler.h"
 
 static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";
@@ -103,6 +104,8 @@ void SettingsManager::load() {
         writeCatalogDirectories(directories);
     }
 
+    launchy::memprof::record("settings:after-catalog-directories");
+
     bool debugLog = g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool();
     log::setDebugLogEnabled(debugLog);
     g_settings->setValue(OPTION_DEBUG_LOG, debugLog);
@@ -118,6 +121,8 @@ void SettingsManager::load() {
 
     // Make sure the built-in catalog directories are always present and first
     ensureDefaultCatalogDirectories();
+
+    launchy::memprof::record("settings:after-fix-catalog-directories");
 
     QString pluginExtraDir = g_settings->value(OPTION_PLUGIN_EXTRA_DIRECTORY).toString();
     if (!pluginExtraDir.isEmpty()) {
@@ -154,6 +159,8 @@ void SettingsManager::load() {
     }
 
     QNetworkProxy::setApplicationProxy(proxy);
+
+    launchy::memprof::record("settings:after-proxy");
 
     // load language translation
     QString lang = g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();

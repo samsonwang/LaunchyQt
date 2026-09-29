@@ -21,11 +21,13 @@
 
 #include <QThread>
 #include <QDir>
+#include <QElapsedTimer>
 
 #include "Catalog.h"
 #include "AppBase.h"
 #include "Directory.h"
 #include "SettingsManager.h"
+#include "MemProfiler.h"
 
 #define CATALOG_PROGRESS_MIN 0
 #define CATALOG_PROGRESS_MAX 100
@@ -64,6 +66,12 @@ void CatalogBuilder::buildCatalog() {
     m_catalog->incrementTimestamp();
     m_indexed.clear();
 
+    launchy::memprof::record("buildCatalog:start");
+    // Sample the memory at most once per second while scanning so we can see
+    // which catalog directory causes the private working set to jump.
+    QElapsedTimer memLogTimer;
+    memLogTimer.start();
+
     PluginHandler& pluginHandler = PluginHandler::instance();
     QList<Directory> catDirs = SettingsManager::instance().readCatalogDirectories();
     const QHash<QString, PluginInfo>& pluginsInfo = pluginHandler.getPlugins();
@@ -84,29 +92,43 @@ void CatalogBuilder::buildCatalog() {
 
         progressStep(m_currentItem);
 
+        if (memLogTimer.elapsed() >= 1000) {
+            launchy::memprof::record(
+                QString("buildCatalog:scan %1").arg(currentDir));
+            memLogTimer.restart();
+        }
+
         ++m_currentItem;
     }
 
     // The file scan is done, free the scan-time path set right away
     m_indexed.clear();
+    launchy::memprof::record("buildCatalog:after-dir-scan");
 
     // Don't call the pluginhandler to request catalog because we need to track progress
     pluginHandler.getCatalogs(m_catalog, this);
+    launchy::memprof::record("buildCatalog:after-plugins");
 
     qDebug() << "CatalogBuilder::buildCatalog, purget old item";
 
     m_catalog->purgeOldItems();
+    launchy::memprof::record("buildCatalog:after-purge");
 
     qDebug() << "CatalogBuilder::buildCatalog, saving catalog";
     // Save the catalog here on the worker thread: serializing and
     // compressing it in the GUI thread froze the interface and caused
     // a large memory spike there
-    m_catalog->save(SettingsManager::instance().catalogFilename());
+    {
+        launchy::memprof::ScopedMem saveScope("buildCatalog:save");
+        m_catalog->save(SettingsManager::instance().catalogFilename());
+    }
+    launchy::memprof::record("buildCatalog:after-save");
 
     qDebug() << "CatalogBuilder::buildCatalog, catalog rebuild finished";
 
     m_progress = CATALOG_PROGRESS_MAX;
     emit catalogFinished();
+    launchy::memprof::record("buildCatalog:finished");
 
     // The rebuild is complete, requests received while it was running
     // were ignored

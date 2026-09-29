@@ -60,6 +60,7 @@
 #include "PluginHandler.h"
 #include "UpdateChecker.h"
 #include "LaunchyVersion.h"
+#include "MemProfiler.h"
 
 namespace launchy {
 
@@ -271,6 +272,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     // Load the plugins
     PluginHandler::instance().loadPlugins();
+    launchy::memprof::record("widget:after-loadPlugins");
 
     executeStartupCommand(command);
 }

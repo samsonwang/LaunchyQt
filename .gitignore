@@ -61,3 +61,7 @@ __pycache__
 
 # VS Code
 .vscode
+
+# WorkBuddy
+.workbuddy
+

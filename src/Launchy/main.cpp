@@ -24,14 +24,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SettingsManager.h"
 #include "LaunchyWidget.h"
 #include "Logger.h"
+#include "MemProfiler.h"
 #include "GlobalVar.h"
 
 int main(int argc, char* argv[]) {
 
     launchy::createApplication(argc, argv);
+    launchy::memprof::record("main:after-createApplication");
 
     // Load settings
     launchy::SettingsManager::instance().load();
+    launchy::memprof::record("main:after-settings-load");
 
     // improve code below with QCommandlinePareser
     QStringList args = qApp->arguments();
@@ -61,6 +64,9 @@ int main(int argc, char* argv[]) {
             }
             else if (arg.compare("debug", Qt::CaseInsensitive) == 0) {
                 launchy::log::setDebugLogEnabled(true);
+                // [MEMPROF] output goes through qInfo(), which only lands in
+                // launchy.log under -debug, so turn on sampling at the same time.
+                launchy::memprof::setEnabled(true);
             }
             else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
                 if (++i < args.length()) {
@@ -70,13 +76,17 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    launchy::memprof::record("main:after-parse-args");
+
     launchy::createLaunchyWidget(command);
 
     int exitCode = qApp->exec();
+    launchy::memprof::record("main:after-exec");
 
     qDebug() << "app exec exit code:" << exitCode;
 
     launchy::cleanupGlobalVar();
+    launchy::memprof::record("main:after-cleanup");
 
     if (exitCode == launchy::Restart) {
         qInfo() << "app restarted" << args;

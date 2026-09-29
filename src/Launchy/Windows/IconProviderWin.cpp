@@ -96,6 +96,9 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
 
         unsigned int flags = SHGFI_ICON | SHGFI_SYSICONINDEX | SHGFI_ICONLOCATION;
 
+        // Pick the smallest system image list that satisfies the requested
+        // size. Fetching SHIL_JUMBO (256x256) only when a large icon is truly
+        // needed avoids allocating a ~256KB pixmap for every 32-48px UI icon.
         if (m_preferredSize <= 16) {
             flags |= SHIL_SMALL;
         }
@@ -126,10 +129,11 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             retIcon.addPixmap(QPixmap::fromImage(QImage::fromHICON(sfi.hIcon)));
 #endif // QT_VERSION
 
-            // extra large icon
-            if (m_preferredSize >= 48) {
-                addIconFromImageList(SHIL_EXTRALARGE, sfi.iIcon, retIcon);
-            }
+            // FIX: SHGetFileInfoW hands us a freshly allocated icon handle.
+            // We must DestroyIcon it, otherwise every extracted icon leaks a
+            // GDI handle plus its backing bitmap (grows unbounded per session).
+            DestroyIcon(sfi.hIcon);
+            sfi.hIcon = NULL;
         }
         else {
             qDebug() << "IconProviderWin::icon, fail to extract by SHGetFileInfo, use qt default";
