@@ -223,12 +223,21 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
     return decoratedText;
 }
 
+// Key of an item in SlowCatalog's position index. Items are equal when both
+// fullPath and shortName match (CatItem::operator==), a control character
+// separates the fields since it can not occur in a path or a file name
+static QString indexKey(const CatItem& item) {
+    return item.fullPath + QChar(0x1f) + item.shortName;
+}
+
 SlowCatalog::SlowCatalog()
     : Catalog() {
 
 }
 
 int SlowCatalog::count() {
+    // Recursive lock: safe on its own (options dialog) and when save() calls
+    // this while already holding m_mutex
     QMutexLocker locker(&m_mutex);
 
     return m_catalogItems.count();
@@ -239,45 +248,68 @@ void SlowCatalog::clear() {
     QMutexLocker locker(&m_mutex);
 
     m_catalogItems.clear();
+    m_index.clear();
 }
 
 void SlowCatalog::addItem(const CatItem& item) {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
 
-    bool replaced = false;
+    const QString key = indexKey(item);
+    auto it = m_index.find(key);
 
-    if (m_timestamp > 0) {
-        // If we're not loading the catalog, search for an existing matching catalog item
-        // and replace it if it exists
-        for (int i = 0; i < m_catalogItems.size(); ++i) {
-            if (item == m_catalogItems[i]) {
-                int usage = m_catalogItems[i].usage;
-                m_catalogItems[i] = CatalogItem(item, m_timestamp);
-                m_catalogItems[i].usage = usage;
-                replaced = true;
-                break;
-            }
+    if (it != m_index.end()) {
+        if (m_timestamp > 0) {
+            // Rebuild phase: refresh the item in place and keep its usage count
+            const int usage = m_catalogItems[it.value()].usage;
+            m_catalogItems[it.value()] = CatalogItem(item, m_timestamp);
+            m_catalogItems[it.value()].usage = usage;
         }
+        else {
+            // While loading the catalog (timestamp 0) an already indexed item
+            // is appended again, exactly like the previous linear scan did.
+            // The index keeps pointing at the first occurrence
+            m_catalogItems.push_back(CatalogItem(item, m_timestamp));
+        }
+        return;
     }
 
-    if (!replaced) {
-        // If no match found, append the item to the catalog
-        // qDebug() << "SlowCatalog::addItem, Adding" << item.fullPath;
-        m_catalogItems.push_back(CatalogItem(item, m_timestamp));
-    }
+    // A new item: append it and remember where it is
+    m_index.insert(key, m_catalogItems.size());
+    m_catalogItems.push_back(CatalogItem(item, m_timestamp));
 }
 
 void SlowCatalog::purgeOldItems() {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
 
+    int removed = 0;
     for (int i = m_catalogItems.size() - 1; i >= 0; --i) {
         if (m_catalogItems.at(i).m_timestamp < m_timestamp) {
-            qDebug() << "SlowCatalog::purgeOldItems, Removing" << m_catalogItems.at(i).fullPath;
+            // Don't log every removed path: a changed directory would emit
+            // tens of thousands of messages while the mutex is held,
+            // blocking searches in the GUI thread
             m_catalogItems.remove(i);
+            ++removed;
         }
     }
+
+    if (removed == 0) {
+        return;
+    }
+
+    // Removing entries shifted the positions, rebuild the index. The first
+    // occurrence wins, exactly like the linear scan used to find it
+    m_index.clear();
+    for (int i = 0; i < m_catalogItems.size(); ++i) {
+        const QString key = indexKey(m_catalogItems[i]);
+        if (!m_index.contains(key)) {
+            m_index.insert(key, i);
+        }
+    }
+
+    qInfo() << "SlowCatalog::purgeOldItems, removed" << removed
+        << "stale items";
 }
 
 
@@ -285,17 +317,18 @@ void SlowCatalog::incrementUsage(const CatItem& item) {
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
 
-    for (int i = 0; i < m_catalogItems.size(); ++i) {
-        if (item == m_catalogItems[i]) {
-            // If an item is currently demoted, return it to a usage count of 1
-            if (m_catalogItems[i].usage < 0) {
-                m_catalogItems[i].usage = 1;
-            }
-            else {
-                ++m_catalogItems[i].usage;
-            }
-            break;
-        }
+    auto it = m_index.find(indexKey(item));
+    if (it == m_index.end()) {
+        return;
+    }
+
+    CatalogItem& found = m_catalogItems[it.value()];
+    // If an item is currently demoted, return it to a usage count of 1
+    if (found.usage < 0) {
+        found.usage = 1;
+    }
+    else {
+        ++found.usage;
     }
 }
 
@@ -303,28 +336,31 @@ void SlowCatalog::demoteItem(const CatItem& item) {
     // Prevent catalog refreshes whilst searching
     QMutexLocker locker(&m_mutex);
 
-    for (int i = 0; i < m_catalogItems.size(); ++i) {
-        if (item == m_catalogItems[i]) {
-            // If an item is not demoted, demote it
-            if (m_catalogItems[i].usage > 0) {
-                m_catalogItems[i].usage = -1;
-            }
-            else { // otherwise demote it further
-                --m_catalogItems[i].usage;
-            }
-            break;
-        }
+    auto it = m_index.find(indexKey(item));
+    if (it == m_index.end()) {
+        return;
+    }
+
+    CatalogItem& found = m_catalogItems[it.value()];
+    // If an item is not demoted, demote it
+    if (found.usage > 0) {
+        found.usage = -1;
+    }
+    else { // otherwise demote it further
+        --found.usage;
     }
 }
 
 const CatItem& SlowCatalog::getItem(int i) {
+    // Recursive lock: save() calls this while already holding m_mutex
     QMutexLocker locker(&m_mutex);
 
     return m_catalogItems[i];
 }
 
-// Return a list of catalog items that match searchText
-// this method should only be called from within a QMutexLocker protected section
+// Return a list of catalog items that match searchText.
+// searchCatalogs() already holds m_mutex, the recursive lock keeps direct
+// callers safe as well
 QList<CatItem*> SlowCatalog::search(const QString& searchText) {
     QMutexLocker locker(&m_mutex);
 

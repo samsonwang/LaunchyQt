@@ -21,6 +21,7 @@
 
 #include <QVector>
 #include <QSet>
+#include <QHash>
 #include <QMutex>
 
 #include "LaunchyLib/CatalogItem.h"
@@ -55,7 +56,17 @@ protected:
     virtual QList<CatItem*> search(const QString&) = 0;
 
     int m_timestamp;
-    QMutex m_mutex;
+    // Guards the catalog data. The lock is recursive: the compound operations
+    // (searchCatalogs, save) hold it while calling the primitives (count,
+    // getItem, search) and the primitives take it again on their own. With a
+    // non-recursive mutex the calling thread deadlocked itself, which froze
+    // the search window: a background rebuild died inside save() while still
+    // holding the lock, so the next search blocked forever
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRecursiveMutex m_mutex;
+#else
+    QMutex m_mutex{QMutex::Recursive};
+#endif
 };
 
 
@@ -97,6 +108,12 @@ protected:
 
 private:
     QVector<CatalogItem> m_catalogItems;
+    // fullPath + shortName (the fields compared by CatItem::operator==) ->
+    // position in m_catalogItems. Lets addItem() find and replace an existing
+    // item without scanning the whole catalog during a rebuild, which used to
+    // take seconds for tens of thousands of items. Must be updated whenever
+    // m_catalogItems changes (see purgeOldItems)
+    QHash<QString, int> m_index;
 };
 
 
