@@ -22,6 +22,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QDebug>
+#include <QStringList>
 
 #include "GlobalVar.h"
 #include "OptionItem.h"
@@ -97,30 +98,61 @@ void Catalog::incrementTimestamp() {
     ++m_timestamp;
 }
 
-// Return true if the specified catalog item matches the specified string
-bool Catalog::matches(CatItem* item, const QString& match) {
-    int matchLength = match.size();
-    int curChar = 0;
-
-    foreach(QChar c, item->searchName) {
-        if (c == match[curChar]) {
-            ++curChar;
-            if (curChar >= matchLength) {
+// Case-insensitive subsequence test: every character of `word` must appear, in
+// order, somewhere inside `name`. Both strings are expected to be lower case
+// already, but `word` is lowered defensively so the helper is self contained.
+static bool wordMatches(const QString& name, const QString& word) {
+    if (word.isEmpty())
+        return true;
+    int cur = 0;
+    int wlen = word.size();
+    for (QChar c : name) {
+        if (c == word[cur]) {
+            if (++cur >= wlen)
                 return true;
-            }
         }
     }
-
-    foreach(QChar c, item->searchNameTrans) {
-        if (c == match[curChar]) {
-            ++curChar;
-            if (curChar >= matchLength) {
-                return true;
-            }
-        }
-    }
-
     return false;
+}
+
+// Count how many whitespace-separated words of `searchText` are subsequences of
+// the item's search name (or its transliterated form). Used to rank items when
+// the whole query is not a contiguous substring (e.g. out-of-order, multi-word).
+static int countMatchingWords(const CatItem* item, const QString& searchText) {
+    QStringList words = searchText.split(' ', QString::SkipEmptyParts);
+    int count = 0;
+    for (QString word : words) {
+        word = word.toLower();
+        if (word.isEmpty())
+            continue;
+        if (wordMatches(item->searchName, word) ||
+            wordMatches(item->searchNameTrans, word))
+            ++count;
+    }
+    return count;
+}
+
+// Return true if the specified catalog item matches the specified string.
+//
+// The query is split on whitespace into individual words. Every non-empty word
+// must be a subsequence of the item's search name (or its transliterated form),
+// in ANY order. This lets a user type any subset of a file name's words, in any
+// order, and still find the file, e.g. "nassim reviews book" matches
+// "book reviews of Nassim Taleb.txt".
+bool Catalog::matches(CatItem* item, const QString& match) {
+    QStringList words = match.split(' ', QString::SkipEmptyParts);
+    if (words.isEmpty())
+        return false;
+
+    for (QString word : words) {
+        word = word.toLower();
+        if (!wordMatches(item->searchName, word) &&
+            !wordMatches(item->searchNameTrans, word)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // Search the catalog, for items matching the text parameter and
@@ -179,22 +211,34 @@ void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list
 QString Catalog::decorateText(const QString& text, const QString& match, bool outputRichText) {
     if (!g_settings->value(OPTION_DECORATETEXT, OPTION_DECORATETEXT_DEFAULT).toBool())
         return text;
-    QString decoratedText;
-    int matchLength = match.size();
-    int curChar = 0;
+    QStringList words = match.split(' ', QString::SkipEmptyParts);
+    if (words.isEmpty())
+        return text;
 
-    int index = text.toLower().indexOf(match);
-    if (index > 0)
-        decoratedText = text.left(index);
-    else
-        index = 0;
+    // Mark every character of `text` that is consumed by the subsequence match
+    // of at least one query word. This keeps the highlight correct when the
+    // query words appear out of order or in multiple places.
+    QString lowerText = text.toLower();
+    QVector<bool> marked(lowerText.size(), false);
+    for (QString word : words) {
+        word = word.toLower();
+        if (word.isEmpty())
+            continue;
+        int cur = 0;
+        int wlen = word.size();
+        for (int i = 0; i < lowerText.size() && cur < wlen; ++i) {
+            if (lowerText[i] == word[cur]) {
+                marked[i] = true;
+                ++cur;
+            }
+        }
+    }
+
+    QString decoratedText;
     bool highlighted = false;
-    for (; index < text.size(); ++index) {
-        QChar c = text[index];
-        // prefix based rendering is buggy with lots of underlines limit it to 15
-        // until we get round to replacing the list widget delegate with a rich text delegate
-        if (curChar < matchLength && c.toLower() == match[curChar].toLower()
-            && (outputRichText || curChar < 15)) {
+    for (int i = 0; i < text.size(); ++i) {
+        QChar c = text[i];
+        if (marked[i]) {
             if (outputRichText) {
                 if (!highlighted) {
                     decoratedText += "<u>";
@@ -204,7 +248,6 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
             }
             else
                 decoratedText += QString("&") + c;
-            ++curChar;
         }
         else {
             if (outputRichText && highlighted) {
@@ -620,6 +663,14 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
             return false;
     }
     else {
+        // Neither item contains the whole query as a contiguous substring
+        // (typical for out-of-order / multi-word queries). Rank by how many
+        // query words match, then by usage, so closer matches surface first.
+        int localWords = countMatchingWords(a, g_searchText);
+        int otherWords = countMatchingWords(b, g_searchText);
+        if (localWords != otherWords)
+            return localWords > otherWords;
+
         // Higher usage
         if (a->usage > b->usage)
             return true;
