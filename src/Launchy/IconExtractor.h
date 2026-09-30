@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QString>
 #include <QIcon>
 #include <QMutex>
+#include <QWaitCondition>
 
 #include "LaunchyLib/CatalogItem.h"
 
@@ -34,14 +35,15 @@ class IconExtractor : public QThread {
     Q_OBJECT
 public:
     IconExtractor();
+    ~IconExtractor() override;
 
 public:
     void processIcon(const CatItem& item, bool highPriority = false);
-    void processIcons(const QList<CatItem>& newItems, bool reset = true);
+    void processIcons(const QList<CatItem>& items, bool reset = true);
     void stop();
 
 protected:
-    virtual void run();
+    void run() override;
 
 signals:
     void iconExtracted(const QString& pluginName,
@@ -52,7 +54,11 @@ private:
     QIcon getIcon(const CatItem& item);
 
     QMutex m_mutex;
+    QWaitCondition m_condition;
     QQueue<CatItem> m_items;
+    // Set to true when a stop is requested; run() ends the thread after the
+    // current request (if any) has been processed.
+    bool m_exiting = false;
 };
 
 } // namespace launchy

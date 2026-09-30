@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IconExtractor.h"
 
 #include <QDir>
+#include <QMutexLocker>
 
 #include "AppBase.h"
 #include "GlobalVar.h"
@@ -27,80 +28,110 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace launchy {
 
 IconExtractor::IconExtractor() {
+    // The worker thread runs for the lifetime of this object: it is started
+    // here and then blocks on the condition variable inside run() waiting for
+    // requests.
+    start(LowPriority);
+}
+
+IconExtractor::~IconExtractor() {
+    // Ask the thread to exit and wait for it to finish, so the object is never
+    // destroyed while the thread is still running.
+    {
+        QMutexLocker locker(&m_mutex);
+        m_exiting = true;
+    }
+    m_condition.wakeAll();
+    wait();
 }
 
 void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
-    m_mutex.lock();
+    int totalCount = 0;
 
-    if (highPriority) {
-        m_items.push_front(item);
-    }
-    else {
-        m_items.push_back(item);
+    {
+        QMutexLocker locker(&m_mutex);
+        if (highPriority) {
+            m_items.push_front(item);
+        }
+        else {
+            m_items.push_back(item);
+        }
+        totalCount = m_items.size();
     }
 
-    m_mutex.unlock();
+    qDebug() << "IconExtractor::processIcon, item path:" << item.fullPath
+             << "total item count:" << totalCount;
 
-    if (!isRunning()) {
-        start(LowPriority);
-    }
+    // Wake the worker thread to process the request.
+    // If the thread is currently busy (mutex released while extracting an
+    // icon) this wakeOne() is lost, but run() re-checks the queue on its next
+    // loop iteration, so the request is never dropped.
+    m_condition.wakeOne();
 }
 
-void IconExtractor::processIcons(const QList<CatItem>& newItems, bool reset) {
-    m_mutex.lock();
+void IconExtractor::processIcons(const QList<CatItem>& items, bool reset) {
+    Q_UNUSED(reset);
 
-    // int itemCount = m_items.size();
+    int totalCount = 0;
 
-    /*
-    if (reset && itemCount > 0 && isRunning()) {
-        // reset the queue, but keep the most recent high priority item
-        // CatItem item = m_items.dequeue();
-        m_items.clear();
-        // if (item.pluginName == (uint)-1)
-        // m_items.append(item);
-        itemCount = m_items.size();
+    {
+        QMutexLocker locker(&m_mutex);
+        if (reset) {
+            m_items.clear();
+        }
+        m_items += items;
+        totalCount = m_items.size();
     }
-    */
 
-    m_items += newItems;
-    // for (int i = itemCount; i < m_items.size(); ++i)
-        // m_items[i].pluginName = i - itemCount;
+    qDebug() << "IconExtractor::processIcons, new item count:" << items.size()
+             << "total item count:" << totalCount;
 
-    m_mutex.unlock();
-
-    if (!isRunning()) {
-        start(IdlePriority);
-    }
+    m_condition.wakeOne();
 }
 
 void IconExtractor::stop() {
-    m_mutex.lock();
+    // Only clear the pending queue: drop icon requests that have not started
+    // extracting yet. The worker thread itself keeps running and waits for
+    // future requests; it is not terminated here.
+
+    qDebug() << "IconExtractor::stop, clearing pending icon requests";
+
+    QMutexLocker locker(&m_mutex);
     m_items.clear();
-    m_mutex.unlock();
 }
 
 void IconExtractor::run() {
-
-    bool itemsRemaining = true;
-
-    do {
+    forever {
         CatItem item;
 
-        m_mutex.lock();
-        itemsRemaining = m_items.size() > 0;
-        if (itemsRemaining)
-            item = m_items.dequeue();
-        m_mutex.unlock();
+        {
+            QMutexLocker locker(&m_mutex);
+            // Block while the queue is empty and no exit has been requested,
+            // avoiding a busy-wait.
+            while (m_items.isEmpty() && !m_exiting) {
+                m_condition.wait(&m_mutex);
+            }
 
-        if (itemsRemaining) {
-            QIcon icon = getIcon(item);
-            emit iconExtracted(item.pluginName, item.fullPath, icon);
+            // Exit requested: end the thread (clear any leftovers first so we
+            // don't keep extracting after destruction begins).
+            if (m_exiting) {
+                m_items.clear();
+                break;
+            }
+
+            item = m_items.dequeue();
+
+            qDebug() << "IconExtractor::run, item path:" << item.fullPath
+                 << "items remaining:" << m_items.size();
         }
-    } while (itemsRemaining);
+
+        QIcon icon = getIcon(item);
+        emit iconExtracted(item.pluginName, item.fullPath, icon);
+    }
 }
 
 QIcon IconExtractor::getIcon(const CatItem& item) {
-    qDebug() << "IconExtractor::getIcon, Fetching icon for" << item.fullPath;
+    qDebug() << "IconExtractor::getIcon, fetching icon for" << item.fullPath;
 
 #ifdef Q_OS_MAC
     if (item.iconPath.endsWith(".png") || item.iconPath.endsWith(".ico"))
