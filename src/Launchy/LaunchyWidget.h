@@ -120,7 +120,10 @@ protected:
     void doTab();
     void doBackTab();
     void doEnter();
-    void processInput();
+    void processInput(bool debounce = false);
+    // Immediate full search + UI refresh. Used by explicit actions and by the
+    // debounce timer once typing pauses.
+    void doSearch();
     void searchOnInput();
     void launchItem();
     void startDropTimer();
@@ -181,6 +184,9 @@ protected:
 
     QTimer* m_rebuildTimer;
     QTimer* m_dropTimer;
+    // debounce timer that defers the catalog search while the user is
+    // typing rapidly; only the final query after a short idle window triggers it.
+    QTimer* m_searchTimer;
 
     IconExtractor m_iconExtractor;
 

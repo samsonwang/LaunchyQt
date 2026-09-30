@@ -120,6 +120,10 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/AppBase.cpp
   ${SRC_DIR}/Launchy/Catalog.h
   ${SRC_DIR}/Launchy/Catalog.cpp
+  ${SRC_DIR}/Launchy/CatalogSlow.h
+  ${SRC_DIR}/Launchy/CatalogSlow.cpp
+  ${SRC_DIR}/Launchy/CatalogFast.h
+  ${SRC_DIR}/Launchy/CatalogFast.cpp
   ${SRC_DIR}/Launchy/CatalogBuilder.h
   ${SRC_DIR}/Launchy/CatalogBuilder.cpp
   ${SRC_DIR}/Launchy/CharLineEdit.h

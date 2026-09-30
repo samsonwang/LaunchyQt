@@ -92,6 +92,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_pHotKey(new QHotkey(this)),
       m_rebuildTimer(new QTimer(this)),
       m_dropTimer(new QTimer(this)),
+      m_searchTimer(new QTimer(this)),
       m_alwaysShowLaunchy(false),
       m_dragging(false),
       m_menuOpen(false),
@@ -266,6 +267,14 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     connect(m_rebuildTimer, &QTimer::timeout,
             this, &LaunchyWidget::scheduledBuildCatalog);
     startRebuildTimer();
+
+    // debounce the catalog search while typing. A short single-shot
+    // window means only the final query after the user pauses triggers the
+    // (potentially expensive) scan, instead of one search per keystroke.
+    m_searchTimer->setSingleShot(true);
+    m_searchTimer->setInterval(60);
+    connect(m_searchTimer, &QTimer::timeout,
+            this, &LaunchyWidget::doSearch);
 
     // start update checker
     UpdateChecker::instance().startup();
@@ -766,7 +775,8 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
     }
 
     else if (!event->text().isEmpty()){
-        processInput();
+        // Plain character typing: debounce so rapid input runs one search
+        processInput(true);
     }
 
 }
@@ -830,6 +840,13 @@ void LaunchyWidget::doTab() {
 }
 
 void LaunchyWidget::doEnter() {
+    // if a debounced search is still pending (user typed fast then hit
+    // Enter), flush it now so we launch against the final query, not a stale one.
+    if (m_searchTimer->isActive()) {
+        m_searchTimer->stop();
+        doSearch();
+    }
+
     hideAlternativeList();
 
     if ((!m_inputData.isEmpty() && !m_searchResult.isEmpty())
@@ -842,10 +859,28 @@ void LaunchyWidget::doEnter() {
     }
 }
 
-void LaunchyWidget::processInput() {
+void LaunchyWidget::processInput(bool debounce) {
     qDebug() << "LaunchyWidget::processInput, inputbox text:" << m_inputBox->text();
 
     m_inputData.parse(m_inputBox->text());
+
+    if (debounce) {
+        // defer the search until typing pauses. Refresh the query text
+        // now so highlight/decorate use the latest input; the catalog scan
+        // itself only runs when the debounce timer fires (final query).
+        QString searchText = m_inputData.isEmpty()
+            ? QString() : m_inputData.last().getText();
+        g_searchText = searchText.toLower();
+        m_searchTimer->start();
+        return;
+    }
+
+    doSearch();
+}
+
+// Immediate full search + UI refresh. Shared by explicit single actions and by
+// the debounce timer once typing pauses.
+void LaunchyWidget::doSearch() {
     searchOnInput();
     updateOutput();
 
@@ -860,6 +895,12 @@ void LaunchyWidget::processInput() {
 }
 
 void LaunchyWidget::searchOnInput() {
+    // An explicit (immediate) search cancels any pending debounced search so a
+    // deliberate action is never overwritten by a stale deferred run.
+    if (m_searchTimer->isActive()) {
+        m_searchTimer->stop();
+    }
+
     QString searchText = m_inputData.isEmpty() ? "" : m_inputData.last().getText();
     QString searchTextLower = searchText.toLower();
     g_searchText = searchTextLower;
@@ -889,7 +930,7 @@ void LaunchyWidget::searchOnInput() {
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
-        std::sort(m_searchResult.begin(), m_searchResult.end(), CatLessRef);
+        std::sort(m_searchResult.begin(), m_searchResult.end(), CatItemCompareRef);
         g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
         // Finally, if the search text looks like a file or directory name,
@@ -1236,13 +1277,13 @@ void LaunchyWidget::onInputBoxInputMethod(QInputMethodEvent* event) {
     if (!commitStr.isEmpty()) {
         qDebug() << "LaunchyWidget::onInputBoxInputMethod, commit string:"
                  << commitStr << ", inputbox text:" << m_inputBox->text();
-        processInput();
+        processInput(true);
     }
 }
 
 void LaunchyWidget::onInputBoxTextEdited(const QString& str) {
     qDebug() << "LaunchyWidget::onInputBoxTextEdited, str:" << str;
-    processInput();
+    processInput(true);
 }
 
 void LaunchyWidget::onSecondInstance() {

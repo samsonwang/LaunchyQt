@@ -121,11 +121,13 @@ void FileSearch::search(const QString& searchText,
         itemList = dir.entryList(filters, QDir::DirsLast | QDir::IgnoreCase | QDir::LocaleAware);
     }
 
-    for (int i = itemList.length()-1; i >= 0; --i) {
+    QStringList words = filePart.split(' ', QString::SkipEmptyParts);
+
+    for (int i = itemList.length() - 1; i >= 0; --i) {
         QString fileName = itemList[i];
         QString filePath = QDir::cleanPath(dir.absolutePath() + "/" + fileName);
         CatItem item(QDir::toNativeSeparators(filePath), fileName);
-        if (filePart.length() == 0 || Catalog::matches(&item, filePart.toLower())) {
+        if (Catalog::matchWords(&item, words)) {
             item.pluginName = NAME_LAUNCHYFILE;
             searchResults.push_front(item);
         }
@@ -146,7 +148,7 @@ void FileSearch::search(const QString& searchText,
     }
     else if (sort) {
         // If we're not matching exactly and there's a filename then do a priority sort
-        std::sort(searchResults.begin(), searchResults.end(), CatLessRef);
+        std::sort(searchResults.begin(), searchResults.end(), CatItemCompareRef);
     }
 
     inputData.last().setLabel(LABEL_FILE);

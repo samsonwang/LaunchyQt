@@ -24,6 +24,7 @@
 #include <QElapsedTimer>
 
 #include "Catalog.h"
+#include "CatalogFast.h"
 #include "AppBase.h"
 #include "Directory.h"
 #include "SettingsManager.h"
@@ -44,7 +45,7 @@ namespace launchy {
 CatalogBuilder* CatalogBuilder::s_instance = nullptr;
 
 CatalogBuilder::CatalogBuilder()
-    : m_catalog(new SlowCatalog),
+    : m_catalog(new CatalogFast),
       m_thread(new QThread),
       m_progress(CATALOG_PROGRESS_MAX) {
     moveToThread(m_thread);

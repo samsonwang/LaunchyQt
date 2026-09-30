@@ -99,9 +99,8 @@ void Catalog::incrementTimestamp() {
 }
 
 // Case-insensitive subsequence test: every character of `word` must appear, in
-// order, somewhere inside `name`. Both strings are expected to be lower case
-// already, but `word` is lowered defensively so the helper is self contained.
-static bool wordMatches(const QString& name, const QString& word) {
+// order, somewhere inside `name`. Both strings are expected to be lower case already.
+static bool matchWordHelper(const QString& name, const QString& word) {
     if (word.isEmpty())
         return true;
     int cur = 0;
@@ -115,21 +114,54 @@ static bool wordMatches(const QString& name, const QString& word) {
     return false;
 }
 
-// Count how many whitespace-separated words of `searchText` are subsequences of
-// the item's search name (or its transliterated form). Used to rank items when
-// the whole query is not a contiguous substring (e.g. out-of-order, multi-word).
-static int countMatchingWords(const CatItem* item, const QString& searchText) {
-    QStringList words = searchText.split(' ', QString::SkipEmptyParts);
+// Count how many pre-split, pre-lowered query words are subsequences of the
+// item's search name (or its transliterated form). Used to rank items when the
+// whole query is not a contiguous substring (e.g. out-of-order, multi-word).
+// The caller is responsible for splitting/toLowering the query once; passing the
+// word list in avoids re-splitting on every rank comparison.
+static int countMatchWords(const CatItem* item,
+                              const QStringList& lowerWords) {
     int count = 0;
-    for (QString word : words) {
-        word = word.toLower();
+    for (const QString& word : lowerWords) {
         if (word.isEmpty())
             continue;
-        if (wordMatches(item->searchName, word) ||
-            wordMatches(item->searchNameTrans, word))
+        if (matchWordHelper(item->searchName, word) ||
+            matchWordHelper(item->searchNameTrans, word))
             ++count;
     }
     return count;
+}
+
+// Precomputed ranking keys for one matched item. Building these ONCE per item
+// (instead of recomputing them on every std::sort comparison) is the whole point
+// of the sort-key cache: a single sort compares each item O(log n) times,
+// so without caching the same indexOf()/matchWordHelper() results are recomputed
+// dozens of times per item.
+struct CatalogRank {
+    CatItem* item;
+    bool exactEqual;   // searchName == query || searchNameTrans == query
+    int findPos;       // min(indexOf in searchName, indexOf in searchNameTrans)
+    int wordMatches;   // countMatchWords result (valid only when findPos == -1)
+    int usage;
+    int nameLen;
+};
+
+static CatalogRank makeRank(CatItem* item, const QString& searchText,
+                            const QStringList& lowerWords) {
+    CatalogRank r;
+    r.item = item;
+    r.exactEqual = (item->searchName == searchText ||
+                    item->searchNameTrans == searchText);
+    r.findPos = std::min(item->searchName.indexOf(searchText),
+                         item->searchNameTrans.indexOf(searchText));
+    r.usage = item->usage;
+    r.nameLen = item->shortName.size();
+    // Only needed when neither name contains the query as a contiguous substring;
+    // the comparator never reads wordMatches otherwise, so skip the work.
+    r.wordMatches = (r.findPos == -1)
+        ? countMatchWords(item, lowerWords)
+        : 0;
+    return r;
 }
 
 // Return true if the specified catalog item matches the specified string.
@@ -139,15 +171,18 @@ static int countMatchingWords(const CatItem* item, const QString& searchText) {
 // in ANY order. This lets a user type any subset of a file name's words, in any
 // order, and still find the file, e.g. "nassim reviews book" matches
 // "book reviews of Nassim Taleb.txt".
-bool Catalog::matches(CatItem* item, const QString& match) {
-    QStringList words = match.split(' ', QString::SkipEmptyParts);
-    if (words.isEmpty())
+// Subsequence test using pre-split, pre-lowered query words.
+// Called in the hot search loop where the query has already been split and
+// lowercased once, avoiding N redundant split()/toLower() calls.
+bool Catalog::matchWords(const CatItem* item, const QStringList& lowerWords) {
+    if (lowerWords.isEmpty())
         return false;
 
-    for (QString word : words) {
-        word = word.toLower();
-        if (!wordMatches(item->searchName, word) &&
-            !wordMatches(item->searchNameTrans, word)) {
+    for (const QString& word : lowerWords) {
+        if (word.isEmpty())
+            continue;
+        if (!matchWordHelper(item->searchName, word)
+            && !matchWordHelper(item->searchNameTrans, word)) {
             return false;
         }
     }
@@ -158,13 +193,115 @@ bool Catalog::matches(CatItem* item, const QString& match) {
 // Search the catalog, for items matching the text parameter and
 // populate the out parameter
 void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
+    // text paramater is expected to be lower case already
+
     // Prevent other threads accessing the catalog
     QMutexLocker locker(&m_mutex);
 
     QList<CatItem*> catMatches = search(text);
     qDebug() << "Catalog::searchCatalogs, search matched count:" << catMatches.count();
-    // Now prioritize the catalog items
-    std::sort(catMatches.begin(), catMatches.end(), CatLessPtr);
+
+    // Prioritize the catalog items.
+    // Precompute each item's ranking keys ONCE, then sort the cached view.
+    // This replaces CatItemComparePtr (which recomputes indexOf()/matchWordHelper() on every
+    // comparison) with a comparator that only reads the cached keys.
+    // Read the result cap once; it bounds both the partial_sort and the output.
+    int resultNum = g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt();
+    if (catMatches.count() > 1) {
+        QStringList words = text.split(' ', QString::SkipEmptyParts);
+
+        QVector<CatalogRank> ranked;
+        ranked.reserve(catMatches.count());
+        for (CatItem* it : catMatches) {
+            ranked.append(makeRank(it, text, words));
+        }
+
+        // Only the top `resultNum` items are ever displayed, so sort just those
+        // instead of the whole match set. partial_sort drops the cost
+        // from O(k log k) to O(k log resultNum) (resultNum is typically 10..20).
+        int n = qMin(resultNum, ranked.count());
+        std::partial_sort(ranked.begin(), ranked.begin() + n, ranked.end(),
+            [&](const CatalogRank& a, const CatalogRank& b) {
+                // Mirrors CatItemComparePtr, but reads precomputed keys.
+                if (a.usage < 0 && b.usage >= 0)
+                    return false;
+                if (b.usage < 0 && a.usage >= 0)
+                    return true;
+
+                if (a.exactEqual && !b.exactEqual)
+                    return true;
+                if (!a.exactEqual && b.exactEqual)
+                    return false;
+
+                int localFind = a.findPos;
+                int otherFind = b.findPos;
+
+                if (text.size() == 1) {
+                    // Match at the start
+                    if (localFind == 0 && otherFind != 0)
+                        return true;
+                    else if (localFind != 0 && otherFind == 0)
+                        return false;
+
+                    // Higher usage
+                    if (a.usage > b.usage)
+                        return true;
+                    if (a.usage < b.usage)
+                        return false;
+                }
+
+                // Contiguous text anywhere in the item name
+                if (localFind != -1 && otherFind == -1)
+                    return true;
+                else if (localFind == -1 && otherFind != -1)
+                    return false;
+
+                if (localFind != -1 && otherFind != -1) {
+                    // Both have word matches
+                    // Higher usage
+                    if (a.usage > b.usage)
+                        return true;
+                    if (a.usage < b.usage)
+                        return false;
+
+                    // Contiguous text nearer the start of the item name
+                    if (localFind < otherFind)
+                        return true;
+                    else if (otherFind < localFind)
+                        return false;
+                }
+                else {
+                    // Neither item contains the whole query as a contiguous substring
+                    int localWords = a.wordMatches;
+                    int otherWords = b.wordMatches;
+                    if (localWords != otherWords)
+                        return localWords > otherWords;
+
+                    // Higher usage
+                    if (a.usage > b.usage)
+                        return true;
+                    if (a.usage < b.usage)
+                        return false;
+                }
+
+                int localLen = a.nameLen;
+                int otherLen = b.nameLen;
+
+                // Favour shorter item names
+                if (localLen < otherLen)
+                    return true;
+                if (localLen > otherLen)
+                    return false;
+
+                // Absolute tiebreaker to prevent loops
+                return a.item->fullPath < b.item->fullPath;
+            });
+
+        // Map the cached, sorted order back onto the pointer list
+        for (int i = 0; i < ranked.count(); ++i) {
+            catMatches[i] = ranked[i].item;
+        }
+    }
 
     // Check for history matches, and put them in the front
     QString location = "History/" + text;
@@ -179,9 +316,8 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
         }
     }
 
-    // Load up the results
-    int max = g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt();
-    for (int i = 0; i < max && i < catMatches.count(); ++i) {
+    // Load up the results (first `resultNum`, already in priority order)
+    for (int i = 0; i < resultNum && i < catMatches.count(); ++i) {
         result.push_back(*catMatches[i]);
     }
 }
@@ -266,345 +402,24 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
     return decoratedText;
 }
 
-// Key of an item in SlowCatalog's position index. Items are equal when both
-// fullPath and shortName match (CatItem::operator==), a control character
-// separates the fields since it can not occur in a path or a file name
-static QString indexKey(const CatItem& item) {
-    return item.fullPath + QChar(0x1f) + item.shortName;
-}
 
-SlowCatalog::SlowCatalog()
-    : Catalog() {
+CatalogItem::CatalogItem()
+    : m_timestamp(0) {
 
 }
 
-int SlowCatalog::count() {
-    // Recursive lock: safe on its own (options dialog) and when save() calls
-    // this while already holding m_mutex
-    QMutexLocker locker(&m_mutex);
-
-    return m_catalogItems.count();
-}
-
-void SlowCatalog::clear() {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    m_catalogItems.clear();
-    m_index.clear();
-}
-
-void SlowCatalog::addItem(const CatItem& item) {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    const QString key = indexKey(item);
-    auto it = m_index.find(key);
-
-    if (it != m_index.end()) {
-        if (m_timestamp > 0) {
-            // Rebuild phase: refresh the item in place and keep its usage count
-            const int usage = m_catalogItems[it.value()].usage;
-            m_catalogItems[it.value()] = CatalogItem(item, m_timestamp);
-            m_catalogItems[it.value()].usage = usage;
-        }
-        else {
-            // While loading the catalog (timestamp 0) an already indexed item
-            // is appended again, exactly like the previous linear scan did.
-            // The index keeps pointing at the first occurrence
-            m_catalogItems.push_back(CatalogItem(item, m_timestamp));
-        }
-        return;
-    }
-
-    // A new item: append it and remember where it is
-    m_index.insert(key, m_catalogItems.size());
-    m_catalogItems.push_back(CatalogItem(item, m_timestamp));
-}
-
-void SlowCatalog::purgeOldItems() {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    int removed = 0;
-    for (int i = m_catalogItems.size() - 1; i >= 0; --i) {
-        if (m_catalogItems.at(i).m_timestamp < m_timestamp) {
-            // Don't log every removed path: a changed directory would emit
-            // tens of thousands of messages while the mutex is held,
-            // blocking searches in the GUI thread
-            m_catalogItems.remove(i);
-            ++removed;
-        }
-    }
-
-    if (removed == 0) {
-        return;
-    }
-
-    // Removing entries shifted the positions, rebuild the index. The first
-    // occurrence wins, exactly like the linear scan used to find it
-    m_index.clear();
-    for (int i = 0; i < m_catalogItems.size(); ++i) {
-        const QString key = indexKey(m_catalogItems[i]);
-        if (!m_index.contains(key)) {
-            m_index.insert(key, i);
-        }
-    }
-
-    qInfo() << "SlowCatalog::purgeOldItems, removed" << removed
-        << "stale items";
-}
-
-
-void SlowCatalog::incrementUsage(const CatItem& item) {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    auto it = m_index.find(indexKey(item));
-    if (it == m_index.end()) {
-        return;
-    }
-
-    CatalogItem& found = m_catalogItems[it.value()];
-    // If an item is currently demoted, return it to a usage count of 1
-    if (found.usage < 0) {
-        found.usage = 1;
-    }
-    else {
-        ++found.usage;
-    }
-}
-
-void SlowCatalog::demoteItem(const CatItem& item) {
-    // Prevent catalog refreshes whilst searching
-    QMutexLocker locker(&m_mutex);
-
-    auto it = m_index.find(indexKey(item));
-    if (it == m_index.end()) {
-        return;
-    }
-
-    CatalogItem& found = m_catalogItems[it.value()];
-    // If an item is not demoted, demote it
-    if (found.usage > 0) {
-        found.usage = -1;
-    }
-    else { // otherwise demote it further
-        --found.usage;
-    }
-}
-
-const CatItem& SlowCatalog::getItem(int i) {
-    // Recursive lock: save() calls this while already holding m_mutex
-    QMutexLocker locker(&m_mutex);
-
-    return m_catalogItems[i];
-}
-
-// Return a list of catalog items that match searchText.
-// searchCatalogs() already holds m_mutex, the recursive lock keeps direct
-// callers safe as well
-QList<CatItem*> SlowCatalog::search(const QString& searchText) {
-    QMutexLocker locker(&m_mutex);
-
-    QList<CatItem*> result;
-    if (!searchText.isEmpty()) {
-        QString lowSearch = searchText.toLower();
-        for (int i = 0; i < m_catalogItems.count(); ++i) {
-            if (matches(&m_catalogItems[i], lowSearch)) {
-                result.push_back(&m_catalogItems[i]);
-            }
-        }
-    }
-
-    return result;
-}
-
-
-FastCatalog::FastCatalog()
-    : Catalog(),
-      m_snapshotDirty(true) {
+CatalogItem::CatalogItem(const CatItem& item, int time)
+    : CatItem(item),
+      m_timestamp(time) {
 
 }
 
-int FastCatalog::count() {
-    return m_catalogItems.count();
+
+bool CatItemCompareRef(CatItem& a, CatItem& b) {
+    return CatItemComparePtr(&a, &b);
 }
 
-void FastCatalog::clear() {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    m_catalogItems.clear();
-    m_snapshot.clear();
-    m_snapshotDirty = true;
-}
-
-void FastCatalog::addItem(const CatItem& item) {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    // The set itself provides the duplicate detection that SlowCatalog
-    // needs a key -> position index for: only fullPath and shortName are
-    // hashed and compared (see qHash in Catalog.h), so an equal item is
-    // found in O(1) even while a rebuild adds tens of thousands of items
-    const CatalogItem stored(item, m_timestamp);
-    auto it = m_catalogItems.find(stored);
-
-    if (it != m_catalogItems.end()) {
-        if (m_timestamp > 0) {
-            // Rebuild phase: refresh every field of the existing item but
-            // keep its usage count, exactly like SlowCatalog does.
-            // QSet::insert keeps the old key object of an equal item, so
-            // the stale entry has to be removed before inserting again
-            CatalogItem refreshed = stored;
-            refreshed.usage = it->usage;
-            m_catalogItems.erase(it);
-            m_catalogItems.insert(refreshed);
-            m_snapshotDirty = true;
-        }
-        // While loading the catalog (timestamp == 0) the first entry of
-        // an equal pair wins, the set cannot keep the duplicates that
-        // SlowCatalog appends in this phase
-        return;
-    }
-
-    m_catalogItems.insert(stored);
-    m_snapshotDirty = true;
-}
-
-void FastCatalog::purgeOldItems() {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    // Collect the stale items first, removing entries while iterating
-    // the set would invalidate the iterator
-    QSet<CatalogItem> stale;
-    for (const CatalogItem& item : m_catalogItems) {
-        if (item.m_timestamp < m_timestamp) {
-            // Don't log every removed path: a changed directory would emit
-            // tens of thousands of messages while the mutex is held,
-            // blocking searches in the GUI thread
-            stale.insert(item);
-        }
-    }
-
-    const int removed = stale.count();
-    if (removed == 0) {
-        return;
-    }
-    for (const CatalogItem& item : stale) {
-        m_catalogItems.remove(item);
-    }
-    // Give the memory of the stale entries back to the system
-    m_catalogItems.squeeze();
-    m_snapshotDirty = true;
-    qInfo() << "FastCatalog::purgeOldItems, removed" << removed
-        << "stale items";
-}
-
-void FastCatalog::incrementUsage(const CatItem& item) {
-    // Prevent other threads accessing the catalog
-    QMutexLocker locker(&m_mutex);
-
-    // Only fullPath and shortName take part in the comparison
-    auto it = m_catalogItems.find(CatalogItem(item, 0));
-    if (it == m_catalogItems.end()) {
-        return;
-    }
-
-    // The set hands out its elements const only, so replace the entry
-    // with an updated copy instead of modifying it in place
-    CatalogItem updated = *it;
-    // If an item is currently demoted, return it to a usage count of 1
-    if (updated.usage < 0) {
-        updated.usage = 1;
-    }
-    else {
-        ++updated.usage;
-    }
-    m_catalogItems.erase(it);
-    m_catalogItems.insert(updated);
-    m_snapshotDirty = true;
-}
-
-void FastCatalog::demoteItem(const CatItem& item) {
-    // Prevent catalog refreshes whilst searching
-    QMutexLocker locker(&m_mutex);
-
-    // Only fullPath and shortName take part in the comparison
-    auto it = m_catalogItems.find(CatalogItem(item, 0));
-    if (it == m_catalogItems.end()) {
-        return;
-    }
-
-    CatalogItem updated = *it;
-    // If an item is not demoted, demote it
-    if (updated.usage > 0) {
-        updated.usage = -1;
-    }
-    else { // otherwise demote it further
-        --updated.usage;
-    }
-    m_catalogItems.erase(it);
-    m_catalogItems.insert(updated);
-    m_snapshotDirty = true;
-}
-
-const CatItem& FastCatalog::getItem(int i) {
-    rebuildSnapshot();
-    return m_snapshot[i];
-}
-
-// Return a list of catalog items that match searchText
-// this method should only be called from within a QMutexLocker protected section
-QList<CatItem*> FastCatalog::search(const QString& searchText) {
-    QList<CatItem*> result;
-    if (searchText.isEmpty()) {
-        return result;
-    }
-
-    // Search the flat copy: the set only offers const elements but the
-    // caller reads through CatItem* pointers (and sorts them)
-    rebuildSnapshot();
-
-    QString lowSearch = searchText.toLower();
-    for (int i = 0; i < m_snapshot.count(); ++i) {
-        if (matches(&m_snapshot[i], lowSearch)) {
-            result.push_back(&m_snapshot[i]);
-        }
-    }
-
-    return result;
-}
-
-// Rebuild the flat copy of the set, must be called with m_mutex held
-void FastCatalog::rebuildSnapshot() {
-    if (!m_snapshotDirty) {
-        return;
-    }
-
-    // resize() keeps the allocated capacity of the previous snapshot
-    m_snapshot.resize(m_catalogItems.count());
-    int i = 0;
-    for (const CatalogItem& item : m_catalogItems) {
-        m_snapshot[i] = item;
-        ++i;
-    }
-    m_snapshotDirty = false;
-}
-
-bool CatLessRef(CatItem& a, CatItem& b) {
-    bool less = CatLessPtr(&a, &b);
-    /*	if (less)
-    qDebug() << a.lowName << "(" << a.usage << ") < " << b.lowName << " (" << b.usage << ")";
-    else
-    qDebug() << b.lowName << "(" << b.usage << ") < " << a.lowName << " (" << a.usage << ")";
-    */
-    return less;
-}
-
-bool CatLessPtr(CatItem* a, CatItem* b) {
+bool CatItemComparePtr(CatItem* a, CatItem* b) {
     // Items with negative usage are lowest priority
     if (a->usage < 0 && b->usage >= 0)
         return false;
@@ -666,8 +481,10 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
         // Neither item contains the whole query as a contiguous substring
         // (typical for out-of-order / multi-word queries). Rank by how many
         // query words match, then by usage, so closer matches surface first.
-        int localWords = countMatchingWords(a, g_searchText);
-        int otherWords = countMatchingWords(b, g_searchText);
+        QStringList words = g_searchText.split(' ', QString::SkipEmptyParts);
+
+        int localWords = countMatchWords(a, words);
+        int otherWords = countMatchWords(b, words);
         if (localWords != otherWords)
             return localWords > otherWords;
 
@@ -689,17 +506,6 @@ bool CatLessPtr(CatItem* a, CatItem* b) {
 
     // Absolute tiebreaker to prevent loops
     return a->fullPath < b->fullPath;
-}
-
-CatalogItem::CatalogItem()
-    : m_timestamp(0) {
-
-}
-
-CatalogItem::CatalogItem(const CatItem& item, int time)
-    : CatItem(item),
-      m_timestamp(time) {
-
 }
 
 } // namespace launchy

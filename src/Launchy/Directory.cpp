@@ -6,14 +6,14 @@ namespace launchy {
 Directory::Directory()
     : indexDirs(false),
       indexExe(false),
-      depth(5) {
+      depth(3) {
 }
 
 Directory::Directory(const QString& n)
     : name(n),
       indexDirs(false),
       indexExe(true),
-      depth(5) {
+      depth(3) {
 }
 
 Directory::Directory(const QString& n, const QStringList& t,
