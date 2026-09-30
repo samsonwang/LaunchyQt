@@ -16,9 +16,11 @@
       PluginPy.dll / PluginPy.pdb
       plugins\<plugin name>\*.dll, *.pdb, *.png
       python\launchy.pyd, python\launchy_util.py
+      translations\launchy_*.qm (compiled from translations\*.ts by the build)
 
     Third-party files (never copied, left untouched in the run directory):
-      Qt5*.dll, qt.conf, qtlibs\, styles\, translations\
+      Qt5*.dll, qt.conf, qtlibs\, styles\
+      translations\qt_*.qm (Qt's own translations)
       python\PySide2\, python\shiboken2\
       python3.dll, python36.dll, python36.zip, vcruntime140.dll
       libEGL.dll, libGLESv2.dll, opengl32sw.dll, D3Dcompiler_47.dll
@@ -171,6 +173,17 @@ function Get-ProjectArtifactList {
                     $relativePaths.Add(('plugins\{0}\{1}' -f $pluginDir.Name, $file.Name))
                 }
             }
+        }
+    }
+
+    # This project's own compiled translations (translations\*.ts are compiled to
+    # launchy_*.qm and copied next to the executable by the build). The Qt translation
+    # files (translations\qt_*.qm) that windeployqt puts into the same directory are
+    # third-party files and are therefore never copied.
+    $translationRoot = Join-Path $SourceDir 'translations'
+    if (Test-Path -LiteralPath $translationRoot -PathType Container) {
+        foreach ($file in Get-ChildItem -LiteralPath $translationRoot -File -Filter 'launchy_*.qm') {
+            $relativePaths.Add(('translations\{0}' -f $file.Name))
         }
     }
 

@@ -47,12 +47,12 @@ GRTAGS
 *.opendb
 ipch
 x64
-[B|b]uild*
-[D|d]ebug*
-[R|r]elease*
-.vs
+[Bb]uild*/
+[Dd]ebug*/
+[Rr]elease*/
+.vs/
 GeneratedFiles
-[P|p]recompiled.h.cpp
+[Pp]recompiled.h.cpp
 *.aps
 
 # Python

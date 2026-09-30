@@ -319,40 +319,51 @@ add_custom_target (PluginPy.Util
 file (GLOB TS_FILES_LAUNCHY
   ${TRANS_DIR}/*.ts)
 
-#qt_create_translation(QM_FILES_LAUNCHY
-#  ${SRC_DIR}/Launchy
-#  ${SRC_DIR}/LaunchyLib
-#  ${SRC_DIR}/PluginPy
-#  ${TS_FILE_LAUNCHY})
+if (QT_MAJOR_VERSION EQUAL 5)
 
-#qt_add_translations(Launchy
-#  TS_FILES ${TS_FILES_LAUNCHY}
-#  QM_FILES_OUTPUT_VARIABLE QM_FILES_LAUNCHY
-#  SOURCES ${SOURCES_LAUNCHY})
+  # Qt5: qt5_create_translation both refreshes the .ts sources and compiles
+  # the .qm files. The positional signature is (QM_VAR ts_files... sources...).
+  qt5_create_translation (QM_FILES_LAUNCHY
+    ${TS_FILES_LAUNCHY}
+    ${SRC_DIR}/Launchy
+    ${SRC_DIR}/LaunchyLib
+    ${SRC_DIR}/PluginPy)
 
-if (QT_MAJOR_VERSION EQUAL 6)
+  # Drive the .qm generation and copy them next to the executable.
+  add_custom_target (Launchy_translations ALL DEPENDS ${QM_FILES_LAUNCHY})
+  add_dependencies (Launchy Launchy_translations)
 
-qt_add_lupdate(Launchy
-  TS_FILES ${TS_FILES_LAUNCHY}
-  OPTIONS NO_GLOBAL_TARGET)
+  add_custom_command (TARGET Launchy_translations POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${QM_FILES_LAUNCHY}
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations
+    COMMENT "copy generated .qm translation files to translations directory")
 
-qt_add_lrelease(Launchy
-  TS_FILES ${TS_FILES_LAUNCHY}
-  QM_FILES_OUTPUT_VARIABLE QM_FILES_LAUNCHY
-  OPTIONS NO_GLOBAL_TARGET)
+else ()
 
-#set_source_files_properties(${TS_FILES_LAUNCHY} PROPERTIES
-#  OUTPUT_LOCATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations)
+  qt_add_lupdate (Launchy
+    TS_FILES ${TS_FILES_LAUNCHY}
+    OPTIONS NO_GLOBAL_TARGET)
 
-# add_custom_target (LaunchyQM
-#  DEPENDS ${QM_FILES_LAUNCHY})
+  qt_add_lrelease (Launchy
+    TS_FILES ${TS_FILES_LAUNCHY}
+    QM_FILES_OUTPUT_VARIABLE QM_FILES_LAUNCHY
+    OPTIONS NO_GLOBAL_TARGET)
 
-message (STATUS "QM_FILES_LAUNCHY: ${QM_FILES_LAUNCHY}")
-add_custom_command (TARGET Launchy_lrelease POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${QM_FILES_LAUNCHY} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations)
+  add_custom_command (TARGET Launchy_lrelease POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${QM_FILES_LAUNCHY}
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations
+    COMMENT "copy generated .qm translation files to translations directory")
 
 endif () # QT_MAJOR_VERSION
+
+# message (STATUS "QM_FILES_LAUNCHY: ${QM_FILES_LAUNCHY}")
+
 
 ##################################################
 # QSingleApplication

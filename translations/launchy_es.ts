@@ -42,102 +42,102 @@
         <translation type="unfinished">Interfaz de usuario</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="188"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="176"/>
         <source>Always display Launchy window</source>
         <translation type="unfinished">Mostrar siempre la ventana de Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="201"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="189"/>
         <source>Hide when lose focus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="217"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="205"/>
         <source>Always on top</source>
         <translation type="unfinished">Siempre visible</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="241"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="229"/>
         <source>Always center</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="263"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="251"/>
         <source>horizontally</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="282"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="270"/>
         <source>vertically</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="316"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="304"/>
         <source>Only allow dragging whilst Shift is pressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="128"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="122"/>
         <source> + </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="471"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="463"/>
         <source>Suggestion List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="510"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="502"/>
         <source>Underline matched text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="543"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="535"/>
         <source>Suggestions display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="591"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="583"/>
         <source>Name and path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="596"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="588"/>
         <source>Path only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="601"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="593"/>
         <source>Name only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="643"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="635"/>
         <source>Auto open delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="674"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="666"/>
         <source> ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="812"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="804"/>
         <source>Visual Effects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="830"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="822"/>
         <source>Opaqueness</source>
         <translation type="unfinished">Opacidad</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="871"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="863"/>
         <source>Fade in time</source>
         <translation type="unfinished">Duración del fundido de entrada</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="906"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="898"/>
         <source>Fade out time</source>
         <translation type="unfinished">Duración del fundido de salida</translation>
     </message>
@@ -147,274 +147,264 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="382"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="373"/>
         <source>Hide Tray Icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="412"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="403"/>
         <source>Application Style:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1540"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1533"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1548"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1541"/>
         <source>Check for updates on startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1559"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1552"/>
         <source>Delay:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1575"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1568"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1591"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1584"/>
         <source>Every:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1610"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1603"/>
         <source> h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1631"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1624"/>
         <source>Proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1637"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1630"/>
         <source>Proxy type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1671"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1664"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1690"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1683"/>
         <source>:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1718"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1711"/>
         <source>Proxy server requires password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1725"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1718"/>
         <source>Username:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1759"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1752"/>
         <source>Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1806"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1799"/>
         <source>Check for updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1829"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1836"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1850"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1857"/>
         <source>System Options</source>
         <translation type="unfinished">Opciones del sistema</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1867"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1874"/>
         <source>Auto rescan catalog every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1919"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1926"/>
         <source>Show hidden files in browse mode</source>
         <translation type="unfinished">Mostrar archivos ocultos en el modo de exploración</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1901"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1908"/>
         <source> min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1926"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1933"/>
         <source>Show network in browse mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1933"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1940"/>
         <source>Portable mode (USB stick)</source>
         <translation type="unfinished">Modo portátil (lápiz USB)</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1951"/>
-        <source>Logging level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1984"/>
-        <source>Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1989"/>
-        <source>Debug</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1994"/>
-        <source>Normal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="942"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="934"/>
         <source>Skins</source>
         <translation type="unfinished">Temas</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="175"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="163"/>
         <source>Ignore hotkey in full-screen mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="325"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="316"/>
         <source>Screen number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="348"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="339"/>
         <source>Rescan screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="696"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="441"/>
+        <source>Resolve symbol link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="688"/>
         <source>Simultaneously visible items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="734"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="726"/>
         <source>Max number of items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="772"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="764"/>
         <source>Max number of history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="963"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="955"/>
         <source>Select a skin</source>
         <translation type="unfinished">Escoja un tema</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1035"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1027"/>
         <source>Author information</source>
         <translation type="unfinished">Datos del autor</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1097"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1086"/>
         <source>Skin preview</source>
         <translation type="unfinished">Vista previa del tema</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1140"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1129"/>
         <source>Catalog</source>
         <translation type="unfinished">Catálogo</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1148"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1137"/>
         <source>Directories</source>
         <translation type="unfinished">Directorios</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1210"/>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1386"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1200"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1378"/>
         <source>+</source>
         <translation type="unfinished">+</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1231"/>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1406"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1222"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1399"/>
         <source>-</source>
         <translation type="unfinished">-</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1270"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1261"/>
         <source>Rescan Catalog</source>
         <translation type="unfinished">Reconstruir catálogo</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1302"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1293"/>
         <source>Indexing 0 items</source>
         <translation type="unfinished">Indexando 0 elementos</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1328"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1319"/>
         <source>File Types</source>
         <translation type="unfinished">Tipos de archivo</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1415"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1408"/>
         <source>Include executables</source>
         <translation type="unfinished">Incluir ejecutables</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1422"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1415"/>
         <source>Include directories</source>
         <translation type="unfinished">Incluir directorios</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1431"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1424"/>
         <source>Depth:</source>
         <translation type="unfinished">Profundidad:</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1460"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1453"/>
         <source>Plugins</source>
         <translation type="unfinished">Complementos</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1472"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1465"/>
         <source>Available plugins</source>
         <translation type="unfinished">Complementos disponibles</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="1512"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1505"/>
         <source>Plugin options</source>
         <translation type="unfinished">Opciones del complemento</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2012"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1806"/>
+        <source>New version:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1947"/>
+        <source>Enable debug logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1962"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2080"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2030"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2295"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchy.wangzhl.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;launchy.wangzhl.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2332"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2284"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -426,7 +416,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2251"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2203"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -436,17 +426,22 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2269"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2221"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2376"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2247"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2328"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2383"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2335"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -485,80 +480,80 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>launchy::LaunchyWidget</name>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="99"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="204"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1107"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="111"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="219"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1176"/>
         <source>Launchy</source>
         <translation type="unfinished">Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="144"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="943"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="948"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1535"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="156"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1006"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1011"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1665"/>
         <source>Options</source>
         <translation type="unfinished">Opciones</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="150"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="949"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="162"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1012"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="205"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="220"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="349"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="951"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="380"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1014"/>
         <source>Launchy %1
 press %2 to activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1212"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1290"/>
         <source>Launchy is already running!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1545"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1675"/>
         <source>Relaunch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="940"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1522"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1003"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1652"/>
         <source>Show Launchy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="941"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1525"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1004"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1655"/>
         <source>Reload skin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="942"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1530"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1005"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1660"/>
         <source>Rebuild catalog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="944"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1540"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1007"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1670"/>
         <source>Check for updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="945"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1008"/>
         <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="946"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1555"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1009"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1685"/>
         <source>Exit</source>
         <translation type="unfinished">Salir</translation>
     </message>
@@ -566,12 +561,12 @@ press %2 to activate</source>
 <context>
     <name>launchy::OptionDialog</name>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="355"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="357"/>
         <source>Plugin options</source>
         <translation type="unfinished">Opciones del complemento</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="415"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="424"/>
         <source>Index has %n item(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -579,42 +574,47 @@ press %2 to activate</source>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="549"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Up</source>
         <translation type="unfinished">Arriba</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="549"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Down</source>
         <translation type="unfinished">Abajo</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="549"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Left</source>
         <translation type="unfinished">Izquierda</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="549"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Right</source>
         <translation type="unfinished">Derecha</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="619"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="628"/>
         <source>Screen %1: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="685"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="643"/>
+        <source>Cursor screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="703"/>
         <source>Launchy</source>
         <translation type="unfinished">Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="686"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="704"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="830"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="854"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation type="unfinished">
@@ -623,37 +623,37 @@ press %2 to activate</source>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="907"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="963"/>
         <source>No Proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="908"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="964"/>
         <source>System Proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="909"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="965"/>
         <source>HTTP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="910"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="966"/>
         <source>SOCKS5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1046"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1106"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1047"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1107"/>
         <source>(%1-bit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/SettingsManager.cpp" line="211"/>
+        <location filename="../src/Launchy/SettingsManager.cpp" line="366"/>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>
@@ -663,12 +663,17 @@ Please check directory:
 <context>
     <name>launchy::UpdateChecker</name>
     <message>
-        <location filename="../src/Launchy/UpdateChecker.cpp" line="151"/>
+        <location filename="../src/Launchy/UpdateChecker.cpp" line="181"/>
+        <source>Failed to check for updates.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/UpdateChecker.cpp" line="231"/>
         <source>A new version is available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/UpdateChecker.cpp" line="155"/>
+        <location filename="../src/Launchy/UpdateChecker.cpp" line="236"/>
         <source>No update is available.</source>
         <translation type="unfinished"></translation>
     </message>
