@@ -31,6 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace pluginpy {
 
+void initSettings(QSettings* setting) {
+    PluginMgr::instance().initSettings(setting);
+}
+
 PluginLoader::PluginLoader(const QString& pluginName, const QString& pluginPath)
     : m_pluginName(pluginName),
       m_pluginPath(pluginPath),
@@ -63,19 +67,6 @@ bool PluginLoader::unload() {
     }
 
     return ret;
-}
-
-void PluginLoader::initSettings(QSettings* setting) {
-    try {
-        PluginMgr::instance().initSettings(setting);
-    }
-    catch (const py::error_already_set& e) {
-        PyErr_Print();
-        PyErr_Clear();
-        const char* errInfo = e.what();
-        qWarning() << "PluginLoader::initSettings, exception catched, error info:"
-            << errInfo;
-    }
 }
 
 bool PluginLoader::load() {

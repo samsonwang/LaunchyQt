@@ -50,7 +50,7 @@ void PluginHandler::loadPlugins() {
     g_settings->endArray();
 
     // init QSetting for python plugin
-    pluginpy::PluginLoader::initSettings(g_settings.data());
+    pluginpy::initSettings(g_settings.data());
 
     foreach(QString directory, SettingsManager::instance().directory("plugins")) {
         // Load up the plugins in the plugins/ directory
@@ -156,8 +156,6 @@ void PluginHandler::endDialog(const QString& name, bool accept) {
     }
     m_plugins[name].sendMsg(MSG_END_DIALOG, (void*)accept);
 }
-
-
 
 void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& pluginPath) {
     qDebug() << "PluginHandler::loadPythonPlugin, plugin:" << pluginName << "(" << pluginPath << ")";

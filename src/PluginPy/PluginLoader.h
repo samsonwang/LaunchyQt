@@ -28,6 +28,8 @@ class QSettings;
 
 namespace pluginpy {
 
+void PLUGINPY_EXPORT initSettings(QSettings* setting);
+
 class PLUGINPY_EXPORT PluginLoader {
 public:
     PluginLoader(const QString& pluginName, const QString& pluginPath);
@@ -35,8 +37,6 @@ public:
     launchy::PluginInterface* instance();
 
     bool unload();
-
-    static void initSettings(QSettings* setting);
 
 private:
     void setFileName(const QString& fileName);

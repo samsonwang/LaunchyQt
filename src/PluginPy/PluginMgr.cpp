@@ -159,7 +159,7 @@ PluginMgr::PluginMgr()
     catch (const py::error_already_set& e) {
         PyErr_Print();
         PyErr_Clear();
-        qWarning() << "pluginpy::PluginMgr::PluginMgr, fail to init QSetting,"
+        qWarning() << "pluginpy::PluginMgr::PluginMgr, fail to init launchy_util,"
             << e.what();
     }
 }

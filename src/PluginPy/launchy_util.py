@@ -5,7 +5,7 @@ import logging as log
 def main():
     redirectOutput()
     initLogging()
-    initPipPackage()
+    # initPipPackage()
 
 
 def initSettings():

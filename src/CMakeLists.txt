@@ -303,15 +303,20 @@ target_link_libraries (PluginPy
   PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE ${Python_LIBRARIES})
 
-add_custom_command (TARGET PluginPy POST_BUILD
+# Copy the built plugin and its python helper into the target's python/ dir on
+# every build (ALL), so the run/deploy tree always has a matching launchy.pyd
+# and launchy_util.py. DEPENDS PluginPy guarantees the .pyd exists before copy.
+add_custom_target (PluginPy.Deploy ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory
+  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  $<TARGET_FILE:PluginPy> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python/launchy.pyd)
-
-# pluginpy util
-add_custom_target (PluginPy.Util
+  $<TARGET_FILE:PluginPy>
+  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python/launchy.pyd
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${SRC_DIR}/PluginPy/launchy_util.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python
-  COMMENT "copy launchy_util.py to target directory"
+  ${SRC_DIR}/PluginPy/launchy_util.py
+  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/python
+  COMMENT "copy PluginPy -> python/launchy.pyd and launchy_util.py to target directory"
+  DEPENDS PluginPy
   SOURCES ${SRC_DIR}/PluginPy/launchy_util.py)
 
 ##################################################

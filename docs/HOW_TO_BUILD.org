@@ -1,63 +1,362 @@
 
 * How to build
 
+This document describes how to build LaunchyQt from source on Windows.
+The pinned toolchain and dependency versions live in =deps/version.txt=.
+
 ** Windows
+
 *** Environments
-VS2017
-Qt5.12.10
-Python3.6.6 64-bit
-PySide2 5.12.6 (the lastest version for Qt5.12)
-CMake3.15 or higher version
+
+| Component   | Version                  | Notes                                              |
+|-------------+--------------------------+----------------------------------------------------|
+| Visual Studio | 2017 (MSVC v141)       | Qt5.12.10 =msvc2017_64= was built with this toolset |
+| Qt          | 5.12.10                  | Use the =msvc2017_64= build                        |
+| Python      | 3.6.6 (64-bit)           | CPython; must match the embedded interpreter ABI   |
+| PySide2     | 5.12.6                   | Last PySide2 release for Qt 5.12                   |
+| CMake       | 3.15 or newer            | 3.14 is the hard minimum (see =cmake_minimum_required=) |
+
 Tips:
-1. If you wants to build 64-bit Launchy, 64-bit Python is required.
-2. If you wants to debug Launchy python, debug version of python is required.
+1. To build a 64-bit Launchy you need a 64-bit Python. A 32-bit Python on
+   =PATH= makes CMake resolve 32-bit libs and the link step fails.
+2. To *debug* Launchy's Python code you need a *debug* build of Python.
+   The standard CPython installer only ships the release libraries, so a
+   Debug build of Launchy cannot link =python36_d.lib= (see FAQ Q4).
 
-*** Configuartion
-These steps is intended to help cmake locate Qt.
-Set =CMAKE_PREFIX_PATH= as Qt install directory, it is =C:/Qt/Qt5.12.10/5.12.10/msvc2017_64= by default.
+*** Configuration
 
-*** Build
-1. Generate VS2017 solution with cmake
-#+BEGIN_SRC bat
-cmake -B build .
+These steps help CMake locate Qt. Set =CMAKE_PREFIX_PATH= to the Qt install
+directory that contains the =msvc2017_64= kit:
+
+#+BEGIN_SRC text
+C:/Qt/Qt5.12.10/5.12.10/msvc2017_64
 #+END_SRC
 
-2. Open solution with VS2017 and build
+You can pass it on the command line (preferred, see FAQ Q1) or set it as a
+system environment variable. =src/CMakeLists.txt= only falls back to the
+path above when =CMAKE_PREFIX_PATH= is *not* already defined.
 
+*** Build
 
+1. Generate the Visual Studio 2017 solution with CMake:
 
-** (obsolete) Windows with Qt Creator
-*** Environments
-- Visual Studio Community 2017
-- Qt 5.12.5
-- Python 3.6.7 (32-bit)
-Tips: If you wants to build 64-bit Launchy, 64-bit Python is required.
+   #+BEGIN_SRC bat
+   cmake -B build -G "Visual Studio 15 2017" -A x64 .
+   #+END_SRC
 
-*** Configuration
-1. Add =PYTHONPATH= in user environment variables, the value should be the path that you installed python.
+   (On a machine with several VS versions, always pass =-G= explicitly so
+   CMake does not pick a newer generator by accident — see FAQ Q2.)
 
-*** Build and Debug
-Now open =src.pro= with Qt Creator, you can build and debug Launchy.
-There are the tips:
-1. If you want to build a debug version, you need to download the python debug version library. As python installer only contains release version library by default.
-2. I have not try other Qt and Python version, if you already have other similar versions installed, try them first and you maight save the time for reinstalling develop environments.
+2. Open the generated solution with VS2017 and build, or build from the
+   command line:
 
-** (obsolete) Windows with Visual Studio 2015
-*** Environments
-Here is what I am using for development and release build.
-- Visual Studio Community 2015 ([[https://my.visualstudio.com/Downloads?q=visual%2520studio%25202015&wt.mc_id=o~msft~vscom~older-downloads][download page]])
-- Qt5.11.1 ([[https://download.qt.io/archive/qt/5.11/5.11.1/][download page]])
-- Qt-VS-addin msvc2015 ([[https://download.qt.io/official_releases/vsaddin/][downlaod page]])
-- Python3.6.7 ([[https://www.python.org/downloads/release/python-367/][download page]])
+   #+BEGIN_SRC bat
+   cmake --build build --config Release
+   #+END_SRC
 
-*** Configuration
-After you have all the above installed, you need to:
-1. Configure qt-vs-addin to the qt path. I recommend to set name to =Qt5.11.1x64= in the Qt Version panel(and =Qt5.11.1x86= if you want to build a win32 version), because this name will be stored in "Launchy.sln". This [[http://doc.qt.io/archives/vs-addin/vs-addin-managing-projects.html][qt official manual]] maight help.
-2. Change launchy solution's Qt version to what you have just configured in step 1.
-3. Add =PYTHONPATH= in user environment variables (and =PYTHONPATH32= if you want to build a win32 version), the value should be the path that you installed python.
+The build output lands in =build/bin/<Config>/=. CMake automatically copies
+the Python plugin (=python/launchy.pyd=, =launchy_util.py=), the native
+plugins (=plugins/*=), the compiled translations (=translations/*.qm=) and
+the OpenSSL runtime DLLs next to the executable.
 
-*** Build and debug
-Now you can build and debug Launchy. There are the tips:
-1. You should build in =Release= configuration.
-2. Even when you are debugging, you should still use release configuration, because we have installed python in release, [[https://docs.microsoft.com/en-us/visualstudio/python/working-with-c-cpp-python-in-visual-studio?view=vs-2017][this page]] have more detailed information about VS working with python.
-3. When debugging in release configuration, you may encounter "unwanted fast jumps" when stepping the code, this is because of compile optimization, and you can turn it off temporary in project property panel.
+** Run the Release build (deploy on Windows)
+
+A successful Release build puts files in =build/bin/Release/=. CMake already
+copies =python/=, =plugins/=, =translations/= and the OpenSSL DLLs. But before
+=Launchy.exe= can actually *start and run python plugins* from that directory
+you still need the Qt runtime, the embedded Python distribution and the skins.
+
+All of the steps below are automated by =misc/deploy_win.ps1= — adjust the
+=QT_PREFIX= / =PYTHON366= variables at the top, then run it from the repo root
+after a Release build:
+
+#+BEGIN_SRC bat
+powershell -ExecutionPolicy Bypass -File misc\deploy_win.ps1
+#+END_SRC
+
+*** Deploy the Qt runtime with windeployqt
+
+Run =windeployqt= from the *same* Qt 5.12.10 =msvc2017_64= install against the
+built executable. We deploy the whole Qt tree into a =qtlibs/= subfolder and let
+=misc/qt.conf= (=Prefix = ./qtlibs=) redirect Qt's plugins / qml / translations
+there, keeping the Release root tidy:
+
+#+BEGIN_SRC bat
+windeployqt --release --no-angle --no-opengl-sw --dir build/bin/Release/qtlibs build/bin/Release/Launchy.exe
+#+END_SRC
+
+What this produces, and the one exception you must know:
+- Qt's plugins land in =qtlibs/platforms/qwindows.dll=, =qtlibs/imageformats/=,
+  =qtlibs/iconengines/=, =qtlibs/styles/=, =qtlibs/bearer/= — *required*,
+  otherwise Launchy fails with "This application failed to start because no Qt
+  platform plugin could be initialized". =qt.conf= points Qt at this folder.
+- Qt's own translations go to =qtlibs/translations/=.
+- The top-level =Qt5Core.dll=, =Qt5Gui.dll=, =Qt5Widgets.dll=, =Qt5Network.dll=,
+  =Qt5Svg.dll=, =Qt5WinExtras.dll= must stay *next to Launchy.exe*
+  in the Release root. The Windows loader resolves those imports only from the
+  executable's directory — =qt.conf= cannot redirect them — so =deploy_win.ps1=
+  copies them back to the root after deploying =qtlibs/=.
+- =deploy_win.ps1= then *deletes* those same =Qt5*.dll= copies from =qtlibs/=.
+  The plugins import =Qt5Core/=Gui/=Widgets/... and the loader resolves them from
+  the directory the application image was loaded from (the root); it never
+  searches a dependent DLL's own folder. Keeping only one copy saves ~23 MB
+  (=qtlibs/= drops from ~30 MB to ~6.5 MB). Any =Qt5*.dll= that does *not* exist
+  in the root is intentionally kept under =qtlibs/.
+
+*Qt modules pulled in by PySide2 (Qt5Qml):* =windeployqt= only walks
+=Launchy.exe='s import table, so it never sees what the python side needs.
+=PySide2/pyside2.abi3.dll= statically imports =Qt5Qml.dll= (and =python3.dll=),
+so a Release built without it fails at runtime with a missing =Qt5Qml.dll=.
+=deploy_win.ps1= therefore also copies =Qt5Qml.dll= into the Release root (root
+copy only — a duplicate under =qtlibs/= would be dropped by the de-dup step
+above). That single DLL is the whole extra dependency: =Qt5Qml.dll= itself
+only needs =Qt5Core.dll= + =Qt5Network.dll= (already present), so no =qml/=
+modules or =Qt5Quick.dll= are shipped. It is taken straight from
+=$QT_PREFIX\bin= so the version always matches the rest of the Qt 5.12.10
+runtime — do not mix in a =Qt5Qml.dll= from another Qt build.
+
+To keep the package small you can skip the ANGLE / software-OpenGL DLLs, which
+Launchy does not need (it renders with the native GDI backend) — already passed
+above via =--no-angle --no-opengl-sw=.
+
+=IMPORTANT=: =windeployqt= does *NOT* deploy the Visual C++ runtime. A Release
+build links the MSVC 2017 CRT, so the machine needs =vcruntime140.dll=,
+=msvcp140.dll=, =concrt140.dll=, etc. Either install the *Visual C++ 2017
+Redistributable* on the target machine, or copy those DLLs next to
+=Launchy.exe= from your VS2017 install
+(=C:/Program Files (x86)/Microsoft Visual Studio/2017/VC/redist/x64/Microsoft.VC141.CRT/=).
+
+*** Deploy the embedded Python
+
+Launchy embeds CPython 3.6.6 (64-bit). =PluginPy= initializes the interpreter
+with =py::initialize_interpreter()= and =launchy_util.py= adds =sys.prefix=
+(the directory that contains =python36.dll=) to =sys.path=, then calls
+=site.main()= *only if =<sys.prefix>/Lib= exists*. To keep the Release footprint
+small we deploy the official *embeddable* package from =deps/python-embed=
+instead of a full CPython install — its standard library is the single zipped
+file =python36.zip=, so the whole Python dependency collapses into one compact
+=python/= directory:
+
+#+BEGIN_SRC text
+build/bin/Release/
+  Launchy.exe
+  python36.dll            <- from the embeddable package (MUST be next to exe)
+  python36._pth           <- points Python at ./python (generated by the script)
+  python/                 <- the embeddable package, compact:
+    python36.zip          <- zipped standard library
+    *.pyd                 <- C extension modules (_ssl, _ctypes, _sqlite3, ...)
+    python3.dll
+    launchy.pyd           <- already copied by the build
+    launchy_util.py       <- already copied by the build
+  ...
+#+END_SRC
+
+The =deploy_win.ps1= script extracts =deps/python-embed/python-3.6.6-embed-amd64.zip=
+and lays it out exactly like above (it drops the old full-install =Lib/= and
+=DLLs/= from the root). You normally do not run these steps by hand.
+
+Notes:
+- =python36.dll= MUST sit next to =Launchy.exe= — the Windows loader resolves it
+  there, and that is also what sets =sys.prefix= to the Release directory.
+- =python36._pth= lives next to =python36.dll= and contains:
+  #+BEGIN_SRC text
+  python/python36.zip
+  python
+  python/Lib/site-packages
+  #+END_SRC
+  This puts the zipped stdlib and the =python/= folder (where =launchy.pyd=
+  lives) on =sys.path=, and also pre-adds =python/Lib/site-packages= so the
+  optional PySide2 is found without needing =site=.
+- For python plugins that use Qt (=initSettings= imports =PySide2= /
+  =shiboken2=), install the matching build into =python/Lib/site-packages=:
+
+  #+BEGIN_SRC bat
+  set PY=C:\Python366
+  %PY%\python.exe -m pip install --target build\bin\Release\python\Lib\site-packages PySide2==5.12.6
+  #+END_SRC
+
+  This is optional for a bare launch, but required once a plugin needs Qt from
+  Python (=deploy_win.ps1= does it automatically when =$INSTALL_PYSIDE2= is
+  =$true=).
+
+*** Deploy the skins
+
+The build does *not* copy skins. On Windows Launchy looks for them in
+=build/bin/Release/skins= (and =%APPDATA%/Launchy/skins=). Copy the repo's
+=skins/= folder or the UI renders with no skin:
+
+#+BEGIN_SRC bat
+xcopy /E /I /Y skins build\bin\Release\skins
+#+END_SRC
+
+*** Pre-run checklist
+
+A Release directory is complete when it contains at least:
+
+| File / dir              | Source                             | Auto-copied by build? |
+|-------------------------+------------------------------------+-----------------------|
+| Launchy.exe             | build output                       | yes                   |
+| Qt5*.dll (root, *only* copy) | =windeployqt= (--dir qtlibs, copied back to root; duplicates in =qtlibs/= removed) | no |
+| qtlibs/ (plugins + Qt translations; no Qt5*.dll) | =windeployqt= (--dir qtlibs) | no          |
+| qt.conf (Prefix=./qtlibs) | =misc/qt.conf=                  | no                    |
+| vcruntime140.dll etc.   | VC++ 2017 Redistributable          | no                    |
+| python36.dll            | =deps/python-embed= (embeddable)   | no                    |
+| python3.dll             | =deps/python-embed= (stable ABI forwarder) | no            |
+| python36._pth           | generated by =deploy_win.ps1=      | no                    |
+| python/ (python36.zip + *.pyd + launchy.pyd) | =deps/python-embed= + build | no (zip) / yes (launchy.pyd) |
+| Qt5Qml.dll              | Qt install =$QT_PREFIX\bin= (for PySide2) | no            |
+| plugins/                | build output                       | yes                   |
+| translations/*.qm       | build output                       | yes                   |
+| libssl/libcrypto 1_1-x64 | =deps/openssl= (via build)       | yes                   |
+| skins/                  | repo =skins/=                      | no                    |
+
+Then run =build/bin/Release/Launchy.exe=.
+
+** FAQ: common pitfalls when setting up the build environment
+
+*** Q1. CMake fails with "Could NOT find Qt5" / cannot locate Qt
+
+CMake needs =CMAKE_PREFIX_PATH= to point at the =msvc2017_64= *subdirectory*,
+not the Qt root. A very common mistake is:
+
+#+BEGIN_SRC text
+# WRONG - this is the Qt root, find_package(Qt5) looks here for msvc2017_64
+C:/Qt/Qt5.12.10
+# RIGHT - the actual msvc2017_64 kit directory
+C:/Qt/Qt5.12.10/5.12.10/msvc2017_64
+#+END_SRC
+
+Pass it explicitly so the fallback path in =src/CMakeLists.txt= is not used:
+
+#+BEGIN_SRC bat
+cmake -B build -G "Visual Studio 15 2017" -A x64 -DCMAKE_PREFIX_PATH="C:/Qt/Qt5.12.10/5.12.10/msvc2017_64" .
+#+END_SRC
+
+Also make sure the *LinguistTools* component is installed (it is part of the
+default Qt 5.12.10 =msvc2017_64= install) — translation generation needs it.
+
+*** Q2. CMake picks the wrong Visual Studio / toolset
+
+Without =-G=, CMake uses the newest Visual Studio it finds. Qt 5.12.10
+=msvc2017_64= was compiled with MSVC 2017 (v141). v142/v143 are CRT-compatible
+in practice, but to avoid surprises always generate with:
+
+#+BEGIN_SRC bat
+cmake -B build -G "Visual Studio 15 2017" -A x64 .
+#+END_SRC
+
+Mixing a 32-bit Qt kit with a 64-bit build (or vice versa) is a hard error —
+double-check you selected =msvc2017_64=, not =msvc2017=.
+
+*** Q3. Link error because of 32-bit vs 64-bit Python
+
+Launchy is built 64-bit. =find_package(Python COMPONENTS Interpreter
+Development REQUIRED)= resolves whatever =python.exe= is first on =PATH=. If
+that is a 32-bit Python, CMake finds 32-bit include/libs and the 64-bit link
+fails. Make sure a 64-bit Python 3.6.6 is on =PATH= and comes before any
+32-bit install.
+
+*** Q4. Debug build fails to link =python36_d.lib= (or similar)
+
+A Debug Launchy links the *debug* Python import library (=python36_d.lib=),
+which the normal CPython installer does not provide. You have two options:
+
+- Build the *Release* configuration (recommended for everyday work), or
+- Install a debug build of Python 3.6.6 so =python36_d.lib= is available.
+
+Do not "fix" this by deleting the =_d= references — the debug CRT is
+incompatible with the release one.
+
+*** Q5. Can I use a newer Python (3.7 / 3.8 / 3.10 / ...)?
+
+No. The embedded interpreter and the bundled PySide2 5.12.6 target the
+Python 3.6 C ABI, and =deps/version.txt= pins =python - 3.6.6=. A newer
+Python either has no matching PySide2 5.12.6 wheel or breaks the embedding
+ABI. Keep Python at 3.6.6 (64-bit).
+
+*** Q6. Launchy runs but the update check / network fails: "TLS initialization failed"
+
+Qt 5.12 loads OpenSSL *at runtime*. It needs =libssl-1_1-x64.dll= and
+=libcrypto-1_1-x64.dll= (OpenSSL 1.1.x, x64) next to =Launchy.exe=.
+
+=src/CMakeLists.txt= copies them from =deps/openssl/= automatically *if that
+directory exists*. If you cloned the repo without =deps/openssl/= (e.g. the
+DLLs were excluded), every https request fails with:
+
+#+BEGIN_SRC text
+network error 99, http status 0: TLS initialization failed
+#+END_SRC
+
+Use OpenSSL *1.1.x* only — Qt 5.12 cannot load OpenSSL 3.x. The bundled
+binaries are OpenSSL 1.1.1s (see =deps/openssl/README.md=).
+
+*** Q7. Python plugins fail to import PySide2 / wrong PySide2 version
+
+Plugins execute inside the embedded Python 3.6.6 interpreter, so install the
+*matching* PySide2:
+
+#+BEGIN_SRC bat
+pip install PySide2==5.12.6
+#+END_SRC
+
+A newer PySide2 (e.g. 5.15) is built against a different Qt patch and causes
+ABI / runtime mismatches with the bundled Qt 5.12.10. Keep PySide2 at 5.12.6.
+
+*** Q8. First run looks broken / no skin, missing plugins
+
+The build copies =python/=, =plugins/=, =translations/= and the OpenSSL DLLs
+next to =Launchy.exe=, but the =skins/= folder from the repo root is *not*
+copied automatically. When you run the freshly built binary you must have the
+skins directory deployed next to it, otherwise Launchy falls back to a bare
+UI. For a release package, copy =skins/= (and the Python environment used by
+plugins) alongside =build/bin/Release/=.
+
+*** Q9. Build runs out of memory / is very slow
+
+=CMAKE_BUILD_PARALLEL_LEVEL= is set to 4. On low-RAM machines lower it or
+limit MSBuild parallelism:
+
+#+BEGIN_SRC bat
+cmake --build build --config Release -- /maxcpucount:2
+#+END_SRC
+
+*** Q10. Launchy won't start: "no Qt platform plugin could be initialized" / missing MSVC CRT
+
+This shows up when you run the freshly built =Launchy.exe= without deploying
+its runtime dependencies. Two separate causes:
+
+- *Qt platform plugin missing* → you skipped =windeployqt=. Run it against
+  =Launchy.exe= so =Qt5*.dll= and =platforms/qwindows.dll= land next to the
+  executable (see "Run the Release build → windeployqt" above).
+- *The application failed to start because its side-by-side configuration is
+  incorrect* / =vcruntime140.dll= not found → =windeployqt= does *not* copy the
+  MSVC 2017 CRT. Install the Visual C++ 2017 Redistributable, or copy
+  =vcruntime140.dll=, =msvcp140.dll=, =concrt140.dll= next to =Launchy.exe=.
+
+*** Q11. Launchy starts but python plugins fail / "ImportError: No module named PySide2"
+
+The embedded interpreter started, but the Python *distribution* is incomplete:
+
+- If python plugins do not load at all, =python36.dll= or =python36._pth= is
+  missing next to =Launchy.exe=, or =python/python36.zip= is absent, so the
+  stdlib cannot be found. Re-run =deploy_win.ps1= (it deploys the embeddable
+  package from =deps/python-embed=, see "Run the Release build → Deploy the
+  embedded Python").
+- If the error is specifically =No module named PySide2= (or =shiboken2=),
+  install the matching package into =Lib/site-packages= with
+  =pip install --target ... PySide2==5.12.6=. Without it, plugins that use Qt
+  from Python cannot import it (see Q7 for the version pin).
+
+*** Q12. Runtime error: "The code execution cannot proceed because Qt5Qml.dll was not found"
+
+=PySide2/pyside2.abi3.dll= statically imports =Qt5Qml.dll=, but =windeployqt=
+only inspects =Launchy.exe=, so it never deploys =Qt5Qml.dll=. Copy it (and
+=python3.dll=) next to =Launchy.exe= from =$QT_PREFIX\bin= — the current
+=deploy_win.ps1= does this automatically. Two traps:
+
+- Do *not* drop in a =Qt5Qml.dll= from a different Qt build (e.g. one pulled in
+  by a stray PySide2 wheel). Mixing Qt patch versions makes Qt abort on load.
+  The Release root's =Qt5Qml.dll= must be the Qt 5.12.10 one, same timestamp
+  family (~Nov 2020) as the other =Qt5*.dll=.
+- =python3.dll= must sit next to =python36.dll= (the Release root). It is the
+  stable-ABI forwarder that =pyside2.abi3.dll= / =shiboken2.abi3.dll= import.

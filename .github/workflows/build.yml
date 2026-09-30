@@ -1,0 +1,139 @@
+name: Build Windows (VS2017 / Qt5.12.10)
+
+# Triggers: push to master/dev, pull requests, or manual dispatch
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+  workflow_dispatch:
+
+# Toolchain mapping (1:1 with the local environment):
+#   VS2017         -> MSVC v141 toolset (Qt5.12.10 msvc2017_64 was built with v141, must link with v141)
+#   Qt5.12.10     -> installed via jurplel/install-qt-action as msvc2017_64
+#   Python3.6.6   -> actions/setup-python (64-bit)
+#   PySide2 5.12.6-> installed via pip (runtime env for Python plugins)
+#   CMake 3.15+   -> Windows runner ships CMake (>=3.15, satisfies the requirement)
+#   x64           -> -A x64
+
+jobs:
+  build:
+    name: Build LaunchyQt (x64, Release)
+    # windows-2022 ships only v142/v143 by default; we install v141 via the VS Installer
+    runs-on: windows-2022
+    timeout-minutes: 120
+
+    env:
+      QT_VERSION: '5.12.10'
+      QT_ARCH: 'win64_msvc2017_64'
+      PYTHON_VERSION: '3.6.6'
+      BUILD_TYPE: 'Release'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------------
+      # 1) Install the MSVC v141 (VS2017) build tools
+      #    windows-2022 ships only v142/v143 by default; Qt5.12.10's msvc2017_64
+      #    prebuilt libraries were compiled with v141 and must be linked with v141,
+      #    otherwise there is a CRT/ABI mismatch risk.
+      #    Component ID: Microsoft.VisualStudio.Component.VC.v141.x86.x64
+      #    If a VS2019 (v142) toolset is acceptable, delete this step and drop -T v141 below.
+      # ------------------------------------------------------------------
+      - name: Install MSVC v141 (VS2017) build tools
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -property installationPath
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+          Write-Host "VS install path: $vsPath"
+          & $installer modify --installPath "$vsPath" `
+            --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 `
+            --quiet --norestart
+
+      # ------------------------------------------------------------------
+      # 2) Install Qt 5.12.10 (msvc2017_64)
+      #    The action auto-sets environment variables such as QT_ROOT_DIR / Qt5_DIR
+      # ------------------------------------------------------------------
+      - name: Install Qt ${{ env.QT_VERSION }} (${{ env.QT_ARCH }})
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'windows'
+          target: 'desktop'
+          arch: ${{ env.QT_ARCH }}
+          # dir is the parent of the Qt folder; final install path is <dir>/Qt/<version>/<arch>
+          dir: '${{ github.workspace }}'
+          # Qt5::WinExtras (qtwinextras) and LinguistTools (qttools)
+          modules: 'qtwinextras qttools'
+          cache: true
+          # Let the action use its own bundled Python to run aqtinstall (decoupled from 3.6.6 below)
+          setup-python: true
+
+      # ------------------------------------------------------------------
+      # 3) Install Python 3.6.6 (64-bit)
+      #    Note: if 3.6.6 has been removed from the setup-python manifest,
+      #    change this to '3.6' (picks the latest 3.6.x, ABI compatible) instead.
+      # ------------------------------------------------------------------
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: 'x64'
+
+      - name: Record Python root dir
+        shell: pwsh
+        run: |
+          $py = "${{ steps.setup-python.outputs.python-path }}"
+          $root = Split-Path $py
+          "Python_ROOT_DIR=$root" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+          Write-Host "Python_ROOT_DIR=$root"
+
+      # ------------------------------------------------------------------
+      # 4) Install PySide2 5.12.6 (runtime env for Python plugins, NOT required to compile)
+      # ------------------------------------------------------------------
+      - name: Install PySide2 5.12.6
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install "PySide2==5.12.6" || pip install "PySide2>=5.12.6,<5.13"
+
+      # ------------------------------------------------------------------
+      # 5) CMake configure
+      #    -S src: this project's CMakeLists.txt lives in src/
+      #    -G "Visual Studio 17 2022" -A x64 -T v141: use VS2022's MSBuild
+      #      but target the v141 (VS2017) toolset
+      #    CMAKE_PREFIX_PATH must point to the Qt install root, otherwise CMakeLists
+      #    falls back to the hardcoded local path C:/Qt/Qt5.12.10/5.12.10/msvc2017_64
+      # ------------------------------------------------------------------
+      - name: Configure CMake
+        shell: pwsh
+        env:
+          # Prevent CMakeLists from overriding CMAKE_PREFIX_PATH with the hardcoded local path
+          CMAKE_PREFIX_PATH: ${{ env.QT_ROOT_DIR }}
+        run: |
+          cmake --version
+          cmake -S src -B build `
+            -G "Visual Studio 17 2022" -A x64 -T v141 `
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
+            -DCMAKE_PREFIX_PATH="${{ env.QT_ROOT_DIR }}" `
+            -DPython_ROOT_DIR="${{ env.Python_ROOT_DIR }}"
+
+      # ------------------------------------------------------------------
+      # 6) Build
+      # ------------------------------------------------------------------
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+      # ------------------------------------------------------------------
+      # 7) Upload build artifacts (build/bin contains exe/dll/plugins/python)
+      # ------------------------------------------------------------------
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: LaunchyQt-${{ env.BUILD_TYPE }}-x64
+          path: build/bin
+          if-no-files-found: warn
