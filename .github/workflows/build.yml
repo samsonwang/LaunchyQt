@@ -50,39 +50,83 @@ jobs:
       #    otherwise there is a CRT/ABI mismatch risk.
       #    Component ID: Microsoft.VisualStudio.Component.VC.v141.x86.x64
       #    If a VS2019 (v142) toolset is acceptable, delete this step and drop -T v141 below.
+      #
+      #    The wait loop matters more than it looks. Two things are racy here:
+      #      * vs_installer.exe is only a bootstrapper -- it exits as soon as the
+      #        real setup is spawned, so its exit code proves nothing.
+      #      * $vsPath\VC\Tools\MSVC\14.16.<latest> is created EARLY, while the
+      #        component is still being extracted. An older revision of this step
+      #        polled for exactly that directory and returned while the instance
+      #        was still being modified. While a VS instance is in that state the
+      #        Setup Configuration API still hands it out, but without the eLocal
+      #        bit (no VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt yet),
+      #        so cmake rejects the whole generator with
+      #            Generator Visual Studio 17 2022
+      #            could not find any instance of Visual Studio.
+      #    The loop below therefore requires three things at once: the 14.16
+      #    folder, a complete cl.exe inside it, AND vswhere listing the instance
+      #    as owning the v141 component (-requires), which only flips once the
+      #    modification has been registered as complete. If it never does, the
+      #    step fails here with the full vswhere inventory instead of letting
+      #    cmake fail three steps later with an opaque message.
       # ------------------------------------------------------------------
       - name: Install MSVC v141 (VS2017) build tools
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          $vsPath = & $vswhere -latest -property installationPath
-          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+          if (-not (Test-Path $vswhere)) {
+            Write-Host "::error::vswhere.exe not found at $vswhere"
+            exit 1
+          }
+          $vsPath = (& $vswhere -latest -property installationPath | Where-Object { $_.Trim() } | Select-Object -First 1)
+          if (-not $vsPath) {
+            Write-Host "::error::vswhere reported no Visual Studio instance"
+            exit 1
+          }
+          $vsPath = $vsPath.Trim()
           Write-Host "VS install path: $vsPath"
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
           if (-not (Test-Path $installer)) {
             Write-Host "::error::vs_installer.exe not found at $installer"
             exit 1
           }
-          # vs_installer.exe is a bootstrapper: it can return before the component is
-          # really installed, so the toolset is polled below. Without that check the
-          # later "-T v141" fails with "The build tools for v141 cannot be found".
           & $installer modify --installPath "$vsPath" `
             --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 `
             --quiet --norestart
+
+          $v141Component = 'Microsoft.VisualStudio.Component.VC.v141.x86.x64'
+          $deadline = (Get-Date).AddMinutes(30)
+          # $ready, not the $toolset variable: an incomplete MSVC folder can be a
+          # non-null DirectoryInfo when the loop runs out of time, and that would
+          # let a half installed toolset through as if it were ready.
+          $ready = $false
           $toolset = $null
-          for ($i = 0; $i -lt 12; $i++) {
-            $toolset = Get-ChildItem -Path "$vsPath\VC\Tools\MSVC" -Directory -Filter '14.16.*' -ErrorAction SilentlyContinue |
-              Select-Object -First 1
-            if ($toolset) { break }
-            Start-Sleep -Seconds 20
+          while (-not $ready -and (Get-Date) -lt $deadline) {
+            # newest first, so the folder is the one MSBuild would pick anyway
+            $toolset = Get-ChildItem -Path "$vsPath\VC\Tools\MSVC" -Directory -Filter '14.16.*' `
+              -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1
+            if ($toolset) {
+              $cl = Join-Path $toolset.FullName 'Bin\Hostx64\x64\cl.exe'
+              $visible = (& $vswhere -products '*' -requires $v141Component -property installationPath |
+                Where-Object { $_.Trim() -eq $vsPath } | Select-Object -First 1)
+              if ((Test-Path $cl) -and $visible) { $ready = $true; break }
+            }
+            Start-Sleep -Seconds 15
           }
-          if (-not $toolset) {
-            Write-Host "::error::MSVC v141 toolset (14.16.x) missing under $vsPath\VC\Tools\MSVC"
+
+          if (-not $ready) {
+            Write-Host "vswhere inventory:"
+            Write-Host (& $vswhere -all -format json)
+            Write-Host "MSVC v141 toolset (14.16.x) never became visible under $vsPath\VC\Tools\MSVC"
+            Write-Host "::error::the MSVC v141 build tools were not installed, see the vswhere inventory above"
             exit 1
           }
           Write-Host "v141 toolset ready: $($toolset.FullName)"
           # exported for the packaging step below, which needs the VC++ 2017
           # redist directory to ship the CRT Launchy.exe links against
           "VC_TOOLSET_DIR=$($toolset.FullName)" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+          "VS_INSTALL_PATH=$vsPath" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
 
       # ------------------------------------------------------------------
       # 2) Install Qt 5.12.10 (msvc2017_64)
@@ -138,6 +182,17 @@ jobs:
       #      but target the v141 (VS2017) toolset
       #    CMAKE_PREFIX_PATH must point to the Qt install root, otherwise CMakeLists
       #    falls back to the hardcoded local path C:/Qt/Qt5.12.10/5.12.10/msvc2017_64
+      #
+      #    The VS generator resolves its instance through the VS Setup Configuration
+      #    COM API first and falls back to vswhere; when neither yields a usable 17.x
+      #    instance (an instance still being modified, a stale instance cache, a
+      #    broken vswhere) cmake stops at project() with
+      #        Generator Visual Studio 17 2022 could not find any instance of Visual Studio.
+      #    That is the one failure this loop is shaped for: the inventory is dumped so
+      #    the next occurrence is a one-screenshot diagnosis, and the configure is
+      #    retried a bounded number of times because the enumeration can simply miss an
+      #    instance that was touched seconds earlier. Any other cmake failure still
+      #    aborts on the first attempt.
       # ------------------------------------------------------------------
       - name: Configure CMake
         shell: pwsh
@@ -145,12 +200,49 @@ jobs:
           # Prevent CMakeLists from overriding CMAKE_PREFIX_PATH with the hardcoded local path
           CMAKE_PREFIX_PATH: ${{ env.QT_ROOT_DIR }}
         run: |
+          $ErrorActionPreference = 'Stop'
           cmake --version
-          cmake -S src -B build `
-            -G "Visual Studio 17 2022" -A x64 -T v141 `
-            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
-            -DCMAKE_PREFIX_PATH="${{ env.QT_ROOT_DIR }}" `
-            -DPython_ROOT_DIR="${{ env.Python_ROOT_DIR }}"
+
+          # ---- inventory -------------------------------------------------------
+          # state is what cmake's GetVSInstanceInfo() reads the eLocal bit from.
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (Test-Path $vswhere) {
+            Write-Host "vswhere -all -format json:"
+            Write-Host (& $vswhere -all -format json)
+          }
+          else {
+            Write-Host "[warn]no vswhere at $vswhere, cmake could not fall back to it either"
+          }
+
+          $cmakeArgs = @(
+            '-S', 'src', '-B', 'build',
+            '-G', 'Visual Studio 17 2022', '-A', 'x64', '-T', 'v141',
+            "-DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}",
+            "-DCMAKE_PREFIX_PATH=${{ env.QT_ROOT_DIR }}",
+            "-DPython_ROOT_DIR=${{ env.Python_ROOT_DIR }}")
+
+          $attempts = 3
+          for ($i = 1; $i -le $attempts; $i++) {
+            Write-Host "=== cmake configure attempt ${i}/${attempts} ==="
+            # cmake writes plenty to stderr, and under 'Stop' the first of those
+            # lines arrives as a terminating NativeCommandError, which would abort
+            # the step before the exit code can even be read (the same reason the
+            # windeployqt call below lowers the preference).
+            $prevEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            $log = & cmake @cmakeArgs 2>&1
+            $code = $LASTEXITCODE
+            $ErrorActionPreference = $prevEap
+            $log | ForEach-Object { Write-Host $_ }
+            if ($code -eq 0) { break }
+            $isInstanceError = $log -match 'could not find any instance of Visual Studio'
+            if (-not $isInstanceError -or $i -eq $attempts) {
+              Write-Host "::error::cmake configure failed with exit code $code"
+              exit 1
+            }
+            Write-Host "[warn]cmake could not see the Visual Studio instance, retrying"
+            Start-Sleep -Seconds 30
+          }
 
       # ------------------------------------------------------------------
       # 5) Build
