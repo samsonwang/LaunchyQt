@@ -45,52 +45,52 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="42"/>
         <source>Launchy options</source>
-        <translation type="unfinished">Настройки Launchy</translation>
+        <translation>Настройки Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="58"/>
         <source>General</source>
-        <translation type="unfinished">Основные</translation>
+        <translation>Общие</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="70"/>
         <source>User Interface</source>
-        <translation type="unfinished">Интерфейс пользователя</translation>
+        <translation>Пользовательский интерфейс</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="176"/>
         <source>Always display Launchy window</source>
-        <translation type="unfinished">Всегда отображать окно Launchy</translation>
+        <translation>Всегда показывать окно Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="189"/>
         <source>Hide when lose focus</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрывать при потере фокуса</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="205"/>
         <source>Always on top</source>
-        <translation type="unfinished">Всегда поверх других окон</translation>
+        <translation>Всегда поверх других окон</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="229"/>
         <source>Always center</source>
-        <translation type="unfinished"></translation>
+        <translation>Всегда по центру</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="251"/>
         <source>horizontally</source>
-        <translation type="unfinished">горизонтально</translation>
+        <translation>по горизонтали</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="270"/>
         <source>vertically</source>
-        <translation type="unfinished">вертикально</translation>
+        <translation>по вертикали</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="304"/>
         <source>Only allow dragging whilst Shift is pressed</source>
-        <translation type="unfinished">Разрешить перетаскивание только с зажатой клавишей Shift</translation>
+        <translation>Разрешить перетаскивание только при нажатой клавише Shift</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="122"/>
@@ -100,42 +100,42 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="463"/>
         <source>Suggestion List</source>
-        <translation type="unfinished">Список предложений</translation>
+        <translation>Список подсказок</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="502"/>
         <source>Underline matched text</source>
-        <translation type="unfinished">Подчеркивать соответствующий текст</translation>
+        <translation>Подчёркивать совпадающий текст</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="535"/>
         <source>Suggestions display</source>
-        <translation type="unfinished">Показывать предложения</translation>
+        <translation>Показывать подсказки</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="583"/>
         <source>Name and path</source>
-        <translation type="unfinished">Имя и путь</translation>
+        <translation>Имя и путь</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="588"/>
         <source>Path only</source>
-        <translation type="unfinished">Только путь</translation>
+        <translation>Только путь</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="593"/>
         <source>Name only</source>
-        <translation type="unfinished">Только имя</translation>
+        <translation>Только имя</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="635"/>
         <source>Auto open delay</source>
-        <translation type="unfinished">Задержка на автооткрытие</translation>
+        <translation>Задержка автовызова</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="666"/>
         <source> ms</source>
-        <translation type="unfinished"> мс</translation>
+        <translation> мс</translation>
     </message>
     <message>
         <source>Simultaneously visible suggestions</source>
@@ -144,22 +144,22 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="804"/>
         <source>Visual Effects</source>
-        <translation type="unfinished">Визуальные эффекты</translation>
+        <translation>Визуальные эффекты</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="822"/>
         <source>Opaqueness</source>
-        <translation type="unfinished">Прозрачность</translation>
+        <translation>Непрозрачность</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="863"/>
         <source>Fade in time</source>
-        <translation type="unfinished">Затухание при появлении</translation>
+        <translation>Время появления (fade-in)</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="898"/>
         <source>Fade out time</source>
-        <translation type="unfinished">Затухание после запуска</translation>
+        <translation>Время исчезновения (fade-out)</translation>
     </message>
     <message>
         <source>Internet Proxy</source>
@@ -168,62 +168,62 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="93"/>
         <source>Hotkey:</source>
-        <translation type="unfinished"></translation>
+        <translation>Горячая клавиша:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="373"/>
         <source>Hide Tray Icon</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрыть иконку в трее</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="403"/>
         <source>Application Style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Стиль приложения:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1533"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1541"/>
         <source>Check for updates on startup</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверять обновления при запуске</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1552"/>
         <source>Delay:</source>
-        <translation type="unfinished"></translation>
+        <translation>Задержка:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1568"/>
         <source> s</source>
-        <translation type="unfinished"></translation>
+        <translation> с</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1584"/>
         <source>Every:</source>
-        <translation type="unfinished"></translation>
+        <translation>Каждые:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1603"/>
         <source> h</source>
-        <translation type="unfinished"></translation>
+        <translation> ч</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1624"/>
         <source>Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Прокси</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1630"/>
         <source>Proxy type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип прокси:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1664"/>
         <source>Server:</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1683"/>
@@ -233,37 +233,37 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1711"/>
         <source>Proxy server requires password</source>
-        <translation type="unfinished"></translation>
+        <translation>Прокси-сервер требует пароль</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1718"/>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя пользователя:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1752"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1799"/>
         <source>Check for updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить наличие обновлений</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1836"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Система</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1857"/>
         <source>System Options</source>
-        <translation type="unfinished">Системные настройки</translation>
+        <translation>Системные настройки</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1874"/>
         <source>Auto rescan catalog every</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматически пересканировать индекс каждые</translation>
     </message>
     <message>
         <source> minutes</source>
@@ -272,87 +272,87 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1926"/>
         <source>Show hidden files in browse mode</source>
-        <translation type="unfinished">Показывать скрытые файлы в режиме просмотра</translation>
+        <translation>Показывать скрытые файлы в режиме просмотра</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1908"/>
         <source> min</source>
-        <translation type="unfinished"></translation>
+        <translation> мин.</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1933"/>
         <source>Show network in browse mode</source>
-        <translation type="unfinished">Показывать сети в режиме просмотра</translation>
+        <translation>Показывать сеть в режиме просмотра</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1940"/>
         <source>Portable mode (USB stick)</source>
-        <translation type="unfinished">Портативный режим (USB-флеш)</translation>
+        <translation>Портативный режим (флешка)</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="934"/>
         <source>Skins</source>
-        <translation type="unfinished">Внешний вид</translation>
+        <translation>Темы</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="163"/>
         <source>Ignore hotkey in full-screen mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорировать горячую клавишу в полноэкранном режиме</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="316"/>
         <source>Screen number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Номер экрана:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="339"/>
         <source>Rescan screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Пересканировать экран</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="441"/>
         <source>Resolve symbol link</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить символическую ссылку</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="688"/>
         <source>Simultaneously visible items</source>
-        <translation type="unfinished"></translation>
+        <translation>Одновременно видимых записей</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="726"/>
         <source>Max number of items</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное число записей</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="764"/>
         <source>Max number of history</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное число записей истории</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="955"/>
         <source>Select a skin</source>
-        <translation type="unfinished">Выберите скин</translation>
+        <translation>Выберите тему</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1027"/>
         <source>Author information</source>
-        <translation type="unfinished">Информация об авторе</translation>
+        <translation>Информация об авторе</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1086"/>
         <source>Skin preview</source>
-        <translation type="unfinished">Предварительный просмотр</translation>
+        <translation>Предпросмотр темы</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1129"/>
         <source>Catalog</source>
-        <translation type="unfinished">Каталог</translation>
+        <translation>Индекс</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1137"/>
         <source>Directories</source>
-        <translation type="unfinished">Каталоги</translation>
+        <translation>Каталоги</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1200"/>
@@ -369,67 +369,67 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1261"/>
         <source>Rescan Catalog</source>
-        <translation type="unfinished">Сканировать каталог</translation>
+        <translation>Пересканировать индекс</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1293"/>
         <source>Indexing 0 items</source>
-        <translation type="unfinished">Всего 0 пунктов</translation>
+        <translation>Индексация 0 записей</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1319"/>
         <source>File Types</source>
-        <translation type="unfinished">Типы файлов</translation>
+        <translation>Типы файлов</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1408"/>
         <source>Include executables</source>
-        <translation type="unfinished">Вкл. исполняемые</translation>
+        <translation>Включать исполняемые файлы</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1415"/>
         <source>Include directories</source>
-        <translation type="unfinished">Вкл. каталоги</translation>
+        <translation>Включать каталоги</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1424"/>
         <source>Depth:</source>
-        <translation type="unfinished">Глубина:</translation>
+        <translation>Глубина:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1453"/>
         <source>Plugins</source>
-        <translation type="unfinished">Плагины</translation>
+        <translation>Плагины</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1465"/>
         <source>Available plugins</source>
-        <translation type="unfinished">Доступные плагины</translation>
+        <translation>Доступные плагины</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1505"/>
         <source>Plugin options</source>
-        <translation type="unfinished">Настройки плагина</translation>
+        <translation>Настройки плагина</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1806"/>
         <source>New version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Новая версия:</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1947"/>
         <source>Enable debug logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить журнал отладки</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1962"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Язык</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2030"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>О программе</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2284"/>
@@ -441,7 +441,14 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Creator and Developer:  Josh Karlin&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Simon Capewell&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-size:12pt;"&gt;Авторы&lt;/span&gt;&lt;/p&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Создатель и разработчик:  Josh Karlin&lt;/p&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Разработчик: Simon Capewell&lt;/p&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Разработчик: Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2203"/>
@@ -451,27 +458,32 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;&quot;&gt;I have been using Launchy for years, and found that this project has not been updated for long. I love this tool and want to reactivate this project.&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;&quot;&gt;I greatly enjoy developing Launchy, and I hope that you enjoy using it. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;"&gt;
+&lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;"&gt;Я пользовался Launchy несколько лет и заметил, что проект давно не обновлялся. Мне нравится эта программа, и я хочу возродить её разработку.&lt;/p&gt;
+&lt;p align="center" style=" margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;"&gt;Мне очень нравится разрабатывать Launchy, и я надеюсь, что вам понравится использовать его. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2221"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Контакты: &lt;a href="wangzhilv@gmail.com"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2247"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Обратная связь: &lt;a href="https://github.com/samsonwang/LaunchyQt/issues"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Разработка: &lt;a href="https://github.com/samsonwang/LaunchyQt/"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2328"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2335"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <source>About Launchy</source>
@@ -479,27 +491,27 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Up</source>
-        <translation type="obsolete">Up</translation>
+        <translation type="obsolete">Вверх</translation>
     </message>
     <message>
         <source>Down</source>
-        <translation type="obsolete">Down</translation>
+        <translation type="obsolete">Вниз</translation>
     </message>
     <message>
         <source>Left</source>
-        <translation type="obsolete">Left</translation>
+        <translation type="obsolete">Слева</translation>
     </message>
     <message>
         <source>Right</source>
-        <translation type="obsolete">Right</translation>
+        <translation type="obsolete">Справа</translation>
     </message>
     <message numerus="yes">
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation type="obsolete">
-            <numerusform>Всего %n пункт</numerusform>
-            <numerusform>Всего %n пункта</numerusform>
-            <numerusform>Всего %n пунктов</numerusform>
+            <numerusform>Индекс содержит %n запись</numerusform>
+            <numerusform>Индекс содержит %n записи</numerusform>
+            <numerusform>Индекс содержит %n записей</numerusform>
         </translation>
     </message>
     <message>
@@ -508,15 +520,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation type="obsolete">Клавиша %1 уже используется, выберите другую.</translation>
+        <translation type="obsolete">Горячая клавиша %1 уже используется, выберите другую.</translation>
     </message>
     <message numerus="yes">
         <source>Index has %n items</source>
         <translation type="obsolete">
-            <numerusform>Всего %n пункт</numerusform>
-            <numerusform>Всего %n пункта</numerusform>
-            <numerusform>Всего %n пунктов</numerusform>
-        </translation>
+    <numerusform>Индекс содержит %n запись</numerusform>
+    <numerusform>Индекс содержит %n записи</numerusform>
+    <numerusform>Индекс содержит %n записей</numerusform>
+</translation>
     </message>
 </context>
 <context>
@@ -537,7 +549,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="219"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1176"/>
         <source>Launchy</source>
-        <translation type="unfinished">Launchy</translation>
+        <translation>Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="156"/>
@@ -545,70 +557,71 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1011"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1665"/>
         <source>Options</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="162"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1012"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="220"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation type="unfinished">Клавиша %1 уже используется, выберите другую.</translation>
+        <translation>Горячая клавиша %1 уже используется, выберите другую.</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="380"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1014"/>
         <source>Launchy %1
 press %2 to activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Launchy %1
+Нажмите %2 для запуска</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1290"/>
         <source>Launchy is already running!</source>
-        <translation type="unfinished"></translation>
+        <translation>Launchy уже запущен!</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1675"/>
         <source>Relaunch</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезапустить</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1003"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1652"/>
         <source>Show Launchy</source>
-        <translation type="unfinished">Показать Launchy</translation>
+        <translation>Показать Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1004"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1655"/>
         <source>Reload skin</source>
-        <translation type="unfinished">Перезагрузить скин</translation>
+        <translation>Перезагрузить тему</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1005"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1660"/>
         <source>Rebuild catalog</source>
-        <translation type="unfinished">Обновить каталог</translation>
+        <translation>Пересоздать индекс</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1007"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1670"/>
         <source>Check for updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить наличие обновлений</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1008"/>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезапуск</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1009"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1685"/>
         <source>Exit</source>
-        <translation type="unfinished">Выход</translation>
+        <translation>Выход</translation>
     </message>
 </context>
 <context>
@@ -616,103 +629,105 @@ press %2 to activate</source>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="357"/>
         <source>Plugin options</source>
-        <translation type="unfinished">Настройки плагина</translation>
+        <translation>Настройки плагина</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Launchy/OptionDialog.cpp" line="424"/>
         <source>Index has %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform>Всего %n пункт</numerusform>
-            <numerusform>Всего %n пункта</numerusform>
-            <numerusform>Всего %n пунктов</numerusform>
-        </translation>
+        <translation>
+    <numerusform>Индекс содержит %n запись</numerusform>
+    <numerusform>Индекс содержит %n записи</numerusform>
+    <numerusform>Индекс содержит %n записей</numerusform>
+</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Up</source>
-        <translation type="unfinished">Up</translation>
+        <translation>Вверх</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Down</source>
-        <translation type="unfinished">Down</translation>
+        <translation>Вниз</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Left</source>
-        <translation type="unfinished">Left</translation>
+        <translation>Слева</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Right</source>
-        <translation type="unfinished">Right</translation>
+        <translation>Справа</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="628"/>
         <source>Screen %1: </source>
-        <translation type="unfinished"></translation>
+        <translation>Экран %1: </translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="643"/>
         <source>Cursor screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Экран под курсором</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="703"/>
         <source>Launchy</source>
-        <translation type="unfinished">Launchy</translation>
+        <translation>Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="704"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation type="unfinished">Клавиша %1 уже используется, выберите другую.</translation>
+        <translation>Горячая клавиша %1 уже используется, выберите другую.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Launchy/OptionDialog.cpp" line="854"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
-        <translation type="unfinished">
-            <numerusform>Всего %n пункт</numerusform>
-            <numerusform>Всего %n пункта</numerusform>
-            <numerusform>Всего %n пунктов</numerusform>
+        <translation>
+            <numerusform>Индекс содержит %n запись</numerusform>
+            <numerusform>Индекс содержит %n записи</numerusform>
+            <numerusform>Индекс содержит %n записей</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="963"/>
         <source>No Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Без прокси</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="964"/>
         <source>System Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Системный прокси</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="965"/>
         <source>HTTP</source>
-        <translation type="unfinished"></translation>
+        <translation>HTTP</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="966"/>
         <source>SOCKS5</source>
-        <translation type="unfinished"></translation>
+        <translation>SOCKS5</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="1106"/>
         <source>Version %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Версия %1</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="1107"/>
         <source>(%1-bit)</source>
-        <translation type="unfinished"></translation>
+        <translation>(%1 бит)</translation>
     </message>
     <message>
         <location filename="../src/Launchy/SettingsManager.cpp" line="366"/>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось переключиться в режим %1.
+Проверьте каталог:
+ %2</translation>
     </message>
 </context>
 <context>
@@ -720,17 +735,17 @@ Please check directory:
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="181"/>
         <source>Failed to check for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось проверить наличие обновлений.</translation>
     </message>
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="231"/>
         <source>A new version is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступна новая версия.</translation>
     </message>
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="236"/>
         <source>No update is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновления недоступны.</translation>
     </message>
 </context>
 </TS>

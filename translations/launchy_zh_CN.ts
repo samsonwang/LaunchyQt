@@ -6,7 +6,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="42"/>
         <source>Launchy options</source>
-        <translation>Launchy选项</translation>
+        <translation>Launchy 设置</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="58"/>
@@ -21,42 +21,42 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="176"/>
         <source>Always display Launchy window</source>
-        <translation>保持主界面显示</translation>
+        <translation>始终显示主窗口</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="189"/>
         <source>Hide when lose focus</source>
-        <translation>丢失焦点后隐藏</translation>
+        <translation>失去焦点时隐藏</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="205"/>
         <source>Always on top</source>
-        <translation>主界面置顶</translation>
+        <translation>窗口置顶</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="229"/>
         <source>Always center</source>
-        <translation>主界面位置</translation>
+        <translation>居中显示</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="251"/>
         <source>horizontally</source>
-        <translation>水平居中</translation>
+        <translation>水平</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="270"/>
         <source>vertically</source>
-        <translation>垂直居中</translation>
+        <translation>垂直</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="304"/>
         <source>Only allow dragging whilst Shift is pressed</source>
-        <translation>仅在Shift按下时主界面可拖拽</translation>
+        <translation>仅在按住 Shift 时允许拖动</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="93"/>
         <source>Hotkey:</source>
-        <translation>快捷键：</translation>
+        <translation>热键：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="122"/>
@@ -66,12 +66,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="804"/>
         <source>Visual Effects</source>
-        <translation>视觉特效</translation>
+        <translation>视觉效果</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="822"/>
         <source>Opaqueness</source>
-        <translation>透明度</translation>
+        <translation>不透明度</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="863"/>
@@ -86,22 +86,22 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="463"/>
         <source>Suggestion List</source>
-        <translation>推荐列表</translation>
+        <translation>候选列表</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="163"/>
         <source>Ignore hotkey in full-screen mode</source>
-        <translation>全屏模式下忽略快捷键</translation>
+        <translation>全屏模式下忽略热键</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="316"/>
         <source>Screen number:</source>
-        <translation>屏幕序号：</translation>
+        <translation>屏幕编号：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="339"/>
         <source>Rescan screen</source>
-        <translation>识别屏幕</translation>
+        <translation>重新扫描屏幕</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="373"/>
@@ -111,27 +111,27 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="403"/>
         <source>Application Style:</source>
-        <translation>程序界面风格：</translation>
+        <translation>应用样式：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="441"/>
         <source>Resolve symbol link</source>
-        <translation type="unfinished"></translation>
+        <translation>解析符号链接</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="502"/>
         <source>Underline matched text</source>
-        <translation>下划线标注匹配的结果</translation>
+        <translation>下划线标出匹配文字</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="535"/>
         <source>Suggestions display</source>
-        <translation>列表显示</translation>
+        <translation>显示候选</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="583"/>
         <source>Name and path</source>
-        <translation>名称和路径</translation>
+        <translation>文件名和路径</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="588"/>
@@ -141,12 +141,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="593"/>
         <source>Name only</source>
-        <translation>仅名称</translation>
+        <translation>仅文件名</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="635"/>
         <source>Auto open delay</source>
-        <translation>自动显示延迟</translation>
+        <translation>自动弹出延迟</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="666"/>
@@ -156,17 +156,17 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="688"/>
         <source>Simultaneously visible items</source>
-        <translation>列表高度</translation>
+        <translation>同时可见的项目数</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="726"/>
         <source>Max number of items</source>
-        <translation>列表最大条目</translation>
+        <translation>项目最大数量</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="764"/>
         <source>Max number of history</source>
-        <translation>历史最大条目</translation>
+        <translation>历史记录最大条数</translation>
     </message>
     <message>
         <source>Style</source>
@@ -184,7 +184,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="955"/>
         <source>Select a skin</source>
-        <translation>皮肤选择</translation>
+        <translation>选择皮肤</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1027"/>
@@ -194,7 +194,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1086"/>
         <source>Skin preview</source>
-        <translation>预览</translation>
+        <translation>皮肤预览</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1129"/>
@@ -226,7 +226,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1293"/>
         <source>Indexing 0 items</source>
-        <translation>共有 0 个条目</translation>
+        <translation>正在索引 0 项</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1319"/>
@@ -246,7 +246,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1424"/>
         <source>Depth:</source>
-        <translation>深度:</translation>
+        <translation>层级：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1453"/>
@@ -286,7 +286,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1584"/>
         <source>Every:</source>
-        <translation>间隔：</translation>
+        <translation>每：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1603"/>
@@ -316,7 +316,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1711"/>
         <source>Proxy server requires password</source>
-        <translation>代理需要密码</translation>
+        <translation>代理服务器需要密码</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1718"/>
@@ -336,7 +336,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1806"/>
         <source>New version:</source>
-        <translation type="unfinished"></translation>
+        <translation>新版本：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1836"/>
@@ -346,7 +346,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1857"/>
         <source>System Options</source>
-        <translation>系统选项</translation>
+        <translation>系统设置</translation>
     </message>
     <message>
         <source>Logging level</source>
@@ -377,17 +377,17 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1940"/>
         <source>Portable mode (USB stick)</source>
-        <translation>便携模式（可以放在U盘中随身携带）</translation>
+        <translation>便携模式（U 盘）</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1926"/>
         <source>Show hidden files in browse mode</source>
-        <translation>在浏览模式下显示隐藏的文件</translation>
+        <translation>浏览模式下显示隐藏文件</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1874"/>
         <source>Auto rescan catalog every</source>
-        <translation>自动更新索引</translation>
+        <translation>自动更新索引，每</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1908"/>
@@ -397,12 +397,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1933"/>
         <source>Show network in browse mode</source>
-        <translation>显示共享网络中的计算机</translation>
+        <translation>浏览模式下显示网络</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1947"/>
         <source>Enable debug logging</source>
-        <translation type="unfinished"></translation>
+        <translation>启用调试日志</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1962"/>
@@ -417,7 +417,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2247"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;反馈： &lt;a href="https://github.com/samsonwang/LaunchyQt/issues"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;开发： &lt;a href="https://github.com/samsonwang/LaunchyQt/"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2284"/>
@@ -429,7 +429,14 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Creator and Developer:  Josh Karlin&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Simon Capewell&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-size:12pt;"&gt;致谢&lt;/span&gt;&lt;/p&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;作者与开发者：  Josh Karlin&lt;/p&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;开发者： Simon Capewell&lt;/p&gt;
+&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;开发者： Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2203"/>
@@ -439,12 +446,17 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;&quot;&gt;I have been using Launchy for years, and found that this project has not been updated for long. I love this tool and want to reactivate this project.&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;&quot;&gt;I greatly enjoy developing Launchy, and I hope that you enjoy using it. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;"&gt;
+&lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;"&gt;我使用 Launchy 已经很多年了，发现这个项目很久没有更新过。我很喜欢这个工具，希望让它重新活跃起来。&lt;/p&gt;
+&lt;p align="center" style=" margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;"&gt;我十分享受开发 Launchy 的过程，也希望你能喜欢使用它。 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2221"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;联系： &lt;a href="wangzhilv@gmail.com"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -473,7 +485,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="220"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation>热键 %1 已经被占用，请选择其他的热键。</translation>
+        <translation>热键 %1 已被占用，请选择其他热键。</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="380"/>
@@ -481,7 +493,7 @@ p, li { white-space: pre-wrap; }
         <source>Launchy %1
 press %2 to activate</source>
         <translation>Launchy %1
-按 %2 显示主窗口</translation>
+按 %2 启动</translation>
     </message>
     <message>
         <source>Test Widget</source>
@@ -501,19 +513,19 @@ press %2 to activate</source>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1003"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1652"/>
         <source>Show Launchy</source>
-        <translation>显示主窗口</translation>
+        <translation>显示 Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1004"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1655"/>
         <source>Reload skin</source>
-        <translation>刷新皮肤</translation>
+        <translation>重载皮肤</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1005"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1660"/>
         <source>Rebuild catalog</source>
-        <translation>更新索引</translation>
+        <translation>重建索引</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1007"/>
@@ -524,7 +536,7 @@ press %2 to activate</source>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1008"/>
         <source>Restart</source>
-        <translation>重新启动</translation>
+        <translation>重启</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1009"/>
@@ -544,8 +556,8 @@ press %2 to activate</source>
         <location filename="../src/Launchy/OptionDialog.cpp" line="424"/>
         <source>Index has %n item(s)</source>
         <translation>
-            <numerusform>共有 %n 条记录</numerusform>
-        </translation>
+    <numerusform>索引共 %n 项</numerusform>
+</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
@@ -570,12 +582,12 @@ press %2 to activate</source>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="628"/>
         <source>Screen %1: </source>
-        <translation>屏幕%1: </translation>
+        <translation>屏幕 %1：</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="643"/>
         <source>Cursor screen</source>
-        <translation type="unfinished"></translation>
+        <translation>光标所在屏幕</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="703"/>
@@ -585,20 +597,20 @@ press %2 to activate</source>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="704"/>
         <source>The hotkey %1 is already in use, please select another.</source>
-        <translation>热键 %1 已经被占用，请选择其他的热键。</translation>
+        <translation>热键 %1 已被占用，请选择其他热键。</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Launchy/OptionDialog.cpp" line="854"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
-            <numerusform>共有 %n 条记录</numerusform>
+            <numerusform>索引共 %n 项</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="963"/>
         <source>No Proxy</source>
-        <translation>无代理</translation>
+        <translation>不使用代理</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="964"/>
@@ -623,7 +635,7 @@ press %2 to activate</source>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="1107"/>
         <source>(%1-bit)</source>
-        <translation>（%1位）</translation>
+        <translation>(%1 位)</translation>
     </message>
     <message>
         <source>Could not convert to portable mode, Please check the write access to the %1 directory.</source>
@@ -634,8 +646,9 @@ press %2 to activate</source>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>
-        <translation>转换为%1模式失败.
-请检查%2目录的写入权限。</translation>
+        <translation>无法切换到 %1 模式。
+请检查目录：
+ %2</translation>
     </message>
 </context>
 <context>
@@ -643,17 +656,17 @@ Please check directory:
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="181"/>
         <source>Failed to check for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>检查更新失败。</translation>
     </message>
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="231"/>
         <source>A new version is available.</source>
-        <translation>有可用的更新。</translation>
+        <translation>有新版本可用。</translation>
     </message>
     <message>
         <location filename="../src/Launchy/UpdateChecker.cpp" line="236"/>
         <source>No update is available.</source>
-        <translation>无可用更新。</translation>
+        <translation>暂无可用更新。</translation>
     </message>
 </context>
 </TS>
