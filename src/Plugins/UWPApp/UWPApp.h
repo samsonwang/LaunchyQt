@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QList>
+#include <QString>
 
 #include "LaunchyLib/PluginInterface.h"
 #include "LaunchyLib/CatalogItem.h"
@@ -42,8 +43,6 @@ private:
 
     void getCatalog(QList<launchy::CatItem>* items);
 
-    void extractIcon(launchy::CatItem* item, QIcon* icon);
-
     void getLabels(QList<launchy::InputData>* items);
 
     void getResults(QList<launchy::InputData>* inputData,
@@ -55,7 +54,4 @@ private:
     void doDialog(QWidget* parent, QWidget** dialog);
 
     void endDialog(bool accept);
-
-private:
-    QString validateIconPath(const QString& iconPath);
 };

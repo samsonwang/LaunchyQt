@@ -639,11 +639,13 @@ list (APPEND SOURCES_UWPAPP ${SOURCES_QT_UWPAPP})
 target_sources (Plugin.UWPApp
   PRIVATE ${SOURCES_UWPAPP})
 
+# gdi32 is needed to read the HBITMAP that IShellItemImageFactory returns for
+# entries whose icon cannot be resolved inside the package (GetDIBits/DeleteObject).
 target_link_libraries (Plugin.UWPApp
   PUBLIC Qt${QT_MAJOR_VERSION}::Core
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE LaunchyLib
-  PRIVATE user32 shell32 propsys)
+  PRIVATE user32 shell32 propsys gdi32)
 
 set_target_properties (Plugin.UWPApp PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/UWPApp"
