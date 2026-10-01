@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <windows.h>
 #include <Shobjidl.h>
-#include <atlbase.h>
+#include <objbase.h>
 #include <propvarutil.h>
 
 #include <QFile>
@@ -112,8 +112,18 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
     CoInitialize(NULL);
 
+    // The COM smart pointers below are plain raw pointers on purpose: ATL
+    // (atlbase.h / atlcomcli.h) is an optional Visual Studio component that
+    // build agents do not always carry, and this plugin only needs reference
+    // counting plus CoTaskMem strings, both of which the COM runtime provides.
+    // They are declared up front so the cleanup after the do/while below is
+    // reached from every exit path, including the early breaks.
+    const size_t pvslen = 512;
+    IShellItem* appFolder = nullptr;
+    IEnumShellItems* enumShellItems = nullptr;
+    wchar_t* pvs = nullptr;
+
     do {
-        CComPtr<IShellItem> appFolder;
         if (FAILED(SHCreateItemFromParsingName(L"shell:AppsFolder",
                                                nullptr,
                                                IID_PPV_ARGS(&appFolder)))) {
@@ -123,7 +133,6 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
         qDebug() << "UWPApp::getCatalog, succeed to open shell::AppsFolder";
 
-        CComPtr<IEnumShellItems> enumShellItems;
         if (FAILED(appFolder->BindToHandler(nullptr,
                                             BHID_EnumItems,
                                             IID_PPV_ARGS(&enumShellItems)))) {
@@ -132,6 +141,13 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
         }
 
         qDebug() << "UWPApp::getCatalog, succeed to bind to handler";
+
+        pvs = static_cast<wchar_t*>(CoTaskMemAlloc(sizeof(wchar_t) * pvslen));
+        if (pvs == nullptr) {
+            qWarning() << "UWPApp::getCatalog, fail to allocate the scratch buffer";
+            break;
+        }
+        memset(pvs, 0, sizeof(wchar_t) * pvslen);
 
         PROPERTYKEY pkLauncherAppState;
         PSGetPropertyKeyFromName(L"System.Launcher.AppState", &pkLauncherAppState);
@@ -142,84 +158,105 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
         PROPERTYKEY pkInstallPath;
         PSGetPropertyKeyFromName(L"System.AppUserModel.PackageInstallPath", &pkInstallPath);
 
-        const size_t pvslen = 512;
-        CComHeapPtr<wchar_t> pvs;
-        pvs.Allocate(pvslen);
-
         qDebug() << "UWPApp::getCatalog, begin while loop";
         IShellItem* shellItemNext = nullptr;
         while (enumShellItems->Next(1, &shellItemNext, nullptr) == S_OK) {
-            CComPtr<IShellItem> shellItem = shellItemNext;
-
-            CComPtr<IPropertyStore> propertyStore;
-            if (FAILED(shellItem->BindToHandler(NULL,
-                                                BHID_PropertyStore,
-                                                IID_PPV_ARGS(&propertyStore)))) {
-                continue;
-            }
+            // ownership of the enum item moves to shellItem, so the loop body
+            // only ever has to release that one pointer
+            IShellItem* shellItem = shellItemNext;
+            shellItemNext = nullptr;
+            shellItem->AddRef();
 
             PROPVARIANT pv;
             PropVariantInit(&pv);
 
-            // UWP app always has valid "Launcher.AppState"
-            if (FAILED(propertyStore->GetValue(pkLauncherAppState, &pv))) {
-                continue;
-            }
-            else {
+            do {
+                IPropertyStore* propertyStore = nullptr;
+                if (FAILED(shellItem->BindToHandler(NULL,
+                                                    BHID_PropertyStore,
+                                                    IID_PPV_ARGS(&propertyStore)))) {
+                    break;
+                }
+
+                // UWP app always has valid "Launcher.AppState"
+                if (FAILED(propertyStore->GetValue(pkLauncherAppState, &pv))) {
+                    propertyStore->Release();
+                    break;
+                }
+
                 memset(pvs, 0, sizeof(wchar_t) * pvslen);
                 PropVariantToString(pv, pvs, pvslen);
                 if (std::wcslen(pvs) == 0) {
-                    continue;
+                    propertyStore->Release();
+                    break;
                 }
-            }
 
-            QString shortName;
-            QString fullPath;
-            QString installPath;
-            QString iconPath;
+                QString shortName;
+                QString fullPath;
+                QString installPath;
+                QString iconPath;
 
-            CComHeapPtr<wchar_t> name;
-            if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &name))) {
-                shortName = QString::fromWCharArray(name);
-                qDebug() << "name: " << shortName;
-            }
+                wchar_t* name = nullptr;
+                if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &name))) {
+                    shortName = QString::fromWCharArray(name);
+                    qDebug() << "name: " << shortName;
+                }
+
+                PropVariantClear(&pv);
+                if (SUCCEEDED(propertyStore->GetValue(pkAppUserModelID, &pv))) {
+                    memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                    PropVariantToString(pv, pvs, pvslen);
+                    fullPath = QString::fromWCharArray(pvs);
+                    qDebug() << " id: " << fullPath;
+                }
+
+                PropVariantClear(&pv);
+                if (SUCCEEDED(propertyStore->GetValue(pkInstallPath, &pv))) {
+                    memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                    PropVariantToString(pv, pvs, pvslen);
+                    installPath = QString::fromWCharArray(pvs);
+                    qDebug() << " install: " << installPath;
+                }
+
+                PropVariantClear(&pv);
+                if (SUCCEEDED(propertyStore->GetValue(pkSmallLogoPath, &pv))) {
+                    memset(pvs, 0, sizeof(wchar_t) * pvslen);
+                    PropVariantToString(pv, pvs, pvslen);
+                    iconPath = QString::fromWCharArray(pvs);
+                    qDebug() << " logo: " << iconPath;
+                    iconPath = installPath + QDir::separator() + iconPath;
+                    iconPath = validateIconPath(iconPath);
+                    qDebug() << " logo(validate): " << iconPath;
+                }
+
+                items->push_back(launchy::CatItem(fullPath,
+                                                  shortName,
+                                                  PLUGIN_NAME,
+                                                  iconPath));
+
+                if (name != nullptr) {
+                    CoTaskMemFree(name);
+                }
+                propertyStore->Release();
+            } while (0);
 
             PropVariantClear(&pv);
-            if (SUCCEEDED(propertyStore->GetValue(pkAppUserModelID, &pv))) {
-                memset(pvs, 0, sizeof(wchar_t) * pvslen);
-                PropVariantToString(pv, pvs, pvslen);
-                fullPath = QString::fromWCharArray(static_cast<wchar_t*>(pvs));
-                qDebug() << " id: " << fullPath;
-            }
-
-            PropVariantClear(&pv);
-            if (SUCCEEDED(propertyStore->GetValue(pkInstallPath, &pv))) {
-                memset(pvs, 0, sizeof(wchar_t) * pvslen);
-                PropVariantToString(pv, pvs, pvslen);
-                installPath = QString::fromWCharArray(pvs);
-                qDebug() << " install: " << installPath;
-            }
-
-            PropVariantClear(&pv);
-            if (SUCCEEDED(propertyStore->GetValue(pkSmallLogoPath, &pv))) {
-                memset(pvs, 0, sizeof(wchar_t) * pvslen);
-                PropVariantToString(pv, pvs, pvslen);
-                iconPath = QString::fromWCharArray(pvs);
-                qDebug() << " logo: " << iconPath;
-                iconPath = installPath + QDir::separator() + iconPath;
-                iconPath = validateIconPath(iconPath);
-                qDebug() << " logo(validate): " << iconPath;
-            }
-
-            items->push_back(launchy::CatItem(fullPath,
-                                              shortName,
-                                              PLUGIN_NAME,
-                                              iconPath));
+            shellItem->Release();
         }
 
         qDebug() << "UWPApp::getCatalog, end while loop";
 
     } while (0);
+
+    if (pvs != nullptr) {
+        CoTaskMemFree(pvs);
+    }
+    if (enumShellItems != nullptr) {
+        enumShellItems->Release();
+    }
+    if (appFolder != nullptr) {
+        appFolder->Release();
+    }
 
     CoUninitialize();
 }
