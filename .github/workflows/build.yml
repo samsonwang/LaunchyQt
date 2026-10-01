@@ -409,10 +409,14 @@ jobs:
           }
 
       # ------------------------------------------------------------------
-      # 7) Install PySide2 5.12.6 and keep ONLY the files the python plugins
-      #    actually reach. The full wheel is ~298 MB (PySide2 215 MB: every Qt
-      #    5.12 module + QtWebEngine + the OpenGL/software rasterizer DLLs,
-      #    shiboken2 3.5 MB). The plugins import exactly:
+      # 7) Install PySide2 5.12.6 (and shiboken2 5.12.6) and keep ONLY the files
+      #    the python plugins actually reach. NOTE: shiboken2 is its own PyPI
+      #    wheel -- PySide2 5.12.x no longer bundles it inside its own wheel --
+      #    so both are installed into the staging dir (--no-deps, pinned) and the
+      #    keep-list below pulls the shiboken2 package straight out of that
+      #    separate wheel. The PySide2 wheel alone is ~215 MB (every Qt 5.12
+      #    module + QtWebEngine + the OpenGL/software rasterizer DLLs);
+      #    shiboken2 adds ~3.5 MB. The plugins import exactly:
       #        from PySide2 import QtCore, QtGui, QtWidgets
       #        from shiboken2 import wrapInstance, getCppPointer
       #    (launchy_util.py and every plugin under src/Plugins/). Resolving the
@@ -450,8 +454,8 @@ jobs:
           # 1) full wheel into a staging dir (never straight into the artifact)
           Write-Host "Installing PySide2 5.12.6 into $staging ..."
           & $py -m pip install --no-cache-dir --disable-pip-version-check `
-            --no-deps --target $staging "PySide2==5.12.6"
-          if ($LASTEXITCODE -ne 0) { Write-Host "::error::pip install PySide2 failed"; exit 1 }
+            --no-deps --target $staging "PySide2==5.12.6" "shiboken2==5.12.6"
+          if ($LASTEXITCODE -ne 0) { Write-Host "::error::pip install PySide2/shiboken2 failed"; exit 1 }
 
           # 2) keep-list: the exact files the plugins import (see step comment)
           $pysideKeep = @('__init__.py', '_config.py',
