@@ -8,11 +8,21 @@ on:
     branches: [master, dev]
   workflow_dispatch:
 
+# Least privilege: the job only checks the repo out and uploads a build
+# artifact, so no write scope is needed. Declared at the workflow root so it
+# covers every job, and so the workflow keeps working (a) if the repository or
+# organisation default is later raised to read-write, (b) if it is copied into
+# another repository that defaults to read-write, and (c) on pull_request
+# events, where an undeclared token is fine locally but a declared read is
+# explicit about what this workflow ever needs.
+permissions:
+  contents: read
+
 # Toolchain mapping (1:1 with the local environment):
 #   VS2017         -> MSVC v141 toolset (Qt5.12.10 msvc2017_64 was built with v141, must link with v141)
 #   Qt5.12.10     -> installed via jurplel/install-qt-action as msvc2017_64
-#   Python3.6.6   -> actions/setup-python (64-bit)
-#   PySide2 5.12.6-> installed via pip (runtime env for Python plugins)
+#   Python3.6.8   -> actions/setup-python (64-bit)
+#   PySide2 5.12.6-> installed in CI but PRUNED to the plugins' needs (step 7)
 #   CMake 3.15+   -> Windows runner ships CMake (>=3.15, satisfies the requirement)
 #   x64           -> -A x64
 
@@ -26,7 +36,7 @@ jobs:
     env:
       QT_VERSION: '5.12.10'
       QT_ARCH: 'win64_msvc2017_64'
-      PYTHON_VERSION: '3.6.6'
+      PYTHON_VERSION: '3.6.8'
       BUILD_TYPE: 'Release'
 
     steps:
@@ -70,6 +80,9 @@ jobs:
             exit 1
           }
           Write-Host "v141 toolset ready: $($toolset.FullName)"
+          # exported for the packaging step below, which needs the VC++ 2017
+          # redist directory to ship the CRT Launchy.exe links against
+          "VC_TOOLSET_DIR=$($toolset.FullName)" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
 
       # ------------------------------------------------------------------
       # 2) Install Qt 5.12.10 (msvc2017_64)
@@ -92,13 +105,16 @@ jobs:
           # exports QT_ROOT_DIR / Qt5_DIR (see action/src/main.ts), which is what the
           # CMake configure step below relies on.
           cache: true
-          # Let the action use its own bundled Python to run aqtinstall (decoupled from 3.6.6 below)
+          # Let the action use its own bundled Python to run aqtinstall
+          # (decoupled from the 3.6.8 toolchain python below)
           setup-python: true
 
       # ------------------------------------------------------------------
-      # 3) Install Python 3.6.6 (64-bit)
-      #    Note: if 3.6.6 has been removed from the setup-python manifest,
-      #    change this to '3.6' (picks the latest 3.6.x, ABI compatible) instead.
+      # 3) Install Python 3.6.8 (64-bit)
+      #    Note: 3.6.6 is no longer resolvable by actions/setup-python on the
+      #    windows-2022 image (fetch fails), so the pinned version is 3.6.8.
+      #    If 3.6.8 also disappears from the setup-python manifest, change this
+      #    to '3.6' (picks the latest available 3.6.x, ABI compatible).
       # ------------------------------------------------------------------
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         id: setup-python
@@ -116,16 +132,7 @@ jobs:
           Write-Host "Python_ROOT_DIR=$root"
 
       # ------------------------------------------------------------------
-      # 4) Install PySide2 5.12.6 (runtime env for Python plugins, NOT required to compile)
-      # ------------------------------------------------------------------
-      - name: Install PySide2 5.12.6
-        shell: pwsh
-        run: |
-          python -m pip install --upgrade pip
-          pip install "PySide2==5.12.6" || pip install "PySide2>=5.12.6,<5.13"
-
-      # ------------------------------------------------------------------
-      # 5) CMake configure
+      # 4) CMake configure
       #    -S src: this project's CMakeLists.txt lives in src/
       #    -G "Visual Studio 17 2022" -A x64 -T v141: use VS2022's MSBuild
       #      but target the v141 (VS2017) toolset
@@ -146,14 +153,765 @@ jobs:
             -DPython_ROOT_DIR="${{ env.Python_ROOT_DIR }}"
 
       # ------------------------------------------------------------------
-      # 6) Build
+      # 5) Build
       # ------------------------------------------------------------------
       - name: Build
         shell: pwsh
         run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
 
       # ------------------------------------------------------------------
-      # 7) Upload build artifacts (build/bin contains exe/dll/plugins/python)
+      # 6) Deploy the Qt runtime
+      #    Written inline instead of calling misc/deploy_win.ps1: the Qt prefix is
+      #    only known to this workflow (jurplel/install-qt-action exports it), and
+      #    the local deployment script points at a hardcoded C:/Qt path that does
+      #    not exist on a runner.
+      #      * windeployqt lays the whole Qt tree (DLLs + plugins + Qt's own
+      #        translations) into qtlibs/, and misc/qt.conf (Prefix = ./qtlibs)
+      #        makes the running app look for its plugins there.
+      #      * the Qt DLLs the app modules import directly are then copied back to
+      #        the root, because the Windows loader ignores qt.conf and only
+      #        searches next to Launchy.exe. The duplicates windeployqt leaves
+      #        under qtlibs/ are dropped again for the same reason in reverse: a
+      #        dependent DLL's imports are resolved from the app image directory,
+      #        never from that DLL's own folder.
+      #      * --no-angle --no-opengl-sw keeps ANGLE/EGL and the software
+      #        rasterizer out. Nothing in this app links them and together they
+      #        are over 100 MB.
+      #    Runs BEFORE the PySide2 step on purpose: that step is what puts
+      #    Qt5Qml.dll into the root, and a Qt5Qml.dll the scanner can already see
+      #    would make windeployqt deploy the whole qml/ tree (~15 MB) that the
+      #    pruned PySide2 never loads.
+      # ------------------------------------------------------------------
+      - name: Deploy the Qt runtime
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $release  = "build/bin/${{ env.BUILD_TYPE }}"
+          $qtPrefix = "${{ env.QT_ROOT_DIR }}"
+          $qtBin    = Join-Path $qtPrefix 'bin'
+          $qtlibs   = Join-Path $release 'qtlibs'
+          $wdeploy  = Join-Path $qtBin 'windeployqt.exe'
+
+          if (-not (Test-Path (Join-Path $release 'Launchy.exe'))) {
+            Write-Host "::error::Launchy.exe not found in $release, the build did not produce it"
+            exit 1
+          }
+          if (-not (Test-Path $wdeploy)) {
+            # Qt 5.12.10 ships qttools inside the base package (see step 2), which
+            # is where windeployqt.exe lives; a missing tool means a partial Qt install
+            Write-Host "::error::windeployqt.exe not found at $wdeploy, the Qt install looks incomplete"
+            exit 1
+          }
+
+          # ---- 1) windeployqt -> qtlibs/ -------------------------------------
+          Write-Host "Deploying the Qt runtime into $qtlibs ..."
+          # a leftover from an older run would mix two Qt layouts in one folder
+          if (Test-Path $qtlibs) { Remove-Item -LiteralPath $qtlibs -Recurse -Force }
+          # windeployqt warns on stderr ("VCINSTALLDIR is not set" on a runner),
+          # and under $ErrorActionPreference = 'Stop' the first of those lines
+          # arrives as a terminating NativeCommandError, aborting the step before
+          # the exit code can even be read. The preference is lowered around the
+          # call so the output is simply captured.
+          $prevEap = $ErrorActionPreference
+          $ErrorActionPreference = 'Continue'
+          $wdeployOut = & $wdeploy --release --no-angle --no-opengl-sw --dir $qtlibs (Join-Path $release 'Launchy.exe') 2>&1
+          $qtExit = $LASTEXITCODE
+          $ErrorActionPreference = $prevEap
+          if ($qtExit -ne 0) {
+            Write-Host $wdeployOut
+            Write-Host "::error::windeployqt exited with $qtExit, the Qt runtime is incomplete"
+            exit 1
+          }
+          if (-not (Test-Path $qtlibs)) {
+            Write-Host "::error::windeployqt produced no $qtlibs folder"
+            exit 1
+          }
+
+          # ---- 2) the Qt DLLs the app modules import -> the root --------------
+          # qt.conf cannot redirect these: Qt5Core.dll etc. are imported by
+          # Launchy.exe / Launchy.dll / the native plugins / launchy.pyd, and the
+          # loader resolves those from the executable's own directory only.
+          # The list is the union of what Qt's deploy script ships for this app;
+          # step 9 re-derives the real closure from the PE import tables, so a
+          # stale list here cannot ship a half deployed artifact.
+          $qtRootDlls = @('Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Widgets.dll', 'Qt5Network.dll',
+                          'Qt5Svg.dll', 'Qt5WinExtras.dll',
+                          'D3Dcompiler_47.dll', 'libEGL.dll', 'libGLESV2.dll', 'opengl32sw.dll')
+          $missing = @()
+          foreach ($f in $qtRootDlls) {
+            if (Test-Path (Join-Path $release $f)) { continue }
+            # windeployqt copied them into qtlibs/; fall back to the Qt install
+            # in case a module is linked but not pulled in by the scan
+            $src = Join-Path $qtlibs $f
+            if (-not (Test-Path $src)) { $src = Join-Path $qtBin $f }
+            if (-not (Test-Path $src)) {
+              $missing += $f
+              continue
+            }
+            Copy-Item -LiteralPath $src -Destination $release -Force
+          }
+          if ($missing.Count -gt 0) {
+            Write-Host "::error::these Qt runtime DLLs are neither in $qtlibs nor in $qtBin : $($missing -join ', ')"
+            exit 1
+          }
+
+          # ---- 3) drop the Qt DLL duplicates from qtlibs/ ---------------------
+          foreach ($f in (Get-ChildItem -Path $qtlibs -Filter 'Qt5*.dll' -File -ErrorAction SilentlyContinue)) {
+            if (Test-Path (Join-Path $release $f.Name)) {
+              Remove-Item -LiteralPath $f.FullName -Force
+            }
+          }
+
+          # ---- 4) qt.conf ------------------------------------------------------
+          # windeployqt may have written its own; the bundled one is the source
+          # of truth (Prefix = ./qtlibs, hence everything Qt lives under qtlibs/)
+          if (-not (Test-Path 'misc/qt.conf')) {
+            Write-Host "::error::misc/qt.conf missing from the checkout, the app would look for Qt in the root"
+            exit 1
+          }
+          Copy-Item -LiteralPath 'misc/qt.conf' -Destination (Join-Path $release 'qt.conf') -Force
+
+          # ---- 5) sanity + size report -----------------------------------------
+          # at least one Qt plugin folder must have been deployed, or the app
+          # starts with no style and no image format support
+          $havePluginDir = 0
+          foreach ($p in 'platforms', 'imageformats', 'styles', 'iconengines', 'bearer') {
+            if (Test-Path (Join-Path $qtlibs $p)) { $havePluginDir++ }
+          }
+          if ($havePluginDir -eq 0) {
+            Write-Host "::error::$qtlibs contains no Qt plugin folder, check the windeployqt output above"
+            exit 1
+          }
+          $qtSize = (Get-ChildItem -Path $qtlibs -Recurse -File -ErrorAction SilentlyContinue |
+                     Measure-Object -Property Length -Sum).Sum
+          $rootQt = 0
+          foreach ($f in $qtRootDlls) {
+            $p = Join-Path $release $f
+            if (Test-Path $p) { $rootQt += (Get-Item $p).Length }
+          }
+          Write-Host ("qtlibs/ (Qt plugins + Qt translations): {0:N1} MB, root Qt DLLs: {1:N1} MB" -f ($qtSize / 1MB), ($rootQt / 1MB))
+
+          # CMake copies the OpenSSL runtime next to Launchy.exe when
+          # deps/openssl exists, but that folder is not in the repo (like
+          # deps/python-embed it is a local-only asset), so a CI artifact has no
+          # TLS until those two DLLs are committed. Worth a loud notice because
+          # the app only fails later, when it tries an https connection.
+          if (-not (Test-Path (Join-Path $release 'libssl-1_1-x64.dll'))) {
+            Write-Host "[warn] no OpenSSL 1.1 runtime in the artifact (deps/openssl is not in the repo), https connections will fail"
+          }
+
+      # ------------------------------------------------------------------
+      # 7) Install PySide2 5.12.6 and keep ONLY the files the python plugins
+      #    actually reach. The full wheel is ~298 MB (PySide2 215 MB: every Qt
+      #    5.12 module + QtWebEngine + the OpenGL/software rasterizer DLLs,
+      #    shiboken2 3.5 MB). The plugins import exactly:
+      #        from PySide2 import QtCore, QtGui, QtWidgets
+      #        from shiboken2 import wrapInstance, getCppPointer
+      #    (launchy_util.py and every plugin under src/Plugins/). Resolving the
+      #    PE import tables of those .pyd/.dll shows the transitive native closure
+      #    is: pyside2.abi3.dll, shiboken2.abi3.dll, msvcp140.dll,
+      #    vcruntime140.dll -- plus the Qt DLLs the app already ships
+      #    (Qt5Core/Qt5Gui/Qt5Widgets/Qt5Network) and Qt5Qml.dll, which
+      #    pyside2.abi3.dll statically imports and nothing else pulls in.
+      #    So PySide2's OWN copies of those Qt DLLs must NOT be shipped: two
+      #    Qt5Core.dll in one process means two copies of Qt's static state.
+      #    Result: ~19 MB instead of 298 MB.
+      #    Layout note: everything lands in python/PySide2 + python/shiboken2,
+      #    i.e. next to launchy.pyd, because PluginMgr.cpp appends
+      #    <appdir>/python to sys.path. (deploy_win.ps1 additionally puts
+      #    python/Lib/site-packages on the path; that is an extra route, not the
+      #    one the launcher uses.)
+      # ------------------------------------------------------------------
+      - name: Install and prune PySide2
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # multi-config generators (Visual Studio) already append the config dir,
+          # so build/bin/${{ env.BUILD_TYPE }} IS the app dir Launchy.exe runs from
+          $release   = "build/bin/${{ env.BUILD_TYPE }}"
+          $pyPkg     = Join-Path $release "python"
+          $staging   = Join-Path $env:RUNNER_TEMP "pyside2-stage"
+          $py        = "${{ steps.setup-python.outputs.python-path }}"
+          $qtBin     = Join-Path "${{ env.QT_ROOT_DIR }}" "bin"
+
+          if (-not (Test-Path $pyPkg)) {
+            Write-Host "::error::$pyPkg was not created by the build"
+            exit 1
+          }
+
+          # 1) full wheel into a staging dir (never straight into the artifact)
+          Write-Host "Installing PySide2 5.12.6 into $staging ..."
+          & $py -m pip install --no-cache-dir --disable-pip-version-check `
+            --no-deps --target $staging "PySide2==5.12.6"
+          if ($LASTEXITCODE -ne 0) { Write-Host "::error::pip install PySide2 failed"; exit 1 }
+
+          # 2) keep-list: the exact files the plugins import (see step comment)
+          $pysideKeep = @('__init__.py', '_config.py',
+                          'QtCore.pyd', 'QtGui.pyd', 'QtWidgets.pyd', 'pyside2.abi3.dll')
+          $shibKeep   = @('__init__.py', '_config.py', 'shiboken2.pyd', 'shiboken2.abi3.dll')
+          $keepGroups = @(
+            @{ Src = "PySide2";   Files = $pysideKeep; Dst = (Join-Path $pyPkg "PySide2") },
+            @{ Src = "shiboken2"; Files = $shibKeep;   Dst = (Join-Path $pyPkg "shiboken2") })
+
+          foreach ($g in $keepGroups) {
+            New-Item -ItemType Directory -Path $g.Dst -Force | Out-Null
+            foreach ($f in $g.Files) {
+              $src = Join-Path (Join-Path $staging $g.Src) $f
+              if (-not (Test-Path $src)) {
+                Write-Host "::error::$($g.Src)/$f missing from the wheel -- the pin is stale, update the keep-list"
+                exit 1
+              }
+              Copy-Item -LiteralPath $src -Destination $g.Dst -Force
+            }
+          }
+
+          # 3) native deps that live in the app dir, not in python/
+          #    Qt5Qml is not pulled in by anything else, so it is taken from the
+          #    Qt prefix; the same goes for the two MSVC redists shiboken2 needs.
+          $rootDeps = @('Qt5Qml.dll')
+          foreach ($f in $rootDeps) {
+            if (-not (Test-Path (Join-Path $release $f))) {
+              Copy-Item -LiteralPath (Join-Path $qtBin $f) -Destination $release -Force
+            }
+          }
+          $crtDeps = @('msvcp140.dll', 'vcruntime140.dll')
+          foreach ($f in $crtDeps) {
+            $dst = Join-Path $release $f
+            if (Test-Path $dst) { continue }
+            $src = Join-Path (Join-Path $staging "shiboken2") $f
+            if (-not (Test-Path $src)) {
+              Write-Host "::error::shiboken2 ships $f but it is missing from the wheel -- update the keep-list"
+              exit 1
+            }
+            Copy-Item -LiteralPath $src -Destination $dst -Force
+          }
+
+          # 4) the app must already provide the other Qt DLLs PySide2 reuses
+          $missingQt = @()
+          foreach ($f in 'Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Widgets.dll', 'Qt5Network.dll') {
+            if (-not (Test-Path (Join-Path $release $f))) { $missingQt += $f }
+          }
+          if ($missingQt.Count -gt 0) {
+            Write-Host "::error::PySide2 needs these next to Launchy.exe but they are missing: $($missingQt -join ', ')"
+            exit 1
+          }
+
+          # 5) report what the prune bought us
+          $payload = 0
+          foreach ($g in $keepGroups) {
+            foreach ($f in (Get-ChildItem -Path $g.Dst -File)) { $payload += $f.Length }
+          }
+          foreach ($f in ($rootDeps + $crtDeps)) {
+            $p = Join-Path $release $f
+            if (Test-Path $p) { $payload += (Get-Item $p).Length }
+          }
+          Write-Host ("pruned PySide2 payload: {0:N1} MB in python/ (+ root deps)" -f ($payload / 1MB))
+
+          # cleanup: only housekeeping, never fail the build over a stale temp dir
+          try { Remove-Item -Recurse -Force $staging -ErrorAction Stop }
+          catch { Write-Host "[warn] could not remove $staging : $($_.Exception.Message)" }
+
+      # ------------------------------------------------------------------
+      # 8) Package the Python runtime (python36.dll + stdlib + extension
+      #     modules).
+      #    Written inline instead of calling misc/deploy_win.ps1: everything is
+      #    taken from the 3.6.8 install step above, so the interpreter, the
+      #    extension modules and the standard library all come as one set, and
+      #    no asset that only exists on a developer machine (the embeddable
+      #    zip is not in the repo) is needed.
+      #      * python36.dll / python3.dll sit next to Launchy.exe -- the Windows
+      #        loader resolves them there and that is also what makes sys.prefix
+      #        the Release root; python36._pth then points Python at python/.
+      #      * the standard library is zipped into python/python36.zip, the same
+      #        shape the embeddable package used (~3 MB instead of a ~39 MB Lib/
+      #        tree).
+      #      * the C extension modules (*.pyd + sqlite3.dll) land in python/,
+      #        which the "python" line of _pth puts on sys.path.
+      #      * skins/ is copied by its own step (step 10), not here.
+      #      * Step 9 imports every stdlib module the plugins use against the
+      #        zip, so a stale or over-pruned list cannot pass.
+      # ------------------------------------------------------------------
+      - name: Package Python runtime
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $release = "build/bin/${{ env.BUILD_TYPE }}"
+          $pyExe   = "${{ steps.setup-python.outputs.python-path }}"
+          $pyRoot  = Split-Path $pyExe
+          $pyDir   = Join-Path $release "python"
+          $pyLib   = Join-Path $pyRoot "Lib"
+          $pyDlls  = Join-Path $pyRoot "DLLs"
+
+          if (-not (Test-Path $pyDir)) {
+            New-Item -ItemType Directory -Path $pyDir -Force | Out-Null
+          }
+          foreach ($f in 'python36.dll', 'python3.dll') {
+            if (-not (Test-Path (Join-Path $pyRoot $f))) {
+              Write-Host "::error::$f missing from the Python install $pyRoot"
+              exit 1
+            }
+          }
+
+          # ---- 1) core runtime DLLs -------------------------------------------
+          # the loader only looks next to Launchy.exe; python36.dll also needs
+          # vcruntime140.dll, which the installer shipped next to it
+          foreach ($f in 'python36.dll', 'python3.dll', 'vcruntime140.dll') {
+            $dst = Join-Path $release $f
+            if (Test-Path $dst) { continue }
+            Copy-Item -LiteralPath (Join-Path $pyRoot $f) -Destination $release -Force
+          }
+
+          # ---- 2) standard library -> python/python36.zip ----------------------
+          # py_compile keeps the .pyc form the zipped stdlib shipped with, so the
+          # payload stays ~3 MB. test/ idlelib/ tkinter/ ensurepip/ and
+          # site-packages/ are dropped (the reference layout did the same and
+          # nothing under src/Plugins imports from them).
+          $zipOut = Join-Path $pyDir "python36.zip"
+          if (Test-Path $zipOut) { Remove-Item -LiteralPath $zipOut -Force }
+          $stdlibZip = @'
+          import os, py_compile, shutil, sys, zipfile
+
+          src, dst = sys.argv[1], sys.argv[2]
+          if sys.version_info[:2] != (3, 6):
+              sys.exit('refusing to package the stdlib with %s' % sys.version)
+
+          SKIP = set(['test', 'idlelib', 'tkinter', 'ensurepip', 'site-packages'])
+          tmp = os.path.join(os.path.dirname(dst), '_stdlib_pyc')
+          os.makedirs(tmp, exist_ok=True)
+          shutil.rmtree(tmp, ignore_errors=True)   # drop a leftover from a retry
+          stored, skipped = 0, []
+          try:
+              with zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED) as z:
+                  for dirpath, dirnames, filenames in os.walk(src):
+                      rel = os.path.relpath(dirpath, src).replace(os.sep, '/')
+                      top = '' if rel == '.' else rel.split('/')[0]
+                      if top in SKIP:
+                          dirnames[:] = []
+                          continue
+                      dirnames[:] = [d for d in dirnames
+                                     if d not in SKIP and d != '__pycache__']
+                      for name in filenames:
+                          if not name.endswith('.py'):
+                              continue
+                          full = os.path.join(dirpath, name)
+                          arc = os.path.relpath(full, src).replace(os.sep, '/')
+                          arc = arc[:-3] + '.pyc'
+                          cfile = os.path.join(tmp, arc)
+                          os.makedirs(os.path.dirname(cfile), exist_ok=True)
+                          try:
+                              py_compile.compile(full, cfile=cfile, doraise=True)
+                          except py_compile.PyCompileError:
+                              # intentionally broken sources (lib2to3 grammar
+                              # fixtures); the shipped zip skipped them too
+                              skipped.append(arc)
+                              continue
+                          z.write(cfile, arc)
+                          os.unlink(cfile)
+                          stored += 1
+          finally:
+              shutil.rmtree(tmp, ignore_errors=True)
+
+          print('stdlib: %d modules in %s (%d skipped)' % (stored, dst, len(skipped)))
+          '@
+          Write-Host "Packaging the standard library from $pyLib ..."
+          $LASTEXITCODE = 0   # $LASTEXITCODE survives the last native call, reset it
+          $zipReport = & $pyExe -c $stdlibZip $pyLib $zipOut
+          Write-Host $zipReport
+          if ($LASTEXITCODE -ne 0) { Write-Host "::error::building python36.zip failed"; exit 1 }
+
+          # ---- 3) C extension modules -----------------------------------------
+          # the same set the embeddable package shipped: unicodedata and sqlite3
+          # are the only ones the plugins reach, the rest cost ~1 MB together
+          $pydKeep = @('_asyncio.pyd', '_bz2.pyd', '_ctypes.pyd', '_decimal.pyd',
+                       '_distutils_findvs.pyd', '_elementtree.pyd', '_hashlib.pyd',
+                       '_lzma.pyd', '_msi.pyd', '_multiprocessing.pyd',
+                       '_overlapped.pyd', '_socket.pyd', '_sqlite3.pyd', '_ssl.pyd',
+                       'pyexpat.pyd', 'select.pyd', 'unicodedata.pyd', 'winsound.pyd')
+          foreach ($f in $pydKeep) {
+            $src = Join-Path $pyDlls $f
+            if (-not (Test-Path $src)) {
+              Write-Host "::error::$f missing from $pyDlls -- update the keep-list"
+              exit 1
+            }
+            Copy-Item -LiteralPath $src -Destination $pyDir -Force
+          }
+          $sqlc = Join-Path $pyDlls "sqlite3.dll"
+          if (Test-Path $sqlc) { Copy-Item -LiteralPath $sqlc -Destination $pyDir -Force }
+
+          # ---- 4) python36._pth next to python36.dll ---------------------------
+          # "python" is what makes launchy.pyd, the .pyds above and the pruned
+          # PySide2 resolve; the zipped stdlib is the first entry.
+          # python/Lib/site-packages is a no-op route kept for parity with the
+          # local deploy script.
+          @('python/python36.zip', 'python', 'python/Lib/site-packages') |
+            Out-File -FilePath (Join-Path $release 'python36._pth') -Encoding ascii -Force
+
+          # ---- 5) MSVC 2017 CRT ------------------------------------------------
+          # Launchy.exe links it and python36.dll needs vcruntime140.dll. The
+          # runner has them in System32; the machine the artifact runs on may not.
+          $vsCrt = $null
+          if ($env:VC_TOOLSET_DIR) {
+            $vsCrt = Get-ChildItem -Path (Join-Path $env:VC_TOOLSET_DIR 'VC\Redist\VS2017') `
+              -Directory -ErrorAction SilentlyContinue |
+              ForEach-Object { Join-Path $_.FullName 'x64\Microsoft.VC141.CRT' } |
+              Where-Object { Test-Path (Join-Path $_ 'msvcp140.dll') } | Select-Object -First 1
+          }
+          if (-not $vsCrt -and (Test-Path 'C:\Windows\System32\vcruntime140.dll')) {
+            $vsCrt = 'C:\Windows\System32'
+          }
+          if ($vsCrt) {
+            foreach ($f in 'vcruntime140.dll', 'msvcp140.dll', 'concrt140.dll') {
+              $dst = Join-Path $release $f
+              if (Test-Path $dst) { continue }
+              $src = Join-Path $vsCrt $f
+              if (Test-Path $src) { Copy-Item -LiteralPath $src -Destination $dst -Force }
+            }
+            Write-Host "CRT taken from $vsCrt"
+          }
+          else {
+            Write-Host "[warn] MSVC 2017 redist not found, ship the VC++ 2017 Redistributable with the artifact"
+          }
+
+          # ---- 6) sanity + size report -----------------------------------------
+          $rootDlls = @('python36.dll', 'python3.dll', 'vcruntime140.dll')
+          foreach ($f in $rootDlls) {
+            if (-not (Test-Path (Join-Path $release $f))) {
+              Write-Host "::error::$f was not placed in $release"
+              exit 1
+            }
+          }
+          $zipNeed = @('os.pyc', 'json/__init__.pyc', 'encodings/__init__.pyc', 'urllib/parse.pyc')
+          $LASTEXITCODE = 0
+          $zipMiss = & $pyExe -c "import sys, zipfile; z = zipfile.ZipFile(sys.argv[1]); print(' '.join(n for n in sys.argv[2:] if n not in z.namelist()))" $zipOut $zipNeed
+          if ($zipMiss.Trim()) {
+            Write-Host "::error::python36.zip is missing stdlib modules: $zipMiss"
+            exit 1
+          }
+          $zipSize = (Get-Item $zipOut).Length
+          $extSize = 0
+          foreach ($f in $pydKeep) { $extSize += (Get-Item (Join-Path $pyDir $f)).Length }
+          Write-Host ("packaged python runtime: {0:N1} MB stdlib + {1:N1} MB extension modules in python/" -f ($zipSize / 1MB), ($extSize / 1MB))
+
+      # ------------------------------------------------------------------
+      # 9) Sanity check the python plugins the build just copied
+      #    Target PythonPlugins.Deploy is the replacement for the old manual
+      #    "copy CalcyPy/DiryPy/... into plugins/" step, so a silently broken glob
+      #    would only show up at runtime. Cheap assertions: every plugin folder
+      #    that owns a <Name>.py reached the output tree, the pruned PySide2
+      #    landed in python/ (and brought no Qt DLLs with it), and every copied
+      #    plugin parses under the 3.6.8 interpreter. Parsing only reads the
+      #    source, so it needs no PySide2.
+      # ------------------------------------------------------------------
+      - name: Verify python plugins
+        shell: pwsh
+        run: |
+          $outRoot = "build/bin/${{ env.BUILD_TYPE }}"
+          if (-not (Test-Path $outRoot)) {
+            Write-Host "::error::$outRoot is missing, the build produced nothing"
+            exit 1
+          }
+
+          $pluginsOut = Join-Path $outRoot "plugins"
+          $pyPkg      = Join-Path $outRoot "python"
+          Write-Host "plugins/ in $outRoot :"
+          if (Test-Path $pluginsOut) {
+            Get-ChildItem -Path $pluginsOut -Directory | ForEach-Object { "  $($_.Name)" }
+          }
+          else {
+            Write-Host "  (none)"
+          }
+
+          # 1) each src/Plugins/<Name>/<Name>.py must have landed in plugins/<Name>/
+          #    (a folder without a matching .py is a native plugin, skip it)
+          $expected = @()
+          foreach ($dir in (Get-ChildItem -Path "src/Plugins" -Directory)) {
+            if (-not (Test-Path (Join-Path $dir.FullName "$($dir.Name).py"))) { continue }
+            $expected += $dir.Name
+          }
+          if ($expected.Count -eq 0) {
+            Write-Host "::error::no python plugin found under src/Plugins, check the repo layout"
+            exit 1
+          }
+
+          $missing = @()
+          foreach ($name in $expected) {
+            $landed = Join-Path (Join-Path $pluginsOut $name) "$name.py"
+            if (-not (Test-Path $landed)) { $missing += $name }
+          }
+          if ($missing.Count -gt 0) {
+            Write-Host "::error::python plugins not copied to $pluginsOut : $($missing -join ', ')"
+            exit 1
+          }
+          Write-Host "copied python plugins: $($expected -join ', ')"
+
+          # 1b) the pruned PySide2 must be present, and must not have dragged the
+          #     full wheel back in (a stray Qt5*.dll under python/ would put a
+          #     second copy of Qt in the process).
+          foreach ($pkg in 'PySide2', 'shiboken2') {
+            if (-not (Test-Path (Join-Path $pyPkg "$pkg/__init__.py"))) {
+              Write-Host "::error::$pyPkg/$pkg/__init__.py missing, PySide2 was not pruned into the artifact"
+              exit 1
+            }
+          }
+          $strayQt = Get-ChildItem -Path $pyPkg -Filter 'Qt5*.dll' -File -ErrorAction SilentlyContinue
+          if ($strayQt) {
+            Write-Host "::error::PySide2 Qt DLLs leaked into python/: $($strayQt.Name -join ', ')"
+            exit 1
+          }
+
+          # 2) the copied sources must at least parse. Parsing only reads the
+          #    source, so no PySide2 is needed here. utf-8-sig matters: DiryPy.py
+          #    starts with a UTF-8 BOM and plain utf-8 makes ast.parse reject it.
+          $py = "${{ steps.setup-python.outputs.python-path }}"
+          $parseCheck = @'
+          import ast, os, sys
+          root = sys.argv[1]
+          count = 0
+          for dirpath, dirnames, filenames in os.walk(root):
+              if os.path.basename(dirpath) == '__pycache__':
+                  continue
+              for name in filenames:
+                  if not name.endswith('.py'):
+                      continue
+                  path = os.path.join(dirpath, name)
+                  count += 1
+                  try:
+                      ast.parse(open(path, encoding='utf-8-sig').read(), filename=path)
+                  except SyntaxError as err:
+                      print('SYNTAX ERROR %s: %s' % (path, err))
+                      sys.exit(1)
+          print('parsed %d plugin files under %s' % (count, sys.version.split()[0]))
+          '@
+          $LASTEXITCODE = 0
+          $report = & $py -c $parseCheck $pluginsOut
+          Write-Host $report
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::a python plugin failed to parse"
+            exit 1
+          }
+
+          # 2b) the packaged stdlib must actually serve the plugins. Emulate the
+          #     runtime sys.path (python36._pth lines -> python/python36.zip +
+          #     python) and import every stdlib module the copied plugin sources
+          #     reference. This is what turns packaging mistakes (stale SKIP
+          #     list, a zip written by the wrong interpreter, a pyd left out of
+          #     the keep-list) into a CI failure instead of a runtime ImportError.
+          #     -S is load bearing: without it the interpreter keeps the build
+          #     machine's own Lib on sys.path and every import would silently
+          #     resolve from there, which would make this check pass no matter
+          #     what was packaged. The snippet asserts that too.
+          $importCheck = @'
+          import os, pathlib, re, sys
+
+          rel, root = sys.argv[1], sys.argv[2]
+          sys.path[:] = [os.path.join(rel, 'python'),
+                         os.path.join(rel, 'python', 'python36.zip')]
+          # guard against the check silently importing the build machine's stdlib
+          # (it happens if the invocation forgets -S): every sys.path entry must
+          # be the packaged python/ folder, a folder below it, or its zip
+          home = os.path.normpath(os.path.join(rel, 'python'))
+          zipf = os.path.join(home, 'python36.zip')
+          stray = []
+          for entry in sys.path:
+              if not entry:
+                  continue
+              norm = os.path.normpath(entry)
+              if norm == zipf or norm == home or norm.startswith(home + os.sep):
+                  continue
+              stray.append(entry)
+          if stray:
+              sys.exit('sys.path is not isolated to the packaged runtime: %r' % (stray,))
+          pat = re.compile(r'^\s*(?:from\s+([A-Za-z_][\w.]*)\s+import|import\s+([A-Za-z_][\w.]*))')
+          # shipped by the build / the pruned PySide2 / optional 3rd party
+          local = set(['launchy', 'launchy_util', 'PySide2', 'PySide6', 'shiboken2',
+                       'bs4', 'requests', 'Calculator', 'CaselessDict',
+                       'future_ntpath', 'translator', 'WebSearch', 'Calcy', 'PyDiry'])
+          # python-2 only names, guarded by `sys.version_info[0] < 3` in the sources
+          py2only = set(['ConfigParser', 'StringIO'])
+          names = set()
+          for path in pathlib.Path(root).rglob('*.py'):
+              for line in path.read_text(encoding='utf-8-sig', errors='ignore').splitlines():
+                  m = pat.match(line)
+                  if m:
+                      names.add((m.group(1) or m.group(2)).split('.')[0])
+          names = sorted(n for n in names - local - py2only - {'__future__', ''})
+          bad = []
+          for name in names:
+              try:
+                  __import__(name)
+              except Exception as exc:
+                  bad.append('%s (%s)' % (name, exc))
+          print('stdlib import check: %d module(s) against %s' % (len(names), sys.path[1]))
+          if bad:
+              print('MISSING: ' + ', '.join(bad))
+              sys.exit(1)
+          '@
+          $LASTEXITCODE = 0
+          $importReport = & $py -S -c $importCheck $outRoot $pluginsOut
+          Write-Host $importReport
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::the packaged stdlib cannot serve the python plugins"
+            exit 1
+          }
+
+          # 2c) the Qt runtime must be complete. windeployqt only walks
+          #     Launchy.exe's import table, so it never sees what the python
+          #     plugins pull in (pyside2.abi3.dll statically imports Qt5Qml.dll)
+          #     nor what the native plugins link (Qt5Svg.dll, in this repo).
+          #     Parse the PE import tables of every image in the artifact and
+          #     require each imported Qt module to sit next to Launchy.exe --
+          #     that directory is the only place the loader looks for the
+          #     imports of an already loaded module.
+          $qtClosure = @'
+          import os, struct, sys
+
+          def qt_imports(data):
+              # Walk a PE image's import directory and return the DLL names.
+              if len(data) < 0x40 or data[:2] != b'MZ':
+                  return []
+              e_lfanew = struct.unpack_from('<I', data, 0x3C)[0]
+              if e_lfanew + 24 > len(data) or data[e_lfanew:e_lfanew + 4] != b'PE\0\0':
+                  return []
+              coff = e_lfanew + 4                       # COFF header, 20 bytes
+              opt = coff + 20                          # optional header
+              magic = struct.unpack_from('<H', data, opt)[0]
+              if magic == 0x20B:                       # PE32+
+                  nrva_off, dirs = opt + 108, opt + 112
+              elif magic == 0x10B:                     # PE32
+                  nrva_off, dirs = opt + 92, opt + 96
+              else:
+                  return []
+              nrva = struct.unpack_from('<I', data, nrva_off)[0]
+              if nrva < 2:                             # need directory 1 = imports
+                  return []
+
+              def rva2off(rva):
+                  sec = dirs + nrva * 8                # data directories, then sections
+                  for i in range(struct.unpack_from('<H', data, coff + 2)[0]):
+                      base = sec + i * 40
+                      if base + 40 > len(data):
+                          break
+                      vsize, va, rawsize, rawptr = struct.unpack_from('<IIII', data, base + 8)
+                      if va <= rva < va + max(vsize, rawsize):
+                          return rawptr + (rva - va)
+                  return None
+
+              import_rva = struct.unpack_from('<I', data, dirs + 8)[0]   # directory 1
+              if not import_rva:
+                  return []
+              pos = rva2off(import_rva)
+              if pos is None:
+                  return []
+              names = set()
+              while pos + 20 <= len(data):
+                  desc = struct.unpack_from('<IIIII', data, pos)
+                  pos += 20
+                  if desc[0] == 0 and desc[4] == 0:    # end of the descriptor list
+                      break
+                  if not desc[3]:                      # name RVA
+                      continue
+                  noff = rva2off(desc[3])
+                  if noff is None:
+                      continue
+                  nul = data.find(b'\0', noff)
+                  if nul < 0:
+                      continue
+                  name = data[noff:nul].decode('utf-8', 'replace')
+                  if name.lower().startswith('qt5'):
+                      names.add(name)
+              return sorted(names)
+
+          root = sys.argv[1]
+          found = set()
+          for dirpath, dirnames, filenames in os.walk(root):
+              if os.path.basename(dirpath) == '__pycache__':
+                  continue
+              for name in filenames:
+                  if os.path.splitext(name)[1].lower() not in ('.dll', '.pyd', '.exe'):
+                      continue
+                  try:
+                      with open(os.path.join(dirpath, name), 'rb') as fh:
+                          data = fh.read()
+                      for dep in qt_imports(data):
+                          found.add(dep)
+                  except Exception:
+                      continue
+          for name in sorted(found):
+              print(name)
+          '@
+          $LASTEXITCODE = 0
+          $qtScan = & $py -c $qtClosure $outRoot
+          $qtDeps = @($qtScan -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+          if ($qtDeps.Count -eq 0) {
+            Write-Host "::error::no Qt5 module resolved anywhere under $outRoot, the PE scan returned nothing"
+            exit 1
+          }
+          Write-Host "Qt modules the artifact loads: $($qtDeps -join ', ')"
+          $qtMiss = @()
+          foreach ($n in $qtDeps) {
+            if (-not (Test-Path (Join-Path $outRoot $n))) { $qtMiss += $n }
+          }
+          if ($qtMiss.Count -gt 0) {
+            Write-Host "::error::Launchy.exe cannot load, these Qt modules are missing from $outRoot : $($qtMiss -join ', ')"
+            exit 1
+          }
+
+          # qt.conf must point at qtlibs/ (that is where windeployqt put the
+          # plugins), and qtlibs/ must not hold a second copy of a root Qt DLL
+          $qtconf = Join-Path $outRoot 'qt.conf'
+          if (-not (Test-Path $qtconf)) {
+            Write-Host "::error::$qtconf missing, Qt would look for its plugins in the artifact root"
+            exit 1
+          }
+          if ((Get-Content -LiteralPath $qtconf -Raw) -notmatch 'Prefix\s*=\s*\./qtlibs') {
+            Write-Host "::error::$qtconf does not point Prefix at ./qtlibs"
+            exit 1
+          }
+          $qtDup = Get-ChildItem -Path (Join-Path $outRoot 'qtlibs') -Filter 'Qt5*.dll' -File -ErrorAction SilentlyContinue |
+            Where-Object { Test-Path (Join-Path $outRoot $_.Name) }
+          if ($qtDup) {
+            Write-Host "::error::duplicate Qt DLLs left in qtlibs/ (dead weight): $($qtDup.Name -join ', ')"
+            exit 1
+          }
+
+      # ------------------------------------------------------------------
+      # 10) Copy the skins into the artifact.
+      #     Their own step, right before the upload, because the build never
+      #     touches skins/: this is a pure asset copy, independent of the Qt and
+      #     Python packaging (it needs nothing they produce). The app looks for
+      #     <appdir>/skins (AppWin.cpp) and renders unskinned if the folder is
+      #     missing, so an empty copy is an error here.
+      # ------------------------------------------------------------------
+      - name: Copy skins
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $release = "build/bin/${{ env.BUILD_TYPE }}"
+          if (-not (Test-Path 'skins')) {
+            Write-Host "::error::skins/ missing from the checkout, the UI would render unskinned"
+            exit 1
+          }
+          # purged first so a retry cannot nest the copy (Copy-Item drops an
+          # existing destination container into itself)
+          $skinsDst = Join-Path $release 'skins'
+          if (Test-Path $skinsDst) { Remove-Item -LiteralPath $skinsDst -Recurse -Force }
+          Copy-Item -LiteralPath 'skins' -Destination $skinsDst -Recurse -Force
+
+          $skinCount = (Get-ChildItem $skinsDst -Directory -ErrorAction SilentlyContinue).Count
+          if ($skinCount -eq 0) {
+            Write-Host "::error::no skin landed in $skinsDst"
+            exit 1
+          }
+          $skinsSize = (Get-ChildItem $skinsDst -Recurse -File -ErrorAction SilentlyContinue |
+                        Measure-Object -Property Length -Sum).Sum
+          if (-not $skinsSize) { $skinsSize = 0 }
+          Write-Host ("copied $skinCount skin(s), {0:N1} MB, into $skinsDst" -f ($skinsSize / 1MB))
+
+      # ------------------------------------------------------------------
+      # 11) Upload build artifacts
+      #     build/bin contains the exe, the Qt runtime (root Qt DLLs + qtlibs/),
+      #     plugins/, python/ (stdlib zip + extension modules + pruned PySide2),
+      #     skins/ and the app translations -- i.e. a tree that runs stand-alone.
       # ------------------------------------------------------------------
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

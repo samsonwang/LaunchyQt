@@ -14,7 +14,13 @@
     Artifacts of this project (copied):
       Launchy.exe / Launchy.dll / Launchy.pdb
       PluginPy.dll / PluginPy.pdb
-      plugins\<plugin name>\*.dll, *.pdb, *.png
+      plugins\<plugin name>\*.dll, *.pdb, *.png          (native plugins)
+      plugins\<python plugin>\...                        (python plugins: the whole folder
+                                                          as built, i.e. <Name>.py plus
+                                                          icons, data.json, helper
+                                                          packages such as Calcy\ or
+                                                          WebSearch\ and the helper
+                                                          binaries some plugins bundle)
       python\launchy.pyd, python\launchy_util.py
       translations\launchy_*.qm (compiled from translations\*.ts by the build)
 
@@ -26,6 +32,11 @@
       libEGL.dll, libGLESv2.dll, opengl32sw.dll, D3Dcompiler_47.dll
       libssl-1_1-x64.dll, libcrypto-1_1-x64.dll
       config\ (user configuration data, this script never reads or writes it)
+
+    Note: a folder under plugins\ that owns a <plugin name>.py is a python plugin and is
+    copied in full; the other plugin folders are native ones and only their *.dll, *.pdb
+    and *.png files are copied. __pycache__ is never listed because the build strips it
+    from the build output (and it is regenerated at runtime anyway).
 
 .PARAMETER Config
     Build configuration: Release (default) or Debug.
@@ -159,7 +170,14 @@ function Get-ProjectArtifactList {
         $relativePaths.Add($relativePath)
     }
 
-    # Native plugins: plugin binary, icon resources and debug symbols under plugins\<plugin name>\
+    # Plugins under plugins\<plugin name>\.
+    # A folder is a python plugin when it owns a <folder name>.py (that is exactly the
+    # contract PluginHandler::loadPlugins() relies on); its whole tree is listed, because
+    # a python plugin reads its assets at runtime (helper modules, icons, data.json,
+    # packaged helper folders such as Calcy\ or WebSearch\), and the ones that bundle an
+    # external helper need it next to them (virtual-keyboard.exe, libgcc/libstdc++).
+    # The remaining folders are native plugins, whose build only produces the plugin
+    # binary, its symbols and its icon, so an extension whitelist is enough there.
     $pluginRoot = Join-Path $SourceDir 'plugins'
     if (Test-Path -LiteralPath $pluginRoot -PathType Container) {
         $allowedExtensions = @('.dll', '.png')
@@ -168,6 +186,22 @@ function Get-ProjectArtifactList {
         }
 
         foreach ($pluginDir in Get-ChildItem -LiteralPath $pluginRoot -Directory) {
+            $entryPoint = Join-Path $pluginDir.FullName ($pluginDir.Name + '.py')
+
+            if (Test-Path -LiteralPath $entryPoint -PathType Leaf) {
+                # Python plugin: copy everything the build put in the folder,
+                # __pycache__ apart (it is stripped from the build output and is
+                # regenerated at runtime).
+                foreach ($file in Get-ChildItem -LiteralPath $pluginDir.FullName -File -Recurse) {
+                    if ($file.Directory.Name -eq '__pycache__') {
+                        continue
+                    }
+                    $relativePaths.Add(('plugins\{0}\{1}' -f $pluginDir.Name, $file.FullName.Substring($pluginDir.FullName.Length + 1)))
+                }
+                continue
+            }
+
+            # Native plugin: plugin binary, icon resources and debug symbols
             foreach ($file in Get-ChildItem -LiteralPath $pluginDir.FullName -File) {
                 if ($allowedExtensions -contains $file.Extension.ToLowerInvariant()) {
                     $relativePaths.Add(('plugins\{0}\{1}' -f $pluginDir.Name, $file.Name))

@@ -320,6 +320,93 @@ add_custom_target (PluginPy.Deploy ALL
   SOURCES ${SRC_DIR}/PluginPy/launchy_util.py)
 
 ##################################################
+# python plugins
+#
+# PluginHandler::loadPlugins() scans the plugins/ directory and treats
+# plugins/<Name>/ as a plugin whenever <Name>.py exists inside it. The native
+# plugins reach that folder through their LIBRARY_OUTPUT_DIRECTORY_RELEASE,
+# but a python plugin has nothing to link, so its whole source folder used to
+# be copied there by hand. This target does it on every build instead, and it
+# picks up any folder under src/Plugins/ that owns a <FolderName>.py, so adding
+# a new python plugin needs no CMake change.
+#
+# The whole folder is copied (entries, icons, data.json, helper packages such
+# as Calcy/ or WebSearch/) because the plugins read their assets at runtime.
+# Only __pycache__ is dropped -- it is generated whenever the plugins run.
+file (GLOB PY_PLUGIN_DIRS CONFIGURE_DEPENDS ${SRC_DIR}/Plugins/*)
+
+# A folder counts as a python plugin when it owns a <FolderName>.py, the rule
+# PluginHandler::loadPlugins() uses to scan the plugins/ directory. Collecting
+# them first also gives the total for the "[i/n]" progress prefix below.
+set (PYTHON_PLUGINS "")
+foreach (pyPluginDir ${PY_PLUGIN_DIRS})
+  if (NOT IS_DIRECTORY "${pyPluginDir}")
+    continue ()
+  endif ()
+  get_filename_component (pyPluginName "${pyPluginDir}" NAME)
+  if (EXISTS "${pyPluginDir}/${pyPluginName}.py")
+    list (APPEND PYTHON_PLUGINS "${pyPluginName}")
+  endif ()
+endforeach ()
+
+list (LENGTH PYTHON_PLUGINS PYTHON_PLUGIN_COUNT)
+message (STATUS "python plugins (${PYTHON_PLUGIN_COUNT}): ${PYTHON_PLUGINS}")
+
+add_custom_target (PythonPlugins.Deploy ALL
+  COMMAND ${CMAKE_COMMAND} -E echo "copy python plugins -> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins"
+  COMMENT "copy python plugins into target directory")
+
+set (pyPluginIndex 0)
+
+foreach (pyPluginName ${PYTHON_PLUGINS})
+  math (EXPR pyPluginIndex "${pyPluginIndex} + 1")
+
+  set (pyPluginDir "${SRC_DIR}/Plugins/${pyPluginName}")
+  set (pyPluginDest "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/${pyPluginName}")
+
+  # __pycache__ sits at the plugin root and inside every packaged helper folder
+  # (Calcy/, PyDiry/, WebSearch/), so the source paths are rewritten to their
+  # counterparts in the output tree. GLOB_RECURSE keeps this independent of
+  # how deep a helper package nests.
+  file (GLOB_RECURSE pyPluginEntries "${pyPluginDir}/**")
+
+  # Progress goes through echo (a real command), not through COMMENT: the
+  # MSBuild generator batches every POST_BUILD comment of a target onto a
+  # single tab separated line, which glued all plugins together. Each echo
+  # owns its own stdout line instead. The counters describe what lands in the
+  # output tree, so cache folders are excluded from the file count and only
+  # counted separately.
+  set (pyPluginFileCount 0)
+  set (pyPluginCacheArgs "")
+  foreach (pyPluginEntry ${pyPluginEntries})
+    if (pyPluginEntry MATCHES "/__pycache__/")
+      string (REPLACE "${pyPluginDir}" "${pyPluginDest}" pyCacheDest "${pyPluginEntry}")
+      get_filename_component (pyCacheDirDest "${pyCacheDest}" DIRECTORY)
+      list (APPEND pyPluginCacheArgs "${pyCacheDirDest}")
+      continue ()
+    endif ()
+    if (NOT IS_DIRECTORY "${pyPluginEntry}")
+      math (EXPR pyPluginFileCount "${pyPluginFileCount} + 1")
+    endif ()
+  endforeach ()
+  list (REMOVE_DUPLICATES pyPluginCacheArgs)
+  list (LENGTH pyPluginCacheArgs pyPluginCacheCount)
+
+  add_custom_command (TARGET PythonPlugins.Deploy POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "  [${pyPluginIndex}/${PYTHON_PLUGIN_COUNT}] ${pyPluginName}: copying ${pyPluginFileCount} files, dropping ${pyPluginCacheCount} __pycache__ -> plugins/${pyPluginName}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${pyPluginDir}" "${pyPluginDest}"
+    VERBATIM)
+
+  # remove_directory takes a single directory on CMake < 3.17, so one command
+  # per cache folder instead of passing the whole list at once.
+  foreach (pyCacheDirDest ${pyPluginCacheArgs})
+    add_custom_command (TARGET PythonPlugins.Deploy POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E remove_directory "${pyCacheDirDest}"
+      VERBATIM)
+  endforeach ()
+endforeach ()
+
+##################################################
 # Launchy main translation
 file (GLOB TS_FILES_LAUNCHY
   ${TRANS_DIR}/*.ts)

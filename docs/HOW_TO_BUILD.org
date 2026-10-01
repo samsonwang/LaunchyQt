@@ -12,8 +12,8 @@ The pinned toolchain and dependency versions live in =deps/version.txt=.
 |-------------+--------------------------+----------------------------------------------------|
 | Visual Studio | 2017 (MSVC v141)       | Qt5.12.10 =msvc2017_64= was built with this toolset |
 | Qt          | 5.12.10                  | Use the =msvc2017_64= build                        |
-| Python      | 3.6.6 (64-bit)           | CPython; must match the embedded interpreter ABI   |
-| PySide2     | 5.12.6                   | Last PySide2 release for Qt 5.12                   |
+| Python      | 3.6.8 (64-bit)           | CPython; must match the embedded interpreter ABI   |
+| PySide2     | 5.12.6 (optional)       | Last PySide2 release for Qt 5.12; installed in CI but pruned to the files the python plugins import (see "Pruning PySide2" below), so it is not needed to build or to boot |
 | CMake       | 3.15 or newer            | 3.14 is the hard minimum (see =cmake_minimum_required=) |
 
 Tips:
@@ -59,6 +59,16 @@ the Python plugin (=python/launchy.pyd=, =launchy_util.py=), the native
 plugins (=plugins/*=), the compiled translations (=translations/*.qm=) and
 the OpenSSL runtime DLLs next to the executable.
 
+The *python* plugins are copied too, by the =PythonPlugins.Deploy= target:
+every folder under =src/Plugins/= that owns a =<FolderName>.py= is copied to
+=plugins/<FolderName>/=. That is the layout =PluginHandler::loadPlugins()=
+expects (it scans =plugins/= and loads =plugins/<Name>/<Name>.py=), and it is
+what used to be done by hand. Adding a new python plugin therefore needs no
+CMake change — as long as the entry file is named after its folder.
+=__pycache__= is stripped from the copy, everything else (helper packages such
+as =Calcy/=, =WebSearch/=, icons, =data.json=) is kept, because the plugins
+read those assets at runtime.
+
 ** Run the Release build (deploy on Windows)
 
 A successful Release build puts files in =build/bin/Release/=. CMake already
@@ -103,6 +113,43 @@ What this produces, and the one exception you must know:
   (=qtlibs/= drops from ~30 MB to ~6.5 MB). Any =Qt5*.dll= that does *not* exist
   in the root is intentionally kept under =qtlibs/.
 
+The CI build does the same, inline in the workflow step "Deploy the Qt runtime"
+(instead of calling =misc/deploy_win.ps1=, which hardcodes
+=$QT_PREFIX=\C:\Qt\Qt5.12.10\...= and would not resolve on a runner). It runs
+the identical windeployqt invocation against =$QT_ROOT_DIR=, copies the root DLLs
+back and de-dups =qtlibs/= exactly as above, then installs the bundled
+=misc/qt.conf=. It also refuses to run *after* the PySide2 step: a =Qt5Qml.dll=
+already sitting in the root would make windeployqt deploy a =qml/= tree that the
+pruned PySide2 never loads.
+
+Completeness of the Qt runtime is checked at the end: the verify step parses the
+PE import table of every =.dll= /=pyd/= =.exe= in the artifact, collects the
+=Qt5*= modules they import and requires each of them to exist next to
+=Launchy.exe=. That closure is what catches both =Qt5Qml.dll= (invisible to
+=windeployqt=, imported by =pyside2.abi3.dll=) and =Qt5Svg.dll= (linked by a
+native plugin) — a hardcoded copy list alone would not.
+
+*Pruning PySide2 to what the plugins import:* the PySide2 wheel is ~298 MB
+(PySide2 215 MB -- every Qt 5.12 module, QtWebEngine, the ANGLE / software-OpenGL
+DLLs; shiboken2 3.5 MB), but the plugins use exactly
+=from PySide2 import QtCore, QtGui, QtWidgets= and
+=from shiboken2 import wrapInstance, getCppPointer= (see =launchy_util.py= and
+every plugin under =src/Plugins/=). Resolving the PE import tables of those
+=.pyd=/=.dll= shows the whole native closure is then
+=pyside2.abi3.dll=, =shiboken2.abi3.dll=, =msvcp140.dll=, =vcruntime140.dll=
+plus the Qt DLLs the app already ships. The wheel's own copies of =Qt5Core.dll= /
+=Qt5Gui.dll= / =Qt5Widgets.dll= / =Qt5Network.dll= / =Qt5Qml.dll= must *not* be
+shipped: two =Qt5Core.dll= in one process means two copies of Qt's static state,
+and a mismatch between a PySide2 Qt and the app Qt aborts on load. Shipping the
+keep-list only costs ~19 MB. =misc/deploy_win.ps1= takes the same route via
+=$INSTALL_PYSIDE2=; the CI build does it in the workflow step
+"Install and prune PySide2", which copies into =build/bin/<Config>/python/PySide2=
+and =.../python/shiboken2= -- the folder =PluginMgr.cpp= puts on =sys.path=,
+because =launchy.pyd= and =launchy_util.py= live next to it. If a plugin ever
+imports another Qt module (e.g. =PySide2.QtNetwork=), add the matching =.pyd=
+plus its DLL to that keep-list; the CI verify step fails loudly if a listed file
+disappears from the wheel.
+
 *Qt modules pulled in by PySide2 (Qt5Qml):* =windeployqt= only walks
 =Launchy.exe='s import table, so it never sees what the python side needs.
 =PySide2/pyside2.abi3.dll= statically imports =Qt5Qml.dll= (and =python3.dll=),
@@ -128,7 +175,7 @@ Redistributable* on the target machine, or copy those DLLs next to
 
 *** Deploy the embedded Python
 
-Launchy embeds CPython 3.6.6 (64-bit). =PluginPy= initializes the interpreter
+Launchy embeds CPython 3.6.8 (64-bit). =PluginPy= initializes the interpreter
 with =py::initialize_interpreter()= and =launchy_util.py= adds =sys.prefix=
 (the directory that contains =python36.dll=) to =sys.path=, then calls
 =site.main()= *only if =<sys.prefix>/Lib= exists*. To keep the Release footprint
@@ -151,9 +198,27 @@ build/bin/Release/
   ...
 #+END_SRC
 
-The =deploy_win.ps1= script extracts =deps/python-embed/python-3.6.6-embed-amd64.zip=
+The =deploy_win.ps1= script extracts =deps/python-embed/python-3.6.8-embed-amd64.zip=
 and lays it out exactly like above (it drops the old full-install =Lib/= and
 =DLLs/= from the root). You normally do not run these steps by hand.
+
+The CI build does not reuse that script; it packages the same layout inline in
+the workflow step "Package Python runtime and skins". There the files come from
+the =actions/setup-python= 3.6.8 install of the same job instead of the
+embeddable zip, so the interpreter, the extension modules and the standard
+library always match:
+
+  #+BEGIN_SRC text
+  root : python36.dll  python3.dll  vcruntime140.dll  python36._pth  skins/
+  python/ : python36.zip (stdlib, .pyc, ~3 MB)  *.pyd  sqlite3.dll  launchy.pyd
+  #+END_SRC
+
+The stdlib is zipped rather than copied as a =Lib/= tree (~39 MB): the zipping
+snippet drops =test=, =idlelib=, =tkinter=, =ensurepip= and =site-packages= and
+stores =.pyc=, which is what the embeddable package shipped. The verify step of
+the workflow imports every stdlib module the plugins use against that zip, which
+is also what would catch a future plugin importing something the packaging step
+dropped.
 
 Notes:
 - =python36.dll= MUST sit next to =Launchy.exe= — the Windows loader resolves it
@@ -179,6 +244,15 @@ Notes:
   Python (=deploy_win.ps1= does it automatically when =$INSTALL_PYSIDE2= is
   =$true=).
 
+  *Smaller alternative (what CI uses):* drop only the files the plugins import
+  into =python/PySide2= and =python/shiboken2=. =PluginMgr.cpp= appends
+  =<appdir>/python= to =sys.path= (next to =launchy.pyd=), so both spellings of
+  the package resolve, and the artifact stays ~19 MB instead of ~298 MB. The
+  native closure to keep is =__init__.py=, =_config.py=, =QtCore.pyd=,
+  =QtGui.pyd=, =QtWidgets.pyd=, =pyside2.abi3.dll= (and the two =shiboken2=
+  counterparts), plus =Qt5Qml.dll= next to =Launchy.exe= for the one Qt import
+  =pyside2.abi3.dll= has that the rest of the app does not.
+
 *** Deploy the skins
 
 The build does *not* copy skins. On Windows Launchy looks for them in
@@ -200,15 +274,27 @@ A Release directory is complete when it contains at least:
 | qtlibs/ (plugins + Qt translations; no Qt5*.dll) | =windeployqt= (--dir qtlibs) | no          |
 | qt.conf (Prefix=./qtlibs) | =misc/qt.conf=                  | no                    |
 | vcruntime140.dll etc.   | VC++ 2017 Redistributable          | no                    |
-| python36.dll            | =deps/python-embed= (embeddable)   | no                    |
-| python3.dll             | =deps/python-embed= (stable ABI forwarder) | no            |
-| python36._pth           | generated by =deploy_win.ps1=      | no                    |
-| python/ (python36.zip + *.pyd + launchy.pyd) | =deps/python-embed= + build | no (zip) / yes (launchy.pyd) |
+| python36.dll            | =deps/python-embed= (embeddable) *or* the 3.6.8 install (CI) | no |
+| python3.dll             | =deps/python-embed= (stable ABI forwarder) *or* the 3.6.8 install (CI) | no |
+| python36._pth           | =deploy_win.ps1= *or* the CI packaging step | no  |
+| python/ (python36.zip + *.pyd + launchy.pyd) | =deps/python-embed= *or* the 3.6.8 install' =DLLs= (CI) + build | no (zip) / yes (launchy.pyd) |
 | Qt5Qml.dll              | Qt install =$QT_PREFIX\bin= (for PySide2) | no            |
 | plugins/                | build output                       | yes                   |
 | translations/*.qm       | build output                       | yes                   |
 | libssl/libcrypto 1_1-x64 | =deps/openssl= (via build)       | yes                   |
-| skins/                  | repo =skins/=                      | no                    |
+| skins/                  | repo =skins/= (also copied by the CI packaging step) | no |
+
+The =.qm= translations and the OpenSSL DLLs are the only build-copied rows; the
+=deploy_win.ps1= script and the CI packaging steps are responsible for the rest
+of this table, including the two Qt runtime rows (CI does the =windeployqt= pass
+in its own "Deploy the Qt runtime" step, so the uploaded artifact is the whole
+tree and runs without anything installed).
+
+One row the CI cannot provide: =deps/openssl= is not in the repo, so CI prints a
+warning and the artifact ships without =libssl-1_1-x64.dll= /
+=libcrypto-1_1-x64.dll=. Launchy boots and keeps working, but any https request
+fails. Commit those two DLLs under =deps/openssl= to close the gap (CMake copies
+them into the output directory by itself).
 
 Then run =build/bin/Release/Launchy.exe=.
 
@@ -253,7 +339,7 @@ double-check you selected =msvc2017_64=, not =msvc2017=.
 Launchy is built 64-bit. =find_package(Python COMPONENTS Interpreter
 Development REQUIRED)= resolves whatever =python.exe= is first on =PATH=. If
 that is a 32-bit Python, CMake finds 32-bit include/libs and the 64-bit link
-fails. Make sure a 64-bit Python 3.6.6 is on =PATH= and comes before any
+fails. Make sure a 64-bit Python 3.6.8 is on =PATH= and comes before any
 32-bit install.
 
 *** Q4. Debug build fails to link =python36_d.lib= (or similar)
@@ -262,7 +348,7 @@ A Debug Launchy links the *debug* Python import library (=python36_d.lib=),
 which the normal CPython installer does not provide. You have two options:
 
 - Build the *Release* configuration (recommended for everyday work), or
-- Install a debug build of Python 3.6.6 so =python36_d.lib= is available.
+- Install a debug build of Python 3.6.8 so =python36_d.lib= is available.
 
 Do not "fix" this by deleting the =_d= references — the debug CRT is
 incompatible with the release one.
@@ -270,9 +356,9 @@ incompatible with the release one.
 *** Q5. Can I use a newer Python (3.7 / 3.8 / 3.10 / ...)?
 
 No. The embedded interpreter and the bundled PySide2 5.12.6 target the
-Python 3.6 C ABI, and =deps/version.txt= pins =python - 3.6.6=. A newer
+Python 3.6 C ABI, and =deps/version.txt= pins =python - 3.6.8=. A newer
 Python either has no matching PySide2 5.12.6 wheel or breaks the embedding
-ABI. Keep Python at 3.6.6 (64-bit).
+ABI. Keep Python at 3.6.8 (64-bit).
 
 *** Q6. Launchy runs but the update check / network fails: "TLS initialization failed"
 
@@ -292,7 +378,7 @@ binaries are OpenSSL 1.1.1s (see =deps/openssl/README.md=).
 
 *** Q7. Python plugins fail to import PySide2 / wrong PySide2 version
 
-Plugins execute inside the embedded Python 3.6.6 interpreter, so install the
+Plugins execute inside the embedded Python 3.6.8 interpreter, so install the
 *matching* PySide2:
 
 #+BEGIN_SRC bat
@@ -304,12 +390,19 @@ ABI / runtime mismatches with the bundled Qt 5.12.10. Keep PySide2 at 5.12.6.
 
 *** Q8. First run looks broken / no skin, missing plugins
 
-The build copies =python/=, =plugins/=, =translations/= and the OpenSSL DLLs
-next to =Launchy.exe=, but the =skins/= folder from the repo root is *not*
-copied automatically. When you run the freshly built binary you must have the
-skins directory deployed next to it, otherwise Launchy falls back to a bare
-UI. For a release package, copy =skins/= (and the Python environment used by
-plugins) alongside =build/bin/Release/=.
+The build copies =python/=, =plugins/= (=python plugins included, see "Build"
+above) =translations/= and the OpenSSL DLLs next to =Launchy.exe=, but the
+=skins/= folder from the repo root is *not* copied automatically. When you run
+the freshly built binary you must have the skins directory deployed next to it,
+otherwise Launchy falls back to a bare UI. For a release package, copy
+=skins/= (and the Python environment used by plugins) alongside
+=build/bin/Release/=.
+
+If a python plugin you added is missing from =plugins/=, check that its entry
+file is called =<FolderName>.py=: =PythonPlugins.Deploy= only copies folders
+whose name matches that file, and the plugin would silently not be picked up
+at startup (=PluginHandler= only looks at directories). The CI build asserts
+this as a build-time check.
 
 *** Q9. Build runs out of memory / is very slow
 
@@ -346,6 +439,16 @@ The embedded interpreter started, but the Python *distribution* is incomplete:
   install the matching package into =Lib/site-packages= with
   =pip install --target ... PySide2==5.12.6=. Without it, plugins that use Qt
   from Python cannot import it (see Q7 for the version pin).
+  Note: Launchy itself still *starts* without PySide2 -- the embedded
+  interpreter boots and pure-python plugins stay usable, only =launchy.settings=
+  (the QSettings bridge in =launchy_util.initSettings()=) and the Qt python
+  plugins are unavailable. The CI artifact *does* contain PySide2 now, but only
+  the pruned keep-list (see "Pruning PySide2" and the workflow step
+  "Install and prune PySide2"), so if it says
+  =No module named PySide2= the artifact was built before that step or the
+  keep-list is stale. A local package for it is produced with
+  =misc/deploy_win.ps1= and =$INSTALL_PYSIDE2 = $true= (full wheel) or by the
+  smaller path described under "Deploy the embedded Python".
 
 *** Q12. Runtime error: "The code execution cannot proceed because Qt5Qml.dll was not found"
 

@@ -7,7 +7,7 @@
 #                               duplicate Qt5*.dll dropped from qtlibs/,
 #                               qt.conf honoured via misc/qt.conf, Prefix=./qtlibs)
 #   2. MSVC 2017 CRT           (vcruntime140.dll / msvcp140.dll / concrt140.dll)
-#   3. Embedded Python 3.6.6   (python36.dll + Lib + DLLs)
+#   3. Embedded Python 3.6.8   (python36.dll + Lib + DLLs)
 #   4. Skins                   (repo skins/)
 #   5. OpenSSL runtime         (safety copy from deps/openssl if missing)
 # See docs/HOW_TO_BUILD.org -> "Run the Release build (deploy on Windows)".
@@ -19,7 +19,7 @@
 
 # ---- configurable paths (adjust to your machine) ---------------------------
 $QT_PREFIX        = "C:\Qt\Qt5.12.10\5.12.10\msvc2017_64"
-$PYTHON_EMBED_ZIP = "E:\Package\python-3.6.6-embed-amd64.zip" # empty -> defaults to deps/python-embed/python-3.6.6-embed-amd64.zip
+$PYTHON_EMBED_ZIP = "E:\Package\python-3.6.8-embed-amd64.zip" # empty -> defaults to deps/python-embed/python-3.6.8-embed-amd64.zip
 $PYTHON366        = "C:\Program Files\Python36" # only used by $INSTALL_PYSIDE2 (needs pip)
 $VS_REDIST        = ""          # auto-detected when empty
 $INSTALL_PYSIDE2  = $false      # set $true to bundle PySide2 for Qt-based python plugins
@@ -168,7 +168,7 @@ if ($VS_REDIST) {
     Write-Host "[deploy][WARN] Install 'Visual C++ 2017 Redistributable (x64)' on the target machine." -ForegroundColor Yellow
 }
 
-# ---- 3. embedded Python 3.6.6 (official embeddable package) -----------------
+# ---- 3. embedded Python 3.6.8 (official embeddable package) -----------------
 # We use the compact embeddable package from deps/ instead of a full CPython
 # install. The OS loader needs python36.dll next to Launchy.exe, so it stays in
 # the Release root (this also defines sys.prefix = root). Everything else of the
@@ -177,11 +177,11 @@ if ($VS_REDIST) {
 # is one small directory. python36._pth (beside python36.dll) points Python at
 # that folder; it also adds python/Lib/site-packages for the optional PySide2.
 if (-not $PYTHON_EMBED_ZIP) {
-    $PYTHON_EMBED_ZIP = Join-Path $repoRoot "deps\python-embed\python-3.6.6-embed-amd64.zip"
+    $PYTHON_EMBED_ZIP = Join-Path $repoRoot "deps\python-embed\python-3.6.8-embed-amd64.zip"
 }
 if (-not (Test-Path $PYTHON_EMBED_ZIP)) {
     Write-Host "[deploy][ERROR] python embeddable zip not found at $PYTHON_EMBED_ZIP" -ForegroundColor Red
-    Write-Host "[deploy][ERROR] Set `$PYTHON_EMBED_ZIP to the python-3.6.6-embed-amd64.zip path." -ForegroundColor Red
+    Write-Host "[deploy][ERROR] Set `$PYTHON_EMBED_ZIP to the python-3.6.8-embed-amd64.zip path." -ForegroundColor Red
     exit 1
 }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
