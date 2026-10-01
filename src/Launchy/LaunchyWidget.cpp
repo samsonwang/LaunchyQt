@@ -935,9 +935,7 @@ void LaunchyWidget::searchOnInput() {
 
         // Finally, if the search text looks like a file or directory name,
         // add any file or directory matches
-        if (searchText.contains(QDir::separator())
-            || searchText.startsWith("~")
-            || (searchText.size() == 2 && searchText[0].isLetter() && searchText[1] == ':')) {
+        if (FileSearch::looksLikePath(searchText)) {
             FileSearch::search(searchText, m_searchResult, m_inputData);
         }
 

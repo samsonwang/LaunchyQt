@@ -127,14 +127,24 @@ void FileSearch::search(const QString& searchText,
         QString fileName = itemList[i];
         QString filePath = QDir::cleanPath(dir.absolutePath() + "/" + fileName);
         CatItem item(QDir::toNativeSeparators(filePath), fileName);
-        if (Catalog::matchWords(&item, words)) {
+        // An empty filePart means the input ends with a separator, so every
+        // entry of the directory is a match. matchWords() rejects an empty
+        // word list, which used to drop the whole listing for "C:\" and
+        // other trailing-separator paths.
+        if (words.isEmpty() || Catalog::matchWords(&item, words)) {
             item.pluginName = NAME_LAUNCHYFILE;
             searchResults.push_front(item);
         }
     }
 
-    // Set the sort and underline global to just the filename
-    g_searchText = filePart;
+    // Set the sort and underline global to just the filename. When the input
+    // ends with a separator there is no filename, and clearing the global
+    // would drop every item out of the ranking and the highlighting done by
+    // CatItemComparePtr() and Catalog::decorateText(), so leave the global
+    // holding the query the user actually typed.
+    if (!filePart.isEmpty()) {
+        g_searchText = filePart;
+    }
 
     if (isDirectory) {
         // We're showing a directory, add it as the top result
@@ -152,5 +162,38 @@ void FileSearch::search(const QString& searchText,
     }
 
     inputData.last().setLabel(LABEL_FILE);
+}
+
+bool FileSearch::looksLikePath(const QString& searchText) {
+	// Normalise separators so that both "\\dir" and "/dir" are recognised,
+	// matching how search() splits the path below.
+	QString searchPath = QDir::fromNativeSeparators(searchText);
+
+	// A URL or other scheme such as "http://example.com" only looks like a
+	// path because of its slashes. Leave it to the catalog and the plugins;
+	// letting it through here would restart the query with a non-lowercased
+	// g_searchText and cost an unnecessary file system probe.
+	if (searchPath.contains(QLatin1String("://")))
+		return false;
+
+	// Any path separator, including a UNC prefix such as "//server/share"
+	if (searchPath.contains(QLatin1Char('/')))
+		return true;
+
+	// A bare drive letter such as "C:" lists the root of the drive
+	if (searchPath.size() == 2 && searchPath[0].isLetter() && searchPath[1] == QLatin1Char(':'))
+		return true;
+
+	// A home directory reference such as "~" or "~/documents"
+	if (searchPath.startsWith(QLatin1Char('~')))
+		return true;
+
+#ifdef Q_OS_WIN
+	// A single separator asks for the list of available drives
+	if (searchPath == "/")
+		return true;
+#endif
+
+	return false;
 }
 }
