@@ -63,15 +63,63 @@ endif ()
 
 ##################################################
 # Python
+#
+# launchy.pyd is a C extension for the interpreter that ships with the app
+# (python36.dll / python36.lib from the 3.6.8 install), so the interpreter used
+# here has to be that same one -- not whichever Python is newest on PATH.
+# FindPython's default strategy is VERSION: it picks the newest Python found in
+# ANY location and treats Python_ROOT_DIR as only a hint, so on a machine (or
+# CI image) that also ships a much newer interpreter the hint loses and the
+# result is an artifact that links a python3x.dll it never ships. Two things
+# pin it: locational search (Python_FIND_STRATEGY LOCATION plus CMP0094 NEW,
+# which the policy needs because it only turned NEW in cmake 3.15 while this
+# project still declares 3.14) and an explicit Python_EXECUTABLE hint, which is
+# the highest priority hint of all.
+#
+# Python_ROOT_DIR is expected from the CI workflow (-DPython_ROOT_DIR=<setup
+# python install>); C:/Program Files/Python36 is the default developer install.
 if (WIN32)
-  # set (ENV{Python_ROOT_DIR} "C:/Program Files/Python310")
-  message (STATUS "Python_ROOT_DIR: $ENV{Python_ROOT_DIR}")
+  if (NOT Python_ROOT_DIR AND EXISTS "C:/Program Files/Python36/python.exe")
+    set (Python_ROOT_DIR "C:/Program Files/Python36")
+  endif ()
+  if (Python_ROOT_DIR)
+    set (Python_EXECUTABLE "${Python_ROOT_DIR}/python.exe")
+  endif ()
+  set (Python_FIND_STRATEGY LOCATION)
+  if (POLICY CMP0094)
+    cmake_policy (SET CMP0094 NEW)
+  endif ()
 endif ()
 
 find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
+# Python_VERSION_STRING carries major.minor.patch, Python_VERSION only
+# major.minor on older FindPython versions.
+set (LAUNCHY_PYTHON_VERSION "${Python_VERSION_STRING}")
+if (NOT LAUNCHY_PYTHON_VERSION)
+  set (LAUNCHY_PYTHON_VERSION "${Python_VERSION}")
+endif ()
+
+if (WIN32)
+  # Fail here rather than ship a .pyd that imports a DLL the artifact lacks
+  if (NOT LAUNCHY_PYTHON_VERSION MATCHES "^3\\.6\\.")
+    message (FATAL_ERROR
+      "launchy.pyd must be built against the embedded Python 3.6 (the runtime "
+      "next to Launchy.exe is python36.dll), found ${LAUNCHY_PYTHON_VERSION} at "
+      "${Python_EXECUTABLE}. Pass -DPython_ROOT_DIR=<python install> to point "
+      "at the 3.6.8 one.")
+  endif ()
+  if (NOT LAUNCHY_PYTHON_VERSION STREQUAL "3.6.8")
+    message (WARNING
+      "building against Python ${LAUNCHY_PYTHON_VERSION}, the embedded runtime "
+      "is 3.6.8")
+  endif ()
+endif ()
+
 message ("Python_FOUND: ${Python_FOUND}")
 message ("Python_VERSION: ${Python_VERSION}")
+message ("Python_VERSION_STRING: ${Python_VERSION_STRING}")
+message ("Python_EXECUTABLE: ${Python_EXECUTABLE}")
 message ("Python_Development_FOUND: ${Python_Development_FOUND}")
 message ("Python_INCLUDE_DIRS:" ${Python_INCLUDE_DIRS})
 message ("Python_LIBRARIES: ${Python_LIBRARIES}")
@@ -333,6 +381,9 @@ add_custom_target (PluginPy.Deploy ALL
 # The whole folder is copied (entries, icons, data.json, helper packages such
 # as Calcy/ or WebSearch/) because the plugins read their assets at runtime.
 # Only __pycache__ is dropped -- it is generated whenever the plugins run.
+#
+# The copy is forced to run after every C++ target at the bottom of this file,
+# see the "python plugins: copy them after the C++ targets" section.
 file (GLOB PY_PLUGIN_DIRS CONFIGURE_DEPENDS ${SRC_DIR}/Plugins/*)
 
 # A folder counts as a python plugin when it owns a <FolderName>.py, the rule
@@ -635,4 +686,33 @@ file (GLOB RESOURCES_VERBY
 add_custom_command (TARGET Plugin.Verby POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${RESOURCES_VERBY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Verby)
+
+##################################################
+# python plugins: copy them after the C++ targets
+#
+# A python plugin is plain data -- nothing links it -- so nothing makes CMake
+# copy it after the compiled code. It used to be an ALL target that raced the
+# native plugin folders, and an incremental build could still drop the step.
+# Pin PythonPlugins.Deploy to the very end of `all`, so plugins/<Name>/ only
+# exists once Launchy.exe, LaunchyLib, PluginPy, every native plugin and the
+# generated .qm files are all in place.
+if (WIN32)
+  set (PYTHON_PLUGINS_DEPENDS
+    Launchy
+    Launchy_translations
+    PluginPy
+    Plugin.Runner
+    Plugin.Tasky
+    Plugin.UWPApp
+    Plugin.Verby)
+else ()
+  set (PYTHON_PLUGINS_DEPENDS
+    Launchy
+    Launchy_translations
+    PluginPy
+    Plugin.Runner
+    Plugin.Verby)
+endif ()
+
+add_dependencies (PythonPlugins.Deploy ${PYTHON_PLUGINS_DEPENDS})
 

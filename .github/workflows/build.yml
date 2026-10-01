@@ -172,6 +172,16 @@ jobs:
         run: |
           $py = "${{ steps.setup-python.outputs.python-path }}"
           $root = Split-Path $py
+          # The artifact ships python36.dll and the build links python36.lib,
+          # so a setup-python that resolves to anything newer silently produces
+          # a launchy.pyd importing a DLL the artifact does not contain. Fail
+          # here instead, next to the install, rather than three steps later.
+          $ver = (& $py -c "import sys; print(sys.version.split()[0])" 2>$null)
+          Write-Host "Python interpreter: $py ($ver)"
+          if (-not $ver -or -not $ver.StartsWith('3.6.')) {
+            Write-Host "::error::expected the $env:PYTHON_VERSION toolchain python, setup-python gave $ver at $py"
+            exit 1
+          }
           "Python_ROOT_DIR=$root" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
           Write-Host "Python_ROOT_DIR=$root"
 
@@ -219,7 +229,13 @@ jobs:
             '-G', 'Visual Studio 17 2022', '-A', 'x64', '-T', 'v141',
             "-DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}",
             "-DCMAKE_PREFIX_PATH=${{ env.QT_ROOT_DIR }}",
-            "-DPython_ROOT_DIR=${{ env.Python_ROOT_DIR }}")
+            # Python_ROOT_DIR alone is not enough: FindPython defaults to the
+            # VERSION strategy, i.e. the newest interpreter found anywhere
+            # (the runner image ships a much newer one), so the exact
+            # interpreter is pinned as well. src/CMakeLists.txt also switches
+            # the search to LOCATION and hard-fails on anything but 3.6.
+            "-DPython_ROOT_DIR=${{ env.Python_ROOT_DIR }}",
+            "-DPython_EXECUTABLE=${{ steps.setup-python.outputs.python-path }}")
 
           $attempts = 3
           for ($i = 1; $i -le $attempts; $i++) {
