@@ -48,9 +48,28 @@ jobs:
           $vsPath = & $vswhere -latest -property installationPath
           $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
           Write-Host "VS install path: $vsPath"
+          if (-not (Test-Path $installer)) {
+            Write-Host "::error::vs_installer.exe not found at $installer"
+            exit 1
+          }
+          # vs_installer.exe is a bootstrapper: it can return before the component is
+          # really installed, so the toolset is polled below. Without that check the
+          # later "-T v141" fails with "The build tools for v141 cannot be found".
           & $installer modify --installPath "$vsPath" `
             --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 `
             --quiet --norestart
+          $toolset = $null
+          for ($i = 0; $i -lt 12; $i++) {
+            $toolset = Get-ChildItem -Path "$vsPath\VC\Tools\MSVC" -Directory -Filter '14.16.*' -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+            if ($toolset) { break }
+            Start-Sleep -Seconds 20
+          }
+          if (-not $toolset) {
+            Write-Host "::error::MSVC v141 toolset (14.16.x) missing under $vsPath\VC\Tools\MSVC"
+            exit 1
+          }
+          Write-Host "v141 toolset ready: $($toolset.FullName)"
 
       # ------------------------------------------------------------------
       # 2) Install Qt 5.12.10 (msvc2017_64)
@@ -65,8 +84,13 @@ jobs:
           arch: ${{ env.QT_ARCH }}
           # dir is the parent of the Qt folder; final install path is <dir>/Qt/<version>/<arch>
           dir: '${{ github.workspace }}'
-          # Qt5::WinExtras (qtwinextras) and LinguistTools (qttools)
-          modules: 'qtwinextras qttools'
+          # Do NOT pass modules here. Qt 5.12.10 no longer publishes qttools or
+          # qtwinextras as standalone module packages -- aqt fails with
+          # "The packages ['qttools', 'qtwinextras'] were not found while parsing XML".
+          # Both are already inside the base package's archive list, which is what
+          # CMake needs for Qt5::LinguistTools and Qt5::WinExtras. The action also
+          # exports QT_ROOT_DIR / Qt5_DIR (see action/src/main.ts), which is what the
+          # CMake configure step below relies on.
           cache: true
           # Let the action use its own bundled Python to run aqtinstall (decoupled from 3.6.6 below)
           setup-python: true
