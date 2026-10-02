@@ -99,6 +99,13 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_optionDialog(nullptr),
       m_optionsOpen(false) {
 
+    // Publish ourselves as the singleton as early as possible, the rest of the
+    // constructor can then safely use g_mainWidget. The startup command runs at
+    // the end of this constructor and may open the options dialog, which reads
+    // g_mainWidget->getHotkey(). Without this, s_instance was still null there
+    // and opening the options dialog crashed.
+    s_instance = this;
+
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 #elif defined(Q_OS_MAC)
@@ -310,10 +317,17 @@ void LaunchyWidget::cleanup() {
 void LaunchyWidget::executeStartupCommand(int command) {
     if (command & ResetPosition) {
         QRect r = geometry();
-        auto screen = qApp->screenAt(r.topLeft());
-        QRect scr = screen->availableGeometry();
-        QPoint pt(scr.width()/2 - r.width()/2, scr.height()/2 - r.height()/2);
-        move(pt);
+        // The saved position may sit outside every screen, so ask for the screen
+        // covering the window center and let resolveScreen() fall back when there is none.
+        QScreen* screen = resolveScreen(-1, r.center());
+        if (!screen) {
+            qWarning() << "LaunchyWidget::executeStartupCommand, ResetPosition skipped, no screen available";
+        }
+        else {
+            QRect scr = screen->availableGeometry();
+            QPoint pt(scr.width()/2 - r.width()/2, scr.height()/2 - r.height()/2);
+            move(pt);
+        }
     }
 
     if (command & ResetSkin) {
@@ -1090,19 +1104,36 @@ void LaunchyWidget::updateVersion(int oldVersion) {
     }
 }
 
+QScreen* LaunchyWidget::resolveScreen(int index, const QPoint& cursorPos) const {
+    // screenAt() returns nullptr when the point is not covered by any screen
+    // (monitor unplugged, saved position outside the current layout, ...), so
+    // this helper never hands out an unvalidated pointer: the last resort is
+    // the primary screen, which may still be nullptr if the app has no screen.
+
+    const QList<QScreen*> listScreen = QApplication::screens();
+    if (index >= 0 && index < listScreen.size()) {
+        return listScreen.at(index);
+    }
+
+    // Negative / out of range index means "follow the cursor". screenAt() is
+    // allowed to return nullptr here, so it must be validated before use.
+    if (QScreen* screen = QGuiApplication::screenAt(cursorPos)) {
+        return screen;
+    }
+
+    if (!listScreen.isEmpty()) {
+        return listScreen.first();
+    }
+    return QGuiApplication::primaryScreen();
+}
+
 void LaunchyWidget::loadPosition(const QPoint& pt) {
     // move to selected screen
-    QList<QScreen*> listScreen = QApplication::screens();
-    QScreen* screen = nullptr;
     int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
-    if (nScreenIndex < 0) {
-        screen = QGuiApplication::screenAt(QCursor::pos());
-    }
-    else if (nScreenIndex < listScreen.size()) {
-        screen = listScreen.at(nScreenIndex);
-    }
-    else {
-        screen = listScreen.front();
+    QScreen* screen = resolveScreen(nScreenIndex, QCursor::pos());
+    if (!screen) {
+        qWarning() << "LaunchyWidget::loadPosition, no screen available, keeping position:" << pt;
+        return;
     }
 
     QRect rtScreen = screen->availableGeometry();
@@ -1546,17 +1577,13 @@ void LaunchyWidget::showOptionDialog() {
         }
 
         // move to selected screen center
-        QList<QScreen*> listScreen = QApplication::screens();
-        QScreen* screen = nullptr;
         int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
-        if (nScreenIndex < 0) {
-            screen = QApplication::screenAt(QCursor::pos());
-        }
-        else if (nScreenIndex < listScreen.size()) {
-            screen = listScreen.at(nScreenIndex);
-        }
-        else {
-            screen = listScreen.front();
+        // screenAt() returns nullptr when the cursor is not over any screen
+        // (monitor unplugged, dialog anchored outside, ...), validated by resolveScreen().
+        QScreen* screen = resolveScreen(nScreenIndex, QCursor::pos());
+        if (!screen) {
+            qWarning() << "LaunchyWidget::showOptionDialog, no screen available, keeping dialog position";
+            return;
         }
 
         QRect rectScreenGeometry = screen->geometry();

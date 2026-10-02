@@ -37,16 +37,19 @@ void LaunchyWidgetLinux::focusLaunchy() {
 
 // Create the main widget for the application
 void createLaunchyWidget(CommandFlags command) {
-    if (!LaunchyWidget::s_instance) {
-        LaunchyWidget::s_instance = new LaunchyWidgetLinux(command);
+    // LaunchyWidget publishes itself into s_instance at the beginning of its
+    // constructor, so the singleton is already reachable while the widget is
+    // still being built (and therefore never null for g_mainWidget).
+    if (!LaunchyWidget::instance()) {
+        LaunchyWidgetLinux* widget = new LaunchyWidgetLinux(command);
 
         // dirty approach to make Qhotkey works, do not know why
-        if (!LaunchyWidget::s_instance->isVisible()) {
-            qreal opac = LaunchyWidget::s_instance->windowOpacity();
-            LaunchyWidget::s_instance->setWindowOpacity(0.01);
-            LaunchyWidget::s_instance->show();
-            LaunchyWidget::s_instance->hide();
-            LaunchyWidget::s_instance->setWindowOpacity(opac);
+        if (!widget->isVisible()) {
+            qreal opac = widget->windowOpacity();
+            widget->setWindowOpacity(0.01);
+            widget->show();
+            widget->hide();
+            widget->setWindowOpacity(opac);
         }
     }
 }

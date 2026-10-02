@@ -78,7 +78,16 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
     qDebug() << "CharListWidget::updateGeometry, height:" << rect.height();
 
     // Is there room for the dropdown box?
+    // screenAt() returns nullptr when the anchor is not covered by any screen
+    // (monitor unplugged, layout changed, ...), so validate it before use.
     QScreen* screen = qApp->screenAt(basePos);
+    if (!screen) {
+        screen = qApp->primaryScreen();
+    }
+    if (!screen) {
+        qWarning() << "CharListWidget::updateGeometry, no screen available, keeping current geometry";
+        return;
+    }
     QRect screenSize = screen->geometry();
     if (rect.y() + rect.height() > screenSize.height()) {
         // Only move it if there's more space above

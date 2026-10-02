@@ -115,6 +115,9 @@ protected:
     void updateOutput(bool resetAlternativesSelection = true);
     void updateOutputItem(const CatItem& item);
     void updateOutputSize();
+    // Resolve the screen a window should be placed on. A negative index means
+    // "follow the cursor", any out of range index falls back to the first screen.
+    QScreen* resolveScreen(int index, const QPoint& cursorPos) const;
     void loadPosition(const QPoint& pt);
     void savePosition();
     void doTab();

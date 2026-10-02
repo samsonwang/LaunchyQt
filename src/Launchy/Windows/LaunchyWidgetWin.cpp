@@ -76,8 +76,11 @@ void LaunchyWidgetWin::focusLaunchy() {
 
 // Create the main widget for the application
 void createLaunchyWidget(CommandFlags command) {
-    if (!LaunchyWidget::s_instance) {
-        LaunchyWidget::s_instance = new LaunchyWidgetWin(command);
+    // LaunchyWidget publishes itself into s_instance at the beginning of its
+    // constructor, so the singleton is already reachable while the widget is
+    // still being built (and therefore never null for g_mainWidget).
+    if (!LaunchyWidget::instance()) {
+        new LaunchyWidgetWin(command);
     }
 }
 
