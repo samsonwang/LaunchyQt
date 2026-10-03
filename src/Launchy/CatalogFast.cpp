@@ -49,6 +49,8 @@ CatalogFast::CatalogFast()
 }
 
 int CatalogFast::count() {
+    QMutexLocker locker(&m_mutex);
+
     return m_catalogItems.count();
 }
 
@@ -180,13 +182,15 @@ void CatalogFast::demoteItem(const CatItem& item) {
 }
 
 const CatItem& CatalogFast::getItem(int i) {
+    QMutexLocker locker(&m_mutex);
+
     rebuildSnapshot();
     return m_snapshot[i];
 }
 
-// Return a list of catalog items that match searchText
-// this method should only be called from within a QMutexLocker protected section
 QList<CatItem*> CatalogFast::search(const QString& searchText) {
+    QMutexLocker locker(&m_mutex);
+
     QList<CatItem*> result;
     if (searchText.isEmpty()) {
         return result;
@@ -319,7 +323,6 @@ void CatalogFast::rebuildSnapshot() {
         return;
     }
 
-    // resize() keeps the allocated capacity of the previous snapshot
     m_snapshot.resize(m_catalogItems.count());
     int i = 0;
     for (const CatalogItem& item : m_catalogItems) {

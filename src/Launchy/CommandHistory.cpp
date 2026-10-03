@@ -99,9 +99,20 @@ void CommandHistory::addItem(const InputDataList& item) {
     }
 }
 
-InputDataList CommandHistory::getItem(int index) {
-    Q_ASSERT(index >= 0 && index < m_history.size());
-    return *(m_history.begin() + index);
+int CommandHistory::getItemCount() const {
+    return m_history.size();
+}
+
+// An empty list signals "no such entry" to the caller instead of reading past the
+// end of the history.
+InputDataList CommandHistory::getItem(int index) const {
+    if (index < 0 || index >= m_history.size()) {
+        qWarning() << "CommandHistory::getItem, index out of range:" << index
+                   << ", history size:" << m_history.size();
+        return InputDataList();
+    }
+
+    return m_history.at(index);
 }
 
 void CommandHistory::removeAt(int index) {

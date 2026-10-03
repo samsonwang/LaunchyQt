@@ -75,7 +75,9 @@ void CatalogBuilder::buildCatalog() {
 
     PluginHandler& pluginHandler = PluginHandler::instance();
     QList<Directory> catDirs = SettingsManager::instance().readCatalogDirectories();
-    const QHash<QString, PluginInfo>& pluginsInfo = pluginHandler.getPlugins();
+    // Snapshot taken under the plugin handler lock, the table may be rebuilt
+    // by the option dialog while the scan continues
+    const QHash<QString, PluginInfo> pluginsInfo = pluginHandler.getPlugins();
     m_totalItems = catDirs.count() + pluginsInfo.count();
     m_currentItem = 0;
 

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QHash>
+#include <QMutex>
 
 #include "LaunchyLib/PluginInterface.h"
 #include "LaunchyLib/CatalogItem.h"
@@ -36,7 +37,10 @@ public:
 
 public:
     void loadPlugins();
-    const QHash<QString, PluginInfo>& getPlugins() const;
+    // Returns a snapshot by value, never a reference: loadPlugins() may rebuild
+    // the table from the GUI thread (the plugins page of the option dialog)
+    // while a worker thread walks the result, so the caller must own a copy.
+    QHash<QString, PluginInfo> getPlugins() const;
 
     void showLaunchy();
     void hideLaunchy();
@@ -52,15 +56,21 @@ public:
 
 private:
     // load plugin written in python
-    void loadPythonPlugin(const QString& pluginName, const QString& pluginPath);
+    void loadPythonPlugin(const QString& pluginName, const QString& pluginPath,
+                          QHash<QString, PluginInfo>* plugins);
     // load plugin written in cpp
-    void loadCppPlugin(const QString& pluginName, const QString& pluginPath);
+    void loadCppPlugin(const QString& pluginName, const QString& pluginPath,
+                       QHash<QString, PluginInfo>* plugins);
 
 private:
     PluginHandler();
     Q_DISABLE_COPY(PluginHandler)
 
 private:
+    // Guards m_plugins and m_loadable. The lock is recursive because a plugin
+    // callback (MSG_INIT while a reload is in progress) may turn around and
+    // read the handler again on the same thread.
+    mutable QMutex m_mutex{QMutex::Recursive};
     QHash<QString, PluginInfo> m_plugins;
     QHash<QString, bool> m_loadable;
 };

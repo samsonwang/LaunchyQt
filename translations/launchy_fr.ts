@@ -130,7 +130,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="635"/>
         <source>Auto open delay</source>
-        <translation>Délai d'ouverture automatique</translation>
+        <translation>Délai d&apos;ouverture automatique</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="666"/>
@@ -154,7 +154,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="863"/>
         <source>Fade in time</source>
-        <translation>Temps de fondu d'ouverture</translation>
+        <translation>Temps de fondu d&apos;ouverture</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="898"/>
@@ -173,12 +173,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="373"/>
         <source>Hide Tray Icon</source>
-        <translation>Masquer l'icône de la barre des tâches</translation>
+        <translation>Masquer l&apos;icône de la barre des tâches</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="403"/>
         <source>Application Style:</source>
-        <translation>Style de l'application :</translation>
+        <translation>Style de l&apos;application :</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1533"/>
@@ -302,12 +302,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="316"/>
         <source>Screen number:</source>
-        <translation>Numéro de l'écran :</translation>
+        <translation>Numéro de l&apos;écran :</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="339"/>
         <source>Rescan screen</source>
-        <translation>Rescanner l'écran</translation>
+        <translation>Rescanner l&apos;écran</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="441"/>
@@ -322,12 +322,12 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="726"/>
         <source>Max number of items</source>
-        <translation>Nombre maximum d'éléments</translation>
+        <translation>Nombre maximum d&apos;éléments</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="764"/>
         <source>Max number of history</source>
-        <translation>Nombre maximum d'historique</translation>
+        <translation>Nombre maximum d&apos;historique</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="955"/>
@@ -337,7 +337,7 @@
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1027"/>
         <source>Author information</source>
-        <translation>Informations sur l'auteur</translation>
+        <translation>Informations sur l&apos;auteur</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1086"/>
@@ -441,14 +441,14 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Creator and Developer:  Josh Karlin&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Simon Capewell&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
-&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-size:12pt;"&gt;Crédits&lt;/span&gt;&lt;/p&gt;
-&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Créateur et développeur :  Josh Karlin&lt;/p&gt;
-&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Développeur : Simon Capewell&lt;/p&gt;
-&lt;p align="center" style=" margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Développeur : Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Crédits&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Créateur et développeur :  Josh Karlin&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Développeur : Simon Capewell&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Développeur : Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2203"/>
@@ -458,22 +458,22 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;&quot;&gt;I have been using Launchy for years, and found that this project has not been updated for long. I love this tool and want to reactivate this project.&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;&quot;&gt;I greatly enjoy developing Launchy, and I hope that you enjoy using it. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;"&gt;
-&lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;"&gt;J'utilise Launchy depuis des années et j'ai constaté que ce projet n'était pas mis à jour depuis longtemps. J'adore cet outil et je veux relancer le projet.&lt;/p&gt;
-&lt;p align="center" style=" margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;"&gt;J'apprécie énormément le développement de Launchy et j'espère que vous appréciez aussi son utilisation. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal; line-height: 25px;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;  line-height: 25px;&quot;&gt;J&apos;utilise Launchy depuis des années et j&apos;ai constaté que ce projet n&apos;était pas mis à jour depuis longtemps. J&apos;adore cet outil et je veux relancer le projet.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:8px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height: 25px;&quot;&gt;J&apos;apprécie énormément le développement de Launchy et j&apos;espère que vous appréciez aussi son utilisation. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2221"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact : &lt;a href="wangzhilv@gmail.com"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact : &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2247"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Retour : &lt;a href="https://github.com/samsonwang/LaunchyQt/issues"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Développement : &lt;a href="https://github.com/samsonwang/LaunchyQt/"&gt;&lt;span style=" text-decoration: underline; color:#0000ff;"&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Retour : &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Développement : &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="2328"/>
@@ -509,8 +509,8 @@ p, li { white-space: pre-wrap; }
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation type="obsolete">
-            <numerusform>L'index contient %n élément</numerusform>
-            <numerusform>L'index contient %n éléments</numerusform>
+            <numerusform>L&apos;index contient %n élément</numerusform>
+            <numerusform>L&apos;index contient %n éléments</numerusform>
         </translation>
     </message>
     <message>
@@ -524,9 +524,9 @@ p, li { white-space: pre-wrap; }
     <message numerus="yes">
         <source>Index has %n items</source>
         <translation type="obsolete">
-    <numerusform>L'index contient %n élément</numerusform>
-    <numerusform>L'index contient %n éléments</numerusform>
-</translation>
+            <numerusform>L&apos;index contient %n élément</numerusform>
+            <numerusform>L&apos;index contient %n éléments</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -543,81 +543,81 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>launchy::LaunchyWidget</name>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="111"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="219"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1176"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="118"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="226"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1230"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="156"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1006"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1011"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1665"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="163"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1043"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1048"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1715"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="162"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1012"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="169"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1049"/>
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="220"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="227"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>Le raccourci %1 est déjà utilisé, veuillez en choisir un autre.</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="380"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1014"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="394"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1051"/>
         <source>Launchy %1
 press %2 to activate</source>
         <translation>Launchy %1
 Appuyez sur %2 pour activer</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1290"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1344"/>
         <source>Launchy is already running!</source>
-        <translation>Launchy est déjà en cours d'exécution !</translation>
+        <translation>Launchy est déjà en cours d&apos;exécution !</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1675"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1725"/>
         <source>Relaunch</source>
         <translation>Redémarrer</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1003"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1652"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1040"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1702"/>
         <source>Show Launchy</source>
         <translation>Afficher Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1004"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1655"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1041"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1705"/>
         <source>Reload skin</source>
         <translation>Recharger le thème</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1005"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1660"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1042"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1710"/>
         <source>Rebuild catalog</source>
         <translation>Reconstruire le catalogue</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1007"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1670"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1044"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1720"/>
         <source>Check for updates</source>
         <translation>Rechercher des mises à jour</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1008"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1045"/>
         <source>Restart</source>
         <translation>Redémarrer</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1009"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1685"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1046"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1735"/>
         <source>Exit</source>
         <translation>Quitter</translation>
     </message>
@@ -633,9 +633,9 @@ Appuyez sur %2 pour activer</translation>
         <location filename="../src/Launchy/OptionDialog.cpp" line="424"/>
         <source>Index has %n item(s)</source>
         <translation>
-    <numerusform>L'index contient %n élément</numerusform>
-    <numerusform>L'index contient %n éléments</numerusform>
-</translation>
+            <numerusform>L&apos;index contient %n élément</numerusform>
+            <numerusform>L&apos;index contient %n éléments</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
@@ -682,37 +682,37 @@ Appuyez sur %2 pour activer</translation>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
-            <numerusform>L'index contient %n élément</numerusform>
-            <numerusform>L'index contient %n éléments</numerusform>
+            <numerusform>L&apos;index contient %n élément</numerusform>
+            <numerusform>L&apos;index contient %n éléments</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="963"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="964"/>
         <source>No Proxy</source>
         <translation>Pas de proxy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="964"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="965"/>
         <source>System Proxy</source>
         <translation>Proxy système</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="965"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="966"/>
         <source>HTTP</source>
         <translation>HTTP</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="966"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="967"/>
         <source>SOCKS5</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1106"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1107"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1107"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1108"/>
         <source>(%1-bit)</source>
         <translation>(%1 bits)</translation>
     </message>

@@ -513,8 +513,21 @@ void LaunchyWidget::launchItem() {
             qDebug() << "LaunchyWidget::launchItem, get args from history";
             int historyIndex = (int)(int64_t)(item.data);
             InputDataList inputData = m_history.getItem(historyIndex);
-            for (int i = 1; i < inputData.count(); ++i) {
-                args += inputData[i].getText() + " ";
+            if (!inputData.isEmpty()) {
+                for (int i = 1; i < inputData.count(); ++i) {
+                    args += inputData[i].getText() + " ";
+                }
+            }
+            else {
+                // The entry aged out of the history (trimmed to the configured
+                // maximum, or deleted) since the alternatives list was built,
+                // fall back on the command line that is still on screen.
+                qWarning() << "LaunchyWidget::launchItem, history entry gone:"
+                           << historyIndex
+                           << ", history size:" << m_history.getItemCount();
+                for (int i = 1; i < m_inputData.count(); ++i) {
+                    args += m_inputData[i].getText() + " ";
+                }
             }
         }
         else if (m_inputData.count() > 1) {
@@ -544,12 +557,10 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
     }
 
     const CatItem& item = m_searchResult[row];
-    int historyIndex = (int)(int64_t)(item.data);
     qDebug() << "LaunchyWidget::onAlternativeListRowChanged, row:" << row
              << ", item.fullpath:" << item.fullPath
              << ", item.shortName:" << item.shortName
              << ", item.pluginName:" << item.pluginName
-             << ", historyIndex:" << historyIndex
              << ", inputBox:" << m_inputBox->text();
 
     if ( (!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
@@ -557,11 +568,20 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
         // Used a void* to hold an int.. ick!
         // BUT! Doing so avoids breaking existing catalogs
 
-        if (item.pluginName == NAME_HISTORY && historyIndex < m_searchResult.count()) {
+        // The row index inside the alternatives list has nothing to do with a
+        // history index: m_searchResult also carries catalog, plugin and file
+        // search matches, so its count is never a valid upper bound for the
+        // history. The history index is the one carried by the item itself, and
+        // getItem() hands back an empty entry when it no longer resolves, which
+        // is how a stale index (the history shrank after the list was built) is
+        // caught here.
+        int historyIndex = (int)(int64_t)(item.data);
+        InputDataList historyEntry = m_history.getItem(historyIndex);
+        if (item.pluginName == NAME_HISTORY && !historyEntry.isEmpty()) {
             qDebug() << "LaunchyWidget::onAlternativeListRowChanged, list history"
                      << item.shortName;
 
-            m_inputData = m_history.getItem(historyIndex);
+            m_inputData = historyEntry;
             m_inputBox->selectAll();
             m_inputBox->insert(m_inputData.toString());
             m_inputBox->selectAll();
@@ -665,10 +685,14 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
         if (row > -1) {
             const CatItem& item = m_searchResult[row];
             if (item.pluginName == NAME_HISTORY) {
-                // Delete selected history entry from the alternatives list
+                // Delete selected history entry from the alternatives list.
+                // row indexes m_searchResult, not m_history; the history index
+                // is the one carried by the item itself.
+                int historyIndex = (int)(int64_t)(item.data);
                 qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
-                         << "delete history:" << item.shortName;
-                m_history.removeAt(row);
+                         << "delete history:" << item.shortName
+                         << ", history index:" << historyIndex;
+                m_history.removeAt(historyIndex);
                 m_inputBox->clear();
                 searchOnInput();
                 updateAlternativeList(false);

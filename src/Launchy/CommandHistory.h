@@ -37,7 +37,16 @@ public:
 
     void addItem(const InputDataList& item);
     void removeAt(int index);
-    InputDataList getItem(int index);
+
+    // Number of stored entries, use it to validate an index before calling getItem()
+    int getItemCount() const;
+
+    // Returns the entry stored at index, or an empty InputDataList when index is out
+    // of range. An assert used to guard this, but it is compiled out under NDEBUG
+    // while the callers still reach here with a stale index, so the check has to be
+    // a real runtime one. Never trust a CatItem::data index that came from an older
+    // population of the alternatives list: the history can shrink in between.
+    InputDataList getItem(int index) const;
 
     void getAllItem(QList<CatItem>& searchResults) const;
     void search(const QString& text, QList<CatItem>& searchResults) const;
