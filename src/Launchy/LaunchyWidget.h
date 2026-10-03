@@ -117,7 +117,18 @@ protected:
     void updateOutputSize();
     // Resolve the screen a window should be placed on. A negative index means
     // "follow the cursor", any out of range index falls back to the first screen.
-    QScreen* resolveScreen(int index, const QPoint& cursorPos) const;
+    QScreen* screenAtIndex(int index) const;
+    // Screen covering the given global point. Falls back to the primary screen
+    // when no screen covers the point (monitor unplugged, point outside the
+    // virtual desktop), so this helper never returns an unvalidated pointer.
+    QScreen* screenAtPoint(const QPoint& globalPos) const;
+    // Re-anchor the window on the display it currently lives on, using the
+    // relative placement recorded by the last loadPosition()/drag. A monitor
+    // plugged in or out must not leave the window behind on a display that is
+    // gone, or stranded in a corner of the remaining one.
+    void relocateToCurrentScreen();
+    // Store the window center as a 0..1 fraction of the display it sits on.
+    void updatePlacementRatio();
     void loadPosition(const QPoint& pt);
     void savePosition();
     void doTab();
@@ -202,6 +213,10 @@ protected:
     bool m_dragging;
     QPoint m_dragStartPos;
     QPoint m_dragStartGlobalPos;
+    // Relative placement (0..1) of the window center inside its display. Kept
+    // so the window can be carried over to another display after a layout
+    // change instead of keeping stale absolute coordinates.
+    QPointF m_placement;
     bool m_menuOpen;
 
     OptionDialog* m_optionDialog;
