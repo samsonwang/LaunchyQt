@@ -31,6 +31,9 @@ public:
     virtual QIcon icon(const QFileInfo& info) const;
 
 private:
+    static bool isNetworkPath(const QString& path);
+
+    QString rawLinkTarget(const QFileInfo& info) const;
     QString linkTargetPathTo64(const QFileInfo& info) const;
     bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
     bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;

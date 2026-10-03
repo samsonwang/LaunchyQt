@@ -462,34 +462,34 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>launchy::LaunchyWidget</name>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="118"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="226"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1230"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="119"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="227"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1301"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="163"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1043"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="164"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="1048"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1715"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1053"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1812"/>
         <source>Options</source>
         <translation>选项</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="169"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1049"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="170"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1054"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="227"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="228"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>热键 %1 已被占用，请选择其他热键。</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="394"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1051"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="400"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1056"/>
         <source>Launchy %1
 press %2 to activate</source>
         <translation>Launchy %1
@@ -500,47 +500,47 @@ press %2 to activate</source>
         <translation type="vanished">测试界面</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1344"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1415"/>
         <source>Launchy is already running!</source>
         <translation>Launchy 已经在运行了！</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1725"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1822"/>
         <source>Relaunch</source>
         <translation>重新启动</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1040"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1702"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1045"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1799"/>
         <source>Show Launchy</source>
         <translation>显示 Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1041"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1705"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1046"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1802"/>
         <source>Reload skin</source>
         <translation>重载皮肤</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1042"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1710"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1047"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1807"/>
         <source>Rebuild catalog</source>
         <translation>重建索引</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1044"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1720"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1049"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1817"/>
         <source>Check for updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1045"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1050"/>
         <source>Restart</source>
         <translation>重启</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1046"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1735"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1051"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1832"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
