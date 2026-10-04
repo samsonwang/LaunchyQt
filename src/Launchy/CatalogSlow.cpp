@@ -166,8 +166,8 @@ QList<CatItem*> CatalogSlow::search(const QString& searchText) {
 
     QList<CatItem*> result;
     if (!searchText.isEmpty()) {
-        // Pre-split and pre-lower the query once, not per item
-        QStringList words = searchText.toLower().split(' ', QString::SkipEmptyParts);
+        // pre-split the query once, not per item
+        QStringList words = searchText.split(' ', QString::SkipEmptyParts);
         for (int i = 0; i < m_catalogItems.count(); ++i) {
             if (matchWords(&m_catalogItems[i], words)) {
                 result.push_back(&m_catalogItems[i]);
