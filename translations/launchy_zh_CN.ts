@@ -169,6 +169,21 @@
         <translation>历史记录最大条数</translation>
     </message>
     <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="821"/>
+        <source>Search mode</source>
+        <translation>搜索模式</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="869"/>
+        <source>Fast</source>
+        <translation>快速</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="874"/>
+        <source>Slow</source>
+        <translation>慢速</translation>
+    </message>
+    <message>
         <source>Style</source>
         <translation type="vanished">风格</translation>
     </message>
@@ -547,6 +562,11 @@ press %2 to activate</source>
 </context>
 <context>
     <name>launchy::OptionDialog</name>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="162"/>
+        <source>Search mode changes will take effect after restarting Launchy.</source>
+        <translation>搜索模式更改将在重启 Launchy 后生效。</translation>
+    </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="357"/>
         <source>Plugin options</source>

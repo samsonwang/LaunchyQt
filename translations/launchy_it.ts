@@ -291,6 +291,21 @@
         <translation>Numero massimo di storico</translation>
     </message>
     <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="821"/>
+        <source>Search mode</source>
+        <translation>Modalità di ricerca</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="869"/>
+        <source>Fast</source>
+        <translation>Veloce</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="874"/>
+        <source>Slow</source>
+        <translation>Lento</translation>
+    </message>
+    <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1129"/>
         <source>Catalog</source>
         <translation>Catalogo</translation>
@@ -551,6 +566,11 @@ Premi %2 per attivare</translation>
 </context>
 <context>
     <name>launchy::OptionDialog</name>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="162"/>
+        <source>Search mode changes will take effect after restarting Launchy.</source>
+        <translation>Le modifiche alla modalità di ricerca avranno effetto dopo il riavvio di Launchy.</translation>
+    </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="557"/>
         <source>Up</source>
