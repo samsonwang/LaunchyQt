@@ -25,9 +25,11 @@
 
 #include "Catalog.h"
 #include "CatalogFast.h"
+#include "CatalogSlow.h"
 #include "AppBase.h"
 #include "Directory.h"
 #include "SettingsManager.h"
+#include "OptionItem.h"
 #include "MemProfiler.h"
 
 #define CATALOG_PROGRESS_MIN 0
@@ -44,8 +46,18 @@ namespace launchy {
 
 CatalogBuilder* CatalogBuilder::s_instance = nullptr;
 
+// Select the catalog once at startup; changing the mode requires a restart.
+static Catalog* createCatalog() {
+    int mode = g_settings->value(OPTION_SEARCH_MODE, OPTION_SEARCH_MODE_DEFAULT).toInt();
+    if (mode == 1) {
+        return new CatalogSlow;
+    }
+
+    return new CatalogFast;
+}
+
 CatalogBuilder::CatalogBuilder()
-    : m_catalog(new CatalogFast),
+    : m_catalog(createCatalog()),
       m_thread(new QThread),
       m_progress(CATALOG_PROGRESS_MAX) {
     moveToThread(m_thread);
