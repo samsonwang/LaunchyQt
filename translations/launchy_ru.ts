@@ -330,6 +330,21 @@
         <translation>Максимальное число записей истории</translation>
     </message>
     <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="821"/>
+        <source>Search mode</source>
+        <translation>Режим поиска</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="869"/>
+        <source>Fast</source>
+        <translation>Быстрый</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="874"/>
+        <source>Slow</source>
+        <translation>Медленный</translation>
+    </message>
+    <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="955"/>
         <source>Select a skin</source>
         <translation>Выберите тему</translation>
@@ -626,6 +641,11 @@ press %2 to activate</source>
 </context>
 <context>
     <name>launchy::OptionDialog</name>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="162"/>
+        <source>Search mode changes will take effect after restarting Launchy.</source>
+        <translation>Изменения режима поиска вступят в силу после перезапуска Launchy.</translation>
+    </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="357"/>
         <source>Plugin options</source>

@@ -134,6 +134,9 @@ void OptionDialog::accept() {
         return;
     }
 
+    bool searchModeChanged = m_pUi->comboBoxCatalogMode->currentIndex()
+        != g_settings->value(OPTION_SEARCH_MODE, OPTION_SEARCH_MODE_DEFAULT).toInt();
+
     bool bSuccess = saveGeneralSettings();
 
     saveSkinSettings();
@@ -152,6 +155,12 @@ void OptionDialog::accept() {
 
     if (!bSuccess) {
         return;
+    }
+
+    if (searchModeChanged) {
+        QMessageBox::information(this, tr("Launchy"),
+                                 tr("Search mode changes will take effect after restarting Launchy."),
+                                 QMessageBox::Ok);
     }
 
     QDialog::accept();
@@ -689,6 +698,8 @@ void OptionDialog::initGeneralWidget() {
     m_pUi->genNumResults->setValue(g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt());
     m_pUi->genNumHistory->setValue(g_settings->value(OPTION_MAXITEMSINHISTORY, OPTION_MAXITEMSINHISTORY_DEFAULT).toInt());
 
+    m_pUi->comboBoxCatalogMode->setCurrentIndex(g_settings->value(OPTION_SEARCH_MODE, OPTION_SEARCH_MODE_DEFAULT).toInt());
+
     m_pUi->genOpaqueness->setValue(g_settings->value(OPTION_OPAQUENESS, OPTION_OPAQUENESS_DEFAULT).toInt());
     m_pUi->genFadeIn->setValue(g_settings->value(OPTION_FADEIN, OPTION_FADEIN_DEFAULT).toInt());
     m_pUi->genFadeOut->setValue(g_settings->value(OPTION_FADEOUT, OPTION_FADEOUT_DEFAULT).toInt());
@@ -730,6 +741,7 @@ bool OptionDialog::saveGeneralSettings() {
     g_settings->setValue(OPTION_NUMVIEWABLE, m_pUi->genMaxViewable->value());
     g_settings->setValue(OPTION_NUMRESULT, m_pUi->genNumResults->value());
     g_settings->setValue(OPTION_MAXITEMSINHISTORY, m_pUi->genNumHistory->value());
+    g_settings->setValue(OPTION_SEARCH_MODE, m_pUi->comboBoxCatalogMode->currentIndex());
     g_settings->setValue(OPTION_OPAQUENESS, m_pUi->genOpaqueness->value());
     g_settings->setValue(OPTION_FADEIN, m_pUi->genFadeIn->value());
     g_settings->setValue(OPTION_FADEOUT, m_pUi->genFadeOut->value());

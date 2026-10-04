@@ -67,6 +67,9 @@ extern const char*      OPTION_APPSTYLE_DEFAULT;
 extern const char*      OPTION_DECORATETEXT;
 extern const bool       OPTION_DECORATETEXT_DEFAULT;
 
+extern const char*      OPTION_SEARCH_MODE;
+extern const int        OPTION_SEARCH_MODE_DEFAULT;
+
 extern const char*      OPTION_AUTOSUGGESTDELAY;
 extern const int        OPTION_AUTOSUGGESTDELAY_DEFAULT;
 

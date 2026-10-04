@@ -330,6 +330,21 @@
         <translation>Nombre maximum d&apos;historique</translation>
     </message>
     <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="821"/>
+        <source>Search mode</source>
+        <translation>Mode de recherche</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="869"/>
+        <source>Fast</source>
+        <translation>Rapide</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="874"/>
+        <source>Slow</source>
+        <translation>Lent</translation>
+    </message>
+    <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="955"/>
         <source>Select a skin</source>
         <translation>Choisir un thème</translation>
@@ -624,6 +639,11 @@ Appuyez sur %2 pour activer</translation>
 </context>
 <context>
     <name>launchy::OptionDialog</name>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="162"/>
+        <source>Search mode changes will take effect after restarting Launchy.</source>
+        <translation>Les changements du mode de recherche prendront effet après le redémarrage de Launchy.</translation>
+    </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="357"/>
         <source>Plugin options</source>

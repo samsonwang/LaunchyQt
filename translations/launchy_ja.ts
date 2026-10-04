@@ -323,6 +323,21 @@
         <translation>履歴の最大数</translation>
     </message>
     <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="821"/>
+        <source>Search mode</source>
+        <translation>検索モード</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="869"/>
+        <source>Fast</source>
+        <translation>高速</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="874"/>
+        <source>Slow</source>
+        <translation>低速</translation>
+    </message>
+    <message>
         <source>Style</source>
         <translation type="obsolete">スタイル</translation>
     </message>
@@ -601,6 +616,11 @@ press %2 to activate</source>
 </context>
 <context>
     <name>launchy::OptionDialog</name>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="162"/>
+        <source>Search mode changes will take effect after restarting Launchy.</source>
+        <translation>検索モードの変更はLaunchyの再起動後に適用されます。</translation>
+    </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="357"/>
         <source>Plugin options</source>

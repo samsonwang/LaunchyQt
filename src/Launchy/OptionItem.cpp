@@ -56,6 +56,9 @@ const bool      OPTION_SHOWHIDDENFILES_DEFAULT                = false;
 const char*     OPTION_SHOWNETWORK                            = "GenOps/showNetwork";
 const bool      OPTION_SHOWNETWORK_DEFAULT                    = false;
 
+const char*     OPTION_SEARCH_MODE                          = "GenOps/searchMode";
+const int       OPTION_SEARCH_MODE_DEFAULT                  = 0;
+
 const char*     OPTION_AUTOSUGGESTDELAY                       = "GenOps/autoSuggestDelay";
 const int       OPTION_AUTOSUGGESTDELAY_DEFAULT               = 1000;
 
