@@ -543,7 +543,16 @@ void LaunchyWidget::launchItem() {
         }
 
         qDebug() << "LaunchyWidget::launchItem, cmd:" << item.fullPath << "args:" << args;
-        runProgram(item.fullPath, args);
+
+        if (item.fullPath.isEmpty()) {
+            // Nothing to run. Passing an empty path to the shell would fall
+            // back to Launchy's own working directory and open it in Explorer.
+            qWarning() << "LaunchyWidget::launchItem, no file path to launch, item:"
+                       << item.shortName << ", plugin:" << item.pluginName;
+        }
+        else {
+            runProgram(item.fullPath, args);
+        }
     }
 
     // udpate outputbox
@@ -854,8 +863,32 @@ void LaunchyWidget::doTab() {
     if (!m_inputData.isEmpty() && !m_searchResult.isEmpty()) {
         qDebug() << "LaunchyWidget::doTab, get path";
 
+        // A history entry stands for a whole command line, not for an item:
+        // CommandHistory::search() keeps the full "key <sep> previous query"
+        // string in the item shortName. Tabbing on one would paste the previous
+        // query back in front of the new one and append a second separator
+        // ("gg <sep> cats <sep> dogs"), so complete from a real match instead.
+        int bestIndex = -1;
+        for (int i = 0; i < m_searchResult.count(); ++i) {
+            if (m_searchResult[i].pluginName != NAME_HISTORY) {
+                bestIndex = i;
+                break;
+            }
+        }
+
+        if (bestIndex < 0) {
+            // Only history matched, keep what the user typed rather than
+            // expanding it into a stale command line
+            qDebug() << "LaunchyWidget::doTab, no non-history match, keep typed text";
+            m_inputBox->selectAll();
+            m_inputBox->insert(m_inputData.toString() + m_inputBox->separatorText());
+            return;
+        }
+
+        const CatItem& bestMatch = m_searchResult[bestIndex];
+
         // If it's an incomplete file or directory, complete it
-        QFileInfo info(m_searchResult.first().fullPath);
+        QFileInfo info(bestMatch.fullPath);
 
         if (m_inputData.last().hasLabel(LABEL_FILE) || info.isDir()) {
             QString path;
@@ -863,7 +896,7 @@ void LaunchyWidget::doTab() {
                 path = info.symLinkTarget();
             }
             else {
-                path = m_searchResult.first().fullPath;
+                path = bestMatch.fullPath;
             }
 
             if (info.isDir() && !path.endsWith(QDir::separator())) {
@@ -875,8 +908,8 @@ void LaunchyWidget::doTab() {
             m_inputBox->insert(m_inputData.toString(true) + QDir::toNativeSeparators(path));
         }
         else {
-            m_inputData.last().setTopResult(m_searchResult[0]);
-            m_inputData.last().setText(m_searchResult[0].shortName);
+            m_inputData.last().setTopResult(bestMatch);
+            m_inputData.last().setText(bestMatch.shortName);
             m_inputBox->selectAll();
             m_inputBox->insert(m_inputData.toString() + m_inputBox->separatorText());
         }
@@ -985,6 +1018,17 @@ void LaunchyWidget::searchOnInput() {
 
         if (!m_searchResult.isEmpty()) {
             m_inputData.last().setTopResult(m_searchResult[0]);
+
+            // The command is launched from the best match of the first segment,
+            // but while there is more than one segment nothing ever fills that
+            // one in: parse() recreates a segment from scratch as soon as its
+            // text stops matching what is on screen, which drops the match that
+            // was picked up when the segment was typed on its own. Seed it from
+            // the same result so a hand edited or pasted command still launches.
+            if (m_inputData.count() > 1
+                && m_inputData.first().getTopResult().fullPath.isEmpty()) {
+                m_inputData.first().setTopResult(m_searchResult[0]);
+            }
         }
     }
 }
