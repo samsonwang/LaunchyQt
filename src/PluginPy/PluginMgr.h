@@ -47,10 +47,17 @@ private:
     PluginMgr(const PluginMgr&) = delete;
     PluginMgr& operator=(const PluginMgr&) = delete;
 
+    // Hands the gil over to python threads for as long as the event loop runs,
+    // and takes it back before the app shuts down. See PluginMgr.cpp.
+    void releaseGilForEventLoop();
+
 private:
     QSettings* m_pSettings;
     QMap<QString, py::object> m_pluginObject;
     QMap<QString, launchy::PluginInterface*> m_pluginInterface;
+    // Thread state of the thread that initialised the interpreter, valid while
+    // the gil is dropped, nullptr once it is held again.
+    PyThreadState* m_mainThreadState;
 };
 
 } // namespace pluginpy

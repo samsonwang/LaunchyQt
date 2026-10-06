@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <pybind11/embed.h>
 
+#include <QApplication>
 #include <QDebug>
 #include <QDir>
-#include <QApplication>
 
 #include "LaunchyLib/LaunchyLib.h"
 #include "LaunchyLib/InputData.h"
@@ -40,6 +40,10 @@ pluginpy::PluginMgr& PluginMgr::instance() {
 }
 
 launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const QString& pluginPath) {
+    // Everything below uses the python api, and the main thread no longer owns
+    // the gil once the event loop is running.
+    py::gil_scoped_acquire gil;
+
     qDebug() << "pluginpy::PluginMgr::loadPlugin, name:" << pluginName
         << "path:" << pluginPath;
 
@@ -79,6 +83,8 @@ launchy::PluginInterface* PluginMgr::loadPlugin(const QString& pluginName, const
 }
 
 bool PluginMgr::unloadPlugin(const QString& pluginName) {
+    py::gil_scoped_acquire gil;
+
     qDebug() << "pluginpy::PluginMgr::unloadPlugin, name:" << pluginName;
 
     launchy::PluginInterface* plugin = m_pluginInterface[pluginName];
@@ -105,6 +111,8 @@ void PluginMgr::initSettings(QSettings* setting) {
         return;
     }
     m_pSettings = setting;
+
+    py::gil_scoped_acquire gil;
 
     try {
         // init qsetting
@@ -133,7 +141,8 @@ void PluginMgr::registerPlugin(py::object pluginClass) {
 }
 
 PluginMgr::PluginMgr()
-    : m_pSettings(nullptr) {
+    : m_pSettings(nullptr),
+      m_mainThreadState(nullptr) {
 
     py::initialize_interpreter();
 
@@ -162,9 +171,52 @@ PluginMgr::PluginMgr()
         qWarning() << "pluginpy::PluginMgr::PluginMgr, fail to init launchy_util,"
             << e.what();
     }
+
+    // Safe to drop it this early because every remaining way into python takes
+    // it back: loadPlugin, unloadPlugin, initSettings, ~PluginMgr, the catches
+    // in PluginLoader and every trampoline call in PluginWrapper::msg.
+    //
+    // It must happen before anything can run python on another thread. The
+    // catalog builder calls getCatalog from its own thread, which now takes the
+    // gil; had the main thread still been holding it, that wait would never end.
+    releaseGilForEventLoop();
+}
+
+// pybind11 keeps the gil on the thread that called initialize_interpreter(), and
+// gil_scoped_acquire only takes and releases it when that thread has handed it
+// over at least once (gil.h derives its "release" flag from whether the thread
+// state is current). Nothing ever did, so the main thread held the gil for the
+// whole life of the app: it runs no python bytecode while sitting in the qt
+// event loop, so it never offers the gil to anybody, and every python thread a
+// plugin starts is starved before its first instruction.
+//
+// Dropping it here lets python threads run. Every entry point that touches
+// python from c++ (loadPlugin, unloadPlugin, initSettings, ~PluginMgr and the
+// trampolines in ExportPyPlugin.h) takes it back with gil_scoped_acquire, which
+// from now on is a real acquire/release pair rather than a no-op.
+void PluginMgr::releaseGilForEventLoop() {
+    if (m_mainThreadState) {
+        return;
+    }
+
+    m_mainThreadState = PyEval_SaveThread();
+    qDebug("pluginpy::PluginMgr, gil handed over to python threads");
+
+    // Taken back before cleanupGlobalVar() pulls the plugins down, so shutdown
+    // sees the same gil state startup did.
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, qApp, [this]() {
+        if (!m_mainThreadState) {
+            return;
+        }
+        PyEval_RestoreThread(m_mainThreadState);
+        m_mainThreadState = nullptr;
+        qDebug("pluginpy::PluginMgr, gil taken back from python threads");
+    });
 }
 
 PluginMgr::~PluginMgr() {
+    py::gil_scoped_acquire gil;
+
     for (auto plugin : m_pluginInterface)
     {
         delete plugin;

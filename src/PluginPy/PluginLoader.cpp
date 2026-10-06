@@ -59,6 +59,8 @@ bool PluginLoader::unload() {
         m_interface = nullptr;
     }
     catch (const py::error_already_set& e) {
+        // PyErr_Print() is python api, so the gil has to be held here as well
+        py::gil_scoped_acquire gil;
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
@@ -75,6 +77,7 @@ bool PluginLoader::load() {
         m_interface = PluginMgr::instance().loadPlugin(m_pluginName, m_pluginPath);
     }
     catch (const py::error_already_set& e) {
+        py::gil_scoped_acquire gil;
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();

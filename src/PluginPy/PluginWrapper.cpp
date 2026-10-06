@@ -172,6 +172,17 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     qDebug() << "pluginpy::PluginWrapper::msg, lock mutex, plugin name:"
         << m_pluginName << "msgId:" << msgId;
 
+    // The gil is taken here for the whole dispatch, not just inside the
+    // trampolines: the main thread no longer owns it (see
+    // PluginMgr::releaseGilForEventLoop), PYBIND11_OVERLOAD_PURE throws its
+    // "pure virtual function" error *after* its own gil scope has ended, and the
+    // handlers below call PyErr_Print() themselves.
+    //
+    // Taken after the mutex on purpose, never before it: a thread waiting for
+    // the mutex must not hold the gil, or it deadlocks against whoever holds
+    // the mutex and is waiting for the gil.
+    py::gil_scoped_acquire gil;
+
     // Dispatch the actual Python function
     int result = 0;
 

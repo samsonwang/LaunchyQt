@@ -110,8 +110,12 @@ public:
 
     void getCatalog(const CatItemList& resultsList) override {
 
-        // this function runs in another thread
-        // pybind11::gil_scoped_acquire gil;
+        // This function runs on the catalog builder thread, so it needs the gil
+        // like every other call into python. It is only safe now that the main
+        // thread lets go of the gil while the event loop runs (see
+        // PluginMgr::releaseGilForEventLoop); before that, taking it here simply
+        // deadlocked against the main thread and had to be left out.
+        py::gil_scoped_acquire gil;
 
         py::function overload = py::get_overload(static_cast<const Plugin*>(this),
                                                  "getCatalog");
@@ -175,29 +179,40 @@ public:
         return nullptr;
     }
 
+    // endDialog closes the doDialog sequence, so a plugin that opened a dialog
+    // has to implement it, but it is looked up without failing like the two
+    // notifications below: PYBIND11_OVERLOAD_PURE raises "Tried to call pure
+    // virtual function" *after* releasing the gil, and a plugin that leaves it
+    // out would then take the whole launcher down on every dialog close.
     void endDialog(bool accept) override {
-        PYBIND11_OVERLOAD_PURE(
-            void,
-            Plugin,
-            endDialog,
-            accept
-        );
+        py::gil_scoped_acquire gil;
+        py::function overload = py::get_override(static_cast<const Plugin*>(this),
+                                                 "endDialog");
+        if (overload) {
+            overload(accept);
+        }
     }
 
+    // launchyShow and launchyHide are notifications, and only a few plugins
+    // implement them. Going through PYBIND11_OVERLOAD_PURE here made every
+    // plugin that does not override them throw "Tried to call pure virtual
+    // function" on every show and hide, so they are looked up without failing.
     void launchyShow() override {
-        PYBIND11_OVERLOAD_PURE(
-            void,
-            Plugin,
-            launchyShow
-        );
+        py::gil_scoped_acquire gil;
+        py::function overload = py::get_override(static_cast<const Plugin*>(this),
+                                                 "launchyShow");
+        if (overload) {
+            overload();
+        }
     }
 
     void launchyHide() override {
-        PYBIND11_OVERLOAD_PURE(
-            void,
-            Plugin,
-            launchyHide
-        );
+        py::gil_scoped_acquire gil;
+        py::function overload = py::get_override(static_cast<const Plugin*>(this),
+                                                 "launchyHide");
+        if (overload) {
+            overload();
+        }
     }
 };
 
