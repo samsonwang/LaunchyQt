@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'websearch.ui',
 # licensing of 'websearch.ui' applies.
 #
-# Created: Fri Jun 20 14:39:15 2025
+# Created: Sun Oct  4 11:32:04 2026
 #      by: pyside2-uic  running on PySide2 5.12.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -36,6 +36,13 @@ class Ui_WebSearchWidget(object):
         self.verticalLayout.addWidget(self.entriesTable)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.fetchFaviconCheckBox = QtWidgets.QCheckBox(WebSearchWidget)
+        self.fetchFaviconCheckBox.setChecked(True)
+        self.fetchFaviconCheckBox.setObjectName("fetchFaviconCheckBox")
+        self.horizontalLayout.addWidget(self.fetchFaviconCheckBox)
+        self.refreshIconButton = QtWidgets.QPushButton(WebSearchWidget)
+        self.refreshIconButton.setObjectName("refreshIconButton")
+        self.horizontalLayout.addWidget(self.refreshIconButton)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.addEntryButton = QtWidgets.QPushButton(WebSearchWidget)
@@ -53,6 +60,7 @@ class Ui_WebSearchWidget(object):
         self.retranslateUi(WebSearchWidget)
         QtCore.QObject.connect(self.addEntryButton, QtCore.SIGNAL("clicked()"), WebSearchWidget.addEntry_clicked)
         QtCore.QObject.connect(self.removeEntryButton, QtCore.SIGNAL("clicked()"), WebSearchWidget.removeEntry_clicked)
+        QtCore.QObject.connect(self.refreshIconButton, QtCore.SIGNAL("clicked()"), WebSearchWidget.refreshIcon_clicked)
         QtCore.QMetaObject.connectSlotsByName(WebSearchWidget)
 
     def retranslateUi(self, WebSearchWidget):
@@ -60,6 +68,10 @@ class Ui_WebSearchWidget(object):
         self.entriesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Key", None, -1))
         self.entriesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Name", None, -1))
         self.entriesTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Url", None, -1))
+        self.fetchFaviconCheckBox.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Download the icon of every site once and show it in the results", None, -1))
+        self.fetchFaviconCheckBox.setText(QtWidgets.QApplication.translate("WebSearchWidget", "Fetch site icons", None, -1))
+        self.refreshIconButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Drop the downloaded icons and fetch them again", None, -1))
+        self.refreshIconButton.setText(QtWidgets.QApplication.translate("WebSearchWidget", "Refresh icons", None, -1))
         self.addEntryButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Add a new entry", None, -1))
         self.addEntryButton.setText(QtWidgets.QApplication.translate("WebSearchWidget", "+", None, -1))
         self.removeEntryButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Remove the selected entry", None, -1))

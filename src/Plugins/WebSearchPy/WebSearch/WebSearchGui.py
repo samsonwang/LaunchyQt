@@ -6,10 +6,14 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtWidgets import QWidget, QTableWidgetItem
 
 from .ui_websearch import *
+from .FaviconCache import cache as faviconCache, toBool
 
 import launchy
 
 class WebSearchGui(QWidget):
+    # The engines and the "fetch site icons" switch share one settings group.
+    FETCH_FAVICON_KEY = "fetchFavicon"
+
     def __init__(self, parent=None, settingName=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.settingName = settingName
@@ -45,6 +49,9 @@ class WebSearchGui(QWidget):
 
         settings.endArray()
 
+        enabled = settings.value(self.settingName + "/" + self.FETCH_FAVICON_KEY, True)
+        self.ui.fetchFaviconCheckBox.setChecked(toBool(enabled, True))
+
     def addEntry_clicked(self):
 #        newEntryDialog = NewDirectoryEntryDialog(self)
 #        newEntryDialog.exec_()
@@ -64,10 +71,30 @@ class WebSearchGui(QWidget):
         if currentRow != -1:
             self.ui.entriesTable.removeRow(currentRow)
 
+    # Drop every downloaded icon and fetch the ones of the listed sites again.
+    def refreshIcon_clicked(self):
+        table = self.ui.entriesTable
+        urls = []
+        for i in range(0, table.rowCount()):
+            urlItem = table.item(i, 2)
+            if urlItem and urlItem.text():
+                urls.append(urlItem.text())
+
+        favicons = faviconCache()
+        favicons.setEnabled(self.ui.fetchFaviconCheckBox.isChecked())
+        favicons.clear()
+        favicons.prefetch(urls)
+        log.debug("WebSearchGui::refreshIcon_clicked, %s url(s) queued" % len(urls))
+
     def writeSettings(self):
         log.debug("WebSearchGui, writeSettings")
         settings = launchy.settings
         table = self.ui.entriesTable
+
+        # How many engines are stored now, endArray() leaves the entries behind
+        # the new count in the file.
+        size = settings.beginReadArray(self.settingName)
+        settings.endArray()
 
         # Remove all empty rows
         itemsToRemove = []
@@ -77,14 +104,14 @@ class WebSearchGui(QWidget):
             urlItem = table.item(i, 2)
             if keyItem is None or nameItem is None or urlItem is None:
                 itemsToRemove.append(i)
-            elif keyItem.text() == "" or nameItem.text() == "" or urlItem == "":
+            elif keyItem.text() == "" or nameItem.text() == "" or urlItem.text() == "":
                 itemsToRemove.append(i)
 
-        for item in itemsToRemove:
+        # Remove from the bottom up, every removal shifts the rows above it
+        for i in reversed(itemsToRemove):
             table.removeRow(i)
 
         # Add all rows to the dirs array
-        settings.remove(self.settingName)
         log.debug("WebSearchUi, settingName: %s" % self.settingName)
         settings.beginWriteArray(self.settingName)
         for i in range(0, table.rowCount()):
@@ -93,3 +120,14 @@ class WebSearchGui(QWidget):
             settings.setValue("name", (table.item(i,1).text()))
             settings.setValue("url", (table.item(i,2).text()))
         settings.endArray()
+
+        # The engines of an array are numbered from 1 on, so the ones behind the
+        # new count are what is left of the previous, longer list. Only they are
+        # dropped, the switch below lives in the same group and has to stay.
+        for i in range(table.rowCount() + 1, size + 1):
+            settings.remove("%s/%d" % (self.settingName, i))
+
+        # Stored as text on purpose: PySide2 hands a boolean "false" back as
+        # None, which would silently turn the switch on again.
+        settings.setValue(self.settingName + "/" + self.FETCH_FAVICON_KEY,
+                          "true" if self.ui.fetchFaviconCheckBox.isChecked() else "false")

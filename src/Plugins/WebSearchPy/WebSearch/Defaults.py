@@ -11,7 +11,7 @@ defaultSetting = {
         "name": "Google Translate"
     },
     "ii": {
-        "url": "http://www.bing.com/search?q=%s",
+        "url": "https://www.bing.com/search?q=%s",
         "name": "Bing"
     },
     "bd": {
@@ -19,7 +19,7 @@ defaultSetting = {
         "name": "Baidu"
     },
     "bt": {
-        "url": "http://fanyi.baidu.com/?aldtype=85#en/zh/%s",
+        "url": "https://fanyi.baidu.com/?aldtype=85#en/zh/%s",
         "name": "Baidu Translation"
     },
     "gmap": {
@@ -27,7 +27,7 @@ defaultSetting = {
         "name": "Google Maps"
     },
     "bmap": {
-        "url": "http://api.map.baidu.com/geocoder?address=%s&output=html&src=Chrome",
+        "url": "https://map.baidu.com/search/%s",
         "name": "Baidu Maps"
     },
     "tao": {
@@ -42,48 +42,28 @@ defaultSetting = {
         "url": "https://search.suning.com/%s/",
         "name": "Suning"
     },
-    "pr": {
-        "url": "https://pronto.inside.nsn.com/pronto/problemReportSearch.html?freeTextdropDownID=prId&searchTopText=%s",
-        "name": "Pronto"
-    },
     "cpp": {
-        "url": "https://en.cppreference.com/mwiki/index.php?title=Special%%3ASearch&search=%s",
+        "url": "https://en.cppreference.com/index.php?search=%s",
         "name": "Cpp Reference"
     },
     "dd": {
-        "url": "http://www.dictionary.com/browse/%s",
+        "url": "https://www.dictionary.com/browse/%s",
         "name": "Dictionary"
     },
     "so": {
-        "url": "http://stackoverflow.com/search?q=%s",
+        "url": "https://stackoverflow.com/search?q=%s",
         "name": "StackOverflow"
     },
     "ieee": {
-        "url": "http://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=%s",
+        "url": "https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=%s",
         "name": "IEEE"
     },
     "man": {
-        "url": "http://www.freebsd.org/cgi/man.cgi?query=%s",
+        "url": "https://www.freebsd.org/cgi/man.cgi?query=%s",
         "name": "Linux Man Page"
     },
     "cygwin": {
         "url": "https://cygwin.com/cgi-bin2/package-grep.cgi?grep=%s&arch=x86",
         "name": "cygwin package search"
-    },
-    "jj": {
-        "url": "https://jira3.int.net.nokia.com/secure/QuickSearch.jspa?searchString=%s",
-        "name": "Jira Search"
-    },
-    "con": {
-        "url": "https://confluence.int.net.nokia.com/dosearchsite.action?cql=siteSearch+~+'%s'",
-        "name": "Confluence"
-    },
-    "ww": {
-        "url": "https://wft.int.net.nokia.com/ext/build_content/%s",
-        "name": "WFT Build Content Search"
-    },
-    "sp": {
-        "url": "https://nokia.sharepoint.com/_layouts/15/sharepoint.aspx?q=%s&v=search",
-        "name": "SharePoint Search"
     },
 }

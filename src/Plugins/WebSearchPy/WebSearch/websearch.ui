@@ -48,6 +48,29 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
+      <widget class="QCheckBox" name="fetchFaviconCheckBox">
+       <property name="toolTip">
+        <string>Download the icon of every site once and show it in the results</string>
+       </property>
+       <property name="text">
+        <string>Fetch site icons</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="refreshIconButton">
+       <property name="toolTip">
+        <string>Drop the downloaded icons and fetch them again</string>
+       </property>
+       <property name="text">
+        <string>Refresh icons</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -143,10 +166,27 @@
      <y>-14</y>
     </hint>
    </hints>
-  </connection>
- </connections>
+ </connection>
+ <connection>
+  <sender>refreshIconButton</sender>
+  <signal>clicked()</signal>
+  <receiver>WebSearchWidget</receiver>
+  <slot>refreshIcon_clicked()</slot>
+  <hints>
+   <hint type="sourcelabel">
+    <x>120</x>
+    <y>468</y>
+   </hint>
+   <hint type="destinationlabel">
+    <x>120</x>
+    <y>-14</y>
+   </hint>
+  </hints>
+ </connection>
+</connections>
  <slots>
   <slot>addEntry_clicked()</slot>
   <slot>removeEntry_clicked()</slot>
+  <slot>refreshIcon_clicked()</slot>
  </slots>
 </ui>

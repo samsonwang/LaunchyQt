@@ -93,10 +93,11 @@ class PyDiryUi(QWidget):
             pathItem = table.item(i,1)
             if nameItem == None or pathItem == None:
                 itemsToRemove.append(i)
-            elif nameItem.text() == "" or pathItem == "":
+            elif nameItem.text() == "" or pathItem.text() == "":
                 itemsToRemove.append(i)
 
-        for item in itemsToRemove:
+        # Remove from the bottom up, every removal shifts the rows above it
+        for i in reversed(itemsToRemove):
             table.removeRow(i)
 
         # Add all rows to the dirs array
