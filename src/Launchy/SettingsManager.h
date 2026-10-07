@@ -46,14 +46,17 @@ public:
     QList<Directory> readCatalogDirectories();
     void writeCatalogDirectories(QList<Directory>& directories);
 
+    // Fix up catalog directories that point into another user's profile, add
+    // the built-in ones and move them to the front. The list is only modified
+    // in memory, returns true when 'directories' was modified
+    bool mergeDefaultCatalogDirectories(QList<Directory>& directories);
+
 private:
     SettingsManager();
     Q_DISABLE_COPY(SettingsManager)
 
 private:
     QString configDirectory(bool portable) const;
-    void fixCatalogUserPaths();
-    void ensureDefaultCatalogDirectories();
 
 private:
     bool m_portable;

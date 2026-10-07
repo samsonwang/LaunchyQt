@@ -444,6 +444,23 @@ void OptionDialog::catRescanClicked(bool val) {
     g_mainWidget->buildCatalog();
 }
 
+// Fix up stale user profile paths and add the built-in catalog directories,
+// both on demand only, they are never applied when Launchy starts
+void OptionDialog::onAddDefaultDirsClicked(bool c) {
+    Q_UNUSED(c)
+
+    if (!SettingsManager::instance().mergeDefaultCatalogDirectories(m_memDirs)) {
+        QMessageBox::information(this, tr("Launchy"),
+                                 tr("The catalog directories are already up to date."),
+                                 QMessageBox::Ok);
+        return;
+    }
+
+    refreshDirectoryList();
+
+    ++g_needRebuildCatalog;
+}
+
 void OptionDialog::catTypesDirChanged(int state) {
     Q_UNUSED(state)
     int row = m_pUi->catDirectories->currentRow();
@@ -862,6 +879,8 @@ void OptionDialog::initCatalogWidget() {
 
     connect(m_pUi->catRescan, &QPushButton::clicked,
             this, &OptionDialog::catRescanClicked);
+    connect(m_pUi->pushButtonAddDefaultDirs, &QPushButton::clicked,
+            this, &OptionDialog::onAddDefaultDirsClicked);
 
     m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
 
@@ -1136,6 +1155,25 @@ void OptionDialog::addDirectory(const QString& directory, bool edit) {
     }
 
     ++g_needRebuildCatalog;
+}
+
+// Refill the directory list widget from the in memory directory list.
+// Signals are blocked so that the rebuild is not triggered for every row.
+void OptionDialog::refreshDirectoryList() {
+    m_pUi->catDirectories->blockSignals(true);
+    m_pUi->catDirectories->clear();
+    m_pUi->catDirectories->blockSignals(false);
+
+    m_pUi->catTypes->clear();
+
+    for (int i = 0; i < m_memDirs.count(); ++i) {
+        QListWidgetItem* item = new QListWidgetItem(m_memDirs[i].name, m_pUi->catDirectories);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+    }
+
+    if (m_pUi->catDirectories->count() > 0) {
+        m_pUi->catDirectories->setCurrentRow(0);
+    }
 }
 
 void OptionDialog::catTypesItemChanged(QListWidgetItem* item) {

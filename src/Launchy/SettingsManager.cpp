@@ -60,6 +60,56 @@ static bool isSameDirectoryPath(const QString& a, const QString& b) {
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
 
 namespace launchy {
+
+// Detect catalog directory paths that point into another user's profile
+// (account renamed or settings migrated to another machine): extract the
+// user name from each path itself and compare it with the current user name.
+// The list is only modified in memory, returns true when it was modified.
+static bool fixCatalogUserPaths(QList<Directory>& directories) {
+#if defined(Q_OS_WIN)
+    const Qt::CaseSensitivity userCase = Qt::CaseInsensitive;
+#else
+    const Qt::CaseSensitivity userCase = Qt::CaseSensitive;
+#endif
+
+    const QString currentHome = QDir::fromNativeSeparators(QDir::homePath());
+    const QString currentUser = currentHome.section('/', -1);
+
+    qDebug("SettingsManager::fixCatalogUserPaths, current user: %s, home: %s",
+           qPrintable(currentUser), qPrintable(currentHome));
+
+    // Match profile roots like C:/Users/name/..., /home/name/... or /Users/name/...
+    static const QRegularExpression userPathRe(
+        QStringLiteral("^((?:[A-Za-z]:)?/(?:Users|home)/)([^/]+)(/.*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
+
+    bool changed = false;
+
+    for (int i = 0; i < directories.count(); ++i) {
+        const QString name = directories[i].name;
+        const QString path = QDir::fromNativeSeparators(name);
+        const QRegularExpressionMatch match = userPathRe.match(path);
+
+        // Skip paths without a profile segment, paths of the current user
+        // and paths that still exist (e.g. C:/Users/Public or other accounts)
+        if (!match.hasMatch()
+            || match.captured(2).compare(currentUser, userCase) == 0
+            || QFile::exists(path)) {
+            continue;
+        }
+
+        const QString fixed = currentHome + match.captured(3);
+        qInfo("SettingsManager::fixCatalogUserPaths, %s -> %s",
+              qPrintable(name),
+              qPrintable(QDir::toNativeSeparators(fixed)));
+        directories[i].name = name.contains('\\')
+            ? QDir::toNativeSeparators(fixed) : fixed;
+        changed = true;
+    }
+
+    return changed;
+}
+
 SettingsManager::SettingsManager()
     : m_portable(false) {
 }
@@ -115,13 +165,6 @@ void SettingsManager::load() {
     qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 
-    // Rewrite catalog directories if the user home directory has changed,
-    // e.g. account renamed or settings migrated to another machine
-    fixCatalogUserPaths();
-
-    // Make sure the built-in catalog directories are always present and first
-    ensureDefaultCatalogDirectories();
-
     launchy::memprof::record("settings:after-fix-catalog-directories");
 
     QString pluginExtraDir = g_settings->value(OPTION_PLUGIN_EXTRA_DIRECTORY).toString();
@@ -172,71 +215,25 @@ void SettingsManager::load() {
     }
 }
 
-// Detect catalog directory paths that point into another user's profile
-// (account renamed or settings migrated to another machine): extract the
-// user name from each path itself and compare it with the current user name.
-void SettingsManager::fixCatalogUserPaths() {
-#if defined(Q_OS_WIN)
-    const Qt::CaseSensitivity userCase = Qt::CaseInsensitive;
-#else
-    const Qt::CaseSensitivity userCase = Qt::CaseSensitive;
-#endif
+// Add the built-in catalog directories and list them first in a fixed order,
+// stale user profile paths are fixed up first.
+// The list is only modified in memory, the caller decides when to persist it
+// and when to rebuild the catalog. Returns true when the list was modified.
+bool SettingsManager::mergeDefaultCatalogDirectories(QList<Directory>& directories) {
 
-    const QString currentHome = QDir::fromNativeSeparators(QDir::homePath());
-    const QString currentUser = currentHome.section('/', -1);
+    bool changed = fixCatalogUserPaths(directories);
 
-    qDebug("SettingsManager::fixCatalogUserPaths, current user: %s, home: %s",
-           qPrintable(currentUser), qPrintable(currentHome));
-
-    // Match profile roots like C:/Users/name/..., /home/name/... or /Users/name/...
-    static const QRegularExpression userPathRe(
-        QStringLiteral("^((?:[A-Za-z]:)?/(?:Users|home)/)([^/]+)(/.*)?$"),
-        QRegularExpression::CaseInsensitiveOption);
-
-    QList<Directory> directories = readCatalogDirectories();
-    bool changed = false;
-
-    for (int i = 0; i < directories.count(); ++i) {
-        const QString name = directories[i].name;
-        const QString path = QDir::fromNativeSeparators(name);
-        const QRegularExpressionMatch match = userPathRe.match(path);
-
-        // Skip paths without a profile segment, paths of the current user
-        // and paths that still exist (e.g. C:/Users/Public or other accounts)
-        if (!match.hasMatch()
-            || match.captured(2).compare(currentUser, userCase) == 0
-            || QFile::exists(path)) {
-            continue;
-        }
-
-        const QString fixed = currentHome + match.captured(3);
-        qInfo("SettingsManager::fixCatalogUserPaths, %s -> %s",
-              qPrintable(name),
-              qPrintable(QDir::toNativeSeparators(fixed)));
-        directories[i].name = name.contains('\\')
-            ? QDir::toNativeSeparators(fixed) : fixed;
-        changed = true;
+    if (!g_app) {
+        return changed;
     }
-
-    if (changed) {
-        writeCatalogDirectories(directories);
-        ++launchy::g_needRebuildCatalog;
-    }
-}
-
-// Ensure the built-in catalog directories are always present and listed first
-// in a fixed order
-void SettingsManager::ensureDefaultCatalogDirectories() {
 
     const QList<Directory> required = g_app->getDefaultCatalogDirectories();
     if (required.isEmpty()) {
-        return;
+        return changed;
     }
 
-    const QList<Directory> existing = readCatalogDirectories();
-    QList<Directory> rest = existing;
+    QList<Directory> rest = directories;
     QList<Directory> ordered;
-    bool added = false;
 
     // Move the required directories to the front, keeping their own settings
     foreach(const Directory& req, required) {
@@ -252,10 +249,9 @@ void SettingsManager::ensureDefaultCatalogDirectories() {
             ordered.append(rest.takeAt(found));
         }
         else {
-            qInfo("SettingsManager::ensureDefaultCatalogDirectories, adding %s",
+            qInfo("SettingsManager::mergeDefaultCatalogDirectories, adding %s",
                   qPrintable(req.name));
             ordered.append(req);
-            added = true;
         }
     }
 
@@ -274,19 +270,17 @@ void SettingsManager::ensureDefaultCatalogDirectories() {
         }
     }
 
-    bool same = ordered.count() == existing.count();
+    bool same = ordered.count() == directories.count();
     for (int i = 0; same && i < ordered.count(); ++i) {
-        same = ordered[i].name == existing[i].name;
+        same = ordered[i].name == directories[i].name;
     }
 
-    if (!same) {
-        writeCatalogDirectories(ordered);
+    if (same) {
+        return changed;
     }
 
-    // Index the new directories as well
-    if (added) {
-        ++launchy::g_needRebuildCatalog;
-    }
+    directories = ordered;
+    return true;
 }
 
 bool SettingsManager::isPortable() const {

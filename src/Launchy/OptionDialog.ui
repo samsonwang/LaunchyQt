@@ -1386,6 +1386,22 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonAddDefaultDirs">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Add the built-in directories and list them first</string>
+             </property>
+             <property name="text">
+              <string>Add Default Directories</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -2465,6 +2481,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>catCheckDirs</tabstop>
   <tabstop>catDepth</tabstop>
   <tabstop>catRescan</tabstop>
+  <tabstop>pushButtonAddDefaultDirs</tabstop>
   <tabstop>plugList</tabstop>
  </tabstops>
  <resources>

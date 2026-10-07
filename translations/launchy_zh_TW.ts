@@ -421,6 +421,21 @@
         <translation>正在索引 0 項</translation>
     </message>
     <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1401"/>
+        <source>Add Default Directories</source>
+        <translation>新增預設目錄</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="1398"/>
+        <source>Add the built-in directories and list them first</source>
+        <translation>新增內建目錄並將其排在最前</translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="457"/>
+        <source>The catalog directories are already up to date.</source>
+        <translation>索引目錄已是最新。</translation>
+    </message>
+    <message>
         <location filename="../src/Launchy/OptionDialog.ui" line="1408"/>
         <source>File Types</source>
         <translation>檔案類型</translation>

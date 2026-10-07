@@ -75,6 +75,9 @@ private:
     void initAboutWidget();
 
     void addDirectory(const QString& directory, bool edit = false);
+    // refill the directory list widget from m_memDirs
+    void refreshDirectoryList();
+    
     void loadPluginDialog(QListWidgetItem* item);
     // void connectCatalogBuilderEvents();
 
@@ -100,6 +103,7 @@ private slots:
     void catalogProgressUpdated(int);
     void catalogBuilt();
     void catRescanClicked(bool);
+    void onAddDefaultDirsClicked(bool);
     // plugins
     void pluginChanged(int row);
     void pluginItemChanged(QListWidgetItem* item);
