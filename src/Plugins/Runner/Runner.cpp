@@ -202,9 +202,6 @@ int Runner::msg(int msgId, void* wParam, void* lParam) {
         launchItem((QList<InputData>*) wParam, (CatItem*)lParam);
         handled = true;
         break;
-    case MSG_HAS_DIALOG:
-        handled = true;
-        break;
     case MSG_DO_DIALOG:
         doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;

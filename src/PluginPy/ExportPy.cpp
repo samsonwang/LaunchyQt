@@ -130,7 +130,6 @@ PYBIND11_MODULE(launchy, m) {
         .def("getResults", &exportpy::Plugin::getResults)
         .def("getCatalog", &exportpy::Plugin::getCatalog)
         .def("launchItem", &exportpy::Plugin::launchItem)
-        .def("hasDialog", &exportpy::Plugin::hasDialog)
         .def("doDialog", &exportpy::Plugin::doDialog)
         .def("endDialog", &exportpy::Plugin::endDialog)
         .def("launchyShow", &exportpy::Plugin::launchyShow)

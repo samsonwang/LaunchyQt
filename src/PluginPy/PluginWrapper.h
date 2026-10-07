@@ -38,8 +38,6 @@ private:
     
     void launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* catItem);
     
-    bool hasDialog();
-    
     void doDialog(QWidget* parent, QWidget** dialog);
     
     void endDialog(bool accept);

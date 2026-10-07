@@ -39,8 +39,6 @@ public:
     virtual void launchItem(const std::vector<InputData>& inputDataList,
                             const CatItem& item) = 0;
 
-    virtual bool hasDialog() = 0;
-
     virtual void* doDialog(void* parentWidget) = 0;
 
     virtual void endDialog(bool accept) = 0;
@@ -141,14 +139,6 @@ public:
             launchItem,
             inputDataList,
             item
-        );
-    }
-
-    bool hasDialog() override {
-        PYBIND11_OVERLOAD_PURE(
-            bool,
-            Plugin,
-            hasDialog
         );
     }
 

@@ -304,9 +304,6 @@ int Verby::msg(int msgId, void* wParam, void* lParam) {
     case MSG_LAUNCH_ITEM:
         handled = launchItem((QList<InputData>*) wParam, (CatItem*)lParam);
         break;
-    case MSG_HAS_DIALOG:
-        handled = true;
-        break;
     case MSG_DO_DIALOG:
         doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;

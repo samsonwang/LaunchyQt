@@ -268,31 +268,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 /**
-	\brief This message asks the plugin if it has a dialog to display in the options menu.
-
-	 The result of the request is returned via the result of the msg function (handled).
-
-	\param wParam NULL
-	\param lParam NULL
-
-	\verbatim
-	int WebyPlugin::msg(int msgId, void* wParam, void* lParam)
-	{
-		bool handled = false;
-		switch (msgId)
-		{
-		case MSG_HAS_DIALOG:
-			handled = true;
-			break;
-		}
-
-		return handled;
-	}
-	\endverbatim
-*/
-#define MSG_HAS_DIALOG 6
-
-/**
 	\brief This message tells the plugin that it's time to show its user interface
 
 	\param wParam (QWidget*): The parent of the dialog to create

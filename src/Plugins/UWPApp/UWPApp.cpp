@@ -619,18 +619,13 @@ int UWPApp::msg(int msgId, void* wParam, void* lParam) {
         handled = 1;
         break;
 
-    case MSG_HAS_DIALOG:
-        // Set to true if you provide a gui
-        // handled = 1;
-        break;
-
     case MSG_DO_DIALOG:
-        // This isn't called unless you return true to MSG_HAS_DIALOG
+        // No options page yet: doDialog() below is an empty stub, so it leaves
+        // the caller's QWidget* at nullptr and Launchy shows an empty box.
         // doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
 
     case MSG_END_DIALOG:
-        // This isn't called unless you return true to MSG_HAS_DIALOG
         // endDialog((bool)wParam);
         break;
 

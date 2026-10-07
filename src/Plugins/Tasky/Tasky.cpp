@@ -323,18 +323,11 @@ int Tasky::msg(int msgId, void* wParam, void* lParam) {
         handled = true;
         break;
 
-    case MSG_HAS_DIALOG:
-        // Set to true if you provide a gui
-        handled = false;
-        break;
-
     case MSG_DO_DIALOG:
-        // This isn't called unless you return true to MSG_HAS_DIALOG
         doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
 
     case MSG_END_DIALOG:
-        // This isn't called unless you return true to MSG_HAS_DIALOG
         endDialog((bool)wParam);
         break;
 

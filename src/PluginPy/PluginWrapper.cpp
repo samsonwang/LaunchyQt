@@ -97,10 +97,6 @@ void PluginWrapper::launchItem(QList<launchy::InputData>* inputData,
     m_plugin->launchItem(inputDataList, launItem);
 }
 
-bool PluginWrapper::hasDialog() {
-    return m_plugin->hasDialog();
-}
-
 void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
 
     void* result = m_plugin->doDialog((void*)parent);
@@ -247,18 +243,14 @@ int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
         handled = true;
         break;
 
-    case MSG_HAS_DIALOG:
-        // Set to true if you provide a gui
-        handled = hasDialog();
-        break;
-
     case MSG_DO_DIALOG:
-        // This isn't called unless you return true to MSG_HAS_DIALOG
+        // Every loaded plugin gets asked, there is no "do you have a dialog"
+        // query beforehand: returning nullptr from doDialog (or not overriding
+        // it at all) is how a python plugin says it has no options page.
         doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
 
     case MSG_END_DIALOG:
-        // This isn't called unless you return true to MSG_HAS_DIALOG
         endDialog((bool)wParam);
         break;
 
