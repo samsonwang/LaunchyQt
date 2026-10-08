@@ -95,7 +95,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_searchTimer(new QTimer(this)),
       m_alwaysShowLaunchy(false),
       m_dragging(false),
-      m_placement(0.5, 0.5),
       m_menuOpen(false),
       m_optionDialog(nullptr),
       m_optionsOpen(false) {
@@ -468,12 +467,14 @@ void LaunchyWidget::hideAlternativeList() {
     // Ensure that any pending shows of the alternatives list are cancelled
     // so that the list isn't erroneously shown shortly after being dismissed.
     m_dropTimer->stop();
-
+    
     // clear the selection before hiding to prevent flicker
-    m_alternativeList->setCurrentRow(-1);
-    m_alternativeList->repaint();
-    m_alternativeList->hide();
-    m_iconExtractor.stop();
+    if (m_alternativeList->isVisible()) {
+        m_alternativeList->setCurrentRow(-1);
+        // m_alternativeList->repaint();
+        m_alternativeList->hide();
+        m_iconExtractor.stop();
+    }
 }
 
 void LaunchyWidget::launchItem() {
@@ -1104,7 +1105,7 @@ void LaunchyWidget::retranslateUi() {
 
 void LaunchyWidget::updateOutputSize() {
     int nIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
-    qDebug() << "LaunchyWidget::showEvent, output icon size:" << nIconSize;
+    qDebug() << "LaunchyWidget::updateOutputSize, output icon size:" << nIconSize;
     g_app->setPreferredIconSize(nIconSize);
     m_alternativeList->setIconSize(nIconSize);
 }
@@ -1212,102 +1213,67 @@ QScreen* LaunchyWidget::screenAtPoint(const QPoint& globalPos) const {
     return QGuiApplication::primaryScreen();
 }
 
-void LaunchyWidget::updatePlacementRatio() {
-    const QRect rectWidget = geometry();
-    QScreen* screen = screenAtPoint(rectWidget.center());
-    const QRect rectScreen = screen ? screen->availableGeometry() : QRect();
-    if (rectScreen.isEmpty()) {
-        // No display behind the window any more: remember the middle, the next
-        // placement on a real display is then a plain centering.
-        m_placement = QPointF(0.5, 0.5);
-        return;
-    }
-
-    const qreal fx = (qreal)(rectWidget.center().x() - rectScreen.left()) / rectScreen.width();
-    const qreal fy = (qreal)(rectWidget.center().y() - rectScreen.top()) / rectScreen.height();
-    m_placement.setX(qBound(0.0, fx, 1.0));
-    m_placement.setY(qBound(0.0, fy, 1.0));
-}
-
-void LaunchyWidget::relocateToCurrentScreen() {
-    if (m_dragging) {
-        return;
-    }
-
-    const QRect rectWidget = geometry();
-    QScreen* screen = screenAtPoint(rectWidget.center());
-    if (!screen) {
-        return;
-    }
-
-    const QRect rectScreen = screen->availableGeometry();
-    QPoint posTarget = rectScreen.topLeft();
-    posTarget += QPoint(qRound(m_placement.x() * rectScreen.width()),
-                        qRound(m_placement.y() * rectScreen.height()));
-    posTarget -= QPoint(rectWidget.width() / 2, rectWidget.height() / 2);
-
-    qDebug() << "LaunchyWidget::relocateToCurrentScreen, display layout changed,"
-        << "pos:" << pos() << "->" << posTarget << "on screen:" << rectScreen;
-
-    loadPosition(posTarget);
-}
-
 void LaunchyWidget::loadPosition(const QPoint& pos) {
+    qDebug() << "LaunchyWidget::loadPosition, required pos:" << pos;
+
     // move to selected screen
     int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
+    qDebug() << "LaunchyWidget::loadPosition, required screen:" << nScreenIndex;
 
     QScreen* screen = screenAtIndex(nScreenIndex);
+    if (!screen) {
+        qWarning() << "LaunchyWidget::loadPosition, no screen available, keeping position:" << pos;
+        return;
+    }
+
+    qDebug() << "LaunchyWidget::loadPosition, required screen:" << screen->name();
+
+    QRect rectScreen = screen->availableGeometry();
+    qDebug() << "LaunchyWidget::loadPosition, required screen:" << rectScreen;
 
     QRect rectWidget = geometry();
-    const QPoint posCenter = pos + rectWidget.center();
+    qDebug() << "LaunchyWidget::loadPosition, widget:" << rectWidget;
 
     // The configured screen index can keep pointing at a monitor that is no
     // longer able to hold the window: unplugged, switched off, or simply no
     // longer the first entry of QApplication::screens() after the display
     // layout changed. Centering the window on that stale geometry is what
     // drops it into a corner - or off the edge - of the display it is really
-    // shown on. Fall back to the screen the window actually sits on.
-    if (nScreenIndex > 0
-        && screen
-        && !screen->availableGeometry().contains(posCenter)) {
+    // shown on.
+
+    const QPoint posCenter = pos + QPoint(rectWidget.width() / 2, rectWidget.height() / 2);
+    qDebug() << "LaunchyWidget::loadPosition, widget center:" << posCenter;
+
+    bool resetPos = false;
+
+    if (nScreenIndex >= 0
+        && !rectScreen.contains(posCenter)) {
+
         qDebug() << "LaunchyWidget::loadPosition, saved pos" << pos
-            << "is not on screen" << nScreenIndex << "(" << screen->name()
-            << ") any more, using the screen the window lives on";
-        if (QScreen* screenHere = screenAtPoint(posCenter)) {
-            screen = screenHere;
-        }
+            << "is not on screen" << nScreenIndex << screen->name() << rectScreen;
+        
+        resetPos = true;
     }
-
-    if (!screen) {
-        qWarning() << "LaunchyWidget::loadPosition, no screen available, keeping position:" << pos;
-        return;
-    }
-
-    QRect rectScreen = screen->availableGeometry();
-
-    qDebug() << "LaunchyWidget::loadPosition, pos:" << pos
-        << "screen:" << rectScreen << "widget:" << rectWidget;
 
     QPoint posTarget(pos);
+
     int centerOption = g_settings->value(OPTION_ALWAYSCENTER, OPTION_ALWAYSCENTER_DEFAULT).toInt();
-    if (centerOption & 1) {
+    if (centerOption & 1 || resetPos) {
         posTarget.setX(rectScreen.center().x() - rectWidget.width() / 2);
     }
-    if (centerOption & 2) {
+    if (centerOption & 2 || resetPos) {
         posTarget.setY(rectScreen.center().y() - rectWidget.height() / 2);
     }
 
     // See if the new position is within the screen dimensions, if not pull it inside
     posTarget.setX(qBound(rectScreen.left(), posTarget.x(),
-                         rectScreen.right() + 1 - rectWidget.width()));
+                          rectScreen.right() + 1 - rectWidget.width()));
     posTarget.setY(qBound(rectScreen.top(), posTarget.y(),
-                         rectScreen.bottom() + 1 - rectWidget.height()));
+                          rectScreen.bottom() + 1 - rectWidget.height()));
+
+    qDebug() << "LaunchyWidget::loadPosition, target pos:" << posTarget;
 
     move(posTarget);
-
-    // Remember where the window sits inside its display, so a later display
-    // change can carry the window over instead of keeping old coordinates.
-    updatePlacementRatio();
 }
 
 void LaunchyWidget::savePosition() {
@@ -1464,21 +1430,13 @@ void LaunchyWidget::onScreenChanged(QScreen* screen) {
         << (screen ? screen->name() : QString());
     // reload screen after screen is changed
     reloadSkin();
-
-    // A display was plugged or unplugged: the window keeps the absolute
-    // coordinates it was placed with, which belong to the old layout. While
-    // hidden that is harmless, but the next show() then feeds those stale
-    // coordinates back into loadPosition() and the window reappears off screen
-    // or in a corner of the remaining display - and stays there. Re-anchor it
-    // as soon as the layout changes.
-    relocateToCurrentScreen();
 }
 
 void LaunchyWidget::applySkin(const QString& name) {
     m_currentSkin = name;
     m_skinChanged = true;
 
-    qDebug() << "apply skin:" << name;
+    qDebug() << "LaunchyWidget::applySkin, name:" << name;
 
     QString skinPath = SettingsManager::instance().skinPath(name);
     // Use default skin if this one doesn't exist or isn't valid
@@ -1591,7 +1549,6 @@ void LaunchyWidget::mouseMoveEvent(QMouseEvent* event) {
 #endif
 
         move(posTarget);
-        updatePlacementRatio();
 
         m_inputBox->setFocus();
     }
@@ -1636,9 +1593,16 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event) {
         if (prevScreenIndex >= 0 && currScreenIndex >= 0) {
             qDebug() << "LaunchyWidget::mouseReleaseEvent, prev screen:" << prevScreenIndex
                 << "curr screen:" << currScreenIndex;
+
+            int screenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
+            if (screenIndex != -1) {
+                g_settings->setValue(OPTION_SCREEN_INDEX, currScreenIndex);
+            }
+
             if (prevScreenIndex != currScreenIndex) {
                 reloadSkin();
             }
+
             break;
         }
     }
@@ -1720,50 +1684,35 @@ void LaunchyWidget::buildCatalog() {
 void LaunchyWidget::showOptionDialog() {
     if (!m_optionsOpen) {
         showLaunchy(true);
-        m_optionsOpen = true;
-
-        if (!m_optionDialog) {
-            m_optionDialog = new OptionDialog(nullptr);
-        }
 
         // move to selected screen center
         int nScreenIndex = g_settings->value(OPTION_SCREEN_INDEX, OPTION_SCREEN_INDEX_DEFAULT).toInt();
         // screenAt() returns nullptr when the cursor is not over any screen
         // (monitor unplugged, dialog anchored outside, ...), validated by screenAtIndex().
         QScreen* screen = screenAtIndex(nScreenIndex);
-        // Same guard as loadPosition(): a monitor the user picked may be gone,
-        // and centering the dialog on its stale geometry would leave the dialog
-        // off screen or in a corner of the display that is still around.
-        if (screen) {
-            const QPoint posDialogCenter = m_optionDialog->geometry().center();
-            if (nScreenIndex > 0
-                && !screen->geometry().contains(posDialogCenter)) {
-                if (QScreen* screenHere = screenAtPoint(posDialogCenter)) {
-                    screen = screenHere;
-                }
-            }
-        }
         if (!screen) {
-            qWarning() << "LaunchyWidget::showOptionDialog, no screen available, keeping dialog position";
-
-            delete m_optionDialog;
-            m_optionDialog = nullptr;
-            m_optionsOpen = false;
+            qWarning() << "LaunchyWidget::showOptionDialog, no screen available, aborting";
             return;
         }
 
-        QRect rectScreenGeometry = screen->geometry();
-        QRect rectDialogGeometry = m_optionDialog->geometry();
+        m_optionsOpen = true;
 
-        qDebug() << "LaunchyWidget::showOptionDialog, screen:" << rectScreenGeometry
-            << "dialog:" << rectDialogGeometry;
+        if (!m_optionDialog) {
+            m_optionDialog = new OptionDialog(nullptr);
+        }
+
+        QRect rectScreen = screen->geometry();
+        QRect rectDialog = m_optionDialog->geometry();
+
+        qDebug() << "LaunchyWidget::showOptionDialog, screen:" << rectScreen
+            << "dialog:" << rectDialog;
 
         // dialog target position
-        QPoint posDialog;
-        posDialog.setX(rectScreenGeometry.x() + rectScreenGeometry.width() / 2 - rectDialogGeometry.width() / 2);
-        posDialog.setY(rectScreenGeometry.y() + rectScreenGeometry.height() / 2 - rectDialogGeometry.height() / 2);
+        QPoint posTarget;
+        posTarget.setX(rectScreen.x() + rectScreen.width() / 2 - rectDialog.width() / 2);
+        posTarget.setY(rectScreen.y() + rectScreen.height() / 2 - rectDialog.height() / 2);
 
-        m_optionDialog->move(posDialog);
+        m_optionDialog->move(posTarget);
 
         m_optionDialog->exec();
 
