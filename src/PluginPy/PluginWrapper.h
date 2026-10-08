@@ -4,7 +4,6 @@
 #include <QString>
 #include <QList>
 #include <QWidget>
-#include <QMutex>
 
 #include "LaunchyLib/InputData.h"
 #include "LaunchyLib/CatalogItem.h"
@@ -52,7 +51,6 @@ private:
 private:
     exportpy::Plugin* m_plugin;
     QString m_pluginName;
-    static QMutex s_inPythonLock;
 };
 
 } // namespace pluginpy

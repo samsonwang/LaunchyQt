@@ -35,8 +35,6 @@ namespace py = pybind11;
 
 namespace pluginpy {
 
-QMutex PluginWrapper::s_inPythonLock;
-
 PluginWrapper::PluginWrapper(exportpy::Plugin* plugin, const QString& pluginName)
     : m_plugin(plugin),
       m_pluginName(pluginName) {
@@ -156,28 +154,31 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     }
     */
 
-    // python GIL
-//     const bool inPython = !s_inPythonLock.tryLock();
-//     if (inPython) {
-//         qDebug() << "PluginWrapper::dispatchMsg, wait for python lock"
-//             << "msgId:" << msgId;
-//         return 0;
-//     }
-
-    s_inPythonLock.lock();
-    qDebug() << "pluginpy::PluginWrapper::msg, lock mutex, plugin name:"
-        << m_pluginName << "msgId:" << msgId;
-
-    // The gil is taken here for the whole dispatch, not just inside the
-    // trampolines: the main thread no longer owns it (see
-    // PluginMgr::releaseGilForEventLoop), PYBIND11_OVERLOAD_PURE throws its
-    // "pure virtual function" error *after* its own gil scope has ended, and the
-    // handlers below call PyErr_Print() themselves.
+    // Every thread that touches the python api has to hold the gil, and that
+    // includes the catalog builder thread that runs getCatalog. The main thread
+    // hands the gil over while the event loop runs
+    // (PluginMgr::releaseGilForEventLoop), so this is a real acquire/release
+    // pair rather than the no-op it used to be.
     //
-    // Taken after the mutex on purpose, never before it: a thread waiting for
-    // the mutex must not hold the gil, or it deadlocks against whoever holds
-    // the mutex and is waiting for the gil.
+    // It is taken for the whole dispatch, not just inside the trampolines:
+    // PYBIND11_OVERLOAD_PURE throws its "pure virtual function" error after its
+    // own gil scope has ended, and the handlers below call PyErr_Print()
+    // themselves.
+    //
+    // Nothing else is serialized here. An earlier version held a QMutex around
+    // the dispatch to keep two python calls from overlapping; it was dropped
+    // because it could not reach the threads a plugin starts itself (those
+    // never enter msg), while being non-recursive it deadlocked whenever a
+    // plugin's own call re-entered the launcher on the same thread - for
+    // instance through launchy.runProgram -> ShellExecuteEx pumping messages.
+    // pybind11's gil is reference counted and re-entrant, so that same nesting
+    // is legal.
     py::gil_scoped_acquire gil;
+
+#if 0
+    qDebug() << "pluginpy::PluginWrapper::msg, enter python, plugin name:"
+        << m_pluginName << "msgId:" << msgId;
+#endif
 
     // Dispatch the actual Python function
     int result = 0;
@@ -198,9 +199,10 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
             " plugin name:" << m_pluginName << "msg id:" << msgId << "error info:" << e.what();
     }
 
-    s_inPythonLock.unlock();
-    qDebug() << "pluginpy::PluginWrapper::msg, unlock mutex, plugin name:"
+#if 0
+    qDebug() << "pluginpy::PluginWrapper::msg, leave python, plugin name:"
         << m_pluginName << "msgId:" << msgId;
+#endif
 
     return result;
 }
