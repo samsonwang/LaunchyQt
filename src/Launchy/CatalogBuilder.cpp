@@ -37,8 +37,8 @@
 // The scan runs in a duty cycle: after CATALOG_THROTTLE_WORK_MS of continuous
 // work it briefly sleeps, so a rebuild never hogs a whole core and other
 // applications stay responsive
-#define CATALOG_THROTTLE_WORK_MS 10
-#define CATALOG_THROTTLE_SLEEP_MS 1
+#define CATALOG_THROTTLE_WORK_MS 100
+#define CATALOG_THROTTLE_SLEEP_MS 5
 // Check the duty cycle every this many entries while iterating large dirs
 #define CATALOG_THROTTLE_ENTRIES 1024
 
@@ -174,19 +174,19 @@ void CatalogBuilder::indexDirectory(const QString& directory,
     QString dir = QDir::toNativeSeparators(directory);
     QDir qDir(dir);
     dir = qDir.absolutePath();
-    QStringList dirs = qDir.entryList(QDir::Dirs|QDir::NoDotAndDotDot);
+    QStringList dirs = qDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     if (depth > 0) {
         for (int i = 0; i < dirs.count(); ++i) {
             if (!dirs[i].startsWith(".")) {
                 QString cur = dirs[i];
-                if (!cur.contains(".lnk")) {
+                if (!cur.endsWith(".lnk", Qt::CaseInsensitive)) {
 #ifdef Q_OS_MAC
                     // Special handling of app directories
                     if (cur.endsWith(".app", Qt::CaseInsensitive)) {
                         CatItem item(dir + "/" + cur);
                         g_app->alterItem(&item);
-                        g_catalog->addItem(item);
+                        m_catalog->addItem(item);
                     }
                     else
 #endif
@@ -214,6 +214,9 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         // Grab any shortcut directories
         // This is to work around a QT weirdness that treats shortcuts to directories as actual directories
         for (int i = 0; i < dirs.count(); ++i) {
+            if ((i % CATALOG_THROTTLE_ENTRIES) == 0) {
+                throttle();
+            }
             if (!dirs[i].startsWith(".")
                 && dirs[i].endsWith(".lnk", Qt::CaseInsensitive)) {
                 if (!m_indexed.contains(dir + "/" + dirs[i])) {
@@ -252,6 +255,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         if (!m_indexed.contains(dir + "/" + files[i])) {
             CatItem item(dir + "/" + files[i]);
             g_app->alterItem(&item);
+
 #ifdef Q_OS_LINUX
             if (item.fullPath.endsWith(".desktop") && item.iconPath.isEmpty()) {
                 continue;

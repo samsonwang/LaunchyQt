@@ -73,14 +73,18 @@ QList<Directory> AppWin::getDefaultCatalogDirectories() const {
 
     dir.name = GetShellDirectory(CSIDL_COMMON_DESKTOPDIRECTORY);
     dir.indexExe = true;
+    dir.depth = 1;
     list.append(dir);
 
     dir.name = GetShellDirectory(CSIDL_DESKTOPDIRECTORY);
     dir.indexExe = true;
+    dir.depth = 1;
     list.append(dir);
 
     dir.name = GetShellDirectory(CSIDL_RECENT);
-    dir.indexDirs = true;
+    dir.indexDirs = false;
+    dir.indexExe = false;
+    dir.depth = 1;
     list.append(dir);
 
     Directory dir2;
