@@ -29,8 +29,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "PluginMsg.h"
 
 namespace launchy {
-Q_DECL_EXPORT QSharedPointer<QSettings> g_settings;
-Q_DECL_EXPORT QAtomicInt g_needRebuildCatalog;
+QSharedPointer<QSettings> g_settings;
+QAtomicInt g_needRebuildCatalog;
+
+QString getAppTempPath(bool toNative) {
+    QString path = QDir::tempPath() + QString("/Launchy");
+
+    QDir dir(path);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    if (toNative) {
+        path = QDir::toNativeSeparators(path);
+    }
+    
+    return path;
+}
+
 } // namespace launchy
 
 #if defined(Q_OS_WIN)
@@ -220,3 +236,4 @@ void runProgram(const QString& file, const QString& args, bool translateSeparato
 } // namespace launchy
 
 #endif
+

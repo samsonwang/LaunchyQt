@@ -54,11 +54,7 @@ std::string getAppPath(bool toNative) {
 }
 
 std::string getAppTempPath(bool toNative) {
-    QString path = QDir::tempPath() + QString("/Launchy");
-    if (toNative) {
-        path = QDir::toNativeSeparators(path);
-    }
-    return path.toStdString();
+    return launchy::getAppTempPath(toNative).toStdString();
 }
 
 void runProgram(const std::string& file, const std::string& args) {

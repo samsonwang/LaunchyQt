@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <QtGlobal>
-
 namespace launchy {
 namespace log {
 

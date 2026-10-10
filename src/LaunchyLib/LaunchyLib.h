@@ -23,6 +23,8 @@ LAUNCHY_EXPORT extern QSharedPointer<QSettings> g_settings;
 
 LAUNCHY_EXPORT extern QAtomicInt g_needRebuildCatalog;
 
+LAUNCHY_EXPORT QString getAppTempPath(bool toNative = true);
+
 /* A convienience run function
 This function will run the program along with arguments and is platform independent.
 param file The location of the file to run

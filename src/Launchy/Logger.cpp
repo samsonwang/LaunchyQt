@@ -3,12 +3,13 @@
 
 #include <cstdio>
 
-#include <QDir>
 #include <QString>
 #include <QDateTime>
 #include <QByteArray>
 #include <QMutex>
 #include <QMutexLocker>
+
+#include <LaunchyLib/LaunchyLib.h>
 
 namespace launchy {
 namespace log {
@@ -95,12 +96,7 @@ static void messageHandler(QtMsgType type,
 static void setLogLevel(QtMsgType type) {
     s_logLevel = type;
     if (s_logFile == nullptr) {
-        QString tempPath = QDir::tempPath() + QString("/Launchy");
-        QDir tempDir(tempPath);
-        if (!tempDir.exists()) {
-            tempDir.mkpath(".");
-        }
-        QString logFileName = tempPath + QString("/launchy.log");
+        QString logFileName = launchy::getAppTempPath() + QString("/launchy.log");
         s_logFile = fopen(logFileName.toUtf8().constData(), "w");
         if (s_logFile) {
             qInstallMessageHandler(messageHandler);

@@ -391,6 +391,17 @@ void OptionDialog::onDebugLogToggled(bool checked) {
     log::setDebugLogEnabled(checked);
 }
 
+void OptionDialog::onOpenLogDirClicked() {
+    QString dirPath = launchy::getAppTempPath();
+    QUrl url = QUrl::fromLocalFile(dirPath);
+    qDebug() << "OptionDialog::onOpenLogDirClicked, open log dir:" << dirPath;
+    if (!QDesktopServices::openUrl(url)) {
+        QMessageBox::warning(this, tr("Launchy"),
+                             tr("Failed to open the log folder:\n%1").arg(dirPath),
+                             QMessageBox::Ok);
+    }
+}
+
 void OptionDialog::languageChanged(int index) {
     const QString loc = m_pUi->comboBoxLanguage->itemData(index).toString();
     if (loc.isEmpty()) {
@@ -1091,6 +1102,8 @@ void OptionDialog::initSystemWidget() {
 
     m_pUi->checkBoxDebugLog->setChecked(g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool());
     connect(m_pUi->checkBoxDebugLog, &QCheckBox::toggled, this, &OptionDialog::onDebugLogToggled);
+    connect(m_pUi->pushButtonOpenLogDir, &QPushButton::clicked,
+            this, &OptionDialog::onOpenLogDirClicked);
 
     // language
     QString lang = TranslationManager::instance().getLocale().name();

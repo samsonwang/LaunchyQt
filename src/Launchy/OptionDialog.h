@@ -115,6 +115,7 @@ private slots:
     // system
     void autoRebuildCheckChanged(bool checked);
     void onDebugLogToggled(bool checked);
+    void onOpenLogDirClicked();
     void languageChanged(int index);
 
 private:

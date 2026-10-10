@@ -446,22 +446,27 @@
         <translation>プラグインの設定</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2076"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2084"/>
         <source>Enable debug logging</source>
         <translation>デバッグログを有効にする</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2091"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2104"/>
+        <source>Open Log Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2121"/>
         <source>Language</source>
         <translation>言語</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2159"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2189"/>
         <source>About</source>
         <translation>バージョン情報</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2413"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2443"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -480,7 +485,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;開発者: Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2332"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2362"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -499,22 +504,22 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Home Page: &lt;a href=&quot;https://launchyqt.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://launchyqt.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;フィードバック: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;開発: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/projects/1&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2350"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2380"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;連絡先: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2376"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2406"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;フィードバック: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;開発: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2457"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2487"/>
         <source>Ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2464"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2494"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
@@ -644,62 +649,69 @@ press %2 to activate</source>
         <source>Plugin options</source>
         <translation>プラグインの設定</translation>
     </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="400"/>
+        <source>Failed to open the log folder:
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="433"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="444"/>
         <source>Index has %n item(s)</source>
         <translation>
             <numerusform>インデックスは %n 件です</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="454"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="465"/>
         <source>The catalog directories are already up to date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="583"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
         <source>Up</source>
         <translation>上</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="583"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
         <source>Down</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="583"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
         <source>Left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="583"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
         <source>Right</source>
         <translation>右</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="654"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="665"/>
         <source>Screen %1: </source>
         <translation>画面 %1: </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="669"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="680"/>
         <source>Cursor screen</source>
         <translation>カーソルがある画面</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="161"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="453"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="731"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="399"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="464"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="742"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="732"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="743"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>ホットキー %1 は既に使用されています。別のものを選択してください。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="885"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="896"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
@@ -707,32 +719,32 @@ press %2 to activate</source>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="995"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1006"/>
         <source>No Proxy</source>
         <translation>プロキシなし</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="996"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1007"/>
         <source>System Proxy</source>
         <translation>システムプロキシ</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="997"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1008"/>
         <source>HTTP</source>
         <translation>HTTP</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="998"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1009"/>
         <source>SOCKS5</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1138"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1151"/>
         <source>Version %1</source>
         <translation>バージョン %1</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1139"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1152"/>
         <source>(%1-bit)</source>
         <translation>(%1 ビット)</translation>
     </message>
