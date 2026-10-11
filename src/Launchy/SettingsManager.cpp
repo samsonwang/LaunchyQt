@@ -37,6 +37,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";
 static const char* historyName = "/history.db";
+
+// a marker file to indicate that the app are installed and not portable
+// (portable mode is used when the ini file is present but the marker file is not)
 static const char* installedName = "/.installed";
 
 #if defined(Q_OS_WIN)
@@ -144,7 +147,9 @@ void SettingsManager::load() {
     }
 
     QString iniPath = configDirectory(m_portable) + iniName;
-    g_settings.reset(new QSettings(iniPath, QSettings::IniFormat));
+    if (g_settings.isNull() || iniPath != g_settings->fileName()) {
+        g_settings.reset(new QSettings(iniPath, QSettings::IniFormat));
+    }
     int nVersion = g_settings->value(OPTION_VERSION, OPTION_VERSION_DEFAULT).toInt();
 
     if (!QFile::exists(iniPath) || nVersion == OPTION_VERSION_DEFAULT) {
@@ -287,7 +292,12 @@ bool SettingsManager::isPortable() const {
     return m_portable;
 }
 
-QList<QString> SettingsManager::directory(QString name) const {
+// Get the configuration directory of the current mode
+QString SettingsManager::configDirectory() const {
+    return configDirectory(m_portable);
+}
+
+QList<QString> SettingsManager::directory(const QString& name) const {
     return m_dirs[name];
 }
 

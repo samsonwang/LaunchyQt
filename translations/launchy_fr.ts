@@ -295,7 +295,7 @@
         <translation>Afficher le réseau en mode parcours</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2069"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2077"/>
         <source>Portable mode (USB stick)</source>
         <translation>Mode portable (clé USB)</translation>
     </message>
@@ -440,27 +440,42 @@
         <translation>Nouvelle version :</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2084"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2080"/>
+        <source>Store settings next to the executable instead of the user profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2100"/>
+        <source>Open Config Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2103"/>
+        <source>Open the folder that holds launchy.ini</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2120"/>
         <source>Enable debug logging</source>
         <translation>Activer le journal de débogage</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2104"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2140"/>
         <source>Open Log Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2121"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2157"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2189"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2225"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2443"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2479"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -479,7 +494,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Développeur : Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2362"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2398"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -504,22 +519,22 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2380"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2416"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact : &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2406"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2442"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Retour : &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Développement : &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2487"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2523"/>
         <source>Ok</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2494"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2530"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -673,13 +688,19 @@ Appuyez sur %2 pour activer</translation>
         <translation>Options du plugin</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="400"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="398"/>
+        <source>Failed to open the config folder:
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="413"/>
         <source>Failed to open the log folder:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="444"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="457"/>
         <source>Index has %n item(s)</source>
         <translation>
             <numerusform>L&apos;index contient %n élément</numerusform>
@@ -687,55 +708,56 @@ Appuyez sur %2 pour activer</translation>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="465"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="478"/>
         <source>The catalog directories are already up to date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="607"/>
         <source>Up</source>
         <translation>Haut</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="607"/>
         <source>Down</source>
         <translation>Bas</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="607"/>
         <source>Left</source>
         <translation>Gauche</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="594"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="607"/>
         <source>Right</source>
         <translation>Droite</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="665"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="678"/>
         <source>Screen %1: </source>
         <translation>Écran %1 : </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="680"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="693"/>
         <source>Cursor screen</source>
         <translation>Écran du curseur</translation>
     </message>
     <message>
         <location filename="../src/Launchy/OptionDialog.cpp" line="161"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="399"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="464"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="742"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="397"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="412"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="477"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="755"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="743"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="756"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>Le raccourci %1 est déjà utilisé, veuillez en choisir un autre.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="896"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="909"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
@@ -744,37 +766,37 @@ Appuyez sur %2 pour activer</translation>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1006"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1019"/>
         <source>No Proxy</source>
         <translation>Pas de proxy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1007"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1020"/>
         <source>System Proxy</source>
         <translation>Proxy système</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1008"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1021"/>
         <source>HTTP</source>
         <translation>HTTP</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1009"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1022"/>
         <source>SOCKS5</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1151"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1166"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1152"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1167"/>
         <source>(%1-bit)</source>
         <translation>(%1 bits)</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/SettingsManager.cpp" line="360"/>
+        <location filename="../src/Launchy/SettingsManager.cpp" line="365"/>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>

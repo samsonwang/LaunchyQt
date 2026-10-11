@@ -114,6 +114,7 @@ private slots:
     void onProxyRequiresPasswordToggled(bool checked);
     // system
     void autoRebuildCheckChanged(bool checked);
+    void onOpenConfigDirClicked();
     void onDebugLogToggled(bool checked);
     void onOpenLogDirClicked();
     void languageChanged(int index);

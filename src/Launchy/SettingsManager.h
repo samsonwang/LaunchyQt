@@ -35,7 +35,11 @@ public:
     bool isPortable() const;
     void setPortable(bool makePortable);
 
-    QList<QString> directory(QString name) const;
+    // Directory that holds the settings files, it follows the current mode
+    // (portable or installed) and the active profile
+    QString configDirectory() const;
+
+    QList<QString> directory(const QString& name) const;
     QString catalogFilename() const;
     QString historyFilename() const;
     QString skinPath(const QString& skinName) const;

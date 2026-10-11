@@ -2064,11 +2064,47 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBoxPortable">
-            <property name="text">
-             <string>Portable mode (USB stick)</string>
+           <layout class="QHBoxLayout" name="horizontalLayoutPortable">
+            <property name="topMargin">
+             <number>2</number>
             </property>
-           </widget>
+            <property name="bottomMargin">
+             <number>2</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="checkBoxPortable">
+              <property name="text">
+               <string>Portable mode (USB stick)</string>
+              </property>
+              <property name="toolTip">
+               <string>Store settings next to the executable instead of the user profile</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerPortable">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonOpenConfigDir">
+              <property name="text">
+               <string>Open Config Folder</string>
+              </property>
+              <property name="toolTip">
+               <string>Open the folder that holds launchy.ini</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayoutDebugLog">

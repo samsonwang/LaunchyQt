@@ -387,6 +387,19 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     }
 }
 
+void OptionDialog::onOpenConfigDirClicked() {
+    // the folder that holds launchy.ini, it follows the current portable mode
+    // (the check box only takes effect after the settings are applied)
+    QString dirPath = SettingsManager::instance().configDirectory();
+    QUrl url = QUrl::fromLocalFile(dirPath);
+    qDebug() << "OptionDialog::onOpenConfigDirClicked, open config dir:" << dirPath;
+    if (!QDesktopServices::openUrl(url)) {
+        QMessageBox::warning(this, tr("Launchy"),
+                             tr("Failed to open the config folder:\n%1").arg(dirPath),
+                             QMessageBox::Ok);
+    }
+}
+
 void OptionDialog::onDebugLogToggled(bool checked) {
     log::setDebugLogEnabled(checked);
 }
@@ -1099,6 +1112,8 @@ void OptionDialog::initSystemWidget() {
     m_pUi->checkBoxShowNetwork->setChecked(g_settings->value(OPTION_SHOWNETWORK, OPTION_SHOWNETWORK_DEFAULT).toBool());
 
     m_pUi->checkBoxPortable->setChecked(SettingsManager::instance().isPortable());
+    connect(m_pUi->pushButtonOpenConfigDir, &QPushButton::clicked,
+            this, &OptionDialog::onOpenConfigDirClicked);
 
     m_pUi->checkBoxDebugLog->setChecked(g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool());
     connect(m_pUi->checkBoxDebugLog, &QCheckBox::toggled, this, &OptionDialog::onDebugLogToggled);
