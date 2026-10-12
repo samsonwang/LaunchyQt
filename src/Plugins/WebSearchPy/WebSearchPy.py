@@ -129,8 +129,8 @@ class WebSearchPy(Plugin):
         if not favicons.isEnabled():
             log.debug("WebSearchPy::__refreshFavicons, favicon fetching is off")
             return
-        # Resolve the cache dir here, on the gui thread, so the download thread
-        # never has to ask launchy.settings where to put its icons.
+        # Resolve the cache dir here, where the launcher owning the temp dir is
+        # the one still running.
         favicons.cacheDir()
         favicons.prefetch([engine.get("url") for engine in self.searchEngine.values()])
 

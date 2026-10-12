@@ -1,9 +1,8 @@
 # Favicon cache of the WebSearchPy plugin.
 #
 # Every search engine entry shows the icon of its own site. The favicon is
-# downloaded once, normalised to a 32x32 png and stored next to the launchy
-# settings, so the icon survives a restart and the gui is never blocked by a
-# network round trip.
+# downloaded once, normalised to a 32x32 png and stored under the temp dir of
+# the running instance, so the gui is never blocked by a network round trip.
 #
 # Threading model:
 #   - iconPath() runs on the launchy gui thread, from Plugin.getResults(), and
@@ -64,7 +63,7 @@ FAILURE_TTL = 3 * 24 * 3600
 # one refresh a week is enough.
 SUCCESS_TTL = 7 * 24 * 3600
 
-# <settings dir>/WebSearchPy, the plugin keeps its downloaded icons there
+# <app temp dir>/WebSearchPy, the plugin keeps its downloaded icons there
 CACHE_DIR_NAME = "WebSearchPy"
 
 # Per host, when its icon was last downloaded and when a download of it last
@@ -257,9 +256,8 @@ class FaviconCache:
             self.m_done.clear()
             self.m_failed.clear()
 
-    # Resolving the dir asks launchy.settings, which belongs to the gui thread,
-    # so it is done once and under a lock: the download thread would otherwise be
-    # the first to get here and race the gui over the same QSettings object.
+    # Resolved once and under a lock, the cache dir cannot move while the
+    # download workers write into it.
     def cacheDir(self):
         if not self.m_dir:
             with self.m_dirLock:
@@ -269,26 +267,21 @@ class FaviconCache:
 
     # --------------------------------------------------------------- private
 
-    # The icons belong to the user, not to the installation: they live next to
-    # the launchy settings (which also makes them follow the portable mode and
-    # the profile), and fall back to the temp dir when that is not writable.
+    # The icons are throwaway data, a host whose record expired is fetched
+    # again anyway, so they belong in the temp dir rather than next to the ini
+    # file: in a portable install that dir sits under "Program Files" and is
+    # not writable for a normal user at all. launchy.getAppTempPath() already
+    # points at <temp>/Launchy, building that path from %TEMP% by hand only
+    # risks a second, different directory.
     def __resolveCacheDir(self):
-        candidates = []
-
         try:
             import launchy
-            iniPath = launchy.settings.fileName()
-            if iniPath:
-                candidates.append(os.path.dirname(str(iniPath)))
-            candidates.append(str(launchy.getAppTempPath()))
+            base = str(launchy.getAppTempPath())
         except Exception as err:
             log.warning("FaviconCache::__resolveCacheDir, fail to ask launchy, %s" % err)
+            base = ""
 
-        candidates.append(os.path.join(str(os.environ.get("TEMP", "")), "Launchy"))
-
-        for base in candidates:
-            if not base:
-                continue
+        if base:
             path = os.path.join(base, CACHE_DIR_NAME)
             if self.__ensureDir(path):
                 self.m_done, self.m_failed = self.__loadState(path)
