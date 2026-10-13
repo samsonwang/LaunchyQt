@@ -222,7 +222,9 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
         int n = qMin(resultNum, ranked.count());
         std::partial_sort(ranked.begin(), ranked.begin() + n, ranked.end(),
             [&](const CatalogRank& a, const CatalogRank& b) {
-                // Mirrors CatItemComparePtr, but reads precomputed keys.
+                // Mirrors CatItemComparePtr, but reads precomputed keys. The
+                // two must rank identically - a discrepancy would silently
+                // change which candidates survive the result cap.
                 if (a.usage < 0 && b.usage >= 0)
                     return false;
                 if (b.usage < 0 && a.usage >= 0)
@@ -244,10 +246,8 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
                         return false;
 
                     // Higher usage
-                    if (a.usage > b.usage)
-                        return true;
-                    if (a.usage < b.usage)
-                        return false;
+                    if (a.usage != b.usage)
+                        return a.usage > b.usage;
                 }
 
                 // Contiguous text anywhere in the item name
@@ -259,10 +259,8 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
                 if (localFind != -1 && otherFind != -1) {
                     // Both have word matches
                     // Higher usage
-                    if (a.usage > b.usage)
-                        return true;
-                    if (a.usage < b.usage)
-                        return false;
+                    if (a.usage != b.usage)
+                        return a.usage > b.usage;
 
                     // Contiguous text nearer the start of the item name
                     if (localFind < otherFind)
@@ -271,17 +269,17 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
                         return false;
                 }
                 else {
-                    // Neither item contains the whole query as a contiguous substring
+                    // Neither item contains the whole query as a contiguous
+                    // substring (typical for out-of-order / multi-word
+                    // queries). Usage first, then the word count, exactly as
+                    // in CatItemComparePtr.
+                    if (a.usage != b.usage)
+                        return a.usage > b.usage;
+
                     int localWords = a.wordMatches;
                     int otherWords = b.wordMatches;
                     if (localWords != otherWords)
                         return localWords > otherWords;
-
-                    // Higher usage
-                    if (a.usage > b.usage)
-                        return true;
-                    if (a.usage < b.usage)
-                        return false;
                 }
 
                 int localLen = a.nameLen;
@@ -451,10 +449,8 @@ bool CatItemComparePtr(CatItem* a, CatItem* b) {
             return false;
 
         // Higher usage
-        if (a->usage > b->usage)
-            return true;
-        if (a->usage < b->usage)
-            return false;
+        if (a->usage != b->usage)
+            return a->usage > b->usage;
     }
 
     // Contiguous text anywhere in the item name
@@ -466,10 +462,8 @@ bool CatItemComparePtr(CatItem* a, CatItem* b) {
     if (localFind != -1 && otherFind != -1) {
         // Both have word matches
         // Higher usage
-        if (a->usage > b->usage)
-            return true;
-        if (a->usage < b->usage)
-            return false;
+        if (a->usage != b->usage)
+            return a->usage > b->usage;
 
         // Contiguous text nearer the start of the item name
         if (localFind < otherFind)
@@ -479,20 +473,27 @@ bool CatItemComparePtr(CatItem* a, CatItem* b) {
     }
     else {
         // Neither item contains the whole query as a contiguous substring
-        // (typical for out-of-order / multi-word queries). Rank by how many
-        // query words match, then by usage, so closer matches surface first.
+        // (typical for out-of-order / multi-word queries).
+        //
+        // Usage is compared before the word count. This is the only branch a
+        // plugin's dynamic result can ever reach: such an item carries the
+        // answer instead of the typed query in its name (CalcyPy answers
+        // "12+3" with an item named "15"), so it matches none of the query
+        // words and every catalog match would outrank it on the word count
+        // alone. A high usage is all a plugin has to say "put me first", so
+        // it has to be honoured here. Items with equal usage - the common
+        // case for catalog entries that were never launched - still get the
+        // multi-word ranking below.
+        if (a->usage != b->usage)
+            return a->usage > b->usage;
+
+        // Rank by how many query words match, so closer matches surface first
         QStringList words = g_searchText.split(' ', QString::SkipEmptyParts);
 
         int localWords = countMatchWords(a, words);
         int otherWords = countMatchWords(b, words);
         if (localWords != otherWords)
             return localWords > otherWords;
-
-        // Higher usage
-        if (a->usage > b->usage)
-            return true;
-        if (a->usage < b->usage)
-            return false;
     }
 
     int localLen = a->shortName.size();
