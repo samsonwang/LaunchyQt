@@ -32,10 +32,43 @@ from Calcy import CalcyGui
 
 class CalcyPy(Plugin):
     setting_dir = 'CalcyPy/'
-    settings = dict()
+
+    # Every setting the plugin reads is listed here with its default. The dict is
+    # used to pre-fill self.settings so a key is never missing, and to drive
+    # __readSettings() one key at a time.
+    default_settings = {
+        # 0 = follow the system locale, 1 = "1.234,5", 2 = "1,234.5"
+        'decimalPointGroupSeparator': 0,
+        'outputPrecision': 3,
+        'showGroupSeparator': False,
+        'copyToClipboard': True,
+        'showBinOut': True,
+        'showOctOut': True,
+        'showHexOut': True,
+        'showSizeOut': True,
+        'showBasePrefix': True,
+        'showZeroBin': True,
+        'showZeroOct': True,
+        'showZeroHex': True,
+        'bitwidth': 16,
+    }
+
+    # Keys whose value is fed straight into a "%0{n}x"-style format string or
+    # into a branch, so only the values offered by the option dialog are usable.
+    allowed_values = {
+        'decimalPointGroupSeparator': (0, 1, 2),
+        'bitwidth': (8, 16, 32, 64),
+    }
 
     def __init__(self):
         Plugin.__init__(self)
+        # Instance dict pre-filled with the defaults. It used to be an empty
+        # class attribute filled by __readSettings(); when that read aborted
+        # halfway the plugin kept running with a partial dict and raised
+        # KeyError on every later query, with nothing in the log (issue #153).
+        # doDialog() hands this very object to the options page, so it has to be
+        # complete before anything is read from the ini file.
+        self.settings = dict(CalcyPy.default_settings)
 
     def init(self):
         self.__readSettings()
@@ -54,6 +87,17 @@ class CalcyPy(Plugin):
         pass
 
     def getResults(self, inputDataList, resultsList):
+        # Everything below used to be unprotected: any exception raised while
+        # formatting the result (a missing setting, a locale returning None, ...)
+        # escaped to PluginWrapper and the plugin simply stopped answering, with
+        # no trace in the log at all. Keep the whole body guarded so a failure is
+        # at least visible instead of silent.
+        try:
+            self.__getResults(inputDataList, resultsList)
+        except Exception:
+            log.exception('CalcyPy::getResults, unexpected failure')
+
+    def __getResults(self, inputDataList, resultsList):
         if len(inputDataList) > 1:
             return
 
@@ -64,7 +108,10 @@ class CalcyPy(Plugin):
 
         try:
             ret = Calculator.calc(text, advanced=True)
-        except:
+        except Exception as err:
+            # Expected while typing: "3+" or "sqrt(" are not complete yet, so
+            # this stays at debug level instead of spamming the log.
+            log.debug('CalcyPy::getResults, cannot evaluate "{}": {}'.format(text, err))
             return
 
         log.debug('CalcyPy::getResults, text = {}, result = {}'.format(text, ret))
@@ -155,32 +202,79 @@ class CalcyPy(Plugin):
 
     def __readSettings(self):
         log.debug('CalcyPy::__readSettings, begin, {}, {}'.format(lSettings, self.setting_dir))
-        # general
-        # don't know why here QSetting fail to load default value
-        decPtGrpSep = lSettings.value(self.setting_dir + 'decimalPointGroupSeparator', 0)
-        log.debug('CalcyPy::__readSettings, decPtGrpSep, {}'.format(decPtGrpSep))
-        if decPtGrpSep:
-            self.settings['decimalPointGroupSeparator'] = int(decPtGrpSep)
-        else:
-            self.settings['decimalPointGroupSeparator'] = 0
 
-        outPrec = lSettings.value(self.setting_dir + 'outputPrecision', 0)
-        log.debug('CalcyPy::__readSettings, outputPrecision, {}'.format(outPrec));
-
-        self.settings['outputPrecision'] = int(lSettings.value(self.setting_dir + 'outputPrecision', 3))
-        self.settings['showGroupSeparator'] = lSettings.value(self.setting_dir + 'showGroupSeparator', False) in ['true', True]
-        self.settings['copyToClipboard'] = lSettings.value(self.setting_dir + 'copyToClipboard', True) in ['true', True]
-        self.settings['showBinOut'] = lSettings.value(self.setting_dir + 'showBinOut', True) in ['true', True]
-        self.settings['showOctOut'] = lSettings.value(self.setting_dir + 'showOctOut', True) in ['true', True]
-        self.settings['showHexOut'] = lSettings.value(self.setting_dir + 'showHexOut', True) in ['true', True]
-        self.settings['showSizeOut'] = lSettings.value(self.setting_dir + 'showSizeOut', True) in ['true', True]
-        self.settings['showBasePrefix'] = lSettings.value(self.setting_dir + 'showBasePrefix', True) in ['true', True]
-        self.settings['showZeroBin'] = lSettings.value(self.setting_dir + 'showZeroBin', True) in ['true', True]
-        self.settings['showZeroOct'] = lSettings.value(self.setting_dir + 'showZeroOct', True) in ['true', True]
-        self.settings['showZeroHex'] = lSettings.value(self.setting_dir + 'showZeroHex', True) in ['true', True]
-        self.settings['bitwidth'] = int(lSettings.value(self.setting_dir + 'bitwidth', 16))
+        # Read one key at a time and swallow per-key failures: a single bad value
+        # (a leftover entry from an older version, a hand-edited ini) used to
+        # abort the read here and leave the settings dict half filled for the
+        # rest of the session.
+        for key, default in CalcyPy.default_settings.items():
+            try:
+                self.settings[key] = self.__readSetting(key, default)
+            except Exception:
+                log.exception('CalcyPy::__readSettings, failed to read key: {}'.format(key))
+                self.settings[key] = default
 
         log.debug('CalcyPy::__readSettings, {}'.format(self.settings))
+
+    def __readSetting(self, key, default):
+        """Read a single key, falling back to `default` for anything unexpected.
+
+        PySide2 5.12 does not honour the default passed to QSettings.value() and
+        can hand back None, and python bools round-trip through the ini file as
+        the strings "true"/"false", so the raw value is never used as is.
+        """
+        raw = lSettings.value(self.setting_dir + key, default)
+        log.debug('CalcyPy::__readSetting, key = {}, raw = {}'.format(key, raw))
+
+        if raw is None:
+            return default
+
+        if isinstance(default, bool):
+            return CalcyPy.__asBool(raw, default)
+
+        value = CalcyPy.__asInt(raw, default)
+
+        allowed = CalcyPy.allowed_values.get(key)
+        if allowed is not None and value not in allowed:
+            log.warning('CalcyPy::__readSetting, key = {}, value {} not in {}, use default'
+                        .format(key, value, allowed))
+            return default
+
+        return value
+
+    @staticmethod
+    def __asBool(raw, default):
+        if isinstance(raw, bool):
+            return raw
+        if isinstance(raw, (int, float)):
+            return bool(raw)
+
+        text = str(raw).strip().lower()
+        if text in ('true', '1', 'yes', 'on'):
+            return True
+        if text in ('false', '0', 'no', 'off', ''):
+            return False
+
+        log.warning('CalcyPy::__asBool, cannot interpret {}, use default'.format(raw))
+        return default
+
+    @staticmethod
+    def __asInt(raw, default):
+        if isinstance(raw, bool):
+            # a bool here means the stored type does not match the key at all
+            log.warning('CalcyPy::__asInt, bool stored for an int key, use default')
+            return default
+
+        try:
+            return int(raw)
+        except (TypeError, ValueError):
+            pass
+
+        try:
+            return int(str(raw).strip())
+        except (TypeError, ValueError):
+            log.warning('CalcyPy::__asInt, cannot interpret {}, use default'.format(raw))
+            return default
 
     def __decimalPoint(self):
         if self.settings['decimalPointGroupSeparator'] == 1:
