@@ -202,14 +202,45 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         }
 
 #ifdef Q_OS_WIN
-        runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
+        // Open the folder with the shell's default "open" verb instead of
+        // hardcoding explorer.exe, so that it opens in whichever file manager
+        // is registered as the default handler for directories.
+        QString folderPath = QDir::toNativeSeparators(info.absolutePath());
+
+        SHELLEXECUTEINFOW shellExecInfo;
+
+        shellExecInfo.cbSize = sizeof(shellExecInfo);
+        shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
+        shellExecInfo.hwnd = NULL;
+        shellExecInfo.lpVerb = L"open";
+        shellExecInfo.lpFile = (LPCWSTR)folderPath.utf16();
+        shellExecInfo.lpParameters = NULL;
+        shellExecInfo.lpDirectory = NULL;
+        shellExecInfo.nShow = SW_NORMAL;
+        shellExecInfo.hInstApp = NULL;
+
+        ShellExecuteExW(&shellExecInfo);
 #endif
     }
     else if (verb == "Open shortcut folder") {
         QFileInfo info(noun);
 
 #ifdef Q_OS_WIN
-        runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
+        QString folderPath = QDir::toNativeSeparators(info.absolutePath());
+
+        SHELLEXECUTEINFOW shellExecInfo;
+
+        shellExecInfo.cbSize = sizeof(shellExecInfo);
+        shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
+        shellExecInfo.hwnd = NULL;
+        shellExecInfo.lpVerb = L"open";
+        shellExecInfo.lpFile = (LPCWSTR)folderPath.utf16();
+        shellExecInfo.lpParameters = NULL;
+        shellExecInfo.lpDirectory = NULL;
+        shellExecInfo.nShow = SW_NORMAL;
+        shellExecInfo.hInstApp = NULL;
+
+        ShellExecuteExW(&shellExecInfo);
 #endif
     }
     else if (verb == "Copy path to clipboard") {
