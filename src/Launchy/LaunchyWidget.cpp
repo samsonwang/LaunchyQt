@@ -143,6 +143,12 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
             this, &LaunchyWidget::onInputBoxFocusOut);
     connect(m_inputBox, &CharLineEdit::inputMethod,
             this, &LaunchyWidget::onInputBoxInputMethod);
+    // textEdited is the only reliable "the query really changed" signal: it also
+    // fires for backspace, delete, cursor edits and paste, all of which reach
+    // keyPressEvent() with an empty QKeyEvent::text() and would otherwise never
+    // trigger a search. It is debounced, so plain typing just restarts the timer.
+    connect(m_inputBox, &QLineEdit::textEdited,
+            this, &LaunchyWidget::onInputBoxTextEdited);
 
     m_outputBox->setObjectName("output");
     m_outputBox->setAlignment(Qt::AlignHCenter);
@@ -564,6 +570,14 @@ void LaunchyWidget::launchItem() {
 }
 
 void LaunchyWidget::onAlternativeListRowChanged(int row) {
+    // Selecting a row rewrites the input box and m_inputData by hand (history
+    // preview, auto suggest). Block the input box signals for the whole handler:
+    // QLineEdit::insert() emits textEdited even when the resulting text is
+    // unchanged, and the textEdited fallback would then re-parse m_inputData and
+    // schedule a debounced search - which in turn rebuilds the list, moves the
+    // current row and lands back here.
+    QSignalBlocker inputSignalBlocker(m_inputBox);
+
     // Check that index is a valid history item index
     // If the current entry is a history item or there is no text entered
     if (row < 0 || row >= m_searchResult.count()) {
@@ -837,6 +851,10 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
 
 // remove input text back to the previous input section
 void LaunchyWidget::doBackTab() {
+    // The caller re-parses and searches right after this, so keep the
+    // programmatic rewrite out of the textEdited fallback.
+    QSignalBlocker inputSignalBlocker(m_inputBox);
+
     QString text = m_inputBox->text();
     int index = text.lastIndexOf(m_inputBox->separatorText());
     if (index >= 0) {
@@ -860,6 +878,10 @@ void LaunchyWidget::doBackTab() {
 }
 
 void LaunchyWidget::doTab() {
+    // Completion rewrites the input box and m_inputData itself, and the caller
+    // runs processInput() straight after, so keep this rewrite out of the
+    // textEdited fallback.
+    QSignalBlocker inputSignalBlocker(m_inputBox);
 
     if (!m_inputData.isEmpty() && !m_searchResult.isEmpty()) {
         qDebug() << "LaunchyWidget::doTab, get path";
@@ -918,10 +940,10 @@ void LaunchyWidget::doTab() {
 }
 
 void LaunchyWidget::doEnter() {
-    // if a debounced search is still pending (user typed fast then hit
-    // Enter), flush it now so we launch against the final query, not a stale one.
+    // if a debounced search is still pending (user typed fast then hit Enter),
+    // run it now so we launch against the final query, not a stale one.
+    // doSearch() -> searchOnInput() drops the pending timer on its own.
     if (m_searchTimer->isActive()) {
-        m_searchTimer->stop();
         doSearch();
     }
 
@@ -953,6 +975,8 @@ void LaunchyWidget::processInput(bool debounce) {
         return;
     }
 
+    // Immediate request: searchOnInput() drops any pending debounced run, so
+    // the deferred pass cannot land afterwards and overwrite these results.
     doSearch();
 }
 
@@ -973,8 +997,10 @@ void LaunchyWidget::doSearch() {
 }
 
 void LaunchyWidget::searchOnInput() {
-    // An explicit (immediate) search cancels any pending debounced search so a
-    // deliberate action is never overwritten by a stale deferred run.
+    // Searching now supersedes any pending debounced run, so the deferred pass
+    // cannot land afterwards and overwrite the results built here. This is the
+    // single choke point: every caller that produces results synchronously
+    // (key handling, catalog rebuild, demote, ...) goes through it.
     if (m_searchTimer->isActive()) {
         m_searchTimer->stop();
     }
@@ -1153,7 +1179,11 @@ void LaunchyWidget::catalogBuilt() {
 
     m_workingAnimation->Stop();
 
-    // Now do a search using the updated catalog
+    // Now do a search using the updated catalog. searchOnInput() drops any
+    // pending debounced run and updateOutput() refreshes the UI right after, so
+    // the refresh is complete either way; doSearch() is deliberately not used
+    // here because its auto-suggest tail would reopen the alternatives list
+    // after every catalog rebuild.
     searchOnInput();
     updateOutput();
 }
@@ -1770,6 +1800,12 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
     if (m_alwaysShowLaunchy) {
         return;
     }
+
+    // The widget is going away, so a deferred search would only run against a
+    // UI that is already fading out. Drop the pending debounce instead of
+    // leaving it to fire on a hidden window; no refresh is needed because the
+    // widget is not being looked at any more.
+    m_searchTimer->stop();
 
     if (isVisible()) {
         m_fader->fadeOut(noFade);
