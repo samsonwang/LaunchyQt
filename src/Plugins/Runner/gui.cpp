@@ -17,8 +17,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "Precompiled.h"
 #include "gui.h"
+
+#ifdef _MSC_VER
+#pragma warning(push,3)
+#endif
+
+#include <stdlib.h>
+
+#include <QtGlobal>
+
+#include <QtGui>
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #include "ui_dlg.h"
 #include "Runner.h"
 #include "Globals.h"

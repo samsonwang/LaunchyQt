@@ -22,6 +22,19 @@ message (STATUS "TRANS_DIR: ${TRANS_DIR}")
 include_directories (${SRC_DIR} ${DEPS_DIR})
 
 ##################################################
+# Source lists
+#
+# Every target below names its files explicitly -- no file(GLOB) for build
+# inputs. A glob is evaluated at configure time only, so a newly added (or
+# removed) .cpp/.h/.ui/.qrc/.png is silently missing from the generated build
+# system until something forces cmake to re-run, and nothing does. Adding or
+# removing a file therefore means editing the matching list here.
+#
+# The python plugins section keeps its globs on purpose: they discover plugins
+# from the folder layout (a new python plugin needs no CMake change) and copy
+# runtime assets -- neither is a build input.
+
+##################################################
 # Qt
 # add CMAKE_PREFIX_PATH = <qt installed dir> in system PATH
 # eg c:/Qt/Qt5.12.10/5.12.10/msvc2017
@@ -227,16 +240,28 @@ set (SOURCES_LAUNCHY
 
 # sources files for operation system
 if (WIN32)
-  file (GLOB SOURCES_PLATFORM_LAUNCHY
-    ${SRC_DIR}/Launchy/Windows/*.h
-    ${SRC_DIR}/Launchy/Windows/*.cpp
+  set (SOURCES_PLATFORM_LAUNCHY
+    ${SRC_DIR}/Launchy/Windows/AppWin.h
+    ${SRC_DIR}/Launchy/Windows/AppWin.cpp
+    ${SRC_DIR}/Launchy/Windows/CrashDumper.h
+    ${SRC_DIR}/Launchy/Windows/CrashDumper.cpp
+    ${SRC_DIR}/Launchy/Windows/IconProviderWin.h
+    ${SRC_DIR}/Launchy/Windows/IconProviderWin.cpp
+    ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.h
+    ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.cpp
+    ${SRC_DIR}/Launchy/Windows/UtilWin.h
+    ${SRC_DIR}/Launchy/Windows/UtilWin.cpp
     ${SRC_DIR}/Launchy/Windows/launchy.rc)
   source_group ("Resource Files" FILES ${SRC_DIR}/Launchy/Windows/launchy.rc)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Windows)
 else ()
-  file (GLOB SOURCES_PLATFORM_LAUNCHY
-    ${SRC_DIR}/Launchy/Linux/*.h
-    ${SRC_DIR}/Launchy/Linux/*.cpp)
+  set (SOURCES_PLATFORM_LAUNCHY
+    ${SRC_DIR}/Launchy/Linux/AppLinux.h
+    ${SRC_DIR}/Launchy/Linux/AppLinux.cpp
+    ${SRC_DIR}/Launchy/Linux/IconProviderLinux.h
+    ${SRC_DIR}/Launchy/Linux/IconProviderLinux.cpp
+    ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.h
+    ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.cpp)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Linux)
 endif (WIN32)
 
@@ -244,10 +269,9 @@ list (APPEND SOURCES_LAUNCHY ${SOURCES_PLATFORM_LAUNCHY})
 target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy)
 
 # qt source files
-file (GLOB SOURCES_QT_LAUNCHY
-  ${SRC_DIR}/Launchy/*.ui
-  ${SRC_DIR}/Launchy/*.qrc
-  ${SRC_DIR}/Launchy/*.ts)
+set (SOURCES_QT_LAUNCHY
+  ${SRC_DIR}/Launchy/OptionDialog.ui
+  ${SRC_DIR}/Launchy/launchy.qrc)
 source_group ("Qt Files" FILES ${SOURCES_QT_LAUNCHY})
 list (APPEND SOURCES_LAUNCHY ${SOURCES_QT_LAUNCHY})
 
@@ -384,6 +408,11 @@ add_custom_target (PluginPy.Deploy ALL
 #
 # The copy is forced to run after every C++ target at the bottom of this file,
 # see the "python plugins: copy them after the C++ targets" section.
+#
+# This glob and the GLOB_RECURSE below are the deliberate exception to the
+# no-glob rule at the top of this file: they discover plugins from the folder
+# layout instead of listing build inputs, and CONFIGURE_DEPENDS makes the
+# generator re-run when a plugin folder appears or disappears.
 file (GLOB PY_PLUGIN_DIRS CONFIGURE_DEPENDS ${SRC_DIR}/Plugins/*)
 
 # A folder counts as a python plugin when it owns a <FolderName>.py, the rule
@@ -418,7 +447,8 @@ foreach (pyPluginName ${PYTHON_PLUGINS})
   # __pycache__ sits at the plugin root and inside every packaged helper folder
   # (Calcy/, PyDiry/, WebSearch/), so the source paths are rewritten to their
   # counterparts in the output tree. GLOB_RECURSE keeps this independent of
-  # how deep a helper package nests.
+  # how deep a helper package nests. Like the glob above it walks runtime data,
+  # not build inputs, so it stays.
   file (GLOB_RECURSE pyPluginEntries "${pyPluginDir}/**")
 
   # Progress goes through echo (a real command), not through COMMENT: the
@@ -459,8 +489,18 @@ endforeach ()
 
 ##################################################
 # Launchy main translation
-file (GLOB TS_FILES_LAUNCHY
-  ${TRANS_DIR}/*.ts)
+# Adding a language means adding its .ts here as well.
+set (TS_FILES_LAUNCHY
+  ${TRANS_DIR}/launchy_de.ts
+  ${TRANS_DIR}/launchy_es.ts
+  ${TRANS_DIR}/launchy_fr.ts
+  ${TRANS_DIR}/launchy_it.ts
+  ${TRANS_DIR}/launchy_ja.ts
+  ${TRANS_DIR}/launchy_nl.ts
+  ${TRANS_DIR}/launchy_pt.ts
+  ${TRANS_DIR}/launchy_ru.ts
+  ${TRANS_DIR}/launchy_zh_CN.ts
+  ${TRANS_DIR}/launchy_zh_TW.ts)
 
 if (QT_MAJOR_VERSION EQUAL 5)
 
@@ -545,15 +585,17 @@ add_library (Plugin.Runner MODULE)
 set_target_properties(Plugin.Runner PROPERTIES
   OUTPUT_NAME "Runner")
 
-file (GLOB SOURCES_RUNNER
-  ${SRC_DIR}/Plugins/Runner/*.h
-  ${SRC_DIR}/Plugins/Runner/*.cpp)
+set (SOURCES_RUNNER
+  ${SRC_DIR}/Plugins/Runner/Runner.h
+  ${SRC_DIR}/Plugins/Runner/Runner.cpp
+  ${SRC_DIR}/Plugins/Runner/Globals.h
+  ${SRC_DIR}/Plugins/Runner/Globals.cpp
+  ${SRC_DIR}/Plugins/Runner/gui.h
+  ${SRC_DIR}/Plugins/Runner/gui.cpp)
 
 # qt source files
-file (GLOB SOURCES_QT_RUNNER
-  ${SRC_DIR}/Plugins/Runner/*.ui
-  ${SRC_DIR}/Plugins/Runner/*.qrc
-  ${SRC_DIR}/Plugins/Runner/*.ts)
+set (SOURCES_QT_RUNNER
+  ${SRC_DIR}/Plugins/Runner/dlg.ui)
 source_group ("Qt Files" FILES ${SOURCES_QT_RUNNER})
 list (APPEND SOURCES_RUNNER ${SOURCES_QT_RUNNER})
 
@@ -569,8 +611,8 @@ set_target_properties (Plugin.Runner PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Runner"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Runner")
 
-file (GLOB RESOURCES_RUNNER
-  ${SRC_DIR}/Plugins/Runner/*.png)
+set (RESOURCES_RUNNER
+  ${SRC_DIR}/Plugins/Runner/runner.png)
 
 add_custom_command (TARGET Plugin.Runner POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -584,15 +626,12 @@ add_library (Plugin.Tasky MODULE)
 set_target_properties(Plugin.Tasky PROPERTIES
   OUTPUT_NAME "Tasky")
 
-file (GLOB SOURCES_TASKY
-  ${SRC_DIR}/Plugins/Tasky/*.h
-  ${SRC_DIR}/Plugins/Tasky/*.cpp)
+set (SOURCES_TASKY
+  ${SRC_DIR}/Plugins/Tasky/Tasky.h
+  ${SRC_DIR}/Plugins/Tasky/Tasky.cpp)
 
-# qt source files
-file (GLOB SOURCES_QT_TASKY
-  ${SRC_DIR}/Plugins/Tasky/*.ui
-  ${SRC_DIR}/Plugins/Tasky/*.qrc
-  ${SRC_DIR}/Plugins/Tasky/*.ts)
+# qt source files (none yet)
+set (SOURCES_QT_TASKY)
 source_group ("Qt Files" FILES ${SOURCES_QT_TASKY})
 list (APPEND SOURCES_TASKY ${SOURCES_QT_TASKY})
 
@@ -609,8 +648,8 @@ set_target_properties (Plugin.Tasky PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Tasky"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Tasky")
 
-file (GLOB RESOURCES_TASKY
-  ${SRC_DIR}/Plugins/Tasky/*.png)
+set (RESOURCES_TASKY
+  ${SRC_DIR}/Plugins/Tasky/tasky.png)
 
 add_custom_command (TARGET Plugin.Tasky POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -624,15 +663,12 @@ add_library (Plugin.UWPApp MODULE)
 set_target_properties(Plugin.UWPApp PROPERTIES
   OUTPUT_NAME "UWPApp")
 
-file (GLOB SOURCES_UWPAPP
-  ${SRC_DIR}/Plugins/UWPApp/*.h
-  ${SRC_DIR}/Plugins/UWPApp/*.cpp)
+set (SOURCES_UWPAPP
+  ${SRC_DIR}/Plugins/UWPApp/UWPApp.h
+  ${SRC_DIR}/Plugins/UWPApp/UWPApp.cpp)
 
-# qt source files
-file (GLOB SOURCES_QT_UWPAPP
-  ${SRC_DIR}/Plugins/UWPApp/*.ui
-  ${SRC_DIR}/Plugins/UWPApp/*.qrc
-  ${SRC_DIR}/Plugins/UWPApp/*.ts)
+# qt source files (none yet)
+set (SOURCES_QT_UWPAPP)
 source_group ("Qt Files" FILES ${SOURCES_QT_UWPAPP})
 list (APPEND SOURCES_UWPAPP ${SOURCES_QT_UWPAPP})
 
@@ -658,15 +694,15 @@ add_library (Plugin.Verby MODULE)
 set_target_properties(Plugin.Verby PROPERTIES
   OUTPUT_NAME "Verby")
 
-file (GLOB SOURCES_VERBY
-  ${SRC_DIR}/Plugins/Verby/*.h
-  ${SRC_DIR}/Plugins/Verby/*.cpp)
+set (SOURCES_VERBY
+  ${SRC_DIR}/Plugins/Verby/Verby.h
+  ${SRC_DIR}/Plugins/Verby/Verby.cpp
+  ${SRC_DIR}/Plugins/Verby/gui.h
+  ${SRC_DIR}/Plugins/Verby/gui.cpp)
 
 # qt source files
-file (GLOB SOURCES_QT_VERBY
-  ${SRC_DIR}/Plugins/Verby/*.ui
-  ${SRC_DIR}/Plugins/Verby/*.qrc
-  ${SRC_DIR}/Plugins/Verby/*.ts)
+set (SOURCES_QT_VERBY
+  ${SRC_DIR}/Plugins/Verby/dlg.ui)
 source_group ("Qt Files" FILES ${SOURCES_QT_VERBY})
 list (APPEND SOURCES_VERBY ${SOURCES_QT_VERBY})
 
@@ -682,8 +718,12 @@ set_target_properties (Plugin.Verby PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Verby"
   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Verby")
 
-file (GLOB RESOURCES_VERBY
-  ${SRC_DIR}/Plugins/Verby/*.png)
+set (RESOURCES_VERBY
+  ${SRC_DIR}/Plugins/Verby/verby.png
+  ${SRC_DIR}/Plugins/Verby/verby_copy.png
+  ${SRC_DIR}/Plugins/Verby/verby_opencontainer.png
+  ${SRC_DIR}/Plugins/Verby/verby_properties.png
+  ${SRC_DIR}/Plugins/Verby/verby_run.png)
 
 add_custom_command (TARGET Plugin.Verby POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
