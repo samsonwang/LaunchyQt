@@ -1,12 +1,8 @@
 # 0.2 Porting to Launchy 3.1.8
 # 0.1 Allows to count from one time to another and provide result formatted for JIRA ;)
 
-import sys, os
-import launchy
-import re
 from datetime import datetime
 
-from launchy import CatItem
 try:
     from PySide2 import QtCore, QtGui, QtWidgets
     from PySide2.QtCore import QLocale
@@ -15,9 +11,10 @@ except Exception as ex:
     try:
         from PySide6.QtWidgets import QWidget, QApplication
     except Exception as ex:
-        print(f"CalcyPy, An error occurred: {ex}")
+        print(f"Chrono, An error occurred: {ex}")
 
-
+import launchy
+from launchy import CatItem
 
 class Chrono(launchy.Plugin):
 
@@ -38,26 +35,37 @@ class Chrono(launchy.Plugin):
         return self.path + "/chrono.png"
 
     def getLabels(self, inputDataList):
-        inputDataList[-1].setLabel(self.getName())
+        if len(inputDataList) > 1:
+            return
+        
+        inputText = inputDataList[0].getText().lower()
+        if inputText == "start" or inputText:
+            inputDataList[0].setLabel(self.getName())
 
     def getResults(self, inputDataList, resultsList):
+        if len(inputDataList) > 1:
+            return
+
+        if not inputDataList[0].hasLabel(self.getName()):
+            return
+        
         finalUrl = " "
         finalName = " "
         isTemplate = False
         
-        for item in inputDataList:
-            inputText = item.getText()
-            if re.search(inputText, "Start", re.IGNORECASE):
-                isTemplate = True
-                finalName = "Start"
-                finalUrl = "Start"
-            elif re.search(inputText, "Stop", re.IGNORECASE):
-                isTemplate = True
-                finalName = "Stop"
-                finalUrl = self.getElapsedTime()
+        inputText = inputDataList[0].getText().lower()
+        if inputText == "start":
+            isTemplate = True
+            finalName = "Start"
+            finalUrl = "Start"
+        elif inputText == "stop":
+            isTemplate = True
+            finalName = "Stop"
+            finalUrl = self.getElapsedTime()
 
         if isTemplate == True:
-            resultsList.push_back( launchy.CatItem(finalUrl, finalName, self.getName(), self.getIcon()))
+            resultsList.push_back(CatItem(finalUrl, finalName,
+                                          self.getName(), self.getIcon()))
 
     def getCatalog(self, resultsList):
         pass
