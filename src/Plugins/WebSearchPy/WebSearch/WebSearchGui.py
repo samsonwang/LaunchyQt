@@ -71,7 +71,9 @@ class WebSearchGui(QWidget):
         if currentRow != -1:
             self.ui.entriesTable.removeRow(currentRow)
 
-    # Drop every downloaded icon and fetch the ones of the listed sites again.
+    # Re-fetch the icons of the listed sites. A site whose re-fetch fails
+    # keeps its previous icon, so the user never sees an icon "disappear"
+    # because of a transient network error or a blank placeholder response.
     def refreshIcon_clicked(self):
         table = self.ui.entriesTable
         urls = []
@@ -82,8 +84,7 @@ class WebSearchGui(QWidget):
 
         favicons = faviconCache()
         favicons.setEnabled(self.ui.fetchFaviconCheckBox.isChecked())
-        favicons.clear()
-        favicons.prefetch(urls)
+        favicons.refresh(urls)
         log.debug("WebSearchGui::refreshIcon_clicked, %s url(s) queued" % len(urls))
 
     def writeSettings(self):

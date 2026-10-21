@@ -36,7 +36,7 @@ class WebSearchPy(Plugin):
         self.path = path
 
     def getIcon(self):
-        return self.path + "/WebSearch.ico"
+        return self.path + "/WebSearch.png"
 
     def getLabels(self, inputDataList):
         query = inputDataList[0].getText()

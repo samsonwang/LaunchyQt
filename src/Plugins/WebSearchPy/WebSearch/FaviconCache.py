@@ -155,6 +155,7 @@ class FaviconCache:
         self.m_done = {}      # host -> epoch of the last successful download
         self.m_failed = {}    # host -> epoch of the last failed download
         self.m_pending = set()  # hosts queued for the download thread
+        self.m_refreshHosts = set()  # hosts forced past __isFresh by refresh()
         self.m_enabled = True
         self.m_proxyKey = None  # proxy the failures below were recorded under
         self.m_lock = threading.Lock()
@@ -214,10 +215,14 @@ class FaviconCache:
                 return
             if self.__recentlyFailedLocked(host):
                 return
+            forceRefresh = host in self.m_refreshHosts
 
         # The icon of the last week is still good, the site does not hear from
-        # us again before SUCCESS_TTL has passed.
-        if self.__isFresh(host):
+        # us again before SUCCESS_TTL has passed. A host flagged by refresh()
+        # bypasses this: the user asked to re-fetch it even when the on-disk
+        # icon is still young, so the mtime fallback in __isFresh does not
+        # short-circuit a refresh either.
+        if not forceRefresh and self.__isFresh(host):
             return
 
         with self.m_lock:
@@ -233,8 +238,10 @@ class FaviconCache:
         for url in urls or []:
             self.request(url)
 
-    # Drop everything downloaded so far, used by the "refresh" button of the
-    # option dialog.
+    # Hard wipe: drop every downloaded icon and the state file. No longer
+    # used by the "refresh" button (which calls refresh() for a soft reset
+    # that keeps the previous icons), kept as a utility for a future "clear
+    # all" action.
     def clear(self):
         cacheDir = self.cacheDir()
         if cacheDir:
@@ -255,6 +262,51 @@ class FaviconCache:
             self.m_missing.clear()
             self.m_done.clear()
             self.m_failed.clear()
+
+    # Soft refresh: re-fetch the listed sites but keep their previous icons
+    # on disk. A host whose re-fetch fails keeps its old .png, unlike clear()
+    # which wipes everything before the re-fetch even starts. Used by the
+    # "refresh icons" button of the option dialog.
+    def refresh(self, urls):
+        self.__forgetFailuresOnProxyChange()
+        hosts = set()
+        for url in urls or []:
+            host = hostOf(url)
+            if host:
+                hosts.add(host)
+        if not hosts:
+            return
+
+        cacheDir = self.cacheDir()
+        with self.m_lock:
+            # Drop the in-memory bookkeeping so iconPath() re-checks disk and
+            # request() does not short-circuit on a stale "known" or "failed
+            # recently" entry. The .png files and m_done stay: m_done is
+            # overwritten on success and popped on failure, and the png files
+            # are the very thing this method preserves.
+            self.m_icons.clear()
+            self.m_missing.clear()
+            self.m_failed.clear()
+            self.m_refreshHosts.clear()
+            self.m_refreshHosts |= hosts
+
+        # Persist the cleared failure records so a crash mid-refresh does not
+        # bring back the old "recently failed" gate on the next start.
+        self.__saveState()
+
+        # A .tmp leftover is from a write that was interrupted, it is never
+        # useful now and would shadow nothing, so it is cleaned up here. The
+        # .png files are deliberately left alone.
+        if cacheDir:
+            for name in os.listdir(cacheDir):
+                if name.endswith(".tmp"):
+                    try:
+                        os.remove(os.path.join(cacheDir, name))
+                    except Exception:
+                        pass
+
+        for url in urls or []:
+            self.request(url)
 
     # Resolved once and under a lock, the cache dir cannot move while the
     # download workers write into it.
@@ -424,8 +476,10 @@ class FaviconCache:
             except Exception as err:
                 log.warning("FaviconCache::__run, fail to download %s, %s" % (url, err))
             finally:
+                host = hostOf(url)
                 with self.m_lock:
-                    self.m_pending.discard(hostOf(url))
+                    self.m_pending.discard(host)
+                    self.m_refreshHosts.discard(host)
 
     def __download(self, url):
         host = hostOf(url)
@@ -560,6 +614,31 @@ class FaviconCache:
 
         return best
 
+    # True when image carries no opaque pixel. Mirrors hasVisiblePixel() in
+    # UWPApp.cpp: an image without an alpha channel is always visible, and an
+    # image whose every pixel has alpha 0 is blank. Called only after a
+    # successful decode on the download thread, so the 32*32 pixel scan is
+    # fine. Fails open: any pixel-read error returns False so __writePng still
+    # proceeds with the write.
+    def __isBlank(self, image):
+        if QtGui is None:
+            return False
+        try:
+            if image is None or image.isNull():
+                return True
+            if not image.hasAlphaChannel():
+                return False
+            for y in range(image.height()):
+                for x in range(image.width()):
+                    # QImage.pixel() returns a QRgb int (0xAARRGGBB); the
+                    # high byte is the alpha channel.
+                    if (image.pixel(x, y) >> 24) & 0xFF != 0:
+                        return False
+            return True
+        except Exception as err:
+            log.debug("FaviconCache::__isBlank, pixel scan failed, %s" % err)
+            return False
+
     # The cache only holds png so launchy needs no ico reader, but whatever the
     # site served (ico, gif, jpeg) is converted through QImage.
     def __writePng(self, data, path):
@@ -580,6 +659,17 @@ class FaviconCache:
                 image = image.scaled(ICON_SIZE, ICON_SIZE,
                                      QtCore.Qt.KeepAspectRatio,
                                      QtCore.Qt.SmoothTransformation)
+                # A site that removed its favicon may answer with a 1x1
+                # transparent gif/png: it passes isImage() and decodes fine,
+                # but the scaled result is fully transparent and would
+                # overwrite a good cached icon with an invisible one. When a
+                # valid old icon is on disk, refuse the blank so __download
+                # routes to __markFailed and the previous icon survives.
+                if (os.path.isfile(path) and os.path.getsize(path) > 0
+                        and self.__isBlank(image)):
+                    log.debug("FaviconCache::__writePng, blank image for %s, "
+                              "keeping the previous icon" % path)
+                    return False
                 tmpPath = path + ".tmp"
                 if image.save(tmpPath, "PNG"):
                     os.replace(tmpPath, path)
