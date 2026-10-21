@@ -93,12 +93,79 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             && g_settings->value(OPTION_RESOLVE_SYM_LINK,
                                  OPTION_RESOLVE_SYM_LINK_DEFAULT).toBool()) {
 
-            // Read the path stored inside the shortcut itself first. Unlike
+            // Read the shortcut once: both the path stored inside the link and
+            // the icon location the user may have configured for it. Unlike
             // QFileInfo::symLinkTarget(), which asks the shell to resolve the
             // link and can therefore probe the target, this is a local read of
             // the .lnk file.
-            QString rawTarget = rawLinkTarget(info);
+            QString linkTarget;
+            QString linkIconPath;
+            int linkIconIndex = 0;
+            readShellLink(info, &linkTarget, &linkIconPath, &linkIconIndex);
 
+            // A manually configured icon outranks the icon of the resolved
+            // target: the user set it precisely because the target's own icon
+            // was not what they wanted. Windows returns an empty location for
+            // shortcuts that were never given a custom icon and only fills it
+            // in when one was configured, so an empty linkIconPath means "no
+            // override" and the code below keeps its previous behaviour.
+            if (!linkIconPath.isEmpty()) {
+                QIcon customIcon;
+                if (addIconFromLinkLocation(linkIconPath, linkIconIndex, customIcon)) {
+                    qDebug() << "IconProviderWin::icon, use the icon configured in the shortcut,"
+                        << "icon path:" << linkIconPath
+                        << "icon index:" << linkIconIndex
+                        << "file path:" << info.filePath();
+
+                    return customIcon;
+                }
+
+                // The configured icon could not be read (its file is gone, or
+                // the index is out of range): fall through and show the
+                // target's icon as before rather than a generic one.
+                qDebug() << "IconProviderWin::icon, fail to extract the icon configured in the shortcut,"
+                    << "icon path:" << linkIconPath
+                    << "icon index:" << linkIconIndex
+                    << "file path:" << info.filePath();
+            }
+
+            // A shortcut that stores only an IDList and no path (Recycle Bin,
+            // This PC, Control Panel, Network) has no file to resolve to, so
+            // symLinkTarget() is empty and there is nothing SHGetFileInfo could
+            // be pointed at. The shell can still name the icon resource of the
+            // namespace item the IDList resolves to, and extracting that
+            // resource directly gives the icon without the shortcut arrow that
+            // Explorer overlays on the link file itself.
+            if (linkTarget.isEmpty()) {
+                QString shellIconPath;
+                int shellIconIndex = 0;
+                if (shellIconLocation(info.filePath(), shellIconPath, shellIconIndex)) {
+                    QIcon itemIcon;
+                    if (addIconFromLinkLocation(shellIconPath, shellIconIndex, itemIcon)) {
+                        qDebug() << "IconProviderWin::icon, shell namespace link,"
+                            << "use the icon of the item the link points at,"
+                            << "icon path:" << shellIconPath
+                            << "icon index:" << shellIconIndex
+                            << "file path:" << info.filePath();
+
+                        return itemIcon;
+                    }
+
+                    qDebug() << "IconProviderWin::icon, shell namespace link,"
+                        << "fail to extract the icon of the item,"
+                        << "icon path:" << shellIconPath
+                        << "icon index:" << shellIconIndex
+                        << "file path:" << info.filePath();
+                }
+
+                // No icon resource to extract: let the shell resolve the link
+                // itself, which yields the right item icon plus the shortcut
+                // arrow rather than nothing at all.
+                filePath = QDir::toNativeSeparators(info.filePath());
+
+                qDebug() << "IconProviderWin::icon, shell namespace link,"
+                    << "let the shell draw the link, file path:" << filePath;
+            }
             // A shortcut whose target lives on the network (UNC path or a drive
             // mapped to a network share) is deliberately left unresolved even
             // when OPTION_RESOLVE_SYM_LINK is on: querying the remote target for
@@ -106,12 +173,12 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
             // the catalog build/UI would freeze with it. For those links the
             // icon is taken from the .lnk itself, which is a local, cached
             // lookup that never touches the network.
-            if (!rawTarget.isEmpty() && isNetworkPath(rawTarget)) {
+            else if (isNetworkPath(linkTarget)) {
                 filePath = QDir::toNativeSeparators(info.filePath());
                 useFileAttributes = true;
 
                 qDebug() << "IconProviderWin::icon, sym link target is a network path,"
-                    << "keep the link itself, target path:" << rawTarget
+                    << "keep the link itself, target path:" << linkTarget
                     << "file path:" << filePath;
             }
             else {
@@ -203,14 +270,32 @@ QIcon IconProviderWin::icon(const QFileInfo& info) const {
     return retIcon;
 }
 
-// Reads the target path stored inside a .lnk file without letting the shell
-// resolve or probe it. IShellLink::GetPath with SLGP_RAWPATH returns the literal
-// string kept in the link file, whereas QFileInfo::symLinkTarget() uses
-// SLGP_UNCPRIORITY and may ask the network for a preferred UNC form. Returns an
-// empty string when the file is not a readable shortcut, in which case callers
-// should fall back to QFileInfo::symLinkTarget().
-QString IconProviderWin::rawLinkTarget(const QFileInfo& info) const {
-    QString ret;
+// Reads a .lnk file without letting the shell resolve or probe the target, and
+// reports both pieces of information the icon code needs through output
+// parameters:
+//  - target: the path obtained with IShellLink::GetPath and SLGP_RAWPATH, which
+//    returns the literal string kept in the link file, whereas
+//    QFileInfo::symLinkTarget() uses SLGP_UNCPRIORITY and may ask the network
+//    for a preferred UNC form;
+//  - iconPath and iconIndex: the icon location, i.e. the icon the user
+//    configured for the shortcut. Windows leaves it empty for links that were
+//    never given a custom icon and fills in the path and index as soon as one is
+//    chosen, including the case where the user explicitly picked the target file
+//    itself. An empty iconPath therefore means "the icon comes from the target".
+// All values come back empty when the file is not a readable shortcut, in which
+// case callers should fall back to QFileInfo::symLinkTarget(). Any output
+// pointer may be null when that value is not needed.
+void IconProviderWin::readShellLink(const QFileInfo& info, QString* target,
+                                    QString* iconPath, int* iconIndex) const {
+    if (target != NULL) {
+        target->clear();
+    }
+    if (iconPath != NULL) {
+        iconPath->clear();
+    }
+    if (iconIndex != NULL) {
+        *iconIndex = 0;
+    }
 
     IShellLinkW* pShellLink = NULL;
     bool neededCoInit = false;
@@ -231,11 +316,31 @@ QString IconProviderWin::rawLinkTarget(const QFileInfo& info) const {
             QString linkPath = QDir::toNativeSeparators(info.filePath());
             hResult = pPersistFile->Load((LPCOLESTR)linkPath.utf16(), STGM_READ);
             if (SUCCEEDED(hResult)) {
-                wchar_t szTarget[MAX_PATH] = { 0 };
-                WIN32_FIND_DATAW wfd;
-                ZeroMemory(&wfd, sizeof(wfd));
-                if (SUCCEEDED(pShellLink->GetPath(szTarget, MAX_PATH, &wfd, SLGP_RAWPATH))) {
-                    ret = QString::fromWCharArray(szTarget);
+                if (target != NULL) {
+                    wchar_t szTarget[MAX_PATH] = { 0 };
+                    WIN32_FIND_DATAW wfd;
+                    ZeroMemory(&wfd, sizeof(wfd));
+                    if (SUCCEEDED(pShellLink->GetPath(szTarget, MAX_PATH, &wfd, SLGP_RAWPATH))) {
+                        *target = QString::fromWCharArray(szTarget);
+                    }
+                }
+
+                if (iconPath != NULL || iconIndex != NULL) {
+                    // The buffer is deliberately larger than MAX_PATH: an icon
+                    // location is stored as a plain string and is not limited to
+                    // the target path limit.
+                    wchar_t szIconPath[1024] = { 0 };
+                    int index = 0;
+                    if (SUCCEEDED(pShellLink->GetIconLocation(szIconPath,
+                                                              sizeof(szIconPath) / sizeof(szIconPath[0]),
+                                                              &index))) {
+                        if (iconPath != NULL) {
+                            *iconPath = QString::fromWCharArray(szIconPath);
+                        }
+                        if (iconIndex != NULL) {
+                            *iconIndex = index;
+                        }
+                    }
                 }
             }
             pPersistFile->Release();
@@ -246,8 +351,162 @@ QString IconProviderWin::rawLinkTarget(const QFileInfo& info) const {
     if (neededCoInit) {
         CoUninitialize();
     }
+}
 
-    return ret;
+// Asks the shell which icon resource a shortcut resolves to. Only needed for
+// shortcuts that store an IDList instead of a path: the icon of a namespace item
+// (Recycle Bin, This PC, Control Panel, Network) is not reachable through
+// IShellLink, but SHGetFileInfo reports the file and index it comes from, e.g.
+// imageres.dll with index -54 for the Recycle Bin. A negative index is a
+// resource id, which is exactly what addIconFromLinkLocation expects.
+// Returns false when the shell has no icon resource to report, in which case the
+// caller lets the shell draw the link itself.
+bool IconProviderWin::shellIconLocation(const QString& linkPath, QString& iconPath,
+                                        int& iconIndex) const {
+    SHFILEINFOW sfi;
+    ZeroMemory(&sfi, sizeof(sfi));
+
+    QString path = QDir::toNativeSeparators(linkPath);
+
+    // The IDList of a namespace shortcut points at a virtual shell folder, so
+    // resolving it here stays local. A shortcut whose target is a real remote
+    // path carries that path as well, which the network check upstream has
+    // already handled.
+    if (SHGetFileInfoW((LPCWSTR)path.utf16(), 0, &sfi, sizeof(sfi),
+                       SHGFI_ICONLOCATION | SHGFI_LARGEICON) == 0) {
+        return false;
+    }
+
+    if (sfi.szDisplayName[0] == L'\0') {
+        return false;
+    }
+
+    iconPath = QString::fromWCharArray(sfi.szDisplayName);
+    iconIndex = sfi.iIcon;
+
+    return true;
+}
+
+// Extracts one specific icon out of the file named by a shortcut's icon
+// location. Unlike the SHGetFileInfo path used for ordinary files, this has to
+// honour a concrete index (and a negative index, which Windows uses for a
+// resource id), and it must return the icon at the size the UI asked for instead
+// of the file's default one. Returns false on any failure so the caller can fall
+// back to the target's icon.
+bool IconProviderWin::addIconFromLinkLocation(const QString& iconPath, int iconIndex,
+                                              QIcon& icon) const {
+    QString path = iconPath;
+
+    // Icon locations are stored verbatim by the shell and very often contain
+    // environment variables (%SystemRoot%\system32\imageres.dll). None of the
+    // extraction APIs below expand them, so do it here.
+    if (path.contains(QLatin1Char('%'))) {
+        wchar_t expanded[1024] = { 0 };
+        if (ExpandEnvironmentStringsW((LPCWSTR)path.utf16(), expanded,
+                                      sizeof(expanded) / sizeof(expanded[0])) > 0) {
+            path = QString::fromWCharArray(expanded);
+        }
+    }
+
+    if (path.isEmpty()) {
+        return false;
+    }
+
+    // Same policy as the rest of this file: never hand a remote path to an API
+    // that would block for seconds when the host is slow or offline. The caller
+    // falls back to the target's icon instead.
+    if (isNetworkPath(path)) {
+        qDebug() << "IconProviderWin::addIconFromLinkLocation, icon path is a network path, skip,"
+            << "icon path:" << path;
+
+        return false;
+    }
+
+    // SHDefExtractIconW scales the icon to the requested size; clamp it to the
+    // range the shell can serve so a bogus setting cannot ask for a 0x0 icon.
+    int size = m_preferredSize;
+    if (size < 16) {
+        size = 16;
+    }
+    else if (size > 256) {
+        size = 256;
+    }
+
+    HICON hIcon = NULL;
+    HICON hLargeIcon = NULL;
+    HICON hSmallIcon = NULL;
+
+    if (iconIndex < 0) {
+        // Negative index: the link points at a resource id rather than at an
+        // ordinal, so the resource is loaded by name. LR_DEFAULTCOLOR is
+        // required because the module is mapped as data, not executed.
+        HMODULE hModule = LoadLibraryExW((LPCWSTR)path.utf16(), NULL,
+                                         LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+        if (hModule != NULL) {
+            hIcon = (HICON)LoadImageW(hModule, MAKEINTRESOURCEW(-iconIndex), IMAGE_ICON,
+                                      size, size, LR_DEFAULTCOLOR);
+            FreeLibrary(hModule);
+        }
+    }
+
+    // SHDefExtractIconW is the shell's own extractor: it scales the icon to the
+    // requested size and accepts an ordinal as well as a resource id, so it also
+    // covers a resource id whose LoadImage above failed.
+    if (hIcon == NULL
+        && SUCCEEDED(SHDefExtractIconW((LPCWSTR)path.utf16(), iconIndex, 0,
+                                       &hLargeIcon, &hSmallIcon, MAKELONG(size, size)))) {
+        hIcon = hLargeIcon != NULL ? hLargeIcon : hSmallIcon;
+
+        // Keep only the handle that is used, anything else leaks a GDI object
+        // for the lifetime of the process.
+        if (hLargeIcon != NULL && hLargeIcon != hIcon) {
+            DestroyIcon(hLargeIcon);
+        }
+        if (hSmallIcon != NULL && hSmallIcon != hIcon) {
+            DestroyIcon(hSmallIcon);
+        }
+    }
+
+    if (hIcon == NULL) {
+        // Last resort for files SHDefExtractIconW refuses (some .ico files, or
+        // an index that only ExtractIconExW can reach). It can only return
+        // 32/16 pixel icons but a slightly smaller icon beats none.
+        hLargeIcon = NULL;
+        hSmallIcon = NULL;
+        if (ExtractIconExW((LPCWSTR)path.utf16(), iconIndex,
+                           &hLargeIcon, &hSmallIcon, 1) > 0) {
+            hIcon = hLargeIcon != NULL ? hLargeIcon : hSmallIcon;
+
+            if (hLargeIcon != NULL && hLargeIcon != hIcon) {
+                DestroyIcon(hLargeIcon);
+            }
+            if (hSmallIcon != NULL && hSmallIcon != hIcon) {
+                DestroyIcon(hSmallIcon);
+            }
+        }
+    }
+
+    if (hIcon == NULL) {
+        return false;
+    }
+
+    bool ok = false;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QPixmap pixmap = QtWin::fromHICON(hIcon);
+#else
+    QPixmap pixmap = QPixmap::fromImage(QImage::fromHICON(hIcon));
+#endif // QT_VERSION
+
+    if (!pixmap.isNull()) {
+        icon.addPixmap(pixmap);
+        ok = true;
+    }
+
+    // The handle is ours: the pixmap above holds a copy of the pixels.
+    DestroyIcon(hIcon);
+
+    return ok;
 }
 
 // Returns true when the path lives on the network. Only cheap checks are used

@@ -758,3 +758,34 @@ endif ()
 
 add_dependencies (PythonPlugins.Deploy ${PYTHON_PLUGINS_DEPENDS})
 
+##################################################
+# Windows utilities
+#
+# dist/win/utilities/ holds ready made shortcut and script collections
+# (SpecialFolders/, SystemPower/, UsefulScripts/) that a manual deploy drops
+# next to the executable -- Launchy indexes them as ordinary files, so they
+# have to sit in the run tree. Nothing links them, so no dependency would ever
+# pull them into the build: this is an ALL target that copies the whole folder
+# on every build (copy_directory only rewrites files whose contents differ,
+# so an incremental build stays cheap).
+#
+# Same rule as the python plugins below: the source is runtime data, not a
+# build input, so files added to it need no CMake change.
+if (WIN32)
+  get_filename_component (UTILITIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../dist/win/utilities ABSOLUTE)
+  set (UTILITIES_DEST ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/utilities)
+
+  if (EXISTS "${UTILITIES_DIR}")
+    add_custom_target (Utilities.Deploy ALL
+      COMMAND ${CMAKE_COMMAND} -E echo
+      "copy utilities -> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/utilities"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${UTILITIES_DIR}" "${UTILITIES_DEST}"
+      COMMENT "copy dist/win/utilities into target directory")
+  else ()
+    message (WARNING "utilities directory not found: ${UTILITIES_DIR}, "
+      "the compiled tree will be missing SpecialFolders/SystemPower/UsefulScripts")
+  endif ()
+endif ()
+
+

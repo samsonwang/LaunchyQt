@@ -33,7 +33,12 @@ public:
 private:
     static bool isNetworkPath(const QString& path);
 
-    QString rawLinkTarget(const QFileInfo& info) const;
+    void readShellLink(const QFileInfo& info, QString* target,
+                       QString* iconPath, int* iconIndex) const;
+    bool shellIconLocation(const QString& linkPath, QString& iconPath, int& iconIndex) const;
+    bool addIconFromLinkLocation(const QString& iconPath, int iconIndex, QIcon& icon) const;
+
+    // obsolete
     QString linkTargetPathTo64(const QFileInfo& info) const;
     bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
     bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;

@@ -23,6 +23,11 @@
                                                           binaries some plugins bundle)
       python\launchy.pyd, python\launchy_util.py
       translations\launchy_*.qm (compiled from translations\*.ts by the build)
+      utilities\<folder>\*                               (dist\win\utilities: the shortcut and
+                                                          script collections the build copies next
+                                                          to the executable, e.g.
+                                                          SpecialFolders\, SystemPower\,
+                                                          UsefulScripts\)
 
     Third-party files (never copied, left untouched in the run directory):
       Qt5*.dll, qt.conf, qtlibs\, styles\
@@ -37,6 +42,11 @@
     copied in full; the other plugin folders are native ones and only their *.dll, *.pdb
     and *.png files are copied. __pycache__ is never listed because the build strips it
     from the build output (and it is regenerated at runtime anyway).
+
+    Note: utilities\ is shipped exactly as the build lays it out (src\CMakeLists.txt copies
+    dist\win\utilities there on every build), so everything below it is an artifact of this
+    project. The run directory keeps any file that is not in the list below: a utilities
+    file removed from the source tree has to be deleted in the run directory by hand.
 
 .PARAMETER Config
     Build configuration: Release (default) or Debug.
@@ -218,6 +228,19 @@ function Get-ProjectArtifactList {
     if (Test-Path -LiteralPath $translationRoot -PathType Container) {
         foreach ($file in Get-ChildItem -LiteralPath $translationRoot -File -Filter 'launchy_*.qm') {
             $relativePaths.Add(('translations\{0}' -f $file.Name))
+        }
+    }
+
+    # utilities\ -- copied next to the executable by the CMake build from
+    # dist\win\utilities (SpecialFolders\, SystemPower\, UsefulScripts\). Launchy indexes
+    # these shortcut and script files like any other entry, so the folder is part of the
+    # production tree. The whole tree is listed (no extension whitelist): the sub folder
+    # layout is what the user sees in the catalog, and a file added to dist\win\utilities
+    # must reach the run directory without touching this script.
+    $utilitiesRoot = Join-Path $SourceDir 'utilities'
+    if (Test-Path -LiteralPath $utilitiesRoot -PathType Container) {
+        foreach ($file in Get-ChildItem -LiteralPath $utilitiesRoot -File -Recurse) {
+            $relativePaths.Add(('utilities\{0}' -f $file.FullName.Substring($utilitiesRoot.Length + 1)))
         }
     }
 
