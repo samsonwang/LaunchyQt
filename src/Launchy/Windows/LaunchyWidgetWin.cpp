@@ -80,7 +80,24 @@ void createLaunchyWidget(CommandFlags command) {
     // constructor, so the singleton is already reachable while the widget is
     // still being built (and therefore never null for g_mainWidget).
     if (!LaunchyWidget::instance()) {
-        new LaunchyWidgetWin(command);
+        LaunchyWidgetWin* widget = new LaunchyWidgetWin(command);
+
+        // Create the native window now, while it is still hidden.
+        //
+        // Windows broadcasts WM_DISPLAYCHANGE to existing top-level windows
+        // only, and the Qt windows plugin re-enumerates the monitors only on
+        // that message (QWindowsScreenManager::handleDisplayChange ->
+        // handleScreenChanges). QWidget creates its HWND lazily on the first
+        // show(), so a launcher that stays hidden until the first hotkey has
+        // no window at all when the user swaps monitors: Qt never refreshes
+        // QScreen and keeps the geometry captured at startup. Invoking Launchy
+        // afterwards then centers it inside a stale rectangle, e.g. the 4K
+        // screen it started on instead of the 2K screen the cursor is on now.
+        //
+        // Showing the window is not required for this. HWND_BROADCAST reaches
+        // invisible top-level windows as well, so creating the handle is enough
+        // to keep the screen list in sync for the whole process lifetime.
+        widget->winId();
     }
 }
 
