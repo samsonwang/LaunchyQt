@@ -70,10 +70,7 @@ using ::operator|;
 
 // minimum system idle time (in seconds) required before a scheduled
 // catalog rebuild is allowed to start
-const int SCHEDULED_REBUILD_MIN_IDLE_SECONDS = 10 * 60;
-// interval (in milliseconds) used to re-check the idle condition when a
-// scheduled catalog rebuild is postponed because the system is still in use
-const int SCHEDULED_REBUILD_CHECK_INTERVAL = 60 * 1000;
+static const int CATALOG_REBUILD_SYSTEM_IDLE_SECONDS = 10 * 60;
 
 LaunchyWidget* LaunchyWidget::s_instance = nullptr;
 
@@ -1688,7 +1685,7 @@ void LaunchyWidget::scheduledBuildCatalog() {
     // requests (F5, tray menu, options dialog, startup rescan) call
     // buildCatalog() directly and always rebuild immediately
     const int idleSeconds = g_app->systemIdleSeconds();
-    if (idleSeconds < 0 || idleSeconds >= SCHEDULED_REBUILD_MIN_IDLE_SECONDS) {
+    if (idleSeconds < 0 || idleSeconds >= CATALOG_REBUILD_SYSTEM_IDLE_SECONDS) {
         // system has been idle long enough, or the platform can not
         // report idle time, rebuild the catalog now
         buildCatalog();
@@ -1698,7 +1695,7 @@ void LaunchyWidget::scheduledBuildCatalog() {
     // the system is still in use, check again in one minute
     qDebug() << "LaunchyWidget::scheduledBuildCatalog, system idle for"
              << idleSeconds << "seconds, rebuild catalog postponed";
-    m_rebuildTimer->start(SCHEDULED_REBUILD_CHECK_INTERVAL);
+    m_rebuildTimer->start(CATALOG_REBUILD_SYSTEM_IDLE_SECONDS * 1000);
 }
 
 void LaunchyWidget::buildCatalog() {
