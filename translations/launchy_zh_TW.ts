@@ -310,7 +310,7 @@
         <translation>瀏覽模式下顯示網路</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2077"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2080"/>
         <source>Portable mode (USB stick)</source>
         <translation>可攜模式 (USB 隨身碟)</translation>
     </message>
@@ -468,17 +468,17 @@
         <translation>插件選項</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2080"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2077"/>
         <source>Store settings next to the executable instead of the user profile</source>
         <translation>將設定儲存在程式所在目錄，而不是使用者設定目錄</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2100"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2103"/>
         <source>Open Config Folder</source>
         <translation>開啟設定資料夾</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2103"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2100"/>
         <source>Open the folder that holds launchy.ini</source>
         <translation>開啟存放 launchy.ini 的資料夾</translation>
     </message>
@@ -503,7 +503,6 @@
         <translation>關於</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2479"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -512,7 +511,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Creator and Developer:  Josh Karlin&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Simon Capewell&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developer: Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -522,7 +521,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;開發者： Samson Wang&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2398"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2423"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -547,22 +546,35 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2416"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2441"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Contact: &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;聯絡： &lt;a href=&quot;wangzhilv@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wangzhilv@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2442"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2467"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Feedback: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Development: &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;回饋： &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github issue&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;開發： &lt;a href=&quot;https://github.com/samsonwang/LaunchyQt/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Github project&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2523"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2504"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Verdana&apos;; font-size:12pt;&quot;&gt;Credits&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt;&quot;&gt;Creator and Developer: Josh Karlin&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt;&quot;&gt;Developer: Simon Capewell&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt;&quot;&gt;Developer: Samson Wang&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:5px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt;&quot;&gt;And github contributers&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2549"/>
         <source>Ok</source>
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.ui" line="2530"/>
+        <location filename="../src/Launchy/OptionDialog.ui" line="2556"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -622,34 +634,34 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>launchy::LaunchyWidget</name>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="118"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="226"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1311"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="115"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="229"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1338"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="163"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1093"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1098"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1805"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="166"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1116"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1121"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1838"/>
         <source>Options</source>
         <translation>選項</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="169"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1099"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="172"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1122"/>
         <source>Close</source>
         <translation>關閉</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="227"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="230"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>快捷鍵 %1 已被佔用，請選擇其他快捷鍵。</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="399"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1101"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="402"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1124"/>
         <source>Launchy %1
 press %2 to activate</source>
         <translation>Launchy %1
@@ -660,47 +672,47 @@ press %2 to activate</source>
         <translation type="vanished">測試界面</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1425"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1452"/>
         <source>Launchy is already running!</source>
         <translation>Launchy 已經在執行了！</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1815"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1848"/>
         <source>Relaunch</source>
         <translation>重新啟動</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1090"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1792"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1113"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1825"/>
         <source>Show Launchy</source>
         <translation>顯示 Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1091"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1795"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1114"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1828"/>
         <source>Reload skin</source>
         <translation>重新載入面板</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1092"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1800"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1115"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1833"/>
         <source>Rebuild catalog</source>
         <translation>重建索引</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1094"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1810"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1117"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1843"/>
         <source>Check for updates</source>
         <translation>檢查更新</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1095"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1118"/>
         <source>Restart</source>
         <translation>重新啟動</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1096"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1825"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1119"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1858"/>
         <source>Exit</source>
         <translation>結束</translation>
     </message>
@@ -815,12 +827,12 @@ press %2 to activate</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1166"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1172"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1167"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1175"/>
         <source>(%1-bit)</source>
         <translation>(%1 位)</translation>
     </message>
@@ -829,7 +841,7 @@ press %2 to activate</source>
         <translation type="vanished">轉換爲可動模式失敗，請檢查%1目錄的寫入權限。</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/SettingsManager.cpp" line="365"/>
+        <location filename="../src/Launchy/SettingsManager.cpp" line="371"/>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>

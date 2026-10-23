@@ -1163,7 +1163,15 @@ void OptionDialog::saveSystemSettings() {
 
 void OptionDialog::initAboutWidget() {
     // About
-    m_pUi->aboutVer->setText(tr("Version %1").arg(LAUNCHY_VERSION_STRING));
+    // Version and build details share one label so a single mouse drag selects
+    // and copies the whole block. Rich text keeps the version line bigger than
+    // the build details. The text is not set in the .ui file, so retranslateUi()
+    // leaves it alone.
+    m_pUi->labelVersionInfo->setText(
+        QString("<span style=\"font-size:12pt\">%1</span><br/>git %2<br/>build %3")
+            .arg(tr("Version %1").arg(LAUNCHY_VERSION_STRING).toHtmlEscaped())
+            .arg(LAUNCHY_GIT_HASH)
+            .arg(LAUNCHY_BUILD_TIME_STRING));
     m_pUi->aboutBit->setText(tr("(%1-bit)").arg(LAUNCHY_BIT_STRING));
     connect(m_pUi->pushButtonAboutQt, &QPushButton::clicked,
             g_app, &QApplication::aboutQt);

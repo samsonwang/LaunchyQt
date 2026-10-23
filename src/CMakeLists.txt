@@ -7,8 +7,6 @@ set (CMAKE_C_STANDARD 11)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set (CMAKE_BUILD_PARALLEL_LEVEL 4)
-
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 get_filename_component (SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ ABSOLUTE)
@@ -20,6 +18,43 @@ message (STATUS "DEPS_DIR: ${DEPS_DIR}")
 message (STATUS "TRANS_DIR: ${TRANS_DIR}")
 
 include_directories (${SRC_DIR} ${DEPS_DIR})
+
+##################################################
+# Build identification: git hash
+#
+# LaunchyVersion.h is bumped by hand, so a binary built from an untagged commit
+# reports whatever the last release was -- which is exactly what a CI artifact
+# cannot afford to do. The About page therefore also shows the commit the build
+# came from.
+#
+# The hash is resolved during EVERY build by src/cmake/GenerateBuildInfo.cmake,
+# not at configure time: committing does not re-run cmake, so a configure time
+# value silently keeps naming the commit that was checked out when cmake last ran
+# (a "-dirty" from an old configure survives a clean commit). The script locates
+# git itself, writes the value into a generated header and prints it in the
+# build log:
+#
+#   Launchy build info: git hash 8e1a4d0d (clean)
+#
+# The header is only rewritten when the value changed, so a build of unchanged
+# sources neither recompiles nor relinks.
+#
+# -DLAUNCHY_GIT_HASH=<hash> supplies the value when the tree carries no git
+#  metadata, e.g. a source tarball.
+set (LAUNCHY_GIT_HASH "" CACHE STRING
+  "Override the git hash recorded in the build (default: resolved from the checkout)")
+
+set (LAUNCHY_BUILD_INFO_HEADER ${CMAKE_BINARY_DIR}/generated/LaunchyBuildInfo.h)
+set (LAUNCHY_BUILD_INFO_SCRIPT ${SRC_DIR}/cmake/GenerateBuildInfo.cmake)
+
+add_custom_target (BuildInfo.Generate
+  COMMAND ${CMAKE_COMMAND}
+    "-DREPO_DIR=${SRC_DIR}/.."
+    "-DOUTPUT_FILE=${LAUNCHY_BUILD_INFO_HEADER}"
+    "-DGIT_HASH_OVERRIDE=${LAUNCHY_GIT_HASH}"
+    -P "${LAUNCHY_BUILD_INFO_SCRIPT}"
+  COMMENT "resolve git hash for this build"
+  VERBATIM)
 
 ##################################################
 # Source lists
@@ -134,7 +169,7 @@ message ("Python_VERSION: ${Python_VERSION}")
 message ("Python_VERSION_STRING: ${Python_VERSION_STRING}")
 message ("Python_EXECUTABLE: ${Python_EXECUTABLE}")
 message ("Python_Development_FOUND: ${Python_Development_FOUND}")
-message ("Python_INCLUDE_DIRS:" ${Python_INCLUDE_DIRS})
+message ("Python_INCLUDE_DIRS: ${Python_INCLUDE_DIRS}")
 message ("Python_LIBRARIES: ${Python_LIBRARIES}")
 
 ##################################################
@@ -280,6 +315,12 @@ target_sources (Launchy
   PRIVATE ${SOURCES_SINGLEAPP}
   PRIVATE ${SOURCES_HOTKEY})
 
+# The commit this build came from. BuildInfo.Generate writes the generated
+# header before any Launchy source is compiled; the include dir is what lets
+# LaunchyVersion.h find it.
+add_dependencies (Launchy BuildInfo.Generate)
+target_include_directories (Launchy PRIVATE ${CMAKE_BINARY_DIR}/generated)
+
 if (WIN32)
 target_link_libraries (Launchy
   LaunchyLib PluginPy
@@ -305,7 +346,7 @@ if (WIN32)
 
   set (OPENSSL_RUNTIME_MISSING FALSE)
   foreach (OPENSSL_RUNTIME_DLL ${OPENSSL_RUNTIME_DLLS})
-    if (NOT EXISTS ${OPENSSL_RUNTIME_DLL})
+    if (NOT EXISTS "${OPENSSL_RUNTIME_DLL}")
       set (OPENSSL_RUNTIME_MISSING TRUE)
     endif ()
   endforeach ()
@@ -314,9 +355,14 @@ if (WIN32)
     message (WARNING "OpenSSL runtime DLLs not found in ${OPENSSL_RUNTIME_DIR}, "
       "https update check will fail with: TLS initialization failed")
   else ()
+    # The destination is the directory Launchy.exe actually lands in
+    # ($<TARGET_FILE_DIR:Launchy>), not CMAKE_RUNTIME_OUTPUT_DIRECTORY/$<CONFIG>:
+    # the two agree today, but the latter silently goes stale the moment the
+    # target overrides its own RUNTIME_OUTPUT_DIRECTORY, and the DLLs have to
+    # sit next to the executable for the loader to find them.
     add_custom_command (TARGET Launchy POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      ${OPENSSL_RUNTIME_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>
+      ${OPENSSL_RUNTIME_DLLS} "$<TARGET_FILE_DIR:Launchy>"
       COMMENT "copy OpenSSL runtime DLLs to target directory")
   endif ()
 endif ()
@@ -513,10 +559,10 @@ if (QT_MAJOR_VERSION EQUAL 5)
     ${SRC_DIR}/PluginPy)
 
   # Drive the .qm generation and copy them next to the executable.
-  add_custom_target (Launchy_translations ALL DEPENDS ${QM_FILES_LAUNCHY})
-  add_dependencies (Launchy Launchy_translations)
+  add_custom_target (Launchy.Translations ALL DEPENDS ${QM_FILES_LAUNCHY})
+  add_dependencies (Launchy Launchy.Translations)
 
-  add_custom_command (TARGET Launchy_translations POST_BUILD
+  add_custom_command (TARGET Launchy.Translations POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -607,9 +653,11 @@ target_link_libraries (Plugin.Runner
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE LaunchyLib)
 
+# plugin/<Name>/ is the folder PluginHandler::loadPlugins() expects. One
+# generator expression instead of a _DEBUG/_RELEASE pair: $<CONFIG> expands to
+# the config being built, and this property accepts target level genexes.
 set_target_properties (Plugin.Runner PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Runner"
-  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Runner")
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Runner")
 
 set (RESOURCES_RUNNER
   ${SRC_DIR}/Plugins/Runner/runner.png)
@@ -645,8 +693,7 @@ target_link_libraries (Plugin.Tasky
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Tasky PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Tasky"
-  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Tasky")
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Tasky")
 
 set (RESOURCES_TASKY
   ${SRC_DIR}/Plugins/Tasky/tasky.png)
@@ -684,8 +731,7 @@ target_link_libraries (Plugin.UWPApp
   PRIVATE user32 shell32 propsys gdi32)
 
 set_target_properties (Plugin.UWPApp PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/UWPApp"
-  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/UWPApp")
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/UWPApp")
 endif ()
 ##################################################
 # plugin: Verby
@@ -715,8 +761,7 @@ target_link_libraries (Plugin.Verby
   PRIVATE LaunchyLib)
 
 set_target_properties (Plugin.Verby PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Debug/plugins/Verby"
-  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release/plugins/Verby")
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Verby")
 
 set (RESOURCES_VERBY
   ${SRC_DIR}/Plugins/Verby/verby.png
@@ -741,7 +786,7 @@ add_custom_command (TARGET Plugin.Verby POST_BUILD
 if (WIN32)
   set (PYTHON_PLUGINS_DEPENDS
     Launchy
-    Launchy_translations
+    Launchy.Translations
     PluginPy
     Plugin.Runner
     Plugin.Tasky
@@ -750,7 +795,7 @@ if (WIN32)
 else ()
   set (PYTHON_PLUGINS_DEPENDS
     Launchy
-    Launchy_translations
+    Launchy.Translations
     PluginPy
     Plugin.Runner
     Plugin.Verby)

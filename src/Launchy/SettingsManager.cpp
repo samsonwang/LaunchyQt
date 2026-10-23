@@ -166,7 +166,8 @@ void SettingsManager::load() {
     g_settings->setValue(OPTION_DEBUG_LOG, debugLog);
 
     qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
-        << "( build" << __DATE__ << __TIME__ << ")";
+        << "(git " << LAUNCHY_GIT_HASH
+        << "build " << LAUNCHY_BUILD_TIME_STRING << ")";
     qInfo("Loading settings in %s mode from %s",
           m_portable ? "portable" : "installed", qPrintable(configDirectory(m_portable)));
 
