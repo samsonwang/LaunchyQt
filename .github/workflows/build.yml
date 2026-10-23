@@ -1020,14 +1020,254 @@ jobs:
           Write-Host ("copied $skinCount skin(s), {0:N1} MB, into $skinsDst" -f ($skinsSize / 1MB))
 
       # ------------------------------------------------------------------
-      # 11) Upload build artifacts
-      #     build/bin contains the exe, the Qt runtime (root Qt DLLs + qtlibs/),
-      #     plugins/, python/ (stdlib zip + extension modules + pruned PySide2),
-      #     skins/ and the app translations -- i.e. a tree that runs stand-alone.
+      # 11) Package with 7-Zip (maximum compression, symbols split out)
+      #     Two archives instead of the raw tree:
+      #       Launchy-v<ver>-win-x64.7z      the runnable tree, *.pdb excluded
+      #       Launchy-v<ver>-win-x64-pdb.7z  only the debug symbols
+      #     The split is not cosmetic. build/bin/Release is ~94 MB raw of which
+      #     the six PDBs are ~20 MB of mostly incompressible-but-useless codeview
+      #     data, and PDBs are exactly what the other 99% of the downloaders
+      #     never open. Keeping them in the main archive makes every user pay
+      #     for a debug build; splitting them costs a crash-report reader one
+      #     extra download and nothing else.
+      #
+      #     Compression settings, spelled out because -mx=9 alone is not the
+      #     maximum the format offers:
+      #       -mx=9                        LZMA2, best-ratio preset
+      #       -md=128m -mfb=273            -mx=9 leaves LZMA2 at a 64 MB
+      #                                    dictionary and 64 fast bytes; both are
+      #                                    raised (273 is LZMA2's own cap). 128 MB
+      #                                    even though the payload is smaller: it
+      #                                    only has to cover the whole tree, and
+      #                                    every further doubling costs ~10x the
+      #                                    dictionary in RAM per encode thread
+      #                                    (the runner has 7 GB, LZMA2 bt4 needs
+      #                                    a big multiple of the dictionary).
+      #       -ms=on                       one solid block. Thousands of small
+      #                                    files (qtlibs/, skins/, python/,
+      #                                    utilities/) then share their
+      #                                    redundancy instead of each starting a
+      #                                    fresh match context -- worth several
+      #                                    percent on this tree.
+      #       -mmt=on                      keep the encoder parallel
+      #
+      #     Both 7z calls run with the working directory set to
+      #     build/bin/Release so the tree lands at the archive root (Launchy.exe
+      #     next to qtlibs/, not under build/bin/Release/). That also decides
+      #     the internal layout of the symbols archive: it mirrors the tree
+      #     (plugins/Runner/Runner.pdb ...), so a debugger can be pointed at the
+      #     extracted folder and finds the binaries' expected relative paths.
+      # ------------------------------------------------------------------
+      - name: Package with 7-Zip
+        id: package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $release = "build/bin/${{ env.BUILD_TYPE }}"
+          if (-not (Test-Path (Join-Path $release 'Launchy.exe'))) {
+            Write-Host "::error::$release/Launchy.exe missing, nothing to package"
+            exit 1
+          }
+
+          # ---- 1) version ------------------------------------------------------
+          # Read from the header the binary was compiled with, never from a
+          # literal here: a release bump would otherwise keep naming the archive
+          # after the previous version while the exe inside says something else.
+          $hdr = Get-Content -LiteralPath 'src/Launchy/LaunchyVersion.h' -Raw
+          $nums = @{}
+          foreach ($k in 'MAJOR', 'MINOR', 'PATCH') {
+            $m = [regex]::Match($hdr, "#define\s+LAUNCHY_VERSION_${k}\s+(\d+)")
+            if (-not $m.Success) {
+              Write-Host "::error::LAUNCHY_VERSION_$k is not defined in src/Launchy/LaunchyVersion.h"
+              exit 1
+            }
+            $nums[$k] = $m.Groups[1].Value
+          }
+          $version = '{0}.{1}.{2}' -f $nums['MAJOR'], $nums['MINOR'], $nums['PATCH']
+          Write-Host "Launchy version: $version"
+
+          # ---- 2) 7-Zip --------------------------------------------------------
+          # windows-2022 ships 7-Zip; the fallbacks exist so a future image that
+          # drops it (or moves it off the default path) fails here with a clear
+          # message instead of at the packaging call.
+          $sevenZip = 'C:\Program Files\7-Zip\7z.exe'
+          if (-not (Test-Path $sevenZip)) {
+            $onPath = Get-Command 7z.exe -ErrorAction SilentlyContinue
+            if ($onPath) { $sevenZip = $onPath.Source }
+          }
+          if (-not (Test-Path $sevenZip)) {
+            $choco = Join-Path $env:ProgramData 'chocolatey\bin\choco.exe'
+            if (-not (Test-Path $choco)) {
+              Write-Host "::error::neither 7-Zip nor chocolatey is present on the runner"
+              exit 1
+            }
+            Write-Host "7-Zip not found, installing 7zip.install ..."
+            & $choco install 7zip.install -y --no-progress
+            if (-not (Test-Path $sevenZip)) {
+              Write-Host "::error::installing 7-Zip did not produce $sevenZip"
+              exit 1
+            }
+          }
+          Write-Host "7-Zip: $sevenZip"
+
+          # ---- 3) what gets split ---------------------------------------------
+          $releaseFull = (Resolve-Path -LiteralPath $release).Path
+          $pdbFiles = @(Get-ChildItem -LiteralPath $release -Filter '*.pdb' -Recurse -File)
+          if ($pdbFiles.Count -eq 0) {
+            # Not tolerated: the workflow builds Release with debug info on
+            # purpose, so an empty symbols archive means the toolchain config
+            # changed and the split silently stopped doing anything.
+            Write-Host "::error::no *.pdb under $release -- the symbols archive would be empty"
+            exit 1
+          }
+
+          # Absolute on purpose: both 7z calls below run with the working
+          # directory inside build/bin/Release, so a relative archive path would
+          # drop the .7z into the tree being archived (and the second call would
+          # pack the first archive into the second one).
+          $outDir = Join-Path $env:GITHUB_WORKSPACE 'build/pkg'
+          if (Test-Path $outDir) { Remove-Item -LiteralPath $outDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+          $appArc = Join-Path $outDir "Launchy-v$version-win-x64.7z"
+          $pdbArc = Join-Path $outDir "Launchy-v$version-win-x64-pdb.7z"
+          $zargs  = @('-t7z', '-m0=lzma2', '-mx=9', '-md=128m', '-mfb=273', '-ms=on', '-mmt=on')
+
+          Push-Location $release
+          try {
+            # 'a' appends to an existing archive, so the stale-file risk is real:
+            # the outDir purge above is what guarantees a clean archive even if
+            # the step is re-run in the same workspace.
+
+            # ---- 3a) app tree, symbols excluded -------------------------------
+            # -xr!*.pdb is recursive, which is what also keeps
+            # plugins/<Name>/<Name>.pdb out of the runtime archive. -r is passed
+            # even though the add command already walks subdirectories: it makes
+            # the mask's recursion explicit rather than implied.
+            Write-Host "=== $(Split-Path $appArc -Leaf) (PDBs excluded) ==="
+            $prevEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            & $sevenZip a @zargs $appArc '*' '-r' '-xr!*.pdb'
+            $appExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevEap
+            if ($appExit -ne 0) {
+              Write-Host "::error::7z failed on the app archive (exit $appExit)"
+              exit 1
+            }
+
+            # ---- 3b) symbols only --------------------------------------------
+            # '*.pdb' plus -r walks the tree for that mask and stores the paths
+            # relative to the current directory, i.e. the same layout as 3a.
+            Write-Host "=== $(Split-Path $pdbArc -Leaf) ($($pdbFiles.Count) PDB(s)) ==="
+            $prevEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            & $sevenZip a @zargs $pdbArc '*.pdb' '-r'
+            $pdbExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevEap
+            if ($pdbExit -ne 0) {
+              Write-Host "::error::7z failed on the symbols archive (exit $pdbExit)"
+              exit 1
+            }
+          }
+          finally {
+            Pop-Location
+          }
+
+          # ---- 4) verify what went into the archives ---------------------------
+          # Exit code 0 proves neither that the exclusion worked nor that every
+          # symbol made it in, so both archives are listed back and compared
+          # against the tree on disk. -slt prints "Path = <name>" per entry; the
+          # first block describes the archive itself, hence Skip 1.
+          $prevEap = $ErrorActionPreference
+          $ErrorActionPreference = 'Continue'
+          $appList = & $sevenZip l -slt $appArc
+          $pdbList = & $sevenZip l -slt $pdbArc
+          $ErrorActionPreference = $prevEap
+          $appPaths = @($appList | Where-Object { $_ -like 'Path = *' } |
+                        ForEach-Object { ($_ -replace '^Path = ', '').Trim() } | Select-Object -Skip 1)
+          $arcPdb   = @($pdbList | Where-Object { $_ -like 'Path = *' } |
+                        ForEach-Object { ($_ -replace '^Path = ', '').Trim() } | Select-Object -Skip 1)
+
+          $leaked = @($appPaths | Where-Object { $_ -like '*.pdb' })
+          if ($leaked.Count -gt 0) {
+            Write-Host "::error::the app archive still contains PDBs: $($leaked -join ', ')"
+            exit 1
+          }
+          if ($appPaths -notcontains 'Launchy.exe') {
+            Write-Host "::error::Launchy.exe is not at the root of $appArc -- the archive root is wrong, the app would unpack to a nested folder"
+            exit 1
+          }
+
+          # Compare the symbol archives as path sets (separators normalised,
+          # since 7z may store either form) so a nested plugin PDB that landed
+          # at the wrong depth is caught too, not just a missing count.
+          $diskPdb = @($pdbFiles | ForEach-Object {
+            $_.FullName.Substring($releaseFull.Length).TrimStart('\') -replace '\\', '/'
+          })
+          $arcNorm = @($arcPdb | ForEach-Object { $_ -replace '\\', '/' })
+          if ($arcNorm.Count -ne $diskPdb.Count) {
+            Write-Host "::error::the symbols archive holds $($arcNorm.Count) of $($diskPdb.Count) PDBs from $release"
+            exit 1
+          }
+          $lost = @($diskPdb | Where-Object { $arcNorm -notcontains $_ })
+          if ($lost.Count -gt 0) {
+            Write-Host "::error::these symbols are missing from $(Split-Path $pdbArc -Leaf) : $($lost -join ', ')"
+            exit 1
+          }
+          Write-Host "symbols split: $($arcNorm.Count) PDB(s) in the symbols archive, 0 in the app archive"
+
+          # ---- 5) report -------------------------------------------------------
+          $rawSize = (Get-ChildItem -LiteralPath $release -Recurse -File |
+                      Measure-Object -Property Length -Sum).Sum
+          $appSize = (Get-Item -LiteralPath $appArc).Length
+          $pdbSize = (Get-Item -LiteralPath $pdbArc).Length
+          if (-not $rawSize) { $rawSize = 0 }
+          Write-Host ("tree {0:N1} MB -> app {1:N1} MB ({2} entries) + pdb {3:N1} MB ({4} entries)" -f `
+            ($rawSize / 1MB), ($appSize / 1MB), $appPaths.Count, ($pdbSize / 1MB), $arcNorm.Count)
+
+          @(
+            "### Launchy $version (win-x64)",
+            "",
+            "| archive | size |",
+            "| --- | ---: |",
+            ("| ``{0}`` | {1:N1} MB |" -f (Split-Path $appArc -Leaf), ($appSize / 1MB)),
+            ("| ``{0}`` | {1:N1} MB |" -f (Split-Path $pdbArc -Leaf), ($pdbSize / 1MB)),
+            "",
+            ("Uncompressed tree: {0:N1} MB ({1} entries with symbols)." -f ($rawSize / 1MB), ($appPaths.Count + $arcNorm.Count))
+          ) | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+          "version=$version" |
+            Out-File -Append -FilePath $env:GITHUB_OUTPUT -Encoding utf8
+          "app_archive=$appArc" |
+            Out-File -Append -FilePath $env:GITHUB_OUTPUT -Encoding utf8
+          "pdb_archive=$pdbArc" |
+            Out-File -Append -FilePath $env:GITHUB_OUTPUT -Encoding utf8
+
+      # ------------------------------------------------------------------
+      # 12) Upload the runnable archive
+      #     build/bin/Release holds the exe, the Qt runtime (root Qt DLLs +
+      #     qtlibs/), plugins/, python/ (stdlib zip + extension modules + pruned
+      #     PySide2), skins/, utilities/ and the app translations -- i.e. a tree
+      #     that runs stand-alone, minus the symbols.
+      #     compression-level 0: the payload is already a -mx=9 LZMA2 archive,
+      #     so letting upload-artifact deflate it again only costs runner time.
       # ------------------------------------------------------------------
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LaunchyQt-${{ env.BUILD_TYPE }}-x64
-          path: build/bin
-          if-no-files-found: warn
+          name: Launchy-v${{ steps.package.outputs.version }}-win-x64
+          path: ${{ steps.package.outputs.app_archive }}
+          compression-level: 0
+          if-no-files-found: error
+
+      # ------------------------------------------------------------------
+      # 13) Upload the symbols archive
+      #     Separate artifact, not a second file in the one above: the whole
+      #     point of the split is that a normal downloader never pulls it.
+      # ------------------------------------------------------------------
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: Launchy-v${{ steps.package.outputs.version }}-win-x64-pdb
+          path: ${{ steps.package.outputs.pdb_archive }}
+          compression-level: 0
+          if-no-files-found: error
