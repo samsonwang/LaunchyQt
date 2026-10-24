@@ -24,7 +24,7 @@ from future_ntpath import expandvars
 from PySide2 import QtCore, QtGui, QtWidgets
 from shiboken2 import wrapInstance, getCppPointer
 
-from PyDiry import PyDiryGui
+from Diry import DiryGui
 
 class DiryPy(launchy.Plugin):
     __version__ = "1.1"
@@ -139,8 +139,11 @@ class DiryPy(launchy.Plugin):
         catItem = inputDataList[-1].getTopResult()
         if catItem.fullPath().endswith(".dirypy"):
             # Launch the directory itself
+            # shortName is a method: without the parentheses the lookup below
+            # raised AttributeError inside CaselessDict.__getitem__ and the
+            # bare except swallowed it, so a bare alias never opened anything.
             try:
-                path = self.dirs[catItem.shortName]
+                path = self.dirs[catItem.shortName()]
                 launchy.runProgram(path, "")
             except:
                 pass
@@ -151,7 +154,7 @@ class DiryPy(launchy.Plugin):
     def doDialog(self, parentWidgetPtr):
         parentWidget = wrapInstance(parentWidgetPtr, QtWidgets.QWidget)
 
-        self.widget = PyDiryGui.PyDiryUi(parentWidget, self.setting_dir)
+        self.widget = DiryGui.DiryOption(parentWidget, self.setting_dir)
         self.widget.show()
 
         return getCppPointer(self.widget)[0]

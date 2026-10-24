@@ -51,10 +51,12 @@ private:
     void endDialog(bool accept);
     QString getIcon() const;
 
-    void initIconDir();
+    void initIconCache();
+    QString iconCachePath(HWND hWnd) const;
 
 private:
     QString m_libPath;
+    QString m_iconCacheDir;
 
     const QString LABEL_TASKY;
 };

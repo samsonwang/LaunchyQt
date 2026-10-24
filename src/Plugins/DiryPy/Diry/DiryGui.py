@@ -5,8 +5,8 @@ from PySide2.QtWidgets import QApplication, QWidget, QDialog, QFileDialog
 
 import launchy
 
-from .ui_pydiry import *
-from .ui_pydiry_new_entry import *
+from .ui_diry import *
+from .ui_diry_new_entry import *
 
 class NewDirectoryEntryDialog(QDialog):
     def __init__(self, parent=None):
@@ -31,7 +31,7 @@ class NewDirectoryEntryDialog(QDialog):
                 self.isValid = True
                 QtWidgets.QDialog.accept(self)
         except Exception as err:
-            print("PyDiryPy, exception catched on new directory dialog accept,", err)
+            print("DiryPy, exception catched on new directory dialog accept,", err)
 
     def reject(self):
         QtWidgets.QDialog.reject(self)
@@ -42,18 +42,18 @@ class NewDirectoryEntryDialog(QDialog):
                                                              ".")
                                                              #self.ui.directoryLineEdit.text())
         except Exception as err:
-            print("PyDiryPy, exception catched on selectDirectory_clicked,", err)
+            print("DiryPy, exception catched on selectDirectory_clicked,", err)
 
         nativeDir = QtCore.QDir.toNativeSeparators(dir)
         self.ui.directoryLineEdit.setText(nativeDir)
 
 
-class PyDiryUi(QWidget):
+class DiryOption(QWidget):
     def __init__(self, parent=None,setting_dir=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.setting_dir = setting_dir
         self.cell_changed = False
-        self.ui = Ui_PyDiryWidget()
+        self.ui = Ui_DiryWidget()
         self.ui.setupUi(self)
         self.__loadSettings()
         self.ui.entriesTable.cellChanged['int','int'].connect(self.entriesTable_cellChanged)
@@ -79,7 +79,7 @@ class PyDiryUi(QWidget):
             self.ui.entriesTable.removeRow(currentRow)
 
     def entriesTable_cellChanged(self, row, col):
-        print("PyDiryUi, entriesTable_cellChanged", row, col)
+        print("DiryGui, entriesTable_cellChanged", row, col)
         self.cell_changed = True
 
     def writeSettings(self):

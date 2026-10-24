@@ -491,7 +491,7 @@ foreach (pyPluginName ${PYTHON_PLUGINS})
   set (pyPluginDest "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/${pyPluginName}")
 
   # __pycache__ sits at the plugin root and inside every packaged helper folder
-  # (Calcy/, PyDiry/, WebSearch/), so the source paths are rewritten to their
+  # (Calcy/, Diry/, WebSearch/), so the source paths are rewritten to their
   # counterparts in the output tree. GLOB_RECURSE keeps this independent of
   # how deep a helper package nests. Like the glob above it walks runtime data,
   # not build inputs, so it stays.

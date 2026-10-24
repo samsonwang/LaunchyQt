@@ -772,8 +772,10 @@ jobs:
           }
 
           # 2) the copied sources must at least parse. Parsing only reads the
-          #    source, so no PySide2 is needed here. utf-8-sig matters: DiryPy.py
-          #    starts with a UTF-8 BOM and plain utf-8 makes ast.parse reject it.
+          #    source, so no PySide2 is needed here. Plain utf-8 is the contract:
+          #    .editorconfig pins charset = utf-8 (no BOM) and every plugin source
+          #    is BOM-free, so a BOM sneaking back in now fails here on purpose
+          #    (ast.parse rejects the U+FEFF lead character).
           $py = "${{ steps.setup-python.outputs.python-path }}"
           $parseCheck = @'
           import ast, os, sys
@@ -788,7 +790,7 @@ jobs:
                   path = os.path.join(dirpath, name)
                   count += 1
                   try:
-                      ast.parse(open(path, encoding='utf-8-sig').read(), filename=path)
+                      ast.parse(open(path, encoding='utf-8').read(), filename=path)
                   except SyntaxError as err:
                       print('SYNTAX ERROR %s: %s' % (path, err))
                       sys.exit(1)
@@ -842,7 +844,7 @@ jobs:
           py2only = set(['ConfigParser', 'StringIO'])
           names = set()
           for path in pathlib.Path(root).rglob('*.py'):
-              for line in path.read_text(encoding='utf-8-sig', errors='ignore').splitlines():
+              for line in path.read_text(encoding='utf-8', errors='ignore').splitlines():
                   m = pat.match(line)
                   if m:
                       names.add((m.group(1) or m.group(2)).split('.')[0])

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pydiry.ui',
-# licensing of 'pydiry.ui' applies.
+# Form implementation generated from reading ui file 'diry.ui',
+# licensing of 'diry.ui' applies.
 #
 # Created: Fri Sep 25 14:09:12 2026
 #      by: pyside2-uic  running on PySide2 5.12.6
@@ -10,13 +10,13 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-class Ui_PyDiryWidget(object):
-    def setupUi(self, PyDiryWidget):
-        PyDiryWidget.setObjectName("PyDiryWidget")
-        PyDiryWidget.resize(375, 360)
-        self.verticalLayout = QtWidgets.QVBoxLayout(PyDiryWidget)
+class Ui_DiryWidget(object):
+    def setupUi(self, DiryWidget):
+        DiryWidget.setObjectName("DiryWidget")
+        DiryWidget.resize(375, 360)
+        self.verticalLayout = QtWidgets.QVBoxLayout(DiryWidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.entriesTable = QtWidgets.QTableWidget(PyDiryWidget)
+        self.entriesTable = QtWidgets.QTableWidget(DiryWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -36,29 +36,29 @@ class Ui_PyDiryWidget(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.addEntryButton = QtWidgets.QPushButton(PyDiryWidget)
+        self.addEntryButton = QtWidgets.QPushButton(DiryWidget)
         self.addEntryButton.setObjectName("addEntryButton")
         self.horizontalLayout.addWidget(self.addEntryButton)
         spacerItem1 = QtWidgets.QSpacerItem(58, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
-        self.removeEntryButton = QtWidgets.QPushButton(PyDiryWidget)
+        self.removeEntryButton = QtWidgets.QPushButton(DiryWidget)
         self.removeEntryButton.setObjectName("removeEntryButton")
         self.horizontalLayout.addWidget(self.removeEntryButton)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem2)
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.retranslateUi(PyDiryWidget)
-        QtCore.QObject.connect(self.addEntryButton, QtCore.SIGNAL("clicked()"), PyDiryWidget.addEntry_clicked)
-        QtCore.QObject.connect(self.removeEntryButton, QtCore.SIGNAL("clicked()"), PyDiryWidget.removeEntry_clicked)
-        QtCore.QMetaObject.connectSlotsByName(PyDiryWidget)
+        self.retranslateUi(DiryWidget)
+        QtCore.QObject.connect(self.addEntryButton, QtCore.SIGNAL("clicked()"), DiryWidget.addEntry_clicked)
+        QtCore.QObject.connect(self.removeEntryButton, QtCore.SIGNAL("clicked()"), DiryWidget.removeEntry_clicked)
+        QtCore.QMetaObject.connectSlotsByName(DiryWidget)
 
-    def retranslateUi(self, PyDiryWidget):
-        PyDiryWidget.setWindowTitle(QtWidgets.QApplication.translate("PyDiryWidget", "PyDiryPy - Launch items from directories", None, -1))
-        self.entriesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("PyDiryWidget", "Name", None, -1))
-        self.entriesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("PyDiryWidget", "Path", None, -1))
-        self.addEntryButton.setToolTip(QtWidgets.QApplication.translate("PyDiryWidget", "Add a new entry", None, -1))
-        self.addEntryButton.setText(QtWidgets.QApplication.translate("PyDiryWidget", "+", None, -1))
-        self.removeEntryButton.setToolTip(QtWidgets.QApplication.translate("PyDiryWidget", "Remove the selected entry", None, -1))
-        self.removeEntryButton.setText(QtWidgets.QApplication.translate("PyDiryWidget", "-", None, -1))
+    def retranslateUi(self, DiryWidget):
+        DiryWidget.setWindowTitle(QtWidgets.QApplication.translate("DiryWidget", "DiryPy - Launch items from directories", None, -1))
+        self.entriesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("DiryWidget", "Name", None, -1))
+        self.entriesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("DiryWidget", "Path", None, -1))
+        self.addEntryButton.setToolTip(QtWidgets.QApplication.translate("DiryWidget", "Add a new entry", None, -1))
+        self.addEntryButton.setText(QtWidgets.QApplication.translate("DiryWidget", "+", None, -1))
+        self.removeEntryButton.setToolTip(QtWidgets.QApplication.translate("DiryWidget", "Remove the selected entry", None, -1))
+        self.removeEntryButton.setText(QtWidgets.QApplication.translate("DiryWidget", "-", None, -1))
 

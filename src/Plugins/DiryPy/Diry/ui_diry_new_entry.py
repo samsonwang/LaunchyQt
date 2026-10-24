@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pydiry_new_entry.ui',
-# licensing of 'pydiry_new_entry.ui' applies.
+# Form implementation generated from reading ui file 'diry_new_entry.ui',
+# licensing of 'diry_new_entry.ui' applies.
 #
 # Created: Fri Sep 25 14:09:31 2026
 #      by: pyside2-uic  running on PySide2 5.12.6

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PyDiryWidget</class>
- <widget class="QWidget" name="PyDiryWidget">
+ <class>DiryWidget</class>
+ <widget class="QWidget" name="DiryWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>PyDiryPy - Launch items from directories</string>
+   <string>DiryPy - Launch items from directories</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -110,7 +110,7 @@
   <connection>
    <sender>addEntryButton</sender>
    <signal>clicked()</signal>
-   <receiver>PyDiryWidget</receiver>
+   <receiver>DiryWidget</receiver>
    <slot>addEntry_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -126,7 +126,7 @@
   <connection>
    <sender>removeEntryButton</sender>
    <signal>clicked()</signal>
-   <receiver>PyDiryWidget</receiver>
+   <receiver>DiryWidget</receiver>
    <slot>removeEntry_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
