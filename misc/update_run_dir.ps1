@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Update the artifacts built by this project (LaunchyQt) into the production run directory
     (D:\Program Files\Launchy by default).

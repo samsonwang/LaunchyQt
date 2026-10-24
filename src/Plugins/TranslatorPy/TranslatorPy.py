@@ -64,7 +64,7 @@ class TranslatorPy(launchy.Plugin):
         # press tab to query
         if len(inputDataList) < 3:
             item = CatItem('press tab to translate' , text,
-                           self.getID(), self.getIcon())
+                           self.getName(), self.getIcon())
             item.setUsage(50000)
             resultsList.append(item)
             return
@@ -78,7 +78,7 @@ class TranslatorPy(launchy.Plugin):
 
         print('TranslatorPy, getResults, ret:', ret)
         item = CatItem(text+".translatorpy", ret['result'],
-                       self.getID(), self.getIcon())
+                       self.getName(), self.getIcon())
         item.setUsage(50000)
         resultsList.append(item)
 

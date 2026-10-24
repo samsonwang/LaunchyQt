@@ -91,7 +91,9 @@ class PyDiryUi(QWidget):
         for i in range(0, table.rowCount()):
             nameItem = table.item(i,0)
             pathItem = table.item(i,1)
-            if nameItem == None or pathItem == None:
+            # PySide2 raises NotImplementedError for QTableWidgetItem == None,
+            # so the identity test has to use "is"
+            if nameItem is None or pathItem is None:
                 itemsToRemove.append(i)
             elif nameItem.text() == "" or pathItem.text() == "":
                 itemsToRemove.append(i)
