@@ -13,7 +13,9 @@
 #
 # The sites are not hit on every launchy start: the time an icon was fetched
 # and the time a fetch failed are kept per host in one state file, and a host
-# is only asked again when both are older than a week.
+# is only asked again when both are older than a week. The same file also
+# records when the cache was last topped up as a whole, which is what lets the
+# plugin throttle that topping-up across a restart.
 
 import html
 import json
@@ -63,12 +65,23 @@ FAILURE_TTL = 3 * 24 * 3600
 # one refresh a week is enough.
 SUCCESS_TTL = 7 * 24 * 3600
 
+# Topping the cache up as a whole (prefetch) is throttled to this: the ttls
+# above are day-level, so an attempt more often buys nothing, and one attempt
+# is not free either -- a stat pair per host plus, through the plugin, a
+# settings read and possibly a parse of the whole ini, all on the gui thread.
+# The stamp of the last attempt lives in the state file, so a restart inside
+# the window does not run it a second time.
+REFRESH_INTERVAL = 12 * 3600
+
 # <app temp dir>/WebSearchPy, the plugin keeps its downloaded icons there
 CACHE_DIR_NAME = "WebSearchPy"
 
 # Per host, when its icon was last downloaded and when a download of it last
 # failed. Both in one file, they say together whether a host is worth a request:
-# {"ok": {host: epoch}, "failed": {host: epoch}}
+# {"ok": {host: epoch}, "failed": {host: epoch}, "refreshed": epoch}
+# "refreshed" is when the cache was last topped up as a whole (prefetch or
+# refresh); the plugin throttles its launchyShow refresh on it, and it is
+# persisted so the throttle window survives a restart.
 STATE_FILE = "favicons.json"
 
 # Max bytes read from a response, a favicon is small and a homepage only needs
@@ -116,6 +129,20 @@ def pruneStamps(mapping, now, ttl):
     return kept
 
 
+# The stamp of the last refresh, as read back from the state file. Only a
+# number in the past is trusted: one from the future (a clock that jumped, a
+# hand-edited file) would hold every refresh back until time reached it, so it
+# counts as "never refreshed" instead.
+def saneStamp(value, now):
+    try:
+        stamp = float(value)
+    except Exception:
+        return 0.0
+    if stamp <= 0 or stamp > now + 60:
+        return 0.0
+    return stamp
+
+
 # Extract the host of a search engine url. The url still holds the "%s" of the
 # query, urlsplit() does not care about it.
 def hostOf(url):
@@ -154,6 +181,7 @@ class FaviconCache:
         self.m_missing = set()  # hosts already checked and not on disk
         self.m_done = {}      # host -> epoch of the last successful download
         self.m_failed = {}    # host -> epoch of the last failed download
+        self.m_lastRefresh = 0.0  # epoch of the last prefetch()/refresh()
         self.m_pending = set()  # hosts queued for the download thread
         self.m_refreshHosts = set()  # hosts forced past __isFresh by refresh()
         self.m_enabled = True
@@ -231,7 +259,21 @@ class FaviconCache:
         self.__startWorkers()
         self.m_queue.put(url)
 
-    def prefetch(self, urls):
+    def prefetch(self, urls, force=False):
+        # Throttled on the stamp of the last attempt, which the state file
+        # persists: a launchy that starts inside the window does not run it
+        # again. force is for the callers whose settings just changed, a new
+        # engine has to get its icon now rather than after the window.
+        if not force:
+            elapsed = time.time() - self.lastRefresh()
+            if elapsed < REFRESH_INTERVAL:
+                log.debug("FaviconCache::prefetch, last refresh %.0fs ago, "
+                          "skipped" % elapsed)
+                return
+        # The attempt counts even when every host turns out to be young: it is
+        # the attempt the throttle is on, and the stamp is what a restart reads
+        # back.
+        self.__stampRefresh()
         # A new proxy can reach hosts the old one could not, so a change makes
         # the sites worth another try instead of waiting out the failure ttl.
         self.__forgetFailuresOnProxyChange()
@@ -262,6 +304,9 @@ class FaviconCache:
             self.m_missing.clear()
             self.m_done.clear()
             self.m_failed.clear()
+            # A wiped cache is re-warmed at once, not held back by the stamp
+            # that was in the state file it just deleted.
+            self.m_lastRefresh = 0.0
 
     # Soft refresh: re-fetch the listed sites but keep their previous icons
     # on disk. A host whose re-fetch fails keeps its old .png, unlike clear()
@@ -290,9 +335,10 @@ class FaviconCache:
             self.m_refreshHosts.clear()
             self.m_refreshHosts |= hosts
 
-        # Persist the cleared failure records so a crash mid-refresh does not
-        # bring back the old "recently failed" gate on the next start.
-        self.__saveState()
+        # Persist the cleared failure records and the refresh stamp, so a
+        # crash mid-refresh does not bring back the old "recently failed" gate
+        # on the next start.
+        self.__stampRefresh()
 
         # A .tmp leftover is from a write that was interrupted, it is never
         # useful now and would shadow nothing, so it is cleaned up here. The
@@ -317,6 +363,27 @@ class FaviconCache:
                     self.m_dir = self.__resolveCacheDir()
         return self.m_dir
 
+    # Epoch of the last refresh of the cache as a whole (prefetch or refresh),
+    # 0.0 when it was never refreshed. It is kept in the state file, so a
+    # launchy started minutes after the last refresh still sees the young
+    # stamp and leaves the sites alone. Resolves the cache dir, which is what
+    # loads the stamp from the file on the first call; the in-memory value
+    # keeps the throttle working even when the file cannot be written.
+    def lastRefresh(self):
+        self.cacheDir()
+        with self.m_lock:
+            return self.m_lastRefresh
+
+    # True when topping the cache up is worth an attempt: fetching is on and
+    # the last attempt is older than REFRESH_INTERVAL. Cheap -- a flag plus the
+    # persisted stamp, and not even the stamp before the cache dir has been
+    # resolved once -- so the gui thread can ask on every hotkey before any of
+    # the work a refresh costs. prefetch() throttles itself as well; this is
+    # only the early, free exit for the hotkey path.
+    def dueForRefresh(self):
+        return (self.isEnabled()
+                and time.time() - self.lastRefresh() >= REFRESH_INTERVAL)
+
     # --------------------------------------------------------------- private
 
     # The icons are throwaway data, a host whose record expired is fetched
@@ -336,7 +403,8 @@ class FaviconCache:
         if base:
             path = os.path.join(base, CACHE_DIR_NAME)
             if self.__ensureDir(path):
-                self.m_done, self.m_failed = self.__loadState(path)
+                self.m_done, self.m_failed, self.m_lastRefresh = \
+                    self.__loadState(path)
                 return path
 
         log.warning("FaviconCache::__resolveCacheDir, no writable cache dir found")
@@ -361,15 +429,17 @@ class FaviconCache:
             return ""
         return os.path.join(cacheDir, safeName(host) + ".png")
 
-    # The downloads and the failures of every host, read together.
+    # The downloads and the failures of every host, plus the stamp of the last
+    # refresh of the cache as a whole, read together.
     def __loadState(self, cacheDir):
         state = self.__readJson(os.path.join(cacheDir, STATE_FILE))
         if not isinstance(state, dict):
-            return {}, {}
+            return {}, {}, 0.0
 
         now = int(time.time())
         return (pruneStamps(state.get("ok"), now, SUCCESS_TTL),
-                pruneStamps(state.get("failed"), now, FAILURE_TTL))
+                pruneStamps(state.get("failed"), now, FAILURE_TTL),
+                saneStamp(state.get("refreshed"), now))
 
     def __readJson(self, path):
         if not os.path.isfile(path):
@@ -388,12 +458,24 @@ class FaviconCache:
         now = int(time.time())
         with self.m_lock:
             state = {"ok": pruneStamps(self.m_done, now, SUCCESS_TTL),
-                     "failed": pruneStamps(self.m_failed, now, FAILURE_TTL)}
+                     "failed": pruneStamps(self.m_failed, now, FAILURE_TTL),
+                     "refreshed": int(self.m_lastRefresh)}
         # Written through a temp file: launchy can exit while a worker is in
         # the middle of it, and a truncated file loses every record.
         if not self.__writeAtomic(os.path.join(cacheDir, STATE_FILE),
                                   json.dumps(state, sort_keys=True).encode("utf-8")):
             return
+
+    # Record a refresh of the cache as a whole and persist it right away: the
+    # stamp is the whole point, and a refresh that queued nothing (everything
+    # still young) would otherwise never reach the state file -- nothing else
+    # saves it. The in-memory value is set even when the write fails, so the
+    # throttle keeps working for the rest of this process either way.
+    def __stampRefresh(self):
+        now = int(time.time())
+        with self.m_lock:
+            self.m_lastRefresh = now
+        self.__saveState()
 
     # True when the icon of host is on disk and young enough to spare the site
     # another request. Called from request(), on the gui thread.

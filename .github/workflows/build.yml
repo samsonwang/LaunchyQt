@@ -839,7 +839,7 @@ jobs:
           # shipped by the build / the pruned PySide2 / optional 3rd party
           local = set(['launchy', 'launchy_util', 'PySide2', 'PySide6', 'shiboken2',
                        'bs4', 'requests', 'Calculator', 'CaselessDict',
-                       'future_ntpath', 'translator', 'WebSearch', 'Calcy', 'PyDiry'])
+                       'future_ntpath', 'translator', 'WebSearch', 'Calcy', 'Diry'])
           # python-2 only names, guarded by `sys.version_info[0] < 3` in the sources
           py2only = set(['ConfigParser', 'StringIO'])
           names = set()
