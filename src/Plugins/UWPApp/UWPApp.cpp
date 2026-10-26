@@ -68,6 +68,11 @@ PROPERTYKEY lookupPropertyKey(const wchar_t* name) {
 // buffer that is needed, which removes the fixed 512 character scratch buffer
 // used before: a long package path was silently truncated there, and the
 // failure of the conversion was not checked at all.
+//
+// A property that the shell publishes as an empty variant (VT_EMPTY, which is
+// how it reports "this entry has no value for that property") converts
+// successfully into an empty string. Such a property is therefore reported as
+// "not set" below, because the value carries no information.
 bool readPropertyString(IPropertyStore* store, const PROPERTYKEY& key, QString* value) {
     if (store == nullptr || value == nullptr || !isPropertyKeySet(key)) {
         return false;
@@ -88,6 +93,32 @@ bool readPropertyString(IPropertyStore* store, const PROPERTYKEY& key, QString* 
 
     PropVariantClear(&prop);
     return ok;
+}
+
+// Read a property that carries a boolean flag. Only an explicit TRUE counts:
+// the shell publishes such a property as an empty variant when the flag is
+// not set at all, and an unset flag must never be read as "the flag is on".
+bool readPropertyFlag(IPropertyStore* store, const PROPERTYKEY& key) {
+    if (store == nullptr || !isPropertyKeySet(key)) {
+        return false;
+    }
+
+    PROPVARIANT prop;
+    PropVariantInit(&prop);
+
+    bool value = false;
+    if (SUCCEEDED(store->GetValue(key, &prop))) {
+        const VARTYPE type = prop.vt & VT_TYPEMASK;
+        if (type == VT_BOOL) {
+            value = prop.boolVal != VARIANT_FALSE;
+        }
+        else if (type == VT_UI4) {
+            value = prop.ulVal != 0;
+        }
+    }
+
+    PropVariantClear(&prop);
+    return value;
 }
 
 // ---------------------------------------------------------------------------
@@ -289,16 +320,23 @@ const char* const kAssetQualifiers[] = {
 int scoreAssetFile(const QString& fileName, const QString& stem, const QString& extension) {
     const QString lower = fileName.toLower();
 
+    // The plate rank decides which variant wins. A package ships the same logo
+    // in a plated and an unplated flavour, and it appends a "contrast-" family
+    // on top of them. A file can carry BOTH markers at once, e.g.
+    // "Square44x44Logo.contrast-black.targetsize-44_altform-unplated.png", so
+    // the contrast test has to come first: such a file is a monochrome variant
+    // that the shell recolours, and it must not be mistaken for a regular
+    // unplated logo.
     int plate = 1;
-    if (lower.contains(QStringLiteral("altform-unplated"))) {
+    if (lower.contains(QStringLiteral("contrast-"))) {
+        plate = 0;      // high contrast / monochrome variants come last
+    }
+    else if (lower.contains(QStringLiteral("altform-unplated"))) {
         plate = 4;
     }
     else if (lower.contains(QStringLiteral("altform-lightunplated"))
              || lower.contains(QStringLiteral("_unplated"))) {
         plate = 3;
-    }
-    else if (lower.contains(QStringLiteral("contrast-"))) {
-        plate = 0;      // high contrast / monochrome variants come last
     }
 
     // Express both qualifier families as an approximate pixel size so they can
@@ -659,11 +697,12 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
     IShellItem* appFolder = nullptr;
     IEnumShellItems* enumShellItems = nullptr;
 
-    const PROPERTYKEY pkLauncherAppState = lookupPropertyKey(L"System.Launcher.AppState");
     const PROPERTYKEY pkSmallLogoPath = lookupPropertyKey(L"System.Tile.SmallLogoPath");
     const PROPERTYKEY pkAppUserModelID = lookupPropertyKey(L"System.AppUserModel.ID");
     const PROPERTYKEY pkInstallPath = lookupPropertyKey(L"System.AppUserModel.PackageInstallPath");
     const PROPERTYKEY pkPackageFullName = lookupPropertyKey(L"System.AppUserModel.PackageFullName");
+    const PROPERTYKEY pkPackageFamilyName = lookupPropertyKey(L"System.AppUserModel.PackageFamilyName");
+    const PROPERTYKEY pkExcludedFromLauncher = lookupPropertyKey(L"System.AppUserModel.ExcludedFromLauncher");
 
     do {
         if (FAILED(SHCreateItemFromParsingName(L"shell:AppsFolder",
@@ -701,24 +740,51 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
                     break;
                 }
 
-                // A UWP entry always carries a launch state. The check filters
-                // out the plain desktop shortcuts that also live in AppsFolder
-                // and that ActivateApplication could not start anyway.
-                QString appState;
-                if (!readPropertyString(propertyStore, pkLauncherAppState, &appState)) {
-                    break;
-                }
-
+                // The display name comes first: the filters below log it when
+                // they drop an entry.
                 wchar_t* name = nullptr;
                 if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &name))) {
                     shortName = QString::fromWCharArray(name);
                     CoTaskMemFree(name);
-                    qDebug() << "name: " << shortName;
+                    qDebug() << "UWPApp::getCatalog, name: " << shortName;
                 }
 
-                // Without an AppUserModelID the entry cannot be launched
+                // The AUMID is what ActivateApplication takes, so it decides
+                // what this entry is. It is read first because the filter
+                // below is built on it.
+                QString aumid;
                 if (!readPropertyString(propertyStore, pkAppUserModelID, &aumid)) {
                     qWarning() << "UWPApp::getCatalog, entry without an id:" << shortName;
+                    break;
+                }
+
+                // Only the packaged applications can be started through
+                // ActivateApplication. The AppsFolder holds the plain desktop
+                // shortcuts as well, and those carry an AUMID that the
+                // activation manager cannot resolve.
+                //
+                // The test is the package family name, not the launch state.
+                // The shell publishes "System.AppUserModel.PackageFamilyName"
+                // for the packaged entries only, and it is the property that
+                // states the meaning: a desktop shortcut belongs to no
+                // package, so it has no family name.
+                //
+                // The launch state ("System.Launcher.AppState") cannot be used
+                // for this: the shell publishes it for every entry of the
+                // folder, as an empty variant for the desktop shortcuts and as
+                // a number for the packaged ones. An empty variant converts
+                // into an empty string, so the old filter only worked by
+                // accident of the value type.
+                QString packageFamilyName;
+                if (!readPropertyString(propertyStore, pkPackageFamilyName, &packageFamilyName)) {
+                    break;
+                }
+
+                // A user can hide an application from the launcher. The
+                // property is only published for the entries that are hidden,
+                // so an unset property means "not hidden" and the entry stays.
+                if (readPropertyFlag(propertyStore, pkExcludedFromLauncher)) {
+                    qDebug() << "UWPApp::getCatalog, excluded from the launcher:" << shortName;
                     break;
                 }
 
@@ -788,9 +854,17 @@ void UWPApp::getResults(QList<launchy::InputData>* inputData, QList<launchy::Cat
 }
 
 void UWPApp::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* item) {
-    // Specify the appropriate COM threading model
-
-    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    // Specify the appropriate COM threading model. The GUI thread already lives
+    // in an apartment (Qt sets it up as STA), so this normally returns S_FALSE
+    // and only bumps the per-thread count: the matching CoUninitialize below
+    // still has to run in that case. RPC_E_CHANGED_MODE means the thread sits in
+    // another apartment and the count must not be touched at all, so the
+    // uninitialize is skipped for that result only.
+    const HRESULT hrCoInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    if (FAILED(hrCoInit)) {
+        qWarning() << "UWPApp::launchItem, fail to initialize COM, HR is" << hrCoInit;
+    }
+    const bool needUninitialize = SUCCEEDED(hrCoInit);
 
     IApplicationActivationManager* pAAM = nullptr;
     HRESULT hr = CoCreateInstance(CLSID_ApplicationActivationManager,
@@ -799,6 +873,9 @@ void UWPApp::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* 
                                   IID_PPV_ARGS(&pAAM));
     if (FAILED(hr)) {
         qWarning() << "UWPApp::launchItem, fail to create CoCreateInstance, HR is" << hr;
+        if (needUninitialize) {
+            CoUninitialize();
+        }
         return;
     }
 
@@ -806,14 +883,19 @@ void UWPApp::launchItem(QList<launchy::InputData>* inputData, launchy::CatItem* 
     hr = pAAM->ActivateApplication(item->fullPath.toStdWString().c_str(), L"", AO_NONE, &pid);
     if (FAILED(hr)) {
         qWarning() << "UWPApp::launchItem, Error in ActivateApplication call & HR is " << hr;
-        return;
     }
 
-    if (hr == 0) {
+    if (SUCCEEDED(hr)) {
         qDebug() << "UWPApp::launchItem, Activated " << item->fullPath << " with pid " << pid;
     }
 
-    CoUninitialize();
+    // The activation manager is released on every path, otherwise every launch
+    // leaks one COM object.
+    pAAM->Release();
+
+    if (needUninitialize) {
+        CoUninitialize();
+    }
 }
 
 void UWPApp::doDialog(QWidget* parent, QWidget** dialog) {
