@@ -63,7 +63,7 @@
      <item>
       <widget class="QPushButton" name="refreshIconButton">
        <property name="toolTip">
-        <string>Drop the downloaded icons and fetch them again</string>
+        <string>Fetch the icons of the listed sites again, a site that fails keeps its current icon</string>
        </property>
        <property name="text">
         <string>Refresh icons</string>

@@ -3,11 +3,11 @@
 
 defaultSetting = {
     "gg": {
-        "url": "https://www.google.com/search?q=%s&oq=hello&sourceid=chrome&ie=UTF-8",
+        "url": "https://www.google.com/search?q=%s",
         "name": "Google"
     },
     "gt":{
-        "url": "https://translate.google.com/?hl=en&tab=wT#en/zh-CN/%s",
+        "url": "https://translate.google.com/?sl=auto&tl=zh-CN&text=%s&op=translate",
         "name": "Google Translate"
     },
     "ii": {
@@ -19,7 +19,7 @@ defaultSetting = {
         "name": "Baidu"
     },
     "bt": {
-        "url": "https://fanyi.baidu.com/?aldtype=85#en/zh/%s",
+        "url": "https://fanyi.baidu.com/mtpe-individual/transText?query=%s&lang=en2zh",
         "name": "Baidu Translation"
     },
     "gmap": {
@@ -59,11 +59,11 @@ defaultSetting = {
         "name": "IEEE"
     },
     "man": {
-        "url": "https://www.freebsd.org/cgi/man.cgi?query=%s",
+        "url": "https://man.archlinux.org/search?q=%s",
         "name": "Linux Man Page"
     },
     "cygwin": {
-        "url": "https://cygwin.com/cgi-bin2/package-grep.cgi?grep=%s&arch=x86",
+        "url": "https://cygwin.com/cgi-bin2/package-grep.cgi?grep=%s&arch=x86_64",
         "name": "cygwin package search"
     },
 }

@@ -70,7 +70,7 @@ class Ui_WebSearchWidget(object):
         self.entriesTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("WebSearchWidget", "Url", None, -1))
         self.fetchFaviconCheckBox.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Download the icon of every site once and show it in the results", None, -1))
         self.fetchFaviconCheckBox.setText(QtWidgets.QApplication.translate("WebSearchWidget", "Fetch site icons", None, -1))
-        self.refreshIconButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Drop the downloaded icons and fetch them again", None, -1))
+        self.refreshIconButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Fetch the icons of the listed sites again, a site that fails keeps its current icon", None, -1))
         self.refreshIconButton.setText(QtWidgets.QApplication.translate("WebSearchWidget", "Refresh icons", None, -1))
         self.addEntryButton.setToolTip(QtWidgets.QApplication.translate("WebSearchWidget", "Add a new entry", None, -1))
         self.addEntryButton.setText(QtWidgets.QApplication.translate("WebSearchWidget", "+", None, -1))

@@ -119,9 +119,21 @@ class WebSearchPy(Plugin):
             log.debug("WebSearchPy::__readConfig, read from config, count: %s" % size)
             for i in range(0, size):
                 settings.setArrayIndex(i)
-                key = settings.value("key")
-                name = settings.value("name")
-                url = settings.value("url")
+                # A hand-edited ini can lose an entry, and value() answers None
+                # for it: as a dict key that is an engine no input can ever
+                # match, as a name it would print as "None" in the result.
+                key = str(settings.value("key", "") or "")
+                name = settings.value("name", "") or ""
+                url = settings.value("url", "") or ""
+                if not key:
+                    log.warning("WebSearchPy::__readConfig, entry %d has no key, skipped" % i)
+                    continue
+                if key in self.searchEngine:
+                    # The dict would silently overwrite the first entry, which
+                    # is the one the option dialog keeps.
+                    log.warning("WebSearchPy::__readConfig, duplicate key %s, "
+                                "the first entry is kept" % key)
+                    continue
                 self.searchEngine[key] = {"name":name, "url": url}
         settings.endArray()
         log.debug("WebSearchPy::__readConfig: %s" % self.searchEngine)

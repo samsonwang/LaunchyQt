@@ -131,7 +131,8 @@ void IconExtractor::run() {
 }
 
 QIcon IconExtractor::getIcon(const CatItem& item) {
-    qDebug() << "IconExtractor::getIcon, fetching icon for" << item.fullPath;
+    qDebug() << "IconExtractor::getIcon, fetching icon for"
+        << item.fullPath << item.iconPath;
 
 #ifdef Q_OS_MAC
     if (item.iconPath.endsWith(".png") || item.iconPath.endsWith(".ico"))
