@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "InputData.h"
 
-#include <QDataStream>
-
 namespace launchy {
 
 InputData::InputData() {
@@ -72,30 +70,6 @@ const CatItem& InputData::getTopResult() const {
 
 void InputData::setTopResult(const CatItem& sr) {
     m_topResult = sr;
-}
-
-QDataStream& operator<<(QDataStream& out, const InputData& inputData) {
-    out << inputData.m_text;
-    out << inputData.m_labels;
-    out << inputData.m_topResult;
-    // The plugin name field is gone from the class (a query's owner is expressed
-    // with CatItem::pluginName, and a per-pass claim with a label), but the slot
-    // stays in the stream: CommandHistory has no version header, it just reads
-    // InputDataList records back to back, so dropping one field would make every
-    // existing history file misparse from the first record on -- and a bogus
-    // length read into a QString container can make QDataStream allocate wildly
-    // before it gives up.
-    out << QString();
-    return out;
-}
-
-QDataStream& operator>>(QDataStream& in, InputData& inputData) {
-    in >> inputData.m_text;
-    in >> inputData.m_labels;
-    in >> inputData.m_topResult;
-    QString legacyPluginName;
-    in >> legacyPluginName; // write-only slot, see operator<<
-    return in;
 }
 
 } // namespace launchy

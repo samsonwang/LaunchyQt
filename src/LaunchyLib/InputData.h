@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyLib.h"
 #include "CatalogItem.h"
 
-class QDataStream;
-
 /** InputData shows one segment (between tabs) of a user's query
 A user's query is typically represented by List<InputData>
 and each element of the list represents a segment of the query.
@@ -74,11 +72,6 @@ public:
 
     /** Change the best catalog match for this segment */
     void setTopResult(const CatItem& sr);
-
-    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out,
-                                                  const InputData& inputData);
-    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in,
-                                                  InputData& inputData);
 
 private:
     /** The user's entry */

@@ -21,49 +21,283 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CommandHistory.h"
 
 #include <QFile>
-#include <QDataStream>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QSaveFile>
 #include <QDebug>
 
 #include "GlobalVar.h"
 #include "OptionItem.h"
-#include "LaunchyVersion.h"
 
 namespace launchy {
+
+// Json file layout:
+// {
+//   "version": 1,
+//   "command": [
+//     [ { "text": "...", "labels": ["..."], "top": { <CatItem> } },
+//       { "text": "...", "labels": ["..."], "top": { <CatItem> } } ],
+//     ...
+//   ],
+//   "promotion": [
+//     { "query": "...", "shortName": "...", "fullPath": "..." },
+//     ...   // front = most recently used, capped at PROMOTION_MAX_ITEMS
+//   ]
+// }
+//
+// Each command is an array of its segments in input order (InputDataList is a
+// QList<InputData>, one array per command is the natural mapping).
+// CatItem only stores the fields that cannot be recomputed: searchName and
+// searchNameTrans are derived from shortName exactly like every CatItem
+// constructor does. The promotion list is an array (not an object) because
+// QJsonObject sorts its keys, which would destroy the LRU order.
+
+static const int HISTORY_FILE_VERSION = 1;
+static const int PROMOTION_MAX_ITEMS = 100;
+
+CommandHistory* g_history = nullptr;
+
+namespace {
+
+QJsonObject catItemToJson(const CatItem& item) {
+    QJsonObject top;
+    top["fullPath"] = item.fullPath;
+    top["shortName"] = item.shortName;
+    top["iconPath"] = item.iconPath;
+    top["pluginName"] = item.pluginName;
+    top["usage"] = item.usage;
+    return top;
+}
+
+// Rebuild a CatItem from the stored fields. Returns false for entries that
+// can never match anything (missing or empty path/name).
+bool catItemFromJson(const QJsonObject& top, CatItem& item) {
+    const QJsonValue fullPathValue = top["fullPath"];
+    const QJsonValue shortNameValue = top["shortName"];
+    if (!fullPathValue.isString() || !shortNameValue.isString()) {
+        return false;
+    }
+
+    const QString& fullPath = fullPathValue.toString();
+    const QString& shortName = shortNameValue.toString();
+    if (fullPath.isEmpty() || shortName.isEmpty()) {
+        return false;
+    }
+
+    // The 4-argument constructor recomputes searchName / searchNameTrans
+    // from shortName, matching what every other creation path does
+    item = CatItem(fullPath, shortName,
+                   top["pluginName"].toString(),
+                   top["iconPath"].toString());
+    // Usage may be negative: a demoted item has usage -1
+    item.usage = top["usage"].toInt();
+    return true;
+}
+
+QJsonObject inputDataToJson(const InputData& data) {
+    QJsonObject segment;
+    segment["text"] = data.getText();
+    segment["top"] = catItemToJson(data.getTopResult());
+
+    // Sort the labels so the file stays diff-friendly
+    QStringList labels = data.getLabels().toList();
+    labels.sort();
+    QJsonArray labelArray;
+    for (const QString& label : labels) {
+        labelArray.append(label);
+    }
+    segment["labels"] = labelArray;
+
+    return segment;
+}
+
+// Returns false when the segment is malformed; the whole command entry is
+// then dropped (a partial entry could never be relaunched anyway).
+bool inputDataFromJson(const QJsonObject& segment, InputData& data) {
+    const QJsonValue textValue = segment["text"];
+    const QJsonValue topValue = segment["top"];
+    if (!textValue.isString() || !topValue.isObject()) {
+        return false;
+    }
+
+    CatItem topResult;
+    if (!catItemFromJson(topValue.toObject(), topResult)) {
+        return false;
+    }
+
+    data = InputData(textValue.toString());
+    data.setTopResult(topResult);
+
+    const QJsonValue labelsValue = segment["labels"];
+    if (labelsValue.isArray()) {
+        const QJsonArray labels = labelsValue.toArray();
+        for (int i = 0; i < labels.count(); ++i) {
+            const QJsonValue label = labels.at(i);
+            if (label.isString()) {
+                data.setLabel(label.toString());
+            }
+        }
+    }
+
+    return true;
+}
+
+} // namespace
+
 CommandHistory::CommandHistory() {
 }
 
 bool CommandHistory::load(const QString& filename) {
-    QFile inFile(filename);
-    if (!inFile.open(QIODevice::ReadOnly))
-        return false;
+    m_filename = filename;
+    m_command.clear();
+    m_promotion.clear();
 
-    QByteArray ba = inFile.readAll();
-    QDataStream in(&ba, QIODevice::ReadOnly);
-    in.setVersion(LAUNCHY_VERSION);
-    while (!in.atEnd()) {
-        InputDataList item;
-        in >> item;
-        m_history.push_back(item);
+    QFile inFile(filename);
+    if (!inFile.open(QIODevice::ReadOnly)) {
+        // No file yet -> empty history. The legacy history.db (binary
+        // QDataStream) is intentionally not read, there is no migration.
+        return false;
+    }
+
+    QJsonParseError parseError;
+    const QJsonDocument doc = QJsonDocument::fromJson(inFile.readAll(),
+                                                      &parseError);
+    if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+        qWarning() << "CommandHistory::load, invalid history file:"
+                   << filename << parseError.errorString();
+        return false;
+    }
+
+    const QJsonObject root = doc.object();
+    const int version = root["version"].toInt();
+    if (version > HISTORY_FILE_VERSION) {
+        qWarning() << "CommandHistory::load, history file version" << version
+                   << "is newer than supported" << HISTORY_FILE_VERSION;
+    }
+
+    const QJsonArray commands = root["command"].toArray();
+    int droppedCommands = 0;
+    for (int i = 0; i < commands.count(); ++i) {
+        const QJsonValue command = commands.at(i);
+        if (!command.isArray()) {
+            ++droppedCommands;
+            continue;
+        }
+
+        const QJsonArray segments = command.toArray();
+        InputDataList entry;
+        bool valid = true;
+        for (int j = 0; j < segments.count(); ++j) {
+            const QJsonValue segment = segments.at(j);
+            InputData data;
+            if (!segment.isObject()
+                || !inputDataFromJson(segment.toObject(), data)) {
+                valid = false;
+                break;
+            }
+            entry.push_back(data);
+        }
+
+        if (valid && !entry.isEmpty()) {
+            m_command.push_back(entry);
+        }
+        else {
+            ++droppedCommands;
+        }
+    }
+
+    const QJsonArray promotion = root["promotion"].toArray();
+    int droppedPromotions = 0;
+    for (int i = 0; i < promotion.count(); ++i) {
+        const QJsonValue entry = promotion.at(i);
+        if (!entry.isObject()) {
+            ++droppedPromotions;
+            continue;
+        }
+
+        const QJsonObject obj = entry.toObject();
+        const QJsonValue queryValue = obj["query"];
+        const QJsonValue shortNameValue = obj["shortName"];
+        const QJsonValue fullPathValue = obj["fullPath"];
+        if (!queryValue.isString() || !shortNameValue.isString()
+            || !fullPathValue.isString()) {
+            ++droppedPromotions;
+            continue;
+        }
+
+        PromotedItem item;
+        item.query = queryValue.toString();
+        item.shortName = shortNameValue.toString();
+        item.fullPath = fullPathValue.toString();
+        if (item.query.isEmpty() || item.shortName.isEmpty()
+            || item.fullPath.isEmpty()) {
+            ++droppedPromotions;
+            continue;
+        }
+
+        m_promotion.push_back(item);
+    }
+
+    // Keep the most recently used entries only (the file order is the LRU
+    // order), also caps hand-edited files that grew past the limit
+    while (m_promotion.count() > PROMOTION_MAX_ITEMS) {
+        m_promotion.removeLast();
+        ++droppedPromotions;
+    }
+
+    if (droppedCommands > 0 || droppedPromotions > 0) {
+        qWarning() << "CommandHistory::load, dropped malformed entries:"
+                   << droppedCommands << "commands,"
+                   << droppedPromotions << "promotions";
     }
 
     return true;
 }
 
 void CommandHistory::save(const QString& filename) const {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::ReadWrite);
-    out.setVersion(LAUNCHY_VERSION);
+    QJsonObject root;
+    root["version"] = HISTORY_FILE_VERSION;
 
-    for (const InputDataList& item : m_history) {
-        out << item;
+    QJsonArray commands;
+    for (const InputDataList& item : m_command) {
+        QJsonArray segments;
+        for (const InputData& data : item) {
+            segments.append(inputDataToJson(data));
+        }
+        commands.append(segments);
     }
+    root["command"] = commands;
 
-    QFile file(filename);
+    QJsonArray promotion;
+    for (const PromotedItem& item : m_promotion) {
+        QJsonObject entry;
+        entry["query"] = item.query;
+        entry["shortName"] = item.shortName;
+        entry["fullPath"] = item.fullPath;
+        promotion.append(entry);
+    }
+    root["promotion"] = promotion;
+
+    // QSaveFile commits atomically, a crash mid-write cannot corrupt the file
+    QSaveFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning("Could not open history for writing");
+        qWarning() << "CommandHistory::save, could not open history file"
+                   << filename;
         return;
     }
-    file.write(ba);
+    file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+    if (!file.commit()) {
+        qWarning() << "CommandHistory::save, could not commit history file"
+                   << filename;
+    }
+}
+
+void CommandHistory::persist() const {
+    if (!m_filename.isEmpty()) {
+        save(m_filename);
+    }
 }
 
 // Add an item or promote an existing matching item to the top of the list
@@ -75,56 +309,62 @@ void CommandHistory::addItem(const InputDataList& item) {
     int historyMax = g_settings->value(OPTION_MAXITEMSINHISTORY,
                                        OPTION_MAXITEMSINHISTORY_DEFAULT).toInt();
     if (historyMax <= 0) {
-        m_history.clear();
+        if (!m_command.isEmpty()) {
+            m_command.clear();
+            persist();
+        }
         return;
     }
 
     // Look for a matching history entry
     QString itemText = item.toString().toLower();
-    for (auto it = m_history.begin(); it != m_history.end(); ++it) {
+    for (auto it = m_command.begin(); it != m_command.end(); ++it) {
         if (it->toString().toLower() == itemText) {
             // Found a match, remove it and add a replacement
-            m_history.erase(it);
+            m_command.erase(it);
             break;
         }
     }
 
     //InputDataList historyItem = item;
     //historyItem.first().setLabel(LABEL_HISTORY);
-    m_history.push_front(item);
-    m_history.front().front().setLabel(LABEL_HISTORY);
+    m_command.push_front(item);
+    m_command.front().front().setLabel(LABEL_HISTORY);
 
-    while (m_history.size() > historyMax) {
-        m_history.pop_back();
+    while (m_command.size() > historyMax) {
+        m_command.pop_back();
     }
+
+    persist();
 }
 
 int CommandHistory::getItemCount() const {
-    return m_history.size();
+    return m_command.size();
 }
 
 // An empty list signals "no such entry" to the caller instead of reading past the
 // end of the history.
 InputDataList CommandHistory::getItem(int index) const {
-    if (index < 0 || index >= m_history.size()) {
+    if (index < 0 || index >= m_command.size()) {
         qWarning() << "CommandHistory::getItem, index out of range:" << index
-                   << ", history size:" << m_history.size();
+                   << ", history size:" << m_command.size();
         return InputDataList();
     }
 
-    return m_history.at(index);
+    return m_command.at(index);
 }
 
 void CommandHistory::removeAt(int index) {
-    if (index >= 0 && index < m_history.size()) {
-        m_history.erase(m_history.begin() + index);
+    if (index >= 0 && index < m_command.size()) {
+        m_command.erase(m_command.begin() + index);
+        persist();
     }
 }
 
 void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
     long long index = 0; // long long in x86 is 4 bytes, and in x64 is 8 bytes
                          // use this to avoid VS C4312 warning
-    for (const InputDataList& historyItem: m_history) {
+    for (const InputDataList& historyItem: m_command) {
         if (historyItem.isEmpty()) {
             continue;
         }
@@ -142,7 +382,7 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
     }
 
     long long index = -1;
-    for (const InputDataList& historyCmd : m_history) {
+    for (const InputDataList& historyCmd : m_command) {
         ++index;
         // ignore history commands which have only one input segment
         if (historyCmd.empty() || historyCmd.count() == 1) {
@@ -177,5 +417,45 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
     }
 }
 
-} // namespace launchy
+bool CommandHistory::promotedItem(const QString& query,
+                                  QString& shortName, QString& fullPath) const {
+    for (const PromotedItem& item : m_promotion) {
+        if (item.query == query) {
+            shortName = item.shortName;
+            fullPath = item.fullPath;
+            return true;
+        }
+    }
+    return false;
+}
 
+void CommandHistory::setPromotedItem(const QString& query,
+                                     const QString& shortName,
+                                     const QString& fullPath) {
+    if (query.isEmpty() || shortName.isEmpty() || fullPath.isEmpty()) {
+        return;
+    }
+
+    // Refresh an existing entry in place (exact match, the old ini storage
+    // was case sensitive too)
+    for (int i = 0; i < m_promotion.count(); ++i) {
+        if (m_promotion[i].query == query) {
+            m_promotion.removeAt(i);
+            break;
+        }
+    }
+
+    PromotedItem item;
+    item.query = query;
+    item.shortName = shortName;
+    item.fullPath = fullPath;
+    m_promotion.push_front(item);
+
+    while (m_promotion.count() > PROMOTION_MAX_ITEMS) {
+        m_promotion.removeLast();
+    }
+
+    persist();
+}
+
+} // namespace launchy

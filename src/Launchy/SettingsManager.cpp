@@ -36,7 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static const char* iniName = "/launchy.ini";
 static const char* dbName = "/launchy.db";
-static const char* historyName = "/history.db";
+// Command history and query promotion, both in a single json file.
+// The legacy binary /history.db is intentionally ignored (no migration).
+static const char* historyName = "/history.json";
 
 // a marker file to indicate that the app are installed and not portable
 // (portable mode is used when the ini file is present but the marker file is not)
@@ -344,11 +346,14 @@ void SettingsManager::setPortable(bool makePortable) {
 
     // Copy the settings to the new location
     // and delete the original settings if they are copied successfully
+    // The history file is optional: it only exists once something was
+    // launched or promoted, so a fresh profile has nothing to copy.
     QString newDir = configDirectory(makePortable);
     QDir(newDir).mkpath(".");
     if (QFile::copy(oldIniName, newDir + iniName)
         && QFile::copy(oldDbName, newDir + dbName)
-        && QFile::copy(oldHistoryName, newDir + historyName)) {
+        && (!QFile::exists(oldHistoryName)
+            || QFile::copy(oldHistoryName, newDir + historyName))) {
         QFile::remove(oldIniName);
         QFile::remove(oldDbName);
         QFile::remove(oldHistoryName);

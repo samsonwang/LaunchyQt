@@ -27,6 +27,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 
+// Persistent history store, everything lives in a single json file:
+//   - "commands":  the launched inputs (InputDataList entries) that make up
+//     the history rows and the history search
+//   - "promotion": "query -> item chosen last time the exact query ran",
+//     used by Catalog to move that item back to the top of the results.
+//     Front of the list is the most recently used entry, the list is capped
+//     (LRU) and validated on load.
 class CommandHistory {
 public:
     CommandHistory();
@@ -51,8 +58,41 @@ public:
     void getAllItem(QList<CatItem>& searchResults) const;
     void search(const QString& text, QList<CatItem>& searchResults) const;
 
+    // Look up the item that was chosen the last time the exact query ran.
+    // Returns false when there is no promotion entry for the query.
+    bool promotedItem(const QString& query,
+                      QString& shortName, QString& fullPath) const;
+
+    // Record that `shortName`/`fullPath` was chosen for `query`, moving the
+    // entry to the front of the LRU list. Persists immediately.
+    void setPromotedItem(const QString& query,
+                         const QString& shortName, const QString& fullPath);
+
 private:
-    QList<InputDataList> m_history;
+    struct PromotedItem {
+        QString query;
+        QString shortName;
+        QString fullPath;
+    };
+
+    // Write the store to the file last passed to load(). Every mutation
+    // persists immediately so a crash cannot lose data.
+    void persist() const;
+
+private:
+    // Front is the most recently launched input
+    QList<InputDataList> m_command;
+
+    // Front is the most recently used promotion entry
+    QList<PromotedItem> m_promotion;
+
+    // File last passed to load(), used by persist()
+    QString m_filename;
 };
+
+// The widget owned history store, set in the LaunchyWidget constructor and
+// cleared in its destructor. Catalog needs the promotion data and has no
+// other way to reach the store (it used to go through g_settings).
+extern CommandHistory* g_history;
 
 } // namespace launchy

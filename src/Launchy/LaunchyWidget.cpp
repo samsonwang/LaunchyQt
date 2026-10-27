@@ -103,6 +103,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // and opening the options dialog crashed.
     s_instance = this;
 
+    // Publish the history store too: Catalog reads the promotion data from
+    // g_history while searching, it has no other way to reach m_history.
+    g_history = &m_history;
+
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 #elif defined(Q_OS_MAC)
@@ -301,6 +305,9 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
 LaunchyWidget::~LaunchyWidget() {
     s_instance = nullptr;
+    // m_history is a member and dies with the widget, don't leave a
+    // dangling pointer behind
+    g_history = nullptr;
     m_trayIcon->hide();
     if (m_optionDialog) {
         m_optionDialog->close();
@@ -678,11 +685,12 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
              || event->key() == Qt::Key_Tab) {
         if (!m_searchResult.isEmpty()) {
             int row = m_alternativeList->currentRow();
-            if (row > -1) {
-                QString location = "History/" + m_inputBox->text();
-                QStringList hist;
-                hist << m_searchResult[row].shortName << m_searchResult[row].fullPath;
-                g_settings->setValue(location, hist);
+                if (row > -1) {
+                    // Remember the choice for this query, Catalog promotes
+                    // it back to the top the next time the query runs
+                    m_history.setPromotedItem(m_inputBox->text(),
+                                              m_searchResult[row].shortName,
+                                              m_searchResult[row].fullPath);
 
                 if (row > 0) {
                     m_searchResult.move(row, 0);

@@ -26,6 +26,7 @@
 
 #include "GlobalVar.h"
 #include "OptionItem.h"
+#include "CommandHistory.h"
 
 namespace launchy {
 
@@ -302,11 +303,13 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
     }
 
     // Check for history matches, and put them in the front
-    QString location = "History/" + text;
-    QStringList hist = g_settings->value(location).toStringList();
-    if (hist.count() == 2) {
+    QString promotedShort;
+    QString promotedFull;
+    if (g_history != nullptr
+        && g_history->promotedItem(text, promotedShort, promotedFull)) {
         for (int i = 0; i < catMatches.count(); ++i) {
-            if (catMatches[i]->shortName == hist[0] && catMatches[i]->fullPath == hist[1]) {
+            if (catMatches[i]->shortName == promotedShort
+                && catMatches[i]->fullPath == promotedFull) {
                 CatItem* tmp = catMatches[i];
                 catMatches.removeAt(i);
                 catMatches.push_front(tmp);
@@ -322,17 +325,21 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
 
 void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list) {
     // Check for history matches
-    QString location = "History/" + text;
-    QStringList hist = g_settings->value(location).toStringList();
+    QString promotedShort;
+    QString promotedFull;
+    const bool promoted = (g_history != nullptr
+                           && g_history->promotedItem(text, promotedShort,
+                                                      promotedFull));
     qDebug() << "Catalog::promoteRecentlyUsedItems, text:"
-        << text << "hist" << hist << "hist count:" << hist.count();
+        << text << "promoted:" << promoted;
 
-    if (hist.count() != 2) {
+    if (!promoted) {
         return;
     }
 
     for (int i = 0; i < list.count(); i++) {
-        if (list[i].shortName == hist[0] && list[i].fullPath == hist[1]) {
+        if (list[i].shortName == promotedShort
+            && list[i].fullPath == promotedFull) {
             CatItem tmp = list[i];
             qDebug() << "Catalog::promoteRecentlyUsedItems, promoted:" << tmp.fullPath;
             list.removeAt(i);
