@@ -40,6 +40,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using namespace launchy;
 
+// Owners that identify Launchy's own file and directory items: the indexed
+// catalog never sets a plugin name at all, and the browse-as-you-type results
+// from FileSearch carry "launchy"/"launchy_file" (NAME_LAUNCHY / NAME_LAUNCHYFILE
+// in Launchy/GlobalVar.h -- that header is part of the application, a plugin
+// cannot link against it, so the values are repeated here).
+static bool isLaunchyOwnedItem(const QString& owner) {
+    return owner.isEmpty()
+        || owner == QLatin1String("launchy")
+        || owner == QLatin1String("launchy_file");
+}
+
 void Verby::init() {
 }
 
@@ -61,10 +72,21 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
         return;
     }
 
-    // If it's not an item from Launchy's built in catalog,
-    // i.e. a file or directory or something added 
-    // by a plugin, don't add verbs.
-    if (!inputData->first().getPlugin().isEmpty()) {
+    // Only items from Launchy's own file catalog get verbs, so that an item
+    // added by another plugin keeps its owner.
+    //
+    // Ask the matched item, never the query. A label on the first segment is
+    // only valid for the pass that set it (parse() drops every label on the
+    // next keystroke), and the plugin callbacks of one pass are iterated in
+    // QHash order, so "did some plugin claim this segment before me" is not
+    // even stable across runs. The item's owner is stable for as long as the
+    // item stays matched, and it is exactly what launchItem() routes on.
+    //
+    // Verby counts as an owner because getResults rewrites the item's plugin
+    // name for the launch routing, and the first segment's top result is never
+    // refreshed again while a second segment exists.
+    const QString& owner = inputData->first().getTopResult().pluginName;
+    if (!isLaunchyOwnedItem(owner) && owner != m_pluginName) {
         return;
     }
 
@@ -148,8 +170,10 @@ void Verby::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
         return;
     }
 
-    // Mark the item as a Verby item so that Verby has a chance to process it before Launchy
-    inputData->first().setPlugin(m_pluginName);
+    // Claim the item so that Launchy hands the launch to Verby instead of running
+    // the file itself: LaunchyWidget::launchItem() picks the plugin from the top
+    // result of the first segment, so that is the only place the owner of the
+    // query has to be written.
     inputData->first().getTopResult().pluginName = m_pluginName;
 
     // ensure there's always an item at the top of the list for launching with parameters.

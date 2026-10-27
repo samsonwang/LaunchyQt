@@ -41,14 +41,6 @@ bool InputData::hasLabel(const std::string& label) {
     return m_data->hasLabel(QString::fromStdString(label));
 }
 
-void InputData::setPlugin(const std::string& plugin) {
-    m_data->setPlugin(QString::fromStdString(plugin));
-}
-
-std::string InputData::getPlugin() const {
-    return m_data->getPlugin().toStdString();
-}
-
 std::string InputData::getText() const {
     return m_data->getText().toStdString();
 }

@@ -77,4 +77,5 @@ private:
 
 #define g_builder launchy::CatalogBuilder::instance()
 #define g_catalog launchy::CatalogBuilder::instance()->getCatalog()
-}
+
+} // namespace launchy

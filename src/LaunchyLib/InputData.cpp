@@ -50,14 +50,6 @@ bool InputData::hasLabel(const QString& label) {
     return m_labels.contains(label);
 }
 
-void InputData::setPlugin(const QString& plugin) {
-    m_pluginName = plugin;
-}
-
-const QString& InputData::getPlugin() const {
-    return m_pluginName;
-}
-
 const QString& InputData::getText() const {
     return m_text;
 }
@@ -86,7 +78,14 @@ QDataStream& operator<<(QDataStream& out, const InputData& inputData) {
     out << inputData.m_text;
     out << inputData.m_labels;
     out << inputData.m_topResult;
-    out << inputData.m_pluginName;
+    // The plugin name field is gone from the class (a query's owner is expressed
+    // with CatItem::pluginName, and a per-pass claim with a label), but the slot
+    // stays in the stream: CommandHistory has no version header, it just reads
+    // InputDataList records back to back, so dropping one field would make every
+    // existing history file misparse from the first record on -- and a bogus
+    // length read into a QString container can make QDataStream allocate wildly
+    // before it gives up.
+    out << QString();
     return out;
 }
 
@@ -94,7 +93,8 @@ QDataStream& operator>>(QDataStream& in, InputData& inputData) {
     in >> inputData.m_text;
     in >> inputData.m_labels;
     in >> inputData.m_topResult;
-    in >> inputData.m_pluginName;
+    QString legacyPluginName;
+    in >> legacyPluginName; // write-only slot, see operator<<
     return in;
 }
 

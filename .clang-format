@@ -1,0 +1,39 @@
+# clang-format configuration for LaunchyQt.
+#
+# Used by the VS Code C/C++ extension ("C_Cpp.clang_format_style": "file"),
+# clangd, and `clang-format` / `git clang-format` on the command line.
+#
+# Base is LLVM; only the options this codebase actually differs on are
+# overridden: 4-space indents, `Type* name`, no column limit (long argument
+# lists are hand wrapped), and namespace bodies that are NOT indented.
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 4
+UseTab: Never
+
+# `public:` / `private:` sit at the same column as `class`, members 4 spaces in.
+AccessModifierOffset: -4
+
+# `const QString& name`, not `const QString &name`.
+PointerAlignment: Left
+
+# Never re-wrap long lines: the existing code is wrapped by hand and a column
+# limit would rewrite half of it.
+ColumnLimit: 0
+
+# The point of this file: `namespace launchy {` bodies stay at column 0.
+# (LLVM already defaults to None - spelled out so it cannot regress quietly.)
+NamespaceIndentation: None
+
+# Do not modernise what is already written:
+# - no trailing `// namespace launchy` comments
+FixNamespaceComments: true
+# - no include reordering
+SortIncludes: false
+# - no reflowing of the hand-formatted comment blocks
+ReflowComments: false
+...

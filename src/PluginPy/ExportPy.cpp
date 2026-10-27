@@ -150,8 +150,6 @@ PYBIND11_MODULE(launchy, m) {
         .def("setLabel", &exportpy::InputData::setLabel)
         .def("removeLabel", &exportpy::InputData::removeLabel)
         .def("hasLabel", &exportpy::InputData::hasLabel)
-        .def("setPlugin", &exportpy::InputData::setPlugin)
-        .def("getPlugin", &exportpy::InputData::getPlugin)
         .def("getText", &exportpy::InputData::getText)
         .def("setText", &exportpy::InputData::setText)
         .def("getTopResult", &exportpy::InputData::getTopResult);

@@ -18,7 +18,6 @@ from WebSearch.LaunchyProxy import proxy as launchyProxy
 
 
 class WebSearchPy(Plugin):
-    settingName = "WebSearchPy"
     # The engines and the "fetch site icons" switch are stored in one group, so
     # writeSettings() must not drop the whole group to rewrite the array; it
     # only removes the entries left behind by a shorter list.
@@ -41,10 +40,10 @@ class WebSearchPy(Plugin):
     def getLabels(self, inputDataList):
         query = inputDataList[0].getText()
         if query in self.searchEngine.keys():
-            inputDataList[-1].setPlugin(self.getName())
+            inputDataList[-1].setLabel(self.getName())
 
     def getResults(self, inputDataList, resultsList):
-        if inputDataList[-1].getPlugin() != self.getName():
+        if not inputDataList[-1].hasLabel(self.getName()):
             return
         query = inputDataList[0].getText()
         keyword = inputDataList[-1].getText()
@@ -71,7 +70,7 @@ class WebSearchPy(Plugin):
     def doDialog(self, parentWidgetPtr):
         log.debug('WebSearchPy::doDialog ...')
         parentWidget = wrapInstance(parentWidgetPtr, QWidget)
-        self.widget = WebSearchGui(parentWidget, self.settingName)
+        self.widget = WebSearchGui(parentWidget, self.getName())
         self.widget.show()
         return getCppPointer(self.widget)[0]
 
@@ -110,7 +109,7 @@ class WebSearchPy(Plugin):
         self.searchEngine.clear()
 
         # Read directories from the settings file
-        size = settings.beginReadArray(self.settingName)
+        size = settings.beginReadArray(self.getName())
         if size <= 0:
             log.debug("WebSearchPy::__readConfig, load defaults")
             from WebSearch import Defaults
@@ -161,7 +160,7 @@ class WebSearchPy(Plugin):
                            for engine in self.searchEngine.values()], force)
 
     def __fetchFaviconEnabled(self):
-        key = self.settingName + "/" + WebSearchGui.FETCH_FAVICON_KEY
+        key = self.getName() + "/" + WebSearchGui.FETCH_FAVICON_KEY
         return toBool(lSettings.value(key, True), True)
 
     @classmethod

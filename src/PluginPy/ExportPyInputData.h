@@ -37,17 +37,6 @@ public:
     /** Check if it has the given label applied to it */
     bool hasLabel(const std::string& label);
 
-    /** Set the id of this query
-    This can be used to override the owner of the selected catalog item, so that
-    no matter what item is chosen from the catalog, the given plugin will be the one
-    to execute it.
-    \param i The plugin id of the plugin to execute the query's best match from the catalog
-    */
-    void setPlugin(const std::string& plugin);
-
-    /** Returns the current owner id of the query */
-    std::string getPlugin() const;
-
     /** Get the text of the query segment */
     std::string getText() const;
 

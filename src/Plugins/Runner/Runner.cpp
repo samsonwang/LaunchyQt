@@ -97,7 +97,6 @@ void Runner::getCatalog(QList<CatItem>* items) {
     }
 }
 
-
 void Runner::getResults(QList<InputData>* inputData, QList<CatItem>* results) {
     if (inputData->count() <= 1) {
         return;

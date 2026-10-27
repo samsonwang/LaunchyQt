@@ -33,6 +33,13 @@ and each element of the list represents a segment of the query.
 
 E.g.  query = "google <tab> this is my search" will have 2 InputData segments
 in the list.  One for "google" and one for "this is my search"
+
+A segment carries no notion of "which plugin owns it". Two mechanisms cover that,
+and they are not interchangeable:
+ - m_labels: volatile, written and read inside one getLabels()/getResults() pass,
+   dropped by InputDataList::parse() on the next keystroke.
+ - CatItem::pluginName of getTopResult(): durable, and the value that
+   LaunchyWidget::launchItem() routes on.
 */
 namespace launchy {
 
@@ -51,16 +58,6 @@ public:
     void clearLabel();
     /** Check if it has the given label applied to it */
     bool hasLabel(const QString& label);
-
-    /** Set plugin name of this query
-    This can be used to override the owner of the selected catalog item, so that
-    no matter what item is chosen from the catalog, the given plugin will be the one
-    to execute it.
-    \param i The name of the plugin to execute the query's best match from the catalog
-    */
-    void setPlugin(const QString& plugin);
-    /** Returns the current owner of the query */
-    const QString& getPlugin() const;
 
     /** Get the text of the query segment */
     const QString& getText() const;
@@ -86,12 +83,14 @@ public:
 private:
     /** The user's entry */
     QString m_text;
-    /** Any assigned labels to this query segment */
+    /** Any assigned labels to this query segment
+    A plugin that wants to be told about, or to handle, this segment tags it here
+    in getLabels() and looks the tag up in getResults(). Labels only live for one
+    pass: InputDataList::parse() drops them on the next keystroke.
+    */
     QSet<QString> m_labels;
     /** A pointer to the best catalog match for this segment of the query */
     CatItem m_topResult;
-    /** The plugin name of this query's owner */
-    QString m_pluginName;
 };
 
 } // namespace launchy
