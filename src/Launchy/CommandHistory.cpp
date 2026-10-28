@@ -61,41 +61,6 @@ CommandHistory* g_history = nullptr;
 
 namespace {
 
-QJsonObject catItemToJson(const CatItem& item) {
-    QJsonObject top;
-    top["fullPath"] = item.fullPath;
-    top["shortName"] = item.shortName;
-    top["iconPath"] = item.iconPath;
-    top["pluginName"] = item.pluginName;
-    top["usage"] = item.usage;
-    return top;
-}
-
-// Rebuild a CatItem from the stored fields. Returns false for entries that
-// can never match anything (missing or empty path/name).
-bool catItemFromJson(const QJsonObject& top, CatItem& item) {
-    const QJsonValue fullPathValue = top["fullPath"];
-    const QJsonValue shortNameValue = top["shortName"];
-    if (!fullPathValue.isString() || !shortNameValue.isString()) {
-        return false;
-    }
-
-    const QString& fullPath = fullPathValue.toString();
-    const QString& shortName = shortNameValue.toString();
-    if (fullPath.isEmpty() || shortName.isEmpty()) {
-        return false;
-    }
-
-    // The 4-argument constructor recomputes searchName / searchNameTrans
-    // from shortName, matching what every other creation path does
-    item = CatItem(fullPath, shortName,
-                   top["pluginName"].toString(),
-                   top["iconPath"].toString());
-    // Usage may be negative: a demoted item has usage -1
-    item.usage = top["usage"].toInt();
-    return true;
-}
-
 QJsonObject inputDataToJson(const InputData& data) {
     QJsonObject segment;
     segment["text"] = data.getText();

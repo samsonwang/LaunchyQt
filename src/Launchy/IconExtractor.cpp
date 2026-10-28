@@ -139,7 +139,11 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
         return QIcon(item.iconPath);
 #endif
 
-    if (item.iconPath.isNull()) {
+    // isEmpty() (not isNull()) on purpose: an icon path is either set or
+    // derived from fullPath, and an empty string is just as "unset" as null.
+    // isNull() would silently lose the icon if any path stores "" instead of
+    // null (e.g. JSON round-trip, which cannot express a null QString).
+    if (item.iconPath.isEmpty()) {
 #ifdef Q_OS_LINUX
         QFileInfo info(item.fullPath);
         if (info.isDir())

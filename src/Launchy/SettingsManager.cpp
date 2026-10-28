@@ -35,7 +35,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MemProfiler.h"
 
 static const char* iniName = "/launchy.ini";
-static const char* dbName = "/launchy.db";
+// The catalog index, stored as JSON (the legacy binary /launchy.db is
+// intentionally ignored, no migration: a fresh index is rebuilt on load)
+static const char* dbName = "/catalog.json";
 // Command history and query promotion, both in a single json file.
 // The legacy binary /history.db is intentionally ignored (no migration).
 static const char* historyName = "/history.json";

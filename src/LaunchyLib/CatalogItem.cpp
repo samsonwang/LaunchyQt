@@ -19,9 +19,45 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CatalogItem.h"
 #include <QDataStream>
+#include <QJsonObject>
 #include "UnicodeTable.h"
 
 namespace launchy {
+
+QJsonObject catItemToJson(const CatItem& item) {
+    QJsonObject obj;
+    obj["fullPath"] = item.fullPath;
+    obj["shortName"] = item.shortName;
+    obj["iconPath"] = item.iconPath;
+    obj["pluginName"] = item.pluginName;
+    obj["usage"] = item.usage;
+    return obj;
+}
+
+// Rebuild a CatItem from the stored fields. Returns false for entries that
+// can never match anything (missing or empty path/name).
+bool catItemFromJson(const QJsonObject& obj, CatItem& item) {
+    const QJsonValue fullPathValue = obj["fullPath"];
+    const QJsonValue shortNameValue = obj["shortName"];
+    if (!fullPathValue.isString() || !shortNameValue.isString()) {
+        return false;
+    }
+
+    const QString fullPath = fullPathValue.toString();
+    const QString shortName = shortNameValue.toString();
+    if (fullPath.isEmpty() || shortName.isEmpty()) {
+        return false;
+    }
+
+    // The 4-argument constructor recomputes searchName / searchNameTrans
+    // from shortName, matching what every other creation path does
+    item = CatItem(fullPath, shortName,
+                   obj["pluginName"].toString(),
+                   obj["iconPath"].toString());
+    // Usage may be negative: a demoted item has usage -1
+    item.usage = obj["usage"].toInt();
+    return true;
+}
 
 CatItem::CatItem()
     : usage(0),

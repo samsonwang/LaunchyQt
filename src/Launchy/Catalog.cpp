@@ -20,7 +20,11 @@
 #include "Catalog.h"
 
 #include <QFile>
-#include <QDataStream>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QSaveFile>
 #include <QDebug>
 #include <QStringList>
 
@@ -29,6 +33,22 @@
 #include "CommandHistory.h"
 
 namespace launchy {
+
+// Json file layout:
+// {
+//   "version": 1,
+//   "items": [
+//     { "fullPath": "...", "shortName": "...", "iconPath": "...",
+//       "pluginName": "...", "usage": 0 },
+//     ...
+//   ]
+// }
+//
+// Only the fields that cannot be recomputed are stored; searchName and
+// searchNameTrans are derived from shortName by the CatItem constructor (see
+// catItemFromJson). The legacy binary launchy.db is intentionally ignored.
+
+static const int CATALOG_FILE_VERSION = 1;
 
 Catalog::Catalog()
     : m_timestamp(0) {
@@ -48,19 +68,46 @@ bool Catalog::load(const QString& filename) {
         return false;
     }
 
+    QJsonParseError parseError;
+    const QJsonDocument doc = QJsonDocument::fromJson(inFile.readAll(),
+                                                      &parseError);
+    if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+        qWarning() << "Catalog::load, invalid catalog file:"
+                   << filename << parseError.errorString();
+        return false;
+    }
+
     // Remove any existing catalog contents
     m_timestamp = 0;
     clear();
 
-    QByteArray ba = inFile.readAll();
-    QByteArray unzipped = qUncompress(ba);
-    QDataStream in(&unzipped, QIODevice::ReadOnly);
-    in.setVersion(QDataStream::Qt_4_2);
+    const QJsonObject root = doc.object();
+    const int version = root["version"].toInt();
+    if (version > CATALOG_FILE_VERSION) {
+        qWarning() << "Catalog::load, catalog file version" << version
+                   << "is newer than supported" << CATALOG_FILE_VERSION;
+    }
 
-    while (!in.atEnd()) {
+    const QJsonArray items = root["items"].toArray();
+    int droppedItems = 0;
+    for (int i = 0; i < items.count(); ++i) {
+        const QJsonValue value = items.at(i);
+        if (!value.isObject()) {
+            ++droppedItems;
+            continue;
+        }
+
         CatItem item;
-        in >> item;
-        addItem(item);
+        if (catItemFromJson(value.toObject(), item)) {
+            addItem(item);
+        }
+        else {
+            ++droppedItems;
+        }
+    }
+
+    if (droppedItems > 0) {
+        qWarning() << "Catalog::load, dropped malformed items:" << droppedItems;
     }
 
     return true;
@@ -69,29 +116,33 @@ bool Catalog::load(const QString& filename) {
 // Save the catalog to the specified filename
 bool Catalog::save(const QString& filename) {
 
-    QByteArray ba;
+    QJsonArray items;
     {
-        // Snapshot the catalog under the lock; compression and file I/O
-        // happen outside so that searches are only blocked for the short
-        // serialization step instead of the whole save
+        // Snapshot the catalog under the lock; JSON serialization and file
+        // I/O happen outside so that searches are only blocked for the short
+        // snapshot step instead of the whole save
         QMutexLocker locker(&m_mutex);
 
-        QDataStream out(&ba, QIODevice::ReadWrite);
-        out.setVersion(QDataStream::Qt_4_2);
-
         for (int i = 0; i < count(); i++) {
-            CatItem item = getItem(i);
-            out << item;
+            items.append(catItemToJson(getItem(i)));
         }
     }
 
-    // Compress and write the catalog to the specified file
-    QFile file(filename);
+    QJsonObject root;
+    root["version"] = CATALOG_FILE_VERSION;
+    root["items"] = items;
+
+    // QSaveFile commits atomically, a crash mid-write cannot corrupt the file
+    QSaveFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("Catalog::save, Could not open catalog file for writing");
         return false;
     }
-    file.write(qCompress(ba));
+    file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+    if (!file.commit()) {
+        qWarning("Catalog::save, Could not commit catalog file");
+        return false;
+    }
     return true;
 }
 

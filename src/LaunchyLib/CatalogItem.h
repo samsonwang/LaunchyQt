@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyLib.h"
 
 class QDataStream;
+class QJsonObject;
 
 /**
 \brief CatItem (Catalog Item) stores a single item in the index
@@ -84,6 +85,13 @@ public:
 
     /** Convert short name to search name */
     static QString convertSearchName(const QString& shortName);
+
+    // Serialize to/from a JSON object. Only the fields that cannot be
+    // recomputed are stored (fullPath, shortName, iconPath, pluginName,
+    // usage); searchName / searchNameTrans are derived from shortName by the
+    // constructor, exactly like every other CatItem creation path.
+    LAUNCHY_EXPORT friend QJsonObject catItemToJson(const CatItem& item);
+    LAUNCHY_EXPORT friend bool catItemFromJson(const QJsonObject& obj, CatItem& item);
 
     friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
     friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
