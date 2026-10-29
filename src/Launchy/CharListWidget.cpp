@@ -89,16 +89,16 @@ void CharListWidget::updateGeometry(const QPoint& basePos, const QPoint& offset)
         return;
     }
     QRect screenSize = screen->geometry();
-    if (rect.y() + rect.height() > screenSize.height()) {
+    if (rect.bottom() > screenSize.bottom()) {
         // Only move it if there's more space above
         // In both cases, ensure it doesn't spill off the screen
-        if (basePos.y() + offset.y() > screenSize.height() / 2) {
+        if (basePos.y() + offset.y() > screenSize.center().y()) {
             rect.moveTop(basePos.y() + offset.y() - rect.height());
-            if (rect.top() < 0)
-                rect.setTop(0);
+            if (rect.top() < screenSize.top())
+                rect.setTop(screenSize.top());
         }
         else {
-            rect.setBottom(screenSize.height());
+            rect.setBottom(screenSize.bottom());
         }
     }
 

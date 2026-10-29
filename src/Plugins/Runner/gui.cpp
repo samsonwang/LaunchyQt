@@ -92,19 +92,35 @@ void Gui::writeOptions() {
         return;
     }
 
-    launchy::g_settings->beginWriteArray(RUNNER_COMMANDS);
+    // Collect the valid rows first so empty rows don't leave gaps in the
+    // written array (a sparse array would otherwise persist empty entries).
+    struct Row {
+        QString name;
+        QString file;
+        QString args;
+    };
+    QVector<Row> rows;
     for (int i = 0; i < m_dlg->table->rowCount(); ++i) {
         if (m_dlg->table->item(i, 0) == NULL || m_dlg->table->item(i, 1) == NULL) continue;
         if (m_dlg->table->item(i, 0)->text() == "" || m_dlg->table->item(i, 1)->text() == "") continue;
-        launchy::g_settings->setArrayIndex(i);
-        launchy::g_settings->setValue("name", m_dlg->table->item(i, 0)->text());
-        launchy::g_settings->setValue("file", m_dlg->table->item(i, 1)->text());
+        Row r;
+        r.name = m_dlg->table->item(i, 0)->text();
+        r.file = m_dlg->table->item(i, 1)->text();
         if (m_dlg->table->item(i, 2) == NULL) {
-            launchy::g_settings->setValue("args", "");
+            r.args = "";
         }
         else {
-            launchy::g_settings->setValue("args", m_dlg->table->item(i, 2)->text());
+            r.args = m_dlg->table->item(i, 2)->text();
         }
+        rows.append(r);
+    }
+
+    launchy::g_settings->beginWriteArray(RUNNER_COMMANDS, rows.size());
+    for (int i = 0; i < rows.size(); ++i) {
+        launchy::g_settings->setArrayIndex(i);
+        launchy::g_settings->setValue("name", rows[i].name);
+        launchy::g_settings->setValue("file", rows[i].file);
+        launchy::g_settings->setValue("args", rows[i].args);
     }
     launchy::g_settings->endArray();
 }

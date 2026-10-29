@@ -64,7 +64,8 @@ private:
     QThread* m_thread;
 
     QSet<QString> m_indexed;
-    int m_progress;
+    // Read on the GUI thread, written on the worker thread
+    QAtomicInt m_progress;
     int m_currentItem;
     int m_totalItems;
 

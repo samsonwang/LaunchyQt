@@ -154,7 +154,7 @@ static bool windowTitleOf(HWND hWnd, QString* title) {
         return false; // No Title
     }
 
-    QScopedPointer<wchar_t> buffer(new wchar_t[len + 1]);
+    QScopedArrayPointer<wchar_t> buffer(new wchar_t[len + 1]);
     DWORD_PTR copied = 0;
     if (!::SendMessageTimeoutW(hWnd, WM_GETTEXT, len + 1,
                                reinterpret_cast<LPARAM>(buffer.data()),

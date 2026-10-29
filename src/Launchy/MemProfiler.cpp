@@ -8,6 +8,8 @@
 
 #include "MemProfiler.h"
 
+#include <atomic>
+
 #include <QMutex>
 #include <QMutexLocker>
 #include <QDebug>
@@ -135,9 +137,14 @@ static QString formatLine(const QString& stage, const MemSnapshot& s, qlonglong 
 // Shared state guarded by s_mutex. The catalog build runs on a worker thread
 // while the GUI thread may also sample, so protect the delta bookkeeping. The
 // enabled flag is read lock-free on the hot path (record/ScopedMem are called
-// many times during startup); toggling it is benign under a benign race.
+// many times during startup), so it is a std::atomic<bool> rather than a
+// volatile bool: volatile does not give atomicity or a memory order, and the
+// read/write must be a data-race-free signal between the worker and GUI
+// threads. The relaxed ordering is enough because a toggled flag only gates
+// whether an independent sample is taken; there is no payload published
+// alongside it that depends on the flag's ordering.
 static QMutex s_mutex;
-static volatile bool s_enabled = false;
+static std::atomic<bool> s_enabled{false};
 static qlonglong s_lastPrivateKB = -1;
 
 void setEnabled(bool enabled) {

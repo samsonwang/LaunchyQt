@@ -46,8 +46,12 @@ PluginWrapper::~PluginWrapper() {
 }
 
 void PluginWrapper::getName(QString* name) {
-    std::string pluginName = m_plugin->getName();
-    *name = QString::fromStdString(pluginName);
+    // name is an out-parameter; guard against a null caller slot before
+    // writing through it (mirrors the doDialog() guard).
+    if (name) {
+        std::string pluginName = m_plugin->getName();
+        *name = QString::fromStdString(pluginName);
+    }
 }
 
 void PluginWrapper::init() {
@@ -96,14 +100,11 @@ void PluginWrapper::launchItem(QList<launchy::InputData>* inputData,
 }
 
 void PluginWrapper::doDialog(QWidget* parent, QWidget** newDlg) {
-
-    void* result = m_plugin->doDialog((void*)parent);
-
-    if (result) {
+    // newDlg is the out-parameter the caller fills in, so guard against a null
+    // caller-provided slot before writing through it.
+    if (newDlg) {
+        void* result = m_plugin->doDialog((void*)parent);
         *newDlg = static_cast<QWidget*>(result);
-    }
-    else {
-        *newDlg = NULL;
     }
 }
 
@@ -223,6 +224,9 @@ int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
 
     case MSG_PATH:
         setPath((const QString*)wParam);
+        // handled stays false, matching the upstream Launchy convention: these
+        // fire-and-forget setters never signal that the message was consumed,
+        // so the caller keeps dispatching it to the other plugins.
         break;
 
     case MSG_GET_LABELS:
@@ -249,10 +253,13 @@ int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
         // Every loaded plugin gets asked, there is no "do you have a dialog"
         // query beforehand: returning nullptr from doDialog (or not overriding
         // it at all) is how a python plugin says it has no options page.
+        // handled stays false so the caller continues asking the other plugins.
         doDialog((QWidget*)wParam, (QWidget**)lParam);
         break;
 
     case MSG_END_DIALOG:
+        // handled stays false, consistent with the doDialog/endDialog pair
+        // being a fire-and-forget notification rather than a consumed message.
         endDialog((bool)wParam);
         break;
 

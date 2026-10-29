@@ -97,6 +97,7 @@ int getDesktop() {
 static void runProgram(const QString& path, const QString& args) {
 
     SHELLEXECUTEINFO ShExecInfo;
+    ZeroMemory(&ShExecInfo, sizeof(ShExecInfo));
     bool elevated = (GetKeyState(VK_SHIFT) & 0x80000000) != 0 && (GetKeyState(VK_CONTROL) & 0x80000000) != 0;
 
     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -127,11 +128,11 @@ void runProgram(const QString& path, const QString& args, bool translateSeparato
     QString path64 = aliasTo64(path);
 
     SHELLEXECUTEINFO ShExecInfo;
+    ZeroMemory(&ShExecInfo, sizeof(ShExecInfo));
     bool elevated = (GetKeyState(VK_SHIFT) & 0x80000000) != 0 && (GetKeyState(VK_CONTROL) & 0x80000000) != 0;
 
     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
     ShExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
-    ShExecInfo.fMask = NULL;
     ShExecInfo.hwnd = NULL;
     ShExecInfo.lpVerb = elevated ? L"runas" : NULL;
     QString filePath = translateSeparators ? QDir::toNativeSeparators(path64) : path64;

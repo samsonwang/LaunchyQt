@@ -20,9 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CrashDumper.h"
 
 #include <stdlib.h>
+#include <strsafe.h>
 
 WCHAR* CrashDumper::m_appName;
 MINIDUMPWRITEDUMP CrashDumper::m_dumpFunction;
+HMODULE CrashDumper::m_dbgHelpDll;
 
 CrashDumper::CrashDumper(const WCHAR* appName) {
     if (m_appName == NULL) {
@@ -31,6 +33,16 @@ CrashDumper::CrashDumper(const WCHAR* appName) {
         SetUnhandledExceptionFilter(TopLevelFilter);
 #endif
     }
+}
+
+CrashDumper::~CrashDumper() {
+    free(m_appName);
+    m_appName = NULL;
+    if (m_dbgHelpDll) {
+        FreeLibrary(m_dbgHelpDll);
+        m_dbgHelpDll = NULL;
+    }
+    m_dumpFunction = NULL;
 }
 
 LONG CrashDumper::TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo) {
@@ -58,35 +70,47 @@ bool CrashDumper::CreateMiniDump(const WCHAR* postfix,
 
     MINIDUMPWRITEDUMP pDump = GetMiniDumpWriteFunction();
     if (pDump) {
-        WCHAR dumpPath[_MAX_PATH];
+        // Build the dump path in a fixed-size buffer using the bounds-checked
+        // StringCch* family so no segment can ever overflow the stack. Every
+        // append is length-checked; on any overflow the path is discarded and
+        // the dump is simply skipped rather than corrupting the stack.
+        WCHAR dumpPath[MAX_PATH];
 
         // work out a good place for the dump file
-        if (!GetTempPathW(_MAX_PATH, dumpPath))
-            wcscpy(dumpPath, L"c:\\");
+        if (!GetTempPathW(_countof(dumpPath), dumpPath))
+            StringCchCopyW(dumpPath, _countof(dumpPath), L"c:\\");
 
-        wcscat(dumpPath, m_appName);
+        if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), m_appName)))
+            return false;
         if (DirectoryExists(dumpPath) == TRUE
             || CreateDirectoryW(dumpPath, NULL) == TRUE) {
-            wcscat(dumpPath, L"\\");
+            if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), L"\\")))
+                return false;
         }
         else {
-            wcscat(dumpPath, L"_");
+            if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), L"_")))
+                return false;
         }
-        wcscat(dumpPath, postfix);
-        wcscat(dumpPath, L"CrashDump");
+        if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), postfix)))
+            return false;
+        if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), L"CrashDump")))
+            return false;
 
         SYSTEMTIME time;
         GetLocalTime(&time);
         WCHAR timeStr[256];
         GetDateFormatW(LOCALE_USER_DEFAULT, 0,
-                       &time, L"yyyyMMdd", timeStr, sizeof(timeStr));
-        wcscat(dumpPath, timeStr);
+                       &time, L"yyyyMMdd", timeStr, _countof(timeStr));
+        if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), timeStr)))
+            return false;
 
         GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0,
-                        &time, L"HHmmss", timeStr, sizeof(timeStr));
-        wcscat(dumpPath, timeStr);
+                        &time, L"HHmmss", timeStr, _countof(timeStr));
+        if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), timeStr)))
+            return false;
 
-        wcscat(dumpPath, L".dmp");
+        if (FAILED(StringCchCatW(dumpPath, _countof(dumpPath), L".dmp")))
+            return false;
 
         // create the file
         HANDLE hFile = CreateFileW(dumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
@@ -130,6 +154,7 @@ MINIDUMPWRITEDUMP CrashDumper::GetMiniDumpWriteFunction() {
             hDll = LoadLibraryW(L"DBGHELP.DLL");
         }
 
+        m_dbgHelpDll = hDll;
         m_dumpFunction = hDll ? (MINIDUMPWRITEDUMP)GetProcAddress(hDll, "MiniDumpWriteDump") : NULL;
     }
 

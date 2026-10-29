@@ -5,7 +5,25 @@ import logging as log
 def main():
     redirectOutput()
     initLogging()
+    initSettingsPlaceholder()
     # initPipPackage()
+
+
+def initSettingsPlaceholder():
+    "Give launchy.settings a value before any plugin module is imported"
+    # Plugins do "from launchy import settings" at module import time (their
+    # __readConfig/__readSettings run later, from init()). The real object is
+    # only installed by initSettings(), which runs when the plugins are loaded,
+    # so this placeholder keeps a "from launchy import settings" from raising
+    # ImportError should a plugin ever be imported before initSettings() ran.
+    # The placeholder is None: nothing reads it before init() replaces it.
+    try:
+        import launchy
+        if not hasattr(launchy, "settings"):
+            launchy.settings = None
+            log.debug("launchy_util::initSettingsPlaceholder, launchy.settings set to None")
+    except Exception as err:
+        log.warning("launchy_util::initSettingsPlaceholder, Exception, %s" % err)
 
 
 def initSettings():
@@ -29,6 +47,7 @@ def initSettings():
 
 
 def initLogging():
+    log_file_name = None
     try:
         import launchy
         log_file_name = os.path.join(launchy.getAppTempPath(), 'launchypy.log')

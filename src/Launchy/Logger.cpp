@@ -61,7 +61,12 @@ static const char* levelTag(QtMsgType type) {
 static void messageHandler(QtMsgType type,
                            const QMessageLogContext& context,
                            const QString& msg) {
+    QMutexLocker locker(&s_logMutex);
     if (severity(type) < severity(s_logLevel)) {
+        return;
+    }
+
+    if (s_logFile == nullptr) {
         return;
     }
 
@@ -69,11 +74,6 @@ static void messageHandler(QtMsgType type,
         .toString("yyyy-MM-dd hh:mm:ss.zzz")
         .toLocal8Bit();
     const QByteArray localMsg = msg.toLocal8Bit();
-
-    QMutexLocker locker(&s_logMutex);
-    if (s_logFile == nullptr) {
-        return;
-    }
 
     // source context is null in release builds, hide it there
     if (context.file != nullptr && context.function != nullptr) {
@@ -94,6 +94,7 @@ static void messageHandler(QtMsgType type,
 }
 
 static void setLogLevel(QtMsgType type) {
+    QMutexLocker locker(&s_logMutex);
     s_logLevel = type;
     if (s_logFile == nullptr) {
         QString logFileName = launchy::getAppTempPath() + QString("/launchy.log");

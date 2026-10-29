@@ -686,7 +686,14 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
     qDebug() << "UWPApp::getCatalog, function entry";
 
-    CoInitialize(NULL);
+    // Same COM threading model as launchItem below: the catalog is enumerated
+    // from the GUI thread, which Qt already set up as STA, so this normally
+    // returns S_FALSE and only bumps the per-thread count. RPC_E_CHANGED_MODE
+    // means the thread sits in another apartment and the count must not be
+    // touched at all, so the uninitialize below is skipped for that result
+    // only. CoInitialize sits inside the do/while so that a failure simply
+    // breaks out to the shared cleanup, like any other failed step.
+    bool needUninitialize = false;
 
     // The COM smart pointers below are plain raw pointers on purpose: ATL
     // (atlbase.h / atlcomcli.h) is an optional Visual Studio component that
@@ -697,14 +704,14 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
     IShellItem* appFolder = nullptr;
     IEnumShellItems* enumShellItems = nullptr;
 
-    const PROPERTYKEY pkSmallLogoPath = lookupPropertyKey(L"System.Tile.SmallLogoPath");
-    const PROPERTYKEY pkAppUserModelID = lookupPropertyKey(L"System.AppUserModel.ID");
-    const PROPERTYKEY pkInstallPath = lookupPropertyKey(L"System.AppUserModel.PackageInstallPath");
-    const PROPERTYKEY pkPackageFullName = lookupPropertyKey(L"System.AppUserModel.PackageFullName");
-    const PROPERTYKEY pkPackageFamilyName = lookupPropertyKey(L"System.AppUserModel.PackageFamilyName");
-    const PROPERTYKEY pkExcludedFromLauncher = lookupPropertyKey(L"System.AppUserModel.ExcludedFromLauncher");
-
     do {
+        const HRESULT hrCoInit = CoInitialize(NULL);
+        if (FAILED(hrCoInit)) {
+            qWarning() << "UWPApp::getCatalog, fail to initialize COM, HR is" << hrCoInit;
+            break;
+        }
+        needUninitialize = true;
+
         if (FAILED(SHCreateItemFromParsingName(L"shell:AppsFolder",
                                                nullptr,
                                                IID_PPV_ARGS(&appFolder)))) {
@@ -723,13 +730,19 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
 
         qDebug() << "UWPApp::getCatalog, succeed to bind to handler";
 
+        const PROPERTYKEY pkSmallLogoPath = lookupPropertyKey(L"System.Tile.SmallLogoPath");
+        const PROPERTYKEY pkAppUserModelID = lookupPropertyKey(L"System.AppUserModel.ID");
+        const PROPERTYKEY pkInstallPath = lookupPropertyKey(L"System.AppUserModel.PackageInstallPath");
+        const PROPERTYKEY pkPackageFullName = lookupPropertyKey(L"System.AppUserModel.PackageFullName");
+        const PROPERTYKEY pkPackageFamilyName = lookupPropertyKey(L"System.AppUserModel.PackageFamilyName");
+        const PROPERTYKEY pkExcludedFromLauncher = lookupPropertyKey(L"System.AppUserModel.ExcludedFromLauncher");
+
         qDebug() << "UWPApp::getCatalog, begin while loop";
         IShellItem* shellItem = nullptr;
         while (enumShellItems->Next(1, &shellItem, nullptr) == S_OK) {
             // The enumeration hands over one reference, and that is the only
             // pointer the loop body has to release.
             IPropertyStore* propertyStore = nullptr;
-            QString aumid;
             QString shortName;
             QString iconPath;
 
@@ -841,8 +854,9 @@ void UWPApp::getCatalog(QList<launchy::CatItem>* items) {
     if (appFolder != nullptr) {
         appFolder->Release();
     }
-
-    CoUninitialize();
+    if (needUninitialize) {
+        CoUninitialize();
+    }
 }
 
 void UWPApp::getLabels(QList<launchy::InputData>* inputData) {

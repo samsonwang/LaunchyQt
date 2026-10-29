@@ -254,6 +254,7 @@ void OptionDialog::skinChanged(const QString& newSkin) {
     QFile fileAuthor(directory + "author.txt");
     if (!fileAuthor.open(QIODevice::ReadOnly)) {
         m_pUi->authorInfo->setText("");
+        return;
     }
 
     QString line, total;
@@ -367,7 +368,12 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     QLayout* pLayout = m_pUi->plugBox->layout();
     if (pLayout != nullptr) {
         while (QLayoutItem* child = pLayout->takeAt(0)) {
-            delete child;
+            if (QWidget* w = child->widget()) {
+                delete w;
+            }
+            else {
+                delete child;
+            }
         }
     }
 

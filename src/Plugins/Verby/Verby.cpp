@@ -198,9 +198,8 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     qDebug() << "verby::launchItem:" << noun << verb;
     if (verb == "Run as admin") {
 #ifdef Q_OS_WIN
-        SHELLEXECUTEINFOW shellExecInfo;
+        SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
 
-        shellExecInfo.cbSize = sizeof(shellExecInfo);
         shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
         shellExecInfo.hwnd = NULL;
         shellExecInfo.lpVerb = L"runas";
@@ -231,9 +230,8 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         // is registered as the default handler for directories.
         QString folderPath = QDir::toNativeSeparators(info.absolutePath());
 
-        SHELLEXECUTEINFOW shellExecInfo;
+        SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
 
-        shellExecInfo.cbSize = sizeof(shellExecInfo);
         shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
         shellExecInfo.hwnd = NULL;
         shellExecInfo.lpVerb = L"open";
@@ -252,9 +250,8 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
 #ifdef Q_OS_WIN
         QString folderPath = QDir::toNativeSeparators(info.absolutePath());
 
-        SHELLEXECUTEINFOW shellExecInfo;
+        SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
 
-        shellExecInfo.cbSize = sizeof(shellExecInfo);
         shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
         shellExecInfo.hwnd = NULL;
         shellExecInfo.lpVerb = L"open";
@@ -277,9 +274,8 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
     }
     else if (verb == "File properties") {
 #ifdef Q_OS_WIN
-        SHELLEXECUTEINFOW shellExecInfo;
+        SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
 
-        shellExecInfo.cbSize = sizeof(shellExecInfo);
         shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_INVOKEIDLIST;
         shellExecInfo.hwnd = NULL;
         shellExecInfo.lpVerb = L"properties";
@@ -313,16 +309,14 @@ void Verby::doDialog(QWidget* parent, QWidget** newDlg) {
 }
 
 void Verby::endDialog(bool accept) {
-    if (accept && m_gui) {
+    // The widget is owned by its parent (the option dialog's plugin box); the
+    // parent deletes it when the page is torn down. Verby holds only a
+    // non-owning pointer, so it must not delete or close the widget here.
+    if (accept && m_gui != nullptr) {
         m_gui->writeOptions();
         init();
     }
-    if (m_gui != NULL) {
-        m_gui->close();
-        delete m_gui;
-    }
-
-    m_gui = NULL;
+    m_gui = nullptr;
 }
 
 Verby::Verby()

@@ -40,7 +40,6 @@ void FileSearch::search(const QString& searchText,
     qDebug() << "Searching file system for" << searchText;
 
     QString searchPath = QDir::fromNativeSeparators(searchText);
-    g_searchText = searchPath;
 
     if (searchPath.startsWith("~"))
         searchPath.replace("~", QDir::homePath());
@@ -67,7 +66,7 @@ void FileSearch::search(const QString& searchText,
         }
         return;
     }
-    if (searchPath.size() == 2 && searchText[0].isLetter() && searchPath[1] == ':')
+    if (searchPath.size() == 2 && searchPath[0].isLetter() && searchPath[1] == ':')
         searchPath += "/";
 #endif
 
@@ -137,15 +136,13 @@ void FileSearch::search(const QString& searchText,
         }
     }
 
-    // Set the sort and underline global to just the filename. When the input
-    // ends with a separator there is no filename, and clearing the global
-    // would drop every item out of the ranking and the highlighting done by
-    // CatItemComparePtr() and Catalog::decorateText(), so leave the global
-    // holding the query the user actually typed.
-    if (!filePart.isEmpty()) {
-        g_searchText = filePart;
-    }
-
+    // The ranking and highlight are scoped to just the filename: pass filePart
+    // to the sort comparator explicitly instead of rewriting g_searchText, so
+    // search() no longer mutates the query state the rest of the pipeline
+    // relies on. When the input ends with a separator there is no filename;
+    // leaving filePart empty would drop every item out of the ranking done by
+    // CatItemComparePtr() and the highlighting done by Catalog::decorateText(),
+    // so in that case fall back to the query the user actually typed.
     if (isDirectory) {
         // We're showing a directory, add it as the top result
         if (!directoryPart.endsWith("/"))
@@ -158,7 +155,9 @@ void FileSearch::search(const QString& searchText,
     }
     else if (sort) {
         // If we're not matching exactly and there's a filename then do a priority sort
-        std::sort(searchResults.begin(), searchResults.end(), CatItemCompareRef);
+        const QString match = filePart.isEmpty() ? searchPath : filePart;
+        std::sort(searchResults.begin(), searchResults.end(),
+                  [&match](CatItem& a, CatItem& b) { return CatItemCompareWithMatch(a, b, match); });
     }
 
     inputData.last().setLabel(LABEL_FILE);

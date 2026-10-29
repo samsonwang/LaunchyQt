@@ -209,10 +209,16 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     if (!info.sendMsg(MSG_GET_NAME, &info.name)) {
         qWarning() << "PluginHandler::loadPythonPlugin, fail to get plugin name,"
             << " plugin path:" << pluginFullPath;
+        info.obj = nullptr;
+        loader.unload();
+        return;
     }
     else if (info.name != pluginName) {
         qWarning() << "PluginHandler::loadPythonPlugin, plugin name not match:"
             << pluginName << ", " << info.name;
+        info.obj = nullptr;
+        loader.unload();
+        return;
     }
     else if (!m_loadable.contains(pluginName) || m_loadable[pluginName]) {
         qDebug() << "PluginHandler::loadPythonPlugin, plugin loaded:" << pluginName;
@@ -223,7 +229,9 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     else {
         qDebug() << "PluginHandler::loadPythonPlugin, plugin configured not to load:"
             << pluginName;
+        info.obj = nullptr;
         loader.unload();
+        return;
     }
 
     (*plugins)[pluginName] = info;
@@ -250,6 +258,9 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
     if (!info.sendMsg(MSG_GET_NAME, &info.name)) {
         qWarning() << "PluginHandler::loadCppPlugin, fail to get plugin name,"
             << " plugin path:" << pluginFullPath;
+        info.obj = nullptr;
+        loader.unload();
+        return;
     }
     else if (!m_loadable.contains(pluginName) || m_loadable[pluginName]) {
         info.loaded = true;
@@ -281,6 +292,7 @@ void PluginHandler::loadCppPlugin(const QString& pluginName, const QString& plug
     }
     else {
         info.loaded = false;
+        info.obj = nullptr;
         loader.unload();
     }
     (*plugins)[pluginName] = info;

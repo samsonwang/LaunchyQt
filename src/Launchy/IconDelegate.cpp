@@ -28,7 +28,8 @@ namespace launchy {
 
 IconDelegate::IconDelegate(QObject* parent)
     : QStyledItemDelegate(parent),
-      m_size(32) {
+      m_size(32),
+      m_alternativesPath(nullptr) {
 }
 
 void IconDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
@@ -56,12 +57,14 @@ void IconDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
     QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), g_searchText);
     painter->drawText(shortRect, Qt::AlignTop | Qt::TextShowMnemonic, text);
 
-    if (option.state & QStyle::State_Selected)
-        painter->setPen(m_alternativesPath->palette().color(QPalette::HighlightedText));
-    else
-        painter->setPen(m_alternativesPath->palette().color(QPalette::WindowText));
+    if (m_alternativesPath) {
+        if (option.state & QStyle::State_Selected)
+            painter->setPen(m_alternativesPath->palette().color(QPalette::HighlightedText));
+        else
+            painter->setPen(m_alternativesPath->palette().color(QPalette::WindowText));
 
-    painter->setFont(m_alternativesPath->font());
+        painter->setFont(m_alternativesPath->font());
+    }
 
     QString full = index.data(ROLE_FULL).toString();
     full = painter->fontMetrics().elidedText(full, option.textElideMode, longRect.width());
@@ -75,32 +78,8 @@ QSize IconDelegate::sizeHint(const QStyleOptionViewItem & /* option */,
     return QSize(10, m_size);
 }
 
-void IconDelegate::setColor(QString line, bool hi) {
-    if (!line.contains(","))
-        m_color = QColor(line);
-
-    QStringList spl = line.split(",");
-    if (spl.count() != 3) return;
-    if (!hi)
-        m_color = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
-    else
-        m_hiColor = QColor(spl.at(0).toInt(), spl.at(1).toInt(), spl.at(2).toInt());
-}
-
-void IconDelegate::setFamily(QString fam) {
-    m_family = fam;
-}
-
 void IconDelegate::setSize(int s) {
     m_size = s;
-}
-
-void IconDelegate::setWeight(int w) {
-    m_weight = w;
-}
-
-void IconDelegate::setItalics(int i) {
-    italics = i;
 }
 
 void IconDelegate::setAlternativePathWidget(QLabel* label) {

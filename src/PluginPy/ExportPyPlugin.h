@@ -147,8 +147,11 @@ public:
         py::function overload = py::get_overload(static_cast<const Plugin*>(this),
                                                  "doDialog");
         if (overload) {
-            PyObject* pw = PyLong_FromVoidPtr(parentWidget);
-            py::object result = overload(py::handle(pw));
+            // PyLong_FromVoidPtr returns a new reference; wrap it as owning so
+            // it is decref'd on destruction instead of leaking once per dialog.
+            py::object pw = py::reinterpret_steal<py::object>(
+                PyLong_FromVoidPtr(parentWidget));
+            py::object result = overload(pw);
 
             // py::object result;
             if (py::detail::cast_is_temporary_value_reference<py::object>::value) {

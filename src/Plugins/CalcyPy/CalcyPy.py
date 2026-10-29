@@ -148,31 +148,31 @@ class CalcyPy(Plugin):
             resultsList.append(item)
 
         if retInDec is not None:
-            item = CatItem("dec.calcpy", retInDec,
+            item = CatItem("dec.calcypy", retInDec,
                            self.getName(), self.getIcon())
             item.setUsage(50000)
             resultsList.append(item)
 
         if retInHex is not None:
-            item = CatItem("hex.calcpy", retInHex,
+            item = CatItem("hex.calcypy", retInHex,
                            self.getName(), self.getIcon())
             item.setUsage(40000)
             resultsList.append(item)
 
         if retInOct is not None:
-            item = CatItem("oct.calcpy", retInOct,
+            item = CatItem("oct.calcypy", retInOct,
                            self.getName(), self.getIcon())
             item.setUsage(30000)
             resultsList.append(item)
 
         if retInBin is not None:
-            item = CatItem("bin.calcpy", retInBin,
+            item = CatItem("bin.calcypy", retInBin,
                            self.getName(), self.getIcon())
             item.setUsage(20000)
             resultsList.append(item)
 
         if retInSize is not None:
-            item = CatItem("size.calcpy", retInSize,
+            item = CatItem("size.calcypy", retInSize,
                            self.getName(), self.getIcon())
             item.setUsage(10000)
             resultsList.append(item)
@@ -322,9 +322,9 @@ class CalcyPy(Plugin):
             log.debug('CalcyPy::__formatFloat, integral str, {}'.format(integralStr))
 
             if self.settings['outputPrecision']:
-                fractionalStr = str(round(fractionalPart, self.settings['outputPrecision'])).lstrip('0')
+                fractionalStr = str(round(abs(fractionalPart), self.settings['outputPrecision'])).lstrip('0')
             else:
-                fractionalStr = str(fractionalPart).lstrip('0')
+                fractionalStr = str(abs(fractionalPart)).lstrip('0')
             if decimalPoint != '.':
                 fractionalStr = fractionalStr.replace('.', decimalPoint)
 
@@ -407,7 +407,7 @@ class CalcyPy(Plugin):
             ret += '%s MB ' % size_mega_bytes if size_mega_bytes else ''
 
             size_kilo_bytes = int(num / (1024)) if int(num / 1024) else 0
-            num -= size_mega_bytes * (1024 ** 1)
+            num -= size_kilo_bytes * 1024
             ret += '%s KB ' % size_kilo_bytes if size_kilo_bytes else ''
 
             size_bytes = int(num % (1024)) if int(num % (1024)) else 0

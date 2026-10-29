@@ -74,8 +74,8 @@ void CatalogBuilder::requestBuild() {
 void CatalogBuilder::buildCatalog() {
     m_throttleTimer.start();
 
-    m_progress = CATALOG_PROGRESS_MIN;
-    emit catalogIncrement(m_progress);
+    m_progress.storeRelease(CATALOG_PROGRESS_MIN);
+    emit catalogIncrement(m_progress.loadAcquire());
     m_catalog->incrementTimestamp();
     m_indexed.clear();
 
@@ -141,7 +141,7 @@ void CatalogBuilder::buildCatalog() {
 
     qDebug() << "CatalogBuilder::buildCatalog, catalog rebuild finished";
 
-    m_progress = CATALOG_PROGRESS_MAX;
+    m_progress.storeRelease(CATALOG_PROGRESS_MAX);
     emit catalogFinished();
     launchy::memprof::record("buildCatalog:finished");
 
@@ -303,20 +303,25 @@ Catalog* CatalogBuilder::getCatalog() {
 }
 
 int CatalogBuilder::getProgress() const {
-    return m_progress;
+    return m_progress.loadAcquire();
 }
 
 int CatalogBuilder::isRunning() const {
-    return m_progress < CATALOG_PROGRESS_MAX;
+    return m_progress.loadAcquire() < CATALOG_PROGRESS_MAX;
 }
 
 bool CatalogBuilder::progressStep(int newStep) {
-    newStep = newStep;
+    Q_UNUSED(newStep)
 
-    int newProgress = (int)(CATALOG_PROGRESS_MAX * (float)m_currentItem / m_totalItems);
-    if (newProgress != m_progress) {
-        m_progress = newProgress;
-        emit catalogIncrement(m_progress);
+    // Guard against division by zero: with no items to scan the progress is
+    // already complete, so report the maximum rather than computing NaN/Inf.
+    int newProgress = CATALOG_PROGRESS_MAX;
+    if (m_totalItems > 0) {
+        newProgress = (int)(CATALOG_PROGRESS_MAX * (float)m_currentItem / m_totalItems);
+    }
+    if (newProgress != m_progress.loadAcquire()) {
+        m_progress.storeRelease(newProgress);
+        emit catalogIncrement(m_progress.loadAcquire());
     }
 
     return true;

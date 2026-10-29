@@ -18,12 +18,14 @@ from WebSearch.LaunchyProxy import proxy as launchyProxy
 
 
 class WebSearchPy(Plugin):
-    # The engines and the "fetch site icons" switch are stored in one group, so
-    # writeSettings() must not drop the whole group to rewrite the array; it
-    # only removes the entries left behind by a shorter list.
-    searchEngine = {}
     def __init__(self):
         Plugin.__init__(self)
+        # The engines and the "fetch site icons" switch are stored in one
+        # group, so writeSettings() must not drop the whole group to rewrite
+        # the array; it only removes the entries left behind by a shorter list.
+        # Kept as an instance dict so one plugin instance can never leak its
+        # engines into another (it used to be a mutable class attribute).
+        self.searchEngine = {}
 
     def init(self):
         self.__readConfig()
@@ -56,11 +58,18 @@ class WebSearchPy(Plugin):
                 CatItem("%s: %s search" % (self.getName(), engine.get("name")),
                         keyword, self.getName(), icon if icon else self.getIcon()))
 
+    def getCatalog(self, resultsList):
+        # One of the two refresh entry points (the other is the "refresh icons"
+        # button of the option dialog). Runs on the catalog builder thread, so
+        # it must not touch the gui: prefetch() only queues hosts on the cache's
+        # own download thread and never blocks on the network here.
+        self.__refreshFavicons()
+
     def launchItem(self, inputDataList, catItem):
         if len(inputDataList) == 2:
             key = inputDataList[0].getText()
             query = inputDataList[-1].getText()
-            url = self.getUrl(key, query)
+            url = self.__getUrl(key, query)
             log.debug('WebSerachPy::launchyItem, key: %s, query: %s url: %s'
                       % (key, query, url))
             if url:
@@ -79,32 +88,15 @@ class WebSearchPy(Plugin):
         self.widget.hide()
         if accept:
             self.widget.writeSettings()
-            # The engines or the switch just changed, a new engine has to get
-            # its icon now rather than after the throttle window.
-            self.__readConfig(True)
-        else:
-            # The dialog may have flipped the switch while it was open, so the
-            # cache is put back in the state the settings ask for.
-            self.__refreshFavicons(True)
+        # Re-read the engines and the "fetch site icons" switch whether the
+        # dialog was accepted or cancelled: the switch may have been toggled
+        # while it was open. No refresh is forced here -- the catalog builder
+        # refreshes the icons when it next runs getCatalog.
+        self.__readConfig()
         del self.widget
         self.widget = None
 
-    # The network may have been down while the cache was warmed at startup, so
-    # the icons get another chance whenever launchy is called up. Hosts whose
-    # icon is still young, or that failed in the last days, are skipped by the
-    # cache itself, so this costs nothing once everything is downloaded -- it
-    # still is a settings read and two stat calls per engine on the gui thread
-    # for every invocation, and the icons are day-level cached. The cache
-    # throttles the attempt itself (REFRESH_INTERVAL, on a stamp its state file
-    # persists, so a restart inside the window skips it as well); asking
-    # dueForRefresh() first is the cheap side of that throttle and keeps a
-    # hotkey inside the window free of even the settings read. Only the option
-    # dialog forces a refresh, a new engine has to get its icon now.
-    def launchyShow(self):
-        if faviconCache().dueForRefresh():
-            self.__refreshFavicons()
-
-    def __readConfig(self, forceRefresh=False):
+    def __readConfig(self):
         settings = lSettings
         self.searchEngine.clear()
 
@@ -121,9 +113,11 @@ class WebSearchPy(Plugin):
                 # A hand-edited ini can lose an entry, and value() answers None
                 # for it: as a dict key that is an engine no input can ever
                 # match, as a name it would print as "None" in the result.
-                key = str(settings.value("key", "") or "")
-                name = settings.value("name", "") or ""
-                url = settings.value("url", "") or ""
+                # Outer whitespace is stripped, a key typed with a stray space
+                # in the ini would otherwise never match the input.
+                key = str(settings.value("key", "") or "").strip()
+                name = str(settings.value("name", "") or "").strip()
+                url = str(settings.value("url", "") or "").strip()
                 if not key:
                     log.warning("WebSearchPy::__readConfig, entry %d has no key, skipped" % i)
                     continue
@@ -139,37 +133,36 @@ class WebSearchPy(Plugin):
         # The proxy of launchy's own option dialog may have changed while it was
         # open, the icon downloads pick the new one up from here on.
         launchyProxy().reload()
-        self.__refreshFavicons(forceRefresh)
 
-    # Top the icon cache up. Called after the engines were read, so also after
-    # the option dialog was accepted; only hosts without a usable icon are
-    # queued, one that was downloaded in the last week is left alone. The
-    # throttle lives in the cache (prefetch skips the attempt inside its
-    # window); force is for the callers whose settings just changed, a new
-    # engine has to get its icon now.
-    def __refreshFavicons(self, force=False):
+    # Top the icon cache up. The only automatic entry point is getCatalog(),
+    # which runs on the catalog builder thread; the other, manual one is the
+    # "refresh icons" button of the option dialog. prefetch() is forced so a
+    # freshly added engine gets its icon right away instead of waiting out the
+    # REFRESH_INTERVAL window: the force only skips the whole-cache throttle,
+    # each host still carries its own ttl (a success is left alone for a week,
+    # a failure is not retried for days), so once everything is downloaded a
+    # run costs nothing but a stat per engine.
+    def __refreshFavicons(self):
         favicons = faviconCache()
         favicons.setEnabled(self.__fetchFaviconEnabled())
         if not favicons.isEnabled():
             log.debug("WebSearchPy::__refreshFavicons, favicon fetching is off")
             return
+        urls = [engine.get("url") for engine in self.searchEngine.values()]
+        log.debug("WebSearchPy::__refreshFavicons, refreshing %d engine(s)" % len(urls))
         # Resolve the cache dir here, where the launcher owning the temp dir is
         # the one still running.
-        favicons.cacheDir()
-        favicons.prefetch([engine.get("url")
-                           for engine in self.searchEngine.values()], force)
+        favicons.prefetch(urls, force=True)
 
     def __fetchFaviconEnabled(self):
         key = self.getName() + "/" + WebSearchGui.FETCH_FAVICON_KEY
         return toBool(lSettings.value(key, True), True)
 
-    @classmethod
-    def encodeQuery(cls, query):
+    def __encodeQuery(self, query):
         return urllib.parse.quote(query.encode("utf8"))
 
-    @classmethod
-    def getUrl(cls, key, query):
-        engine = WebSearchPy.searchEngine.get(key)
+    def __getUrl(self, key, query):
+        engine = self.searchEngine.get(key)
         if not engine:
             log.warning("WebSearchPy::getUrl, unknown engine key: %s" % key)
             return ""
@@ -183,7 +176,7 @@ class WebSearchPy(Plugin):
         # the eval()ed string altogether. The placeholder is swapped through a
         # sentinel so an escaped "%%s" stays the literal "%s" it always was.
         result = (url.replace("%%", "\x00")
-                     .replace("%s", WebSearchPy.encodeQuery(query))
+                     .replace("%s", self.__encodeQuery(query))
                      .replace("\x00", "%"))
         if "%s" not in url:
             log.debug("WebSearchPy::getUrl, %s carries no %%s, "

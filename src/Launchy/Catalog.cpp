@@ -410,16 +410,26 @@ QString Catalog::decorateText(const QString& text, const QString& match, bool ou
     // Mark every character of `text` that is consumed by the subsequence match
     // of at least one query word. This keeps the highlight correct when the
     // query words appear out of order or in multiple places.
-    QString lowerText = text.toLower();
-    QVector<bool> marked(lowerText.size(), false);
+    //
+    // Lowercase the text character-by-character instead of as a whole string:
+    // QString::toLower() can change a code point's length (e.g. U+0130 'İ'
+    // folds to "i" + combining dot above), which would desynchronise `marked`
+    // from `text` and cause an out-of-bounds or misaligned highlight. Per-char
+    // folding keeps a 1:1 index mapping and is what QString uses for
+    // case-insensitive substring comparison.
+    QVector<bool> marked(text.size(), false);
+    QVector<QChar> lowerChars;
+    lowerChars.reserve(text.size());
+    for (int i = 0; i < text.size(); ++i)
+        lowerChars.append(text.at(i).toLower());
     for (QString word : words) {
         word = word.toLower();
         if (word.isEmpty())
             continue;
         int cur = 0;
         int wlen = word.size();
-        for (int i = 0; i < lowerText.size() && cur < wlen; ++i) {
-            if (lowerText[i] == word[cur]) {
+        for (int i = 0; i < text.size() && cur < wlen; ++i) {
+            if (lowerChars[i] == word[cur]) {
                 marked[i] = true;
                 ++cur;
             }
@@ -475,18 +485,26 @@ bool CatItemCompareRef(CatItem& a, CatItem& b) {
     return CatItemComparePtr(&a, &b);
 }
 
+bool CatItemCompareWithMatch(CatItem& a, CatItem& b, const QString& match) {
+    return CatItemComparePtrWithMatch(&a, &b, match);
+}
+
 bool CatItemComparePtr(CatItem* a, CatItem* b) {
+    return CatItemComparePtrWithMatch(a, b, g_searchText);
+}
+
+bool CatItemComparePtrWithMatch(CatItem* a, CatItem* b, const QString& match) {
     // Items with negative usage are lowest priority
     if (a->usage < 0 && b->usage >= 0)
         return false;
     if (b->usage < 0 && a->usage >= 0)
         return true;
 
-    bool localEqual = (a->searchName == g_searchText
-                       || a->searchNameTrans == g_searchText);
+    bool localEqual = (a->searchName == match
+                       || a->searchNameTrans == match);
 
-    bool otherEqual = (b->searchName == g_searchText
-                       || b->searchNameTrans == g_searchText);
+    bool otherEqual = (b->searchName == match
+                       || b->searchNameTrans == match);
 
     // Exact match between search text and item name has higest priority
     if (localEqual && !otherEqual)
@@ -494,12 +512,12 @@ bool CatItemComparePtr(CatItem* a, CatItem* b) {
     if (!localEqual && otherEqual)
         return false;
 
-    int localFind = std::min(a->searchName.indexOf(g_searchText),
-                             a->searchNameTrans.indexOf(g_searchText));
-    int otherFind = std::min(b->searchName.indexOf(g_searchText),
-                             b->searchNameTrans.indexOf(g_searchText));
+    int localFind = std::min(a->searchName.indexOf(match),
+                             a->searchNameTrans.indexOf(match));
+    int otherFind = std::min(b->searchName.indexOf(match),
+                             b->searchNameTrans.indexOf(match));
 
-    if (g_searchText.size() == 1) {
+    if (match.size() == 1) {
         // Match at the start
         if (localFind == 0 && otherFind != 0)
             return true;
@@ -546,7 +564,7 @@ bool CatItemComparePtr(CatItem* a, CatItem* b) {
             return a->usage > b->usage;
 
         // Rank by how many query words match, so closer matches surface first
-        QStringList words = g_searchText.split(' ', QString::SkipEmptyParts);
+        QStringList words = match.split(' ', QString::SkipEmptyParts);
 
         int localWords = countMatchWords(a, words);
         int otherWords = countMatchWords(b, words);

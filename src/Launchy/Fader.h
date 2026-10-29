@@ -27,7 +27,7 @@ namespace launchy {
 class Fader : public QThread {
 	Q_OBJECT
 public:
-	Fader(QObject* parent = NULL);
+	Fader(QObject* parent = nullptr);
 	virtual ~Fader();
 
 	void fadeIn(bool quick);

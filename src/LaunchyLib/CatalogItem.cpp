@@ -76,7 +76,13 @@ CatItem::CatItem(const QString& full, bool isDir)
     else {
         shortName = fullPath.mid(last+1);
         if (!isDir) {
-            shortName = shortName.mid(0, shortName.lastIndexOf("."));
+            // A leading dot (".bashrc") or a name with no extension must keep
+            // the full name; lastIndexOf(".") would otherwise yield an empty
+            // string (mid(0, 0)) or, for no dot at all, mid(0, -1).
+            const int dot = shortName.lastIndexOf(".");
+            if (dot > 0) {
+                shortName = shortName.mid(0, dot);
+            }
         }
     }
 

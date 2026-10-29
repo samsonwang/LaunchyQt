@@ -41,7 +41,6 @@ private:
     // obsolete
     QString linkTargetPathTo64(const QFileInfo& info) const;
     bool addIconFromImageList(int imageListIndex, int iconIndex, QIcon& icon) const;
-    bool addIconFromShellFactory(const QString& filePath, QIcon& icon) const;
 };
 
 } // namespace launchy

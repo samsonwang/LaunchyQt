@@ -31,6 +31,7 @@ typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFi
 class CrashDumper {
 public:
     CrashDumper(const WCHAR* appName);
+    ~CrashDumper();
 private:
     static LONG WINAPI TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo);
     static MINIDUMPWRITEDUMP GetMiniDumpWriteFunction();
@@ -38,5 +39,6 @@ private:
     static BOOL DirectoryExists(LPCWSTR szPath);
 
     static MINIDUMPWRITEDUMP m_dumpFunction;
+    static HMODULE m_dbgHelpDll;
     static WCHAR* m_appName;
 };

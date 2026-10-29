@@ -27,9 +27,7 @@ AnimationLabel::AnimationLabel(QWidget* parent)
     animation->setCacheMode(QMovie::CacheAll);
 }
 
-AnimationLabel::~AnimationLabel() {
-    animation->deleteLater();
-}
+AnimationLabel::~AnimationLabel() = default;
 
 void AnimationLabel::LoadAnimation(const QString& animationPath) {
     // Ensure the animation continues to run after loading a new graphic

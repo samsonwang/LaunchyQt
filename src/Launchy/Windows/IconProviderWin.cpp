@@ -303,10 +303,17 @@ void IconProviderWin::readShellLink(const QFileInfo& info, QString* target,
     HRESULT hResult = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
                                        IID_PPV_ARGS(&pShellLink));
     if (hResult == CO_E_NOTINITIALIZED) {
-        neededCoInit = true;
-        CoInitialize(NULL);
-        hResult = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-                                   IID_PPV_ARGS(&pShellLink));
+        // CoInitialize only succeeds on S_OK or S_FALSE. When it fails (e.g.
+        // RPC_E_CHANGED_MODE, meaning another thread already initialised the
+        // apartment for a different threading model) it must NOT be followed by
+        // a CoUninitialize: that would drop a reference count we never added
+        // and tear down someone else's apartment.
+        HRESULT hrInit = CoInitialize(NULL);
+        neededCoInit = SUCCEEDED(hrInit);
+        if (neededCoInit) {
+            hResult = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
+                                       IID_PPV_ARGS(&pShellLink));
+        }
     }
 
     if (SUCCEEDED(hResult) && pShellLink != NULL) {
@@ -591,36 +598,6 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
     }
 
     return SUCCEEDED(hResult);
-}
-
-// !! OBSOLETED function (samson 2020-4-12)
-// On Vista or 7 we could use SHIL_JUMBO to get a 256x256 icon,
-// but we'll use SHCreateItemFromParsingName as it'll give an identical
-// icon to the one shown in explorer and it scales automatically.
-bool IconProviderWin::addIconFromShellFactory(const QString& filePath, QIcon& icon) const {
-    CoInitialize(NULL);
-    HRESULT hResult = S_FALSE;
-    IShellItemImageFactory* pSIIF = NULL;
-    hResult = SHCreateItemFromParsingName((PCWSTR)filePath.utf16(), NULL, IID_PPV_ARGS(&pSIIF));
-    if (hResult == S_OK && pSIIF) {
-        HBITMAP hBitmap = NULL;
-        SIZE iconSize = {m_preferredSize, m_preferredSize};
-        hResult = pSIIF->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY , &hBitmap);
-        if (hResult == S_OK && hBitmap != NULL) {
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            QPixmap iconPixmap = QtWin::fromHBITMAP(hBitmap);
-#else
-            QPixmap iconPixmap = QPixmap::fromImage(QImage::fromHBITMAP(hBitmap));
-#endif // QT_VERSION
-
-            icon.addPixmap(iconPixmap);
-            DeleteObject(hBitmap);
-        }
-        pSIIF->Release();
-    }
-    CoUninitialize();
-    return hResult == S_OK;
 }
 
 } // namespace launchy

@@ -17,6 +17,7 @@
 # records when the cache was last topped up as a whole, which is what lets the
 # plugin throttle that topping-up across a restart.
 
+import atexit
 import html
 import json
 import os
@@ -80,8 +81,8 @@ CACHE_DIR_NAME = "WebSearchPy"
 # failed. Both in one file, they say together whether a host is worth a request:
 # {"ok": {host: epoch}, "failed": {host: epoch}, "refreshed": epoch}
 # "refreshed" is when the cache was last topped up as a whole (prefetch or
-# refresh); the plugin throttles its launchyShow refresh on it, and it is
-# persisted so the throttle window survives a restart.
+# refresh); the plugin throttles its next prefetch on it, and it is persisted
+# so the throttle window survives a restart.
 STATE_FILE = "favicons.json"
 
 # Max bytes read from a response, a favicon is small and a homepage only needs
@@ -260,6 +261,7 @@ class FaviconCache:
         self.m_queue.put(url)
 
     def prefetch(self, urls, force=False):
+        self.cacheDir()
         # Throttled on the stamp of the last attempt, which the state file
         # persists: a launchy that starts inside the window does not run it
         # again. force is for the callers whose settings just changed, a new
@@ -320,8 +322,10 @@ class FaviconCache:
             if host:
                 hosts.add(host)
         if not hosts:
+            log.debug("FaviconCache::refresh, no host to refresh")
             return
 
+        log.debug("FaviconCache::refresh, re-fetching %d host(s)" % len(hosts))
         cacheDir = self.cacheDir()
         with self.m_lock:
             # Drop the in-memory bookkeeping so iconPath() re-checks disk and
@@ -373,16 +377,6 @@ class FaviconCache:
         self.cacheDir()
         with self.m_lock:
             return self.m_lastRefresh
-
-    # True when topping the cache up is worth an attempt: fetching is on and
-    # the last attempt is older than REFRESH_INTERVAL. Cheap -- a flag plus the
-    # persisted stamp, and not even the stamp before the cache dir has been
-    # resolved once -- so the gui thread can ask on every hotkey before any of
-    # the work a refresh costs. prefetch() throttles itself as well; this is
-    # only the early, free exit for the hotkey path.
-    def dueForRefresh(self):
-        return (self.isEnabled()
-                and time.time() - self.lastRefresh() >= REFRESH_INTERVAL)
 
     # --------------------------------------------------------------- private
 
@@ -463,7 +457,7 @@ class FaviconCache:
         # Written through a temp file: launchy can exit while a worker is in
         # the middle of it, and a truncated file loses every record.
         if not self.__writeAtomic(os.path.join(cacheDir, STATE_FILE),
-                                  json.dumps(state, sort_keys=True).encode("utf-8")):
+                                  json.dumps(state, sort_keys=True, indent=2).encode("utf-8")):
             return
 
     # Record a refresh of the cache as a whole and persist it right away: the
@@ -552,6 +546,8 @@ class FaviconCache:
         while True:
             url = self.m_queue.get()
             if url is None:
+                # The sentinel shutdown() drops into the queue: stop the worker
+                # instead of treating None as a url.
                 return
             try:
                 self.__download(url)
@@ -562,6 +558,18 @@ class FaviconCache:
                 with self.m_lock:
                     self.m_pending.discard(host)
                     self.m_refreshHosts.discard(host)
+
+    # Drop one sentinel per worker so every __run loop exits instead of
+    # blocking on the queue for ever. The workers are daemon threads and the
+    # process exit reclaims them anyway, but the sentinel makes the None check
+    # in __run real and lets a graceful close actually stop the downloads.
+    def shutdown(self):
+        with self.m_lock:
+            workers = [thread for thread in self.m_threads if thread.is_alive()]
+        for _ in workers:
+            self.m_queue.put(None)
+        for thread in workers:
+            thread.join(timeout=REQUEST_TIMEOUT)
 
     def __download(self, url):
         host = hostOf(url)
@@ -754,7 +762,19 @@ class FaviconCache:
                     return False
                 tmpPath = path + ".tmp"
                 if image.save(tmpPath, "PNG"):
-                    os.replace(tmpPath, path)
+                    # The rename is the atomic publish; when it fails the .tmp
+                    # is a half-written leftover and must not linger to shadow
+                    # the next attempt (a stale .tmp is never a valid icon).
+                    try:
+                        os.replace(tmpPath, path)
+                    except Exception as err:
+                        log.warning("FaviconCache::__writePng, fail to publish %s, %s"
+                                    % (path, err))
+                        try:
+                            os.remove(tmpPath)
+                        except Exception:
+                            pass
+                        return False
                     return True
                 log.debug("FaviconCache::__writePng, fail to save %s" % tmpPath)
             else:
@@ -809,3 +829,17 @@ def cache():
         if _g_cache is None:
             _g_cache = FaviconCache()
     return _g_cache
+
+
+# The workers are daemon threads, so the interpreter can exit without them, but
+# asking them to stop first lets an in-flight download finish its atomic write
+# instead of being cut off mid-file. Registered once, when this module loads.
+def _shutdownCache():
+    global _g_cache
+    with _g_cacheLock:
+        cache_ = _g_cache
+    if cache_ is not None:
+        cache_.shutdown()
+
+
+atexit.register(_shutdownCache)

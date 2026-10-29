@@ -87,7 +87,10 @@ bool PluginMgr::unloadPlugin(const QString& pluginName) {
 
     qDebug() << "pluginpy::PluginMgr::unloadPlugin, name:" << pluginName;
 
-    launchy::PluginInterface* plugin = m_pluginInterface[pluginName];
+    // Use value() rather than operator[]: operator[] would silently insert an
+    // empty (nullptr) entry for an unknown plugin before the remove() below, so
+    // an unload of a never-loaded plugin would leave a stray null entry behind.
+    launchy::PluginInterface* plugin = m_pluginInterface.value(pluginName, nullptr);
     if (plugin) {
         delete plugin;
         plugin = nullptr;
@@ -118,8 +121,11 @@ void PluginMgr::initSettings(QSettings* setting) {
         // init qsetting
         py::object launchyModule = py::module::import("launchy");
         py::object launchyDict = launchyModule.attr("__dict__");
-        PyObject* settingPyObj = PyLong_FromVoidPtr(m_pSettings);
-        launchyDict["__settings"] = py::handle(settingPyObj);
+        // PyLong_FromVoidPtr returns a new reference; steal it so the assigned
+        // object owns it (no leak, though initSettings is usually called once).
+        py::object settingPyObj = py::reinterpret_steal<py::object>(
+            PyLong_FromVoidPtr(m_pSettings));
+        launchyDict["__settings"] = settingPyObj;
 
         // run launchy_util initSettings
         qDebug() << "pluginpy::PluginMgr::initSettings, import launchy_util";
@@ -226,9 +232,21 @@ PluginMgr::~PluginMgr() {
     m_pluginInterface.clear();
     m_pluginObject.clear();
 
-    // !! can not call this function,
-    // python is still running in this destructor
-    // py::finalize_interpreter();
+    // We deliberately do NOT call py::finalize_interpreter() here.
+    //
+    // The interpreter cannot be finalized from inside ~PluginMgr: the very next
+    // lines still touch the python api (m_pluginObject.clear() destroys each
+    // py::object, and ~PluginWrapper drops its held exportpy::Plugin*), so the
+    // interpreter must stay alive through the end of this destructor. Even a
+    // finalize() placed after clear() would be unsafe, because the gil held by
+    // the scope guard above is released as the function returns and pybind11
+    // does not finalize cleanly after a gil acquire/release pair has wrapped a
+    // partially torn-down interpreter.
+    //
+    // For a single-instance singleton destroyed at process exit, leaving the
+    // interpreter initialized is the accepted behaviour: the OS reclaims all
+    // python state as the process terminates. No per-run resource leak is
+    // observable to the user.
 }
 
 } // namesapce pluginpy

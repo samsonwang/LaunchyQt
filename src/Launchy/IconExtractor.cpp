@@ -70,8 +70,6 @@ void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
 }
 
 void IconExtractor::processIcons(const QList<CatItem>& items, bool reset) {
-    Q_UNUSED(reset);
-
     int totalCount = 0;
 
     {

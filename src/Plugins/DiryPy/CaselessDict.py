@@ -10,7 +10,7 @@
 # ********************************************
 
 class CaselessDict:
-    def __init__(self,inDict=None):
+    def __init__(self, inDict=None):
         """Constructor: takes conventional dictionary
            as input (or nothing)"""
         self.dict = {}
@@ -18,23 +18,13 @@ class CaselessDict:
             for key in inDict:
                 k = key.lower()
                 self.dict[k] = (key, inDict[key])
-        self.keyList = self.dict.keys()
-        return
 
     def clear(self):
         self.dict = {}
-        self.keyList = self.dict.keys()
 
     def __iter__(self):
-        self.iterPosition = 0
-        return(self)
-
-    def next(self):
-        if self.iterPosition >= len(self.keyList):
-            raise StopIteration
-        x = self.dict[self.keyList[self.iterPosition]][0]
-        self.iterPosition += 1
-        return x
+        for k in self.dict:
+            yield self.dict[k][0]
 
     def __getitem__(self, key):
         k = key.lower()
@@ -43,11 +33,10 @@ class CaselessDict:
     def __setitem__(self, key, value):
         k = key.lower()
         self.dict[k] = (key, value)
-        self.keyList = self.dict.keys()
 
     def has_key(self, key):
         k = key.lower()
-        return k in self.keyList
+        return k in self.dict
 
     def __len__(self):
         return len(self.dict)
@@ -59,10 +48,10 @@ class CaselessDict:
         return [v[1] for v in self.dict.values()]
 
     def items(self):
-        return self.dict.values()
+        return [(v[0], v[1]) for v in self.dict.values()]
 
     def __contains__(self, item):
-        return self.dict.has_key(item.lower())
+        return item.lower() in self.dict
 
     def __repr__(self):
         items = ", ".join([("%r: %r" % (k,v)) for k,v in self.items()])

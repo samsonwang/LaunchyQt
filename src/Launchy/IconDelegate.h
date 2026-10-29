@@ -38,21 +38,11 @@ public:
     virtual QSize sizeHint(const QStyleOptionViewItem &option,
                            const QModelIndex &index) const;
 
-    void setColor(QString line, bool hi = false);
-
-    void setFamily(QString fam);
     void setSize(int s);
-    void setWeight(int w);
-    void setItalics(int i);
     void setAlternativePathWidget(QLabel* label);
 
 private:
-    QColor m_color;
-    QColor m_hiColor;
-    QString m_family;
     int m_size;
-    int m_weight;
-    int italics;
     QLabel* m_alternativesPath;
 };
 }

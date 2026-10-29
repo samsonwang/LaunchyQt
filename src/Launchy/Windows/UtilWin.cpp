@@ -36,23 +36,27 @@ void UpdateEnvironment() {
         return;
 
     wchar_t* environment;
-    if (!CreateEnvironmentBlock((LPVOID*)&environment, accessToken, FALSE))
+    if (!CreateEnvironmentBlock((LPVOID*)&environment, accessToken, FALSE)) {
+        CloseHandle(accessToken);
         return;
+    }
 
     // Empty the current environment
     QStringList variables;
     wchar_t* currentEnvironment = GetEnvironmentStringsW();
-    for (WCHAR* p = currentEnvironment; *p != 0;)
-    {
-        QString variable = QString::fromWCharArray(p);
-        QString name = variable.section("=", 0, 0);
-        // Ignore entries for drive current directory entries that have no name
-        if (name.size() > 0)
-            variables.append(name);
-        p += wcslen(p) + 1;
-    }
     if (currentEnvironment)
+    {
+        for (WCHAR* p = currentEnvironment; *p != 0;)
+        {
+            QString variable = QString::fromWCharArray(p);
+            QString name = variable.section("=", 0, 0);
+            // Ignore entries for drive current directory entries that have no name
+            if (name.size() > 0)
+                variables.append(name);
+            p += wcslen(p) + 1;
+        }
         FreeEnvironmentStringsW(currentEnvironment);
+    }
 
     // Now we've finished enumerating the current environment, we can safely delete variables
     foreach(QString name, variables)
@@ -69,7 +73,9 @@ void UpdateEnvironment() {
         if (value)
         {
             *value = L'\0';
-            SetEnvironmentVariableW(name, value + 1);
+            // Skip drive current-directory entries that have no name
+            if (*name != L'\0')
+                SetEnvironmentVariableW(name, value + 1);
         }
     }
 
@@ -79,7 +85,9 @@ void UpdateEnvironment() {
 
 QString GetShellDirectory(int type) {
     wchar_t buffer[_MAX_PATH];
-    SHGetFolderPathW(NULL, type, NULL, 0, buffer);
+    buffer[0] = L'\0';
+    if (FAILED(SHGetFolderPathW(NULL, type, NULL, 0, buffer)))
+        return QString();
     return QString::fromWCharArray(buffer);
 }
 

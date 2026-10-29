@@ -33,14 +33,16 @@ void TranslationManager::setLocale(const QLocale& loc) {
     qInfo() << "LanguageManager::setLang, set language to" << loc;
     m_loc = loc;
 
-    if (m_loc == QLocale("en")) {
-        qApp->removeTranslator(&m_translatorLaunchy);
-        qApp->removeTranslator(&m_translatorQt);
-    }
-    else if (m_translatorLaunchy.load(loc,
-                                 QString("launchy"),
-                                 QString("_"),
-                                 QString("translations"))) {
+    // Remove any previously installed translators first, so switching
+    // languages never installs a duplicate or leaves a stale one behind.
+    qApp->removeTranslator(&m_translatorLaunchy);
+    qApp->removeTranslator(&m_translatorQt);
+
+    if (m_loc != QLocale("en")
+        && m_translatorLaunchy.load(loc,
+                                    QString("launchy"),
+                                    QString("_"),
+                                    QString("translations"))) {
 
         qApp->installTranslator(&m_translatorLaunchy);
 

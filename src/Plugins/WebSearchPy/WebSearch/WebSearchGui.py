@@ -21,7 +21,7 @@ def textItem(value):
 
 class WebSearchGui(QWidget):
     # The engines and the "fetch site icons" switch share one settings group.
-    FETCH_FAVICON_KEY = "fetchFavicon"
+    FETCH_FAVICON_KEY = "FetchFavicon"
 
     # The input separator is " \u25ba ", or " | " on a font without the arrow,
     # and the key is whatever stands in front of it -- so these characters

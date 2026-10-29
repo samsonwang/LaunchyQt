@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CommandHistory.h"
 
+#include <cstdint>
+
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -327,8 +329,9 @@ void CommandHistory::removeAt(int index) {
 }
 
 void CommandHistory::getAllItem(QList<CatItem>& searchResults) const {
-    long long index = 0; // long long in x86 is 4 bytes, and in x64 is 8 bytes
-                         // use this to avoid VS C4312 warning
+    // intptr_t matches the size of void* on both x86 and x64, so the index
+    // survives the round-trip through item.data without truncation or C4312.
+    intptr_t index = 0;
     for (const InputDataList& historyItem: m_command) {
         if (historyItem.isEmpty()) {
             continue;
@@ -346,7 +349,7 @@ void CommandHistory::search(const QString& text, QList<CatItem>& searchResults) 
         return;
     }
 
-    long long index = -1;
+    intptr_t index = -1;
     for (const InputDataList& historyCmd : m_command) {
         ++index;
         // ignore history commands which have only one input segment

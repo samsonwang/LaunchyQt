@@ -155,7 +155,8 @@ const CatItem& CatalogSlow::getItem(int i) {
     // Recursive lock: save() calls this while already holding m_mutex
     QMutexLocker locker(&m_mutex);
 
-    return m_catalogItems[i];
+    // .at() is bounds-checked; operator[] would silently read out of range
+    return m_catalogItems.at(i);
 }
 
 // Return a list of catalog items that match searchText.

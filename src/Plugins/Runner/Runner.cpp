@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyLib/PluginMsg.h"
 
 #include "gui.h"
-#include "gui.h"
 
 using namespace launchy;
 
@@ -125,9 +124,8 @@ void Runner::launchItem(QList<InputData>* inputData, CatItem* item) {
     file = spl[0];
     for (int i = 1; i < spl.size(); ++i) {
         if (inputData->count() >= i+1) {
-            // const InputData* ij = &inputData->at(i);
-            CatItem* it = &((InputData)inputData->at(i)).getTopResult();
-            file += it->fullPath;
+            const CatItem& it = inputData->at(i).getTopResult();
+            file += it.fullPath;
         }
         file += spl[i];
     }
@@ -136,7 +134,7 @@ void Runner::launchItem(QList<InputData>* inputData, CatItem* item) {
     spl = file.split("%%%");
 
     file = spl[0];
-    if (spl.count() > 0) {
+    if (spl.count() > 1) {
         args = spl[1];
     }
 
@@ -150,18 +148,21 @@ void Runner::launchItem(QList<InputData>* inputData, CatItem* item) {
 
 
 void Runner::doDialog(QWidget* parent, QWidget** newDlg) {
-    if (m_gui != NULL)
+    if (m_gui != nullptr)
         return;
-    m_gui.reset(new Gui(parent));
-    *newDlg = m_gui.data();
+    m_gui = new Gui(parent);
+    *newDlg = m_gui;
 }
 
 void Runner::endDialog(bool accept) {
-    if (accept && m_gui != NULL) {
+    // The widget is owned by its parent (the option dialog's plugin box); the
+    // parent deletes it when the page is torn down. Runner holds only a
+    // non-owning pointer, so it must not delete or close the widget here.
+    if (accept && m_gui != nullptr) {
         m_gui->writeOptions();
         init();
     }
-    m_gui.reset();
+    m_gui = nullptr;
 }
 
 void Runner::setPath(const QString* path) {
@@ -170,12 +171,11 @@ void Runner::setPath(const QString* path) {
 }
 
 Runner::Runner()
-    : HASH_RUNNER("Runner") {
-    m_gui.reset();
+    : HASH_RUNNER("Runner"),
+      m_gui(nullptr) {
 }
 
 Runner::~Runner() {
-    m_gui.reset();
 }
 
 int Runner::msg(int msgId, void* wParam, void* lParam) {

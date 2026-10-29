@@ -30,7 +30,8 @@ Fader::Fader(QObject* parent)
 }
 
 Fader::~Fader() {
-
+    stop();
+    wait();
 }
 
 void Fader::fadeIn(bool quick) {

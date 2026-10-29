@@ -741,6 +741,9 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
                 searchOnInput();
                 updateOutput(false);
             }
+            // Keep the focus on the list so the user can keep navigating after
+            // the deletion/demotion; the other branches manage their own focus.
+            m_alternativeList->setFocus();
         }
     }
     else if (event->key() == Qt::Key_Left
@@ -753,7 +756,6 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
         m_inputBox->processKey(event);
         keyPressEvent(event);
     }
-    m_alternativeList->setFocus();
 }
 
 void LaunchyWidget::onAlternativeListFocusOut() {
@@ -1426,6 +1428,7 @@ void LaunchyWidget::reloadSkin() {
 void LaunchyWidget::exit() {
     qInfo() << "LaunchyWidget::exit, ...";
     m_fader->stop();
+    m_fader->wait();
     hideTrayIcon();
     saveSettings();
     qApp->exit();

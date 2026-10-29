@@ -92,7 +92,13 @@ private:
 
 // QSet<CatalogItem> needs a hash that is consistent with the equality
 // used by the set, see CatItem::operator== (fullPath and shortName)
-inline uint qHash(const CatalogItem& item, uint seed = 0) {
+inline uint qHash(const CatalogItem& item
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                  , size_t seed = 0
+#else
+                  , uint seed = 0
+#endif
+) {
     return qHash(item.shortName, qHash(item.fullPath, seed));
 }
 

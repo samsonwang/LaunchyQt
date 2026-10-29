@@ -158,11 +158,15 @@ def socks5Connect(address, timeout, config):
         try:
             request += b"\x01" + socket.inet_aton(host)
         except Exception:
-            # Not an ipv4 literal, so it goes over as a name.
-            encoded = host.encode("idna")
-            if len(encoded) > 255:
-                raise IOError("socks5: host name too long")
-            request += b"\x03" + bytes([len(encoded)]) + encoded
+            # Not an ipv4 literal, so it is either an ipv6 literal or a name.
+            try:
+                request += b"\x04" + socket.inet_pton(socket.AF_INET6, host)
+            except Exception:
+                # Neither address family parsed it, so it goes over as a name.
+                encoded = host.encode("idna")
+                if len(encoded) > 255:
+                    raise IOError("socks5: host name too long")
+                request += b"\x03" + bytes([len(encoded)]) + encoded
         request += struct.pack(">H", int(address[1]))
         sock.sendall(bytes(request))
 

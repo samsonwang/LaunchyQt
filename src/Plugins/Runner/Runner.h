@@ -61,7 +61,7 @@ private:
     QString HASH_RUNNER;
     QList<runnerCmd> m_cmds;
     QString m_libPath;
-    QSharedPointer<Gui> m_gui;
+    Gui* m_gui;
 };
 
 #endif // RUNNER_H

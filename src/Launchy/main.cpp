@@ -96,4 +96,6 @@ int main(int argc, char* argv[]) {
     }
 
     launchy::log::stopLogging();
+
+    return exitCode;
 }

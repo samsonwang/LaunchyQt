@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QMessageBox>
 #include <QNetworkProxy>
+#include <QSettings>
 #include <QStyleFactory>
 #include <QDir>
 #include <QRegularExpression>
@@ -37,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static const char* iniName = "/launchy.ini";
 // The catalog index, stored as JSON (the legacy binary /launchy.db is
 // intentionally ignored, no migration: a fresh index is rebuilt on load)
-static const char* dbName = "/catalog.json";
+static const char* catalogName = "/catalog.json";
 // Command history and query promotion, both in a single json file.
 // The legacy binary /history.db is intentionally ignored (no migration).
 static const char* historyName = "/history.json";
@@ -307,7 +308,7 @@ QList<QString> SettingsManager::directory(const QString& name) const {
 }
 
 QString SettingsManager::catalogFilename() const {
-    return configDirectory(m_portable) + dbName;
+    return configDirectory(m_portable) + catalogName;
 }
 
 QString SettingsManager::historyFilename() const {
@@ -342,23 +343,25 @@ void SettingsManager::setPortable(bool makePortable) {
     g_settings.clear();
 
     QString oldDir = configDirectory(m_portable);
-    QString oldIniName = oldDir + iniName;
-    QString oldDbName = oldDir + dbName;
-    QString oldHistoryName = oldDir + historyName;
+    QString oldIniPath = oldDir + iniName;
+    QString oldCatalogPath = oldDir + catalogName;
+    QString oldHistoryPath = oldDir + historyName;
 
     // Copy the settings to the new location
     // and delete the original settings if they are copied successfully
-    // The history file is optional: it only exists once something was
-    // launched or promoted, so a fresh profile has nothing to copy.
+    // The history and catalog files are optional: the history only exists
+    // once something was launched or promoted, and the catalog only exists
+    // once a directory has been indexed, so a fresh profile may have
+    // neither to copy.
     QString newDir = configDirectory(makePortable);
     QDir(newDir).mkpath(".");
-    if (QFile::copy(oldIniName, newDir + iniName)
-        && QFile::copy(oldDbName, newDir + dbName)
-        && (!QFile::exists(oldHistoryName)
-            || QFile::copy(oldHistoryName, newDir + historyName))) {
-        QFile::remove(oldIniName);
-        QFile::remove(oldDbName);
-        QFile::remove(oldHistoryName);
+    if (QFile::copy(oldIniPath, newDir + iniName)
+        && (!QFile::exists(oldCatalogPath) || QFile::copy(oldCatalogPath, newDir + catalogName))
+        && (!QFile::exists(oldHistoryPath)
+            || QFile::copy(oldHistoryPath, newDir + historyName))) {
+        QFile::remove(oldIniPath);
+        QFile::remove(oldCatalogPath);
+        QFile::remove(oldHistoryPath);
         QFile::remove(newDir + installedName);
 
         if (!makePortable && !QDir(oldDir).rmdir(".")) {
@@ -391,11 +394,11 @@ void SettingsManager::setPortable(bool makePortable) {
 // Delete all settings files in both installed and portable directories
 void SettingsManager::removeAll() {
     QFile::remove(configDirectory(false) + iniName);
-    QFile::remove(configDirectory(false) + dbName);
+    QFile::remove(configDirectory(false) + catalogName);
     QFile::remove(configDirectory(false) + historyName);
 
     QFile::remove(configDirectory(true) + iniName);
-    QFile::remove(configDirectory(true) + dbName);
+    QFile::remove(configDirectory(true) + catalogName);
     QFile::remove(configDirectory(true) + historyName);
 }
 
@@ -414,20 +417,26 @@ void SettingsManager::setProfileName(const QString& name) {
 
 QList<Directory> SettingsManager::readCatalogDirectories() {
     QList<Directory> result;
-    int size = g_settings->beginReadArray("directories");
+    // Use a local copy instead of the shared g_settings instance: this method
+    // is called from the catalog builder worker thread while the GUI thread may
+    // read/write the same QSettings. QSettings keeps group/array state, so two
+    // threads sharing one instance is not safe. A separate instance bound to the
+    // same file reads independently and never disturbs the shared one.
+    QSettings settings(g_settings->fileName(), QSettings::IniFormat);
+    int size = settings.beginReadArray("directories");
     for (int i = 0; i < size; ++i) {
-        g_settings->setArrayIndex(i);
+        settings.setArrayIndex(i);
         Directory tmp;
-        tmp.name = g_settings->value("name").toString();
+        tmp.name = settings.value("name").toString();
         if (tmp.name.length() > 0) {
-            tmp.types = g_settings->value("types").toStringList();
-            tmp.indexDirs = g_settings->value("indexDirs", false).toBool();
-            tmp.indexExe = g_settings->value("indexExes", false).toBool();
-            tmp.depth = g_settings->value("depth", 100).toInt();
+            tmp.types = settings.value("types").toStringList();
+            tmp.indexDirs = settings.value("indexDirs", false).toBool();
+            tmp.indexExe = settings.value("indexExes", false).toBool();
+            tmp.depth = settings.value("depth", 100).toInt();
             result.append(tmp);
         }
     }
-    g_settings->endArray();
+    settings.endArray();
 
     return result;
 }

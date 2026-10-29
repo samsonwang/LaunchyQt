@@ -55,7 +55,7 @@ launchy::PluginInterface* PluginLoader::instance() {
 bool PluginLoader::unload() {
     bool ret = false;
     try {
-        PluginMgr::instance().unloadPlugin(m_pluginName);
+        ret = PluginMgr::instance().unloadPlugin(m_pluginName);
         m_interface = nullptr;
     }
     catch (const py::error_already_set& e) {
