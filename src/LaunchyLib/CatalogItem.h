@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QString>
+
 #include "LaunchyLib.h"
 
-class QDataStream;
 class QJsonObject;
 
 /**
@@ -92,9 +92,6 @@ public:
     // constructor, exactly like every other CatItem creation path.
     LAUNCHY_EXPORT friend QJsonObject catItemToJson(const CatItem& item);
     LAUNCHY_EXPORT friend bool catItemFromJson(const QJsonObject& obj, CatItem& item);
-
-    friend LAUNCHY_EXPORT QDataStream& operator<<(QDataStream& out, const CatItem& item);
-    friend LAUNCHY_EXPORT QDataStream& operator>>(QDataStream& in, CatItem& item);
 };
 
 } // namespace launchy

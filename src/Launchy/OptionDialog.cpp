@@ -335,8 +335,10 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
         PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 
-    // write out the new config
-    g_settings->beginWriteArray("Plugin");
+    // write out the new config. Pass the count explicitly: beginWriteArray()
+    // without a size leaves stale high-index entries behind when the list
+    // shrinks, which then resurface as phantom plugins on the next read.
+    g_settings->beginWriteArray("Plugin", m_pUi->plugList->count());
     for (int i = 0; i < m_pUi->plugList->count(); i++) {
         QListWidgetItem* item = m_pUi->plugList->item(i);
         g_settings->setArrayIndex(i);

@@ -25,31 +25,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace launchy {
 
 class Fader : public QThread {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	Fader(QObject* parent = nullptr);
-	virtual ~Fader();
+    Fader(QObject* parent = nullptr);
+    virtual ~Fader();
 
-	void fadeIn(bool quick);
-	void fadeOut(bool quick);
-	void run();
+    void fadeIn(bool quick);
+    void fadeOut(bool quick);
+    void run();
 
-	inline void stop() { m_keepRunning = false; }
-	inline bool isFading() const { return m_delta < 0 && isRunning(); }
+    inline void stop() { m_keepRunning = false; }
+    inline bool isFadingOut() const { return m_delta < 0 && isRunning(); }
 
 signals:
-	void fadeLevel(double level);
+    void fadeLevel(double level);
 
 private:
-	QMutex m_mutex;
-	bool m_keepRunning;
+    QMutex m_mutex;
 
-	double m_delta;
-	int m_delay;
+    bool m_keepRunning;
 
-	double m_level;
-	double m_targetLevel;
+    double m_delta;
+    int m_delay;
+
+    double m_level;
+    double m_targetLevel;
 };
 
 } // namespace launchy
-

@@ -78,12 +78,7 @@ public:
     int m_timestamp;
 };
 
-
-bool CatItemComparePtr(CatItem* left, CatItem* right);
-bool CatItemCompareRef(CatItem& left, CatItem& right);
-
-// Pointer-level comparator that ranks against an explicit query string.
-bool CatItemComparePtrWithMatch(CatItem* left, CatItem* right, const QString& match);
+bool CatItemCompare(CatItem& left, CatItem& right);
 
 // Sort comparator variant that ranks against an explicit query string rather
 // than the global g_searchText. FileSearch uses it so it can rank and sort by

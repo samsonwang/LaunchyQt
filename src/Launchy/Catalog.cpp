@@ -480,20 +480,7 @@ CatalogItem::CatalogItem(const CatItem& item, int time)
 
 }
 
-
-bool CatItemCompareRef(CatItem& a, CatItem& b) {
-    return CatItemComparePtr(&a, &b);
-}
-
-bool CatItemCompareWithMatch(CatItem& a, CatItem& b, const QString& match) {
-    return CatItemComparePtrWithMatch(&a, &b, match);
-}
-
-bool CatItemComparePtr(CatItem* a, CatItem* b) {
-    return CatItemComparePtrWithMatch(a, b, g_searchText);
-}
-
-bool CatItemComparePtrWithMatch(CatItem* a, CatItem* b, const QString& match) {
+static bool CatItemComparePtrWithMatch(CatItem* a, CatItem* b, const QString& match) {
     // Items with negative usage are lowest priority
     if (a->usage < 0 && b->usage >= 0)
         return false;
@@ -583,6 +570,14 @@ bool CatItemComparePtrWithMatch(CatItem* a, CatItem* b, const QString& match) {
 
     // Absolute tiebreaker to prevent loops
     return a->fullPath < b->fullPath;
+}
+
+bool CatItemCompare(CatItem& a, CatItem& b) {
+    return CatItemComparePtrWithMatch(&a, &b, g_searchText);
+}
+
+bool CatItemCompareWithMatch(CatItem& a, CatItem& b, const QString& match) {
+    return CatItemComparePtrWithMatch(&a, &b, match);
 }
 
 } // namespace launchy

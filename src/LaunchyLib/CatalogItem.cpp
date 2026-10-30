@@ -18,8 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "CatalogItem.h"
-#include <QDataStream>
+
 #include <QJsonObject>
+
 #include "UnicodeTable.h"
 
 namespace launchy {
@@ -130,28 +131,6 @@ bool CatItem::operator!=(const CatItem& other) const {
 
 bool CatItem::operator==(const CatItem& other) const {
     return fullPath == other.fullPath && shortName == other.shortName;
-}
-
-QDataStream& operator<<(QDataStream& out, const CatItem &item) {
-    out << item.fullPath;
-    out << item.shortName;
-    out << item.searchName;
-    out << item.searchNameTrans;
-    out << item.iconPath;
-    out << item.pluginName;
-    out << item.usage;
-    return out;
-}
-
-QDataStream& operator>>(QDataStream& in, CatItem &item) {
-    in >> item.fullPath;
-    in >> item.shortName;
-    in >> item.searchName;
-    in >> item.searchNameTrans;
-    in >> item.iconPath;
-    in >> item.pluginName;
-    in >> item.usage;
-    return in;
 }
 
 QString CatItem::convertSearchName(const QString& shortName) {

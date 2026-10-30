@@ -766,7 +766,7 @@ void LaunchyWidget::onAlternativeListFocusOut() {
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
         && !m_optionsOpen
-        && !m_fader->isFading()) {
+        && !m_fader->isFadingOut()) {
         hideLaunchy();
     }
 }
@@ -1041,7 +1041,7 @@ void LaunchyWidget::searchOnInput() {
 
         // Sort the results by match and usage, then promote any that match previously
         // executed commands
-        std::sort(m_searchResult.begin(), m_searchResult.end(), CatItemCompareRef);
+        std::sort(m_searchResult.begin(), m_searchResult.end(), CatItemCompare);
         g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
 
         // Finally, if the search text looks like a file or directory name,
@@ -1370,7 +1370,7 @@ void LaunchyWidget::onHotkey() {
     qDebug() << "LaunchyWidget::onHotkey,"
              << "always show launchy:" << m_alwaysShowLaunchy
              << "visible:" << isVisible()
-             << "fading:" << m_fader->isFading()
+             << "fading:" << m_fader->isFadingOut()
              << "active window:" << QApplication::activeWindow();
 
     if (m_menuOpen || m_optionsOpen) {
@@ -1378,7 +1378,7 @@ void LaunchyWidget::onHotkey() {
     }
     else if (!m_alwaysShowLaunchy
              && isVisible()
-             && !m_fader->isFading()
+             && !m_fader->isFadingOut()
              && QApplication::activeWindow() != nullptr) {
         qDebug() << "LaunchyWidget::onHotkey, hideLaunchy";
         hideLaunchy();
@@ -1439,7 +1439,7 @@ void LaunchyWidget::onInputBoxFocusOut() {
         && !isActiveWindow()
         && !m_alternativeList->isActiveWindow()
         && !m_optionsOpen
-        && !m_fader->isFading()) {
+        && !m_fader->isFadingOut()) {
         hideLaunchy();
     }
 }

@@ -164,35 +164,35 @@ void FileSearch::search(const QString& searchText,
 }
 
 bool FileSearch::looksLikePath(const QString& searchText) {
-	// Normalise separators so that both "\\dir" and "/dir" are recognised,
-	// matching how search() splits the path below.
-	QString searchPath = QDir::fromNativeSeparators(searchText);
+    // Normalise separators so that both "\\dir" and "/dir" are recognised,
+    // matching how search() splits the path below.
+    QString searchPath = QDir::fromNativeSeparators(searchText);
 
-	// A URL or other scheme such as "http://example.com" only looks like a
-	// path because of its slashes. Leave it to the catalog and the plugins;
-	// letting it through here would restart the query with a non-lowercased
-	// g_searchText and cost an unnecessary file system probe.
-	if (searchPath.contains(QLatin1String("://")))
-		return false;
+    // A URL or other scheme such as "http://example.com" only looks like a
+    // path because of its slashes. Leave it to the catalog and the plugins;
+    // letting it through here would restart the query with a non-lowercased
+    // g_searchText and cost an unnecessary file system probe.
+    if (searchPath.contains(QLatin1String("://")))
+        return false;
 
-	// Any path separator, including a UNC prefix such as "//server/share"
-	if (searchPath.contains(QLatin1Char('/')))
-		return true;
+    // Any path separator, including a UNC prefix such as "//server/share"
+    if (searchPath.contains(QLatin1Char('/')))
+        return true;
 
-	// A bare drive letter such as "C:" lists the root of the drive
-	if (searchPath.size() == 2 && searchPath[0].isLetter() && searchPath[1] == QLatin1Char(':'))
-		return true;
+    // A bare drive letter such as "C:" lists the root of the drive
+    if (searchPath.size() == 2 && searchPath[0].isLetter() && searchPath[1] == QLatin1Char(':'))
+        return true;
 
-	// A home directory reference such as "~" or "~/documents"
-	if (searchPath.startsWith(QLatin1Char('~')))
-		return true;
+    // A home directory reference such as "~" or "~/documents"
+    if (searchPath.startsWith(QLatin1Char('~')))
+        return true;
 
 #ifdef Q_OS_WIN
-	// A single separator asks for the list of available drives
-	if (searchPath == "/")
-		return true;
+    // A single separator asks for the list of available drives
+    if (searchPath == "/")
+        return true;
 #endif
 
-	return false;
+    return false;
 }
-}
+} // namespace launchy

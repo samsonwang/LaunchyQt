@@ -229,11 +229,15 @@ void PluginHandler::loadPythonPlugin(const QString& pluginName, const QString& p
     else {
         qDebug() << "PluginHandler::loadPythonPlugin, plugin configured not to load:"
             << pluginName;
+        info.loaded = false;
         info.obj = nullptr;
         loader.unload();
-        return;
     }
 
+    // A disabled plugin still has to be in the table: the option dialog's plugin
+    // list is built from m_plugins, so a plugin that is left out here disappears
+    // from the list and can never be re-enabled, and its "load=false" entry is
+    // silently dropped the next time pluginItemChanged rewrites the array.
     (*plugins)[pluginName] = info;
 }
 
