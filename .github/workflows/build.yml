@@ -235,7 +235,11 @@ jobs:
             # interpreter is pinned as well. src/CMakeLists.txt also switches
             # the search to LOCATION and hard-fails on anything but 3.6.
             "-DPython_ROOT_DIR=${{ env.Python_ROOT_DIR }}",
-            "-DPython_EXECUTABLE=${{ steps.setup-python.outputs.python-path }}")
+            "-DPython_EXECUTABLE=${{ steps.setup-python.outputs.python-path }}",
+            # Tests are OFF by default; this workflow builds and runs them, so
+            # the flag is passed explicitly (the "Run tests" step below would
+            # otherwise silently find nothing).
+            "-DLAUNCHY_BUILD_TESTS=ON")
 
           $attempts = 3
           for ($i = 1; $i -le $attempts; $i++) {
@@ -266,6 +270,19 @@ jobs:
       - name: Build
         shell: pwsh
         run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+      # ------------------------------------------------------------------
+      # 5b) Run the unit tests (QTest + CTest)
+      #     `ctest` runs every add_test() target registered in test/CMakeLists.txt.
+      #     Test executables live in build/test/<Config>, a self-contained tree:
+      #     the test target's POST_BUILD step copies Launchy.dll + Qt5Core.dll +
+      #     Qt5Test.dll next to each exe, so no extra deployment is needed here.
+      # ------------------------------------------------------------------
+      - name: Run tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ctest --test-dir build -C ${{ env.BUILD_TYPE }} --output-on-failure
 
       # ------------------------------------------------------------------
       # 6) Deploy the Qt runtime

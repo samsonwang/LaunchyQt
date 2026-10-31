@@ -44,6 +44,11 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 set (LAUNCHY_GIT_HASH "" CACHE STRING
   "Override the git hash recorded in the build (default: resolved from the checkout)")
 
+# Build the unit tests (QTest + CTest). OFF by default: they need the Qt5 Test
+# component installed and are only wanted on machines/CI that actually run
+# them. Pass -DLAUNCHY_BUILD_TESTS=ON to enable (see the test section below).
+option (LAUNCHY_BUILD_TESTS "Build the unit tests (QTest + CTest)" OFF)
+
 set (LAUNCHY_BUILD_INFO_HEADER ${CMAKE_BINARY_DIR}/generated/LaunchyBuildInfo.h)
 set (LAUNCHY_BUILD_INFO_SCRIPT ${SRC_DIR}/cmake/GenerateBuildInfo.cmake)
 
@@ -831,6 +836,27 @@ if (WIN32)
     message (WARNING "utilities directory not found: ${UTILITIES_DIR}, "
       "the compiled tree will be missing SpecialFolders/SystemPower/UsefulScripts")
   endif ()
+endif ()
+
+##################################################
+# Unit tests (QTest + CTest)
+#
+# Tests live in <repo>/test/ and are driven by CTest. They link LaunchyLib
+# directly to exercise the real code. See test/CMakeLists.txt for how to add
+# a test (drop a Test<Name>.cpp + one launchy_add_test line).
+#
+# Gated behind LAUNCHY_BUILD_TESTS (OFF by default). When OFF, neither
+# enable_testing() nor the test subdirectory runs, so the build neither needs
+# the Qt5 Test component nor writes any CTest files -- `ctest` then simply has
+# nothing to do. Enable with -DLAUNCHY_BUILD_TESTS=ON.
+#
+# enable_testing() must be called here at the top level (not inside
+# test/CMakeLists.txt) so CMake writes the top-level build/CTestTestfile.cmake
+# that recurses into test/ -- calling it only inside test/ leaves `ctest` at
+# the build root with "No tests were found".
+if (LAUNCHY_BUILD_TESTS)
+    enable_testing ()
+    add_subdirectory (../test ${CMAKE_BINARY_DIR}/test)
 endif ()
 
 
