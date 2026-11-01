@@ -32,11 +32,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QUrl>
 #include <QDesktopServices>
 
-#include "LaunchyLib/LaunchyLib.h"
+#include "PluginInterface/Runtime.h"
 
 #include "ui_OptionDialog.h"
 
 #include "AppBase.h"
+#include "Platform/Platform.h"
 #include "LaunchyWidget.h"
 #include "GlobalVar.h"
 #include "PluginHandler.h"
@@ -270,16 +271,16 @@ void OptionDialog::skinChanged(const QString& newSkin) {
     // Set the image preview
     QPixmap pix;
     if (pix.load(directory + "background.png")) {
-        if (!g_app->supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
+        if (!platform().supportsAlphaBorder() && QFile::exists(directory + "background_nc.png"))
             pix.load(directory + "background_nc.png");
         if (pix.hasAlpha())
             pix.setMask(pix.mask());
-        if (!g_app->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
+        if (!platform().supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
             pix.setMask(QBitmap(directory + "mask_nc.png"));
         else if (QFile::exists(directory + "mask.png"))
             pix.setMask(QBitmap(directory + "mask.png"));
 
-        if (g_app->supportsAlphaBorder()) {
+        if (platform().supportsAlphaBorder()) {
             // Compose the alpha image with the background
             QImage sourceImage(pix.toImage());
             QImage destinationImage(directory + "alpha.png");
@@ -1162,7 +1163,21 @@ void OptionDialog::saveSystemSettings() {
 
     g_settings->setValue(OPTION_SHOWHIDDENFILES, m_pUi->checkBoxShowHidden->isChecked());
     g_settings->setValue(OPTION_SHOWNETWORK, m_pUi->checkBoxShowNetwork->isChecked());
-    SettingsManager::instance().setPortable(m_pUi->checkBoxPortable->isChecked());
+
+    // Switching mode only moves the files, it does not change their content, so
+    // the style/proxy/language already applied stay correct. A failure has to
+    // be reported here though: core has no message box, and the checkbox must
+    // not keep claiming a mode the app is not running in.
+    if (!SettingsManager::instance().setPortable(m_pUi->checkBoxPortable->isChecked())) {
+        SettingsManager& settings = SettingsManager::instance();
+        QMessageBox::warning(this,
+                             QString("Launchy"),
+                             tr("Fail to convert to %1 mode.\n"
+                                "Please check directory:\n %2")
+                                 .arg(settings.isPortable() ? "portable" : "installed")
+                                 .arg(settings.configDirectory()));
+        m_pUi->checkBoxPortable->setChecked(settings.isPortable());
+    }
 
     g_settings->setValue(OPTION_DEBUG_LOG, m_pUi->checkBoxDebugLog->isChecked());
 
@@ -1182,7 +1197,7 @@ void OptionDialog::initAboutWidget() {
             .arg(LAUNCHY_BUILD_TIME_STRING));
     m_pUi->aboutBit->setText(tr("(%1-bit)").arg(LAUNCHY_BIT_STRING));
     connect(m_pUi->pushButtonAboutQt, &QPushButton::clicked,
-            g_app, &QApplication::aboutQt);
+            qApp, &QApplication::aboutQt);
 }
 
 void OptionDialog::addDirectory(const QString& directory, bool edit) {

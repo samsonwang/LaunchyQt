@@ -12,7 +12,7 @@
       4. Re-run this script elevated (UAC) when the run directory is not writable.
 
     Artifacts of this project (copied):
-      Launchy.exe / Launchy.dll / Launchy.pdb
+      Launchy.exe / PluginInterface.dll / PluginInterface.pdb
       PluginPy.dll / PluginPy.pdb
       plugins\<plugin name>\*.dll, *.pdb, *.png          (native plugins)
       plugins\<python plugin>\...                        (python plugins: the whole folder
@@ -161,12 +161,12 @@ function Get-ProjectArtifactList {
 
     $relativePaths = New-Object System.Collections.Generic.List[string]
 
-    # Main executable, core library (LaunchyLib builds Launchy.dll),
+    # Main executable, core library (PluginInterface builds PluginInterface.dll),
     # Python binding module and the project Python scripts
     $topLevelFiles = @(
         'Launchy.exe',
-        'Launchy.dll',
-        'Launchy.pdb',
+        'PluginInterface.dll',
+        'PluginInterface.pdb',
         'PluginPy.dll',
         'PluginPy.pdb',
         'python\launchy.pyd',

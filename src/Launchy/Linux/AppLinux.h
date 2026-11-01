@@ -21,10 +21,12 @@
 
 #include "AppBase.h"
 #include "IconProviderLinux.h"
-#include "Directory.h"
 
 namespace launchy {
 
+// The Linux application object: the QApplication (via AppBase) plus the Linux
+// icon provider. The platform questions themselves are answered by
+// PlatformLinux in the platform library, not here.
 class AppLinux : public AppBase {
     Q_OBJECT
 public:
@@ -34,25 +36,9 @@ public:
     void setPreferredIconSize(int size);
 
     QString GetSettingsDirectory();
-    QList<Directory> getDefaultCatalogDirectories();
 
     void AddToNotificationArea();
     void RemoveFromNotificationArea();
-
-    virtual QHash<QString, QList<QString>> getDirectories();
-	virtual QString expandEnvironmentVars(QString txt);
-
-    bool supportsAlphaBorder() const;
-
-    /*
-      QIcon icon(const QFileInfo& info) {
-      shared_ptr<UnixIconProvider> u(dynamic_pointer_cast<UnixIconProvider>(icons));
-      return u->getIcon(info);
-//		return ((UnixIconProvider*) icons.get())->getIcon(info);
-}
-    */
-
-    virtual void alterItem(CatItem* item);
 };
 
 }

@@ -20,65 +20,82 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include <QHash>
-#include <QMutex>
+#include <QString>
 
-#include "LaunchyLib/PluginInterface.h"
-#include "LaunchyLib/CatalogItem.h"
-#include "LaunchyLib/InputData.h"
-#include "LaunchyLib/PluginInfo.h"
+#include <memory>
+
+#include "PluginInterface/CatalogItem.h"
+#include "PluginInterface/InputData.h"
+
+#include "PluginInfo.h"
+#include "PluginRegistry.h"
+
+class QWidget;
 
 namespace launchy {
-class Catalog;
-class INotifyProgressStep;
 
+class PluginFactory;
+
+// The application's plugin service, and the whole of what is left of it here:
+// the registry in the core library owns the plugin table and does the message
+// dispatch, this class only wires the factories into it and adapts the one call
+// that carries a QWidget. It keeps no plugin state.
+//
+// It stays a class with a singleton accessor because the call sites read better
+// as PluginHandler::instance().launchItem(...) than as a global function, and
+// because doDialog() is the only place that has to know about widgets: making
+// that a free function would spread the QWidget typing over the option dialog.
 class PluginHandler {
 public:
     static PluginHandler& instance();
 
 public:
+    // Scan the plugin directories and rebuild the table. Called once at
+    // startup, and again whenever the option dialog's plugin page asks for it.
     void loadPlugins();
-    // Returns a snapshot by value, never a reference: loadPlugins() may rebuild
-    // the table from the GUI thread (the plugins page of the option dialog)
-    // while a worker thread walks the result, so the caller must own a copy.
-    QHash<QString, PluginInfo> getPlugins() const;
 
-    void showLaunchy();
-    void hideLaunchy();
+    QHash<QString, PluginInfo> getPlugins() const {
+        return PluginRegistry::instance().getPlugins();
+    }
 
-    void getLabels(QList<InputData>* inputData);
-    void getResults(QList<InputData>* inputData, QList<CatItem>* results);
-    void getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep);
+    void showLaunchy() {
+        PluginRegistry::instance().showLaunchy();
+    }
 
-    int launchItem(QList<InputData>* inputData, CatItem* item);
+    void hideLaunchy() {
+        PluginRegistry::instance().hideLaunchy();
+    }
 
+    void getLabels(QList<InputData>* inputData) {
+        PluginRegistry::instance().getLabels(inputData);
+    }
+
+    void getResults(QList<InputData>* inputData, QList<CatItem>* results) {
+        PluginRegistry::instance().getResults(inputData, results);
+    }
+
+    void getCatalogs(Catalog* catalog, INotifyProgressStep* progressStep) {
+        PluginRegistry::instance().getCatalogs(catalog, progressStep);
+    }
+
+    int launchItem(QList<InputData>* inputData, CatItem* item) {
+        return PluginRegistry::instance().launchItem(inputData, item);
+    }
+
+    void endDialog(const QString& name, bool accept) {
+        PluginRegistry::instance().endDialog(name, accept);
+    }
+
+    // The registry hands the dialog back as an opaque handle, see
+    // PluginRegistry::doDialog().
     QWidget* doDialog(QWidget* parent, const QString& name);
-    void endDialog(const QString& name, bool accept);
-
-private:
-    // load plugin written in python
-    void loadPythonPlugin(const QString& pluginName, const QString& pluginPath,
-                          QHash<QString, PluginInfo>* plugins);
-    // load plugin written in cpp
-    void loadCppPlugin(const QString& pluginName, const QString& pluginPath,
-                       QHash<QString, PluginInfo>* plugins);
 
 private:
     PluginHandler();
     Q_DISABLE_COPY(PluginHandler)
 
 private:
-    // Guards m_plugins and m_loadable. The lock is recursive because a plugin
-    // callback (MSG_INIT while a reload is in progress) may turn around and
-    // read the handler again on the same thread.
-    mutable QMutex m_mutex{QMutex::Recursive};
-    QHash<QString, PluginInfo> m_plugins;
-    QHash<QString, bool> m_loadable;
-};
-
-// This interface is used to notify clients when a step in a long running process occurs
-class INotifyProgressStep {
-public:
-    virtual bool progressStep(int newStep) = 0;
+    std::unique_ptr<PluginFactory> m_factory;
 };
 
 } // namespace launchy

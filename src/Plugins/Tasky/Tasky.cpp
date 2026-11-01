@@ -53,8 +53,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QTextCodec>
 #include <QPixmap>
 
-#include "LaunchyLib/LaunchyLib.h"
-#include "LaunchyLib/PluginMsg.h"
+#include "PluginInterface/Runtime.h"
+#include "PluginInterface/PluginMsg.h"
 
 #define PLUGIN_NAME "Tasky"
 

@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QAtomicInt>
 #include <QElapsedTimer>
-#include "PluginHandler.h"
+#include "PluginRegistry.h"
 class QThread;
 
 namespace launchy {
@@ -33,6 +33,12 @@ public:
     static CatalogBuilder* instance();
     static void cleanup();
     static Catalog* getCatalog();
+
+    // The catalog when the builder already exists, nullptr otherwise.
+    // Unlike getCatalog() this never creates the singleton: teardown code must
+    // not resurrect the builder while the process is going down (cleanupGlobalVar
+    // deletes the builder before the widget that owns the history store).
+    static Catalog* catalogIfCreated();
 
     int getProgress() const;
     int isRunning() const;

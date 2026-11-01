@@ -21,12 +21,13 @@
 
 #include <QThread>
 #include <QDir>
+#include <QDebug>
 #include <QElapsedTimer>
 
 #include "Catalog.h"
 #include "CatalogFast.h"
 #include "CatalogSlow.h"
-#include "AppBase.h"
+#include "Platform/Platform.h"
 #include "Directory.h"
 #include "SettingsManager.h"
 #include "OptionItem.h"
@@ -85,11 +86,11 @@ void CatalogBuilder::buildCatalog() {
     QElapsedTimer memLogTimer;
     memLogTimer.start();
 
-    PluginHandler& pluginHandler = PluginHandler::instance();
+    PluginRegistry& pluginRegistry = PluginRegistry::instance();
     QList<Directory> catDirs = SettingsManager::instance().readCatalogDirectories();
     // Snapshot taken under the plugin handler lock, the table may be rebuilt
     // by the option dialog while the scan continues
-    const QHash<QString, PluginInfo> pluginsInfo = pluginHandler.getPlugins();
+    const QHash<QString, PluginInfo> pluginsInfo = pluginRegistry.getPlugins();
     m_totalItems = catDirs.count() + pluginsInfo.count();
     m_currentItem = 0;
 
@@ -98,7 +99,7 @@ void CatalogBuilder::buildCatalog() {
         qDebug() << "CatalogBuilder::buildCatalog, total items:"
                  << m_totalItems << "current item:" << m_currentItem;
 
-        QString currentDir = g_app->expandEnvironmentVars(catDirs[m_currentItem].name);
+        QString currentDir = platform().expandEnvironmentVars(catDirs[m_currentItem].name);
         indexDirectory(currentDir,
                        catDirs[m_currentItem].types,
                        catDirs[m_currentItem].indexDirs,
@@ -121,7 +122,7 @@ void CatalogBuilder::buildCatalog() {
     launchy::memprof::record("buildCatalog:after-dir-scan");
 
     // Don't call the pluginhandler to request catalog because we need to track progress
-    pluginHandler.getCatalogs(m_catalog, this);
+    pluginRegistry.getCatalogs(m_catalog, this);
     launchy::memprof::record("buildCatalog:after-plugins");
 
     qDebug() << "CatalogBuilder::buildCatalog, purget old item";
@@ -185,7 +186,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                     // Special handling of app directories
                     if (cur.endsWith(".app", Qt::CaseInsensitive)) {
                         CatItem item(dir + "/" + cur);
-                        g_app->alterItem(&item);
+                        platform().alterItem(&item);
                         m_catalog->addItem(item);
                     }
                     else
@@ -254,7 +255,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
         }
         if (!m_indexed.contains(dir + "/" + files[i])) {
             CatItem item(dir + "/" + files[i]);
-            g_app->alterItem(&item);
+            platform().alterItem(&item);
 
 #ifdef Q_OS_LINUX
             if (item.fullPath.endsWith(".desktop") && item.iconPath.isEmpty()) {
@@ -300,6 +301,10 @@ void CatalogBuilder::cleanup() {
 
 Catalog* CatalogBuilder::getCatalog() {
     return instance()->m_catalog;
+}
+
+Catalog* CatalogBuilder::catalogIfCreated() {
+    return s_instance ? s_instance->m_catalog : nullptr;
 }
 
 int CatalogBuilder::getProgress() const {

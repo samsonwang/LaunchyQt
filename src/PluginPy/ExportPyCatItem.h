@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "LaunchyLib/CatalogItem.h"
+#include "PluginInterface/CatalogItem.h"
 
 namespace exportpy {
 

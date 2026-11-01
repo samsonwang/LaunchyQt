@@ -40,8 +40,9 @@
 
 #include <QHotkey/QHotkey>
 
-#include "LaunchyLib/PluginInterface.h"
-#include "LaunchyLib/PluginMsg.h"
+#include "PluginInterface/PluginInterface.h"
+#include "PluginInterface/PluginMsg.h"
+#include "PluginInterface/Runtime.h"
 
 #include "GlobalVar.h"
 #include "IconDelegate.h"
@@ -50,6 +51,7 @@
 #include "FileSearch.h"
 #include "SettingsManager.h"
 #include "AppBase.h"
+#include "Platform/Platform.h"
 #include "Fader.h"
 #include "IconDelegate.h"
 #include "AnimationLabel.h"
@@ -103,9 +105,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // and opening the options dialog crashed.
     s_instance = this;
 
-    // Publish the history store too: Catalog reads the promotion data from
-    // g_history while searching, it has no other way to reach m_history.
-    g_history = &m_history;
+    // The catalog asks the history store for the promotion of the last exact
+    // query through the IHistoryPromotion seam; the widget itself owns the
+    // store, so the pointer is only valid while this object is.
+    g_catalog->setHistoryPromotion(&m_history);
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
@@ -127,7 +130,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
     setAttribute(Qt::WA_AlwaysShowToolTips);
     setAttribute(Qt::WA_InputMethodEnabled);
-    if (g_app->supportsAlphaBorder()) {
+    if (platform().supportsAlphaBorder()) {
         setAttribute(Qt::WA_TranslucentBackground);
     }
     setFocusPolicy(Qt::ClickFocus);
@@ -263,17 +266,17 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // Move to saved position
     loadPosition(g_settings->value(OPTION_POS, OPTION_POS_DEFAULT).toPoint());
 
-    connect(g_app, &SingleApplication::instanceStarted,
+    connect(AppBase::instance(), &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
 
     // reload skin after new screen is added or removed
-    connect(g_app, &QGuiApplication::screenAdded,
+    connect(qApp, &QGuiApplication::screenAdded,
             this, &LaunchyWidget::onScreenChanged);
 
-    connect(g_app, &QGuiApplication::screenRemoved,
+    connect(qApp, &QGuiApplication::screenRemoved,
             this, &LaunchyWidget::onScreenChanged);
 
-    connect(g_app, &QGuiApplication::primaryScreenChanged,
+    connect(qApp, &QGuiApplication::primaryScreenChanged,
             this, &LaunchyWidget::onScreenChanged);
 
     // Set the timers
@@ -305,9 +308,13 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 
 LaunchyWidget::~LaunchyWidget() {
     s_instance = nullptr;
-    // m_history is a member and dies with the widget, don't leave a
-    // dangling pointer behind
-    g_history = nullptr;
+    // m_history is a member and dies with the widget, don't leave a dangling
+    // pointer behind. catalogIfCreated() is used on purpose: the builder is
+    // deleted before the widget during shutdown, and getCatalog() would create
+    // a second one just to clear a pointer.
+    if (Catalog* catalog = CatalogBuilder::catalogIfCreated()) {
+        catalog->setHistoryPromotion(nullptr);
+    }
     m_trayIcon->hide();
     if (m_optionDialog) {
         m_optionDialog->close();
@@ -556,13 +563,13 @@ void LaunchyWidget::launchItem() {
         qDebug() << "LaunchyWidget::launchItem, cmd:" << item.fullPath << "args:" << args;
 
         if (item.fullPath.isEmpty()) {
-            // Nothing to run. Passing an empty path to the shell would fall
+            // Nothing to run. Passing an empty path to the platform would fall
             // back to Launchy's own working directory and open it in Explorer.
             qWarning() << "LaunchyWidget::launchItem, no file path to launch, item:"
                        << item.shortName << ", plugin:" << item.pluginName;
         }
         else {
-            runProgram(item.fullPath, args);
+            platform().runProgram(item.fullPath, args);
         }
     }
 
@@ -1139,7 +1146,7 @@ void LaunchyWidget::retranslateUi() {
 void LaunchyWidget::updateOutputSize() {
     int nIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
     qDebug() << "LaunchyWidget::updateOutputSize, output icon size:" << nIconSize;
-    g_app->setPreferredIconSize(nIconSize);
+    launchy::setPreferredIconSize(nIconSize);
     m_alternativeList->setIconSize(nIconSize);
 }
 
@@ -1362,7 +1369,7 @@ void LaunchyWidget::onHotkey() {
 
     if (g_settings->value(OPTION_IGNORE_FULL_SCREEN,
                           OPTION_IGNORE_FULL_SCREEN_DEFAULT).toBool()
-        && !g_app->allowNotification()) {
+        && !platform().allowNotification()) {
         qDebug() << "LaunchyWidget::onHotkey, not allow notification";
         return;
     }
@@ -1504,7 +1511,7 @@ void LaunchyWidget::applySkin(const QString& name) {
 
     bool validFrame = false;
     QPixmap frame;
-    if (g_app->supportsAlphaBorder()) {
+    if (platform().supportsAlphaBorder()) {
         if (frame.load(skinPath + "frame.png")) {
             validFrame = true;
         }
@@ -1695,7 +1702,7 @@ void LaunchyWidget::scheduledBuildCatalog() {
     // Only scheduled rebuilds are gated by the idle condition, manual
     // requests (F5, tray menu, options dialog, startup rescan) call
     // buildCatalog() directly and always rebuild immediately
-    const int idleSeconds = g_app->systemIdleSeconds();
+    const int idleSeconds = platform().systemIdleSeconds();
     if (idleSeconds < 0 || idleSeconds >= CATALOG_REBUILD_SYSTEM_IDLE_SECONDS) {
         // system has been idle long enough, or the platform can not
         // report idle time, rebuild the catalog now

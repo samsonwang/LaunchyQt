@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ExportPyInputData.h"
 
-#include "LaunchyLib/InputData.h"
+#include "PluginInterface/InputData.h"
 
 #include "ExportPyCatItem.h"
 

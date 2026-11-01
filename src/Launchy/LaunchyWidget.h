@@ -24,8 +24,8 @@
 #include <QLabel>
 #include <QUrl>
 
-#include "LaunchyLib/CatalogItem.h"
-#include "LaunchyLib/InputData.h"
+#include "PluginInterface/CatalogItem.h"
+#include "PluginInterface/InputData.h"
 
 #include "IconExtractor.h"
 #include "CommandHistory.h"

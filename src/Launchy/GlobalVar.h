@@ -21,18 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QString>
 
+// g_searchText and the NAME_*/LABEL_* item identities moved to LaunchyCore
+// (see Core/CoreGlobals.h) because the catalog and the history store use them.
+// Re-exported here so the application sources keep compiling without a second
+// include.
+#include "CoreGlobals.h"
+
 namespace launchy {
 
-extern const QString NAME_LAUNCHY;
-extern const QString NAME_HISTORY;
-extern const QString NAME_LAUNCHYFILE;
-
-extern const QString LABEL_FILE;
-extern const QString LABEL_AUTOSUGGEST;
-extern const QString LABEL_HISTORY;
-
-extern QString g_searchText;
-
+// Tear the application's process-wide objects down in dependency order. Called
+// once, after the event loop returns.
 void cleanupGlobalVar();
 
 } // namespace launchy

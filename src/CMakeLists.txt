@@ -109,11 +109,6 @@ if (POLICY CMP0020)
   cmake_policy (SET CMP0020 NEW)
 endif ()
 
-# hide console in release
-if (WIN32)
-  set (CMAKE_WIN32_EXECUTABLE TRUE)
-endif ()
-
 ##################################################
 # Python
 #
@@ -212,6 +207,9 @@ endif ()
 ##################################################
 # Launchy
 add_executable (Launchy)
+if (WIN32)
+  set_target_properties (Launchy PROPERTIES WIN32_EXECUTABLE TRUE)
+endif ()
 
 # source files
 set (SOURCES_LAUNCHY
@@ -219,22 +217,14 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/AnimationLabel.cpp
   ${SRC_DIR}/Launchy/AppBase.h
   ${SRC_DIR}/Launchy/AppBase.cpp
-  ${SRC_DIR}/Launchy/Catalog.h
-  ${SRC_DIR}/Launchy/Catalog.cpp
-  ${SRC_DIR}/Launchy/CatalogSlow.h
-  ${SRC_DIR}/Launchy/CatalogSlow.cpp
-  ${SRC_DIR}/Launchy/CatalogFast.h
-  ${SRC_DIR}/Launchy/CatalogFast.cpp
+  ${SRC_DIR}/Launchy/AppSettings.h
+  ${SRC_DIR}/Launchy/AppSettings.cpp
   ${SRC_DIR}/Launchy/CatalogBuilder.h
   ${SRC_DIR}/Launchy/CatalogBuilder.cpp
   ${SRC_DIR}/Launchy/CharLineEdit.h
   ${SRC_DIR}/Launchy/CharLineEdit.cpp
   ${SRC_DIR}/Launchy/CharListWidget.h
   ${SRC_DIR}/Launchy/CharListWidget.cpp
-  ${SRC_DIR}/Launchy/CommandHistory.h
-  ${SRC_DIR}/Launchy/CommandHistory.cpp
-  ${SRC_DIR}/Launchy/Directory.h
-  ${SRC_DIR}/Launchy/Directory.cpp
   ${SRC_DIR}/Launchy/DropListWidget.h
   ${SRC_DIR}/Launchy/DropListWidget.cpp
   ${SRC_DIR}/Launchy/Fader.h
@@ -251,10 +241,6 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/IconDelegate.cpp
   ${SRC_DIR}/Launchy/IconExtractor.h
   ${SRC_DIR}/Launchy/IconExtractor.cpp
-  ${SRC_DIR}/Launchy/IconProviderBase.h
-  ${SRC_DIR}/Launchy/IconProviderBase.cpp
-  ${SRC_DIR}/Launchy/InputDataList.h
-  ${SRC_DIR}/Launchy/InputDataList.cpp
   ${SRC_DIR}/Launchy/LaunchyVersion.h
   ${SRC_DIR}/Launchy/LaunchyWidget.h
   ${SRC_DIR}/Launchy/LaunchyWidget.cpp
@@ -265,12 +251,10 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/main.cpp
   ${SRC_DIR}/Launchy/OptionDialog.h
   ${SRC_DIR}/Launchy/OptionDialog.cpp
-  ${SRC_DIR}/Launchy/OptionItem.h
-  ${SRC_DIR}/Launchy/OptionItem.cpp
+  ${SRC_DIR}/Launchy/PluginFactory.h
+  ${SRC_DIR}/Launchy/PluginFactory.cpp
   ${SRC_DIR}/Launchy/PluginHandler.h
   ${SRC_DIR}/Launchy/PluginHandler.cpp
-  ${SRC_DIR}/Launchy/SettingsManager.h
-  ${SRC_DIR}/Launchy/SettingsManager.cpp
   ${SRC_DIR}/Launchy/TranslationManager.h
   ${SRC_DIR}/Launchy/TranslationManager.cpp
   ${SRC_DIR}/Launchy/UpdateChecker.h
@@ -278,28 +262,53 @@ set (SOURCES_LAUNCHY
 )
 
 
+# Sources shared by every platform: the icon cache base and the platform seam
+# itself (PlatformBase, the installed instance and the factory). Together with
+# the platform specific files below they build the LaunchyPlatform library,
+# which answers every question the core asks the OS and produces the QIcons the
+# UI needs. The seam lives here rather than in LaunchyCore because only this
+# library knows how to create a platform: with both in one place, the installed
+# pointer is a file-local in Platform.cpp instead of a global in a header, and
+# nothing has to be inline. The application object (AppBase, a QApplication) is
+# deliberately NOT here: it lives in the executable so this library stays free of
+# QApplication.
+set (SOURCES_PLATFORM_COMMON
+  ${SRC_DIR}/Platform/IconProviderBase.h
+  ${SRC_DIR}/Platform/IconProviderBase.cpp
+  ${SRC_DIR}/Platform/Platform.h
+  ${SRC_DIR}/Platform/Platform.cpp)
+
 # sources files for operation system
 if (WIN32)
+  set (SOURCES_PLATFORM
+    ${SRC_DIR}/Platform/Windows/PlatformWin.h
+    ${SRC_DIR}/Platform/Windows/PlatformWin.cpp
+    ${SRC_DIR}/Platform/Windows/CrashDumper.h
+    ${SRC_DIR}/Platform/Windows/CrashDumper.cpp
+    ${SRC_DIR}/Platform/Windows/IconProviderWin.h
+    ${SRC_DIR}/Platform/Windows/IconProviderWin.cpp
+    ${SRC_DIR}/Platform/Windows/UtilWin.h
+    ${SRC_DIR}/Platform/Windows/UtilWin.cpp)
+  # The application object (QApplication) and the main widget override stay in
+  # the executable: AppWin is the Windows QApplication, LaunchyWidgetWin
+  # inherits the application's LaunchyWidget, launchy.rc is the exe resource.
   set (SOURCES_PLATFORM_LAUNCHY
     ${SRC_DIR}/Launchy/Windows/AppWin.h
     ${SRC_DIR}/Launchy/Windows/AppWin.cpp
-    ${SRC_DIR}/Launchy/Windows/CrashDumper.h
-    ${SRC_DIR}/Launchy/Windows/CrashDumper.cpp
-    ${SRC_DIR}/Launchy/Windows/IconProviderWin.h
-    ${SRC_DIR}/Launchy/Windows/IconProviderWin.cpp
     ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.h
     ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.cpp
-    ${SRC_DIR}/Launchy/Windows/UtilWin.h
-    ${SRC_DIR}/Launchy/Windows/UtilWin.cpp
     ${SRC_DIR}/Launchy/Windows/launchy.rc)
   source_group ("Resource Files" FILES ${SRC_DIR}/Launchy/Windows/launchy.rc)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Windows)
 else ()
+  set (SOURCES_PLATFORM
+    ${SRC_DIR}/Platform/Linux/PlatformLinux.h
+    ${SRC_DIR}/Platform/Linux/PlatformLinux.cpp
+    ${SRC_DIR}/Platform/Linux/IconProviderLinux.h
+    ${SRC_DIR}/Platform/Linux/IconProviderLinux.cpp)
   set (SOURCES_PLATFORM_LAUNCHY
     ${SRC_DIR}/Launchy/Linux/AppLinux.h
     ${SRC_DIR}/Launchy/Linux/AppLinux.cpp
-    ${SRC_DIR}/Launchy/Linux/IconProviderLinux.h
-    ${SRC_DIR}/Launchy/Linux/IconProviderLinux.cpp
     ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.h
     ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.cpp)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Linux)
@@ -328,13 +337,12 @@ target_include_directories (Launchy PRIVATE ${CMAKE_BINARY_DIR}/generated)
 
 if (WIN32)
 target_link_libraries (Launchy
-  LaunchyLib PluginPy
+  PluginInterface LaunchyCore LaunchyPlatform PluginPy
   SingleApplication QHotKey
-  userenv netapi32
   Qt${QT_MAJOR_VERSION}::Widgets Qt${QT_MAJOR_VERSION}::Network Qt${QT_MAJOR_VERSION}::WinExtras)
 else ()
 target_link_libraries (Launchy
-  LaunchyLib PluginPy
+  PluginInterface LaunchyCore LaunchyPlatform PluginPy
   SingleApplication QHotKey
   Qt${QT_MAJOR_VERSION}::Widgets Qt${QT_MAJOR_VERSION}::Network Qt${QT_MAJOR_VERSION}::GuiPrivate)
 endif ()
@@ -373,30 +381,136 @@ if (WIN32)
 endif ()
 
 ##################################################
-# LaunchyLib
+# PluginInterface
 # source files
-add_library (LaunchyLib SHARED)
+add_library (PluginInterface SHARED)
 
-set_target_properties(LaunchyLib PROPERTIES
-  OUTPUT_NAME "Launchy")
-
-target_sources (LaunchyLib
+target_sources (PluginInterface
   PRIVATE
-  ${SRC_DIR}/LaunchyLib/CatalogItem.h
-  ${SRC_DIR}/LaunchyLib/CatalogItem.cpp
-  ${SRC_DIR}/LaunchyLib/InputData.h
-  ${SRC_DIR}/LaunchyLib/InputData.cpp
-  ${SRC_DIR}/LaunchyLib/LaunchyLib.h
-  ${SRC_DIR}/LaunchyLib/LaunchyLib.cpp
-  ${SRC_DIR}/LaunchyLib/PluginInfo.h
-  ${SRC_DIR}/LaunchyLib/PluginInfo.cpp
-  ${SRC_DIR}/LaunchyLib/PluginInterface.h
-  ${SRC_DIR}/LaunchyLib/PluginInterface.cpp
-  ${SRC_DIR}/LaunchyLib/PluginMsg.h
-  ${SRC_DIR}/LaunchyLib/UnicodeTable.cpp)
+  ${SRC_DIR}/PluginInterface/CatalogItem.h
+  ${SRC_DIR}/PluginInterface/CatalogItem.cpp
+  ${SRC_DIR}/PluginInterface/InputData.h
+  ${SRC_DIR}/PluginInterface/InputData.cpp
+  ${SRC_DIR}/PluginInterface/Runtime.h
+  ${SRC_DIR}/PluginInterface/Runtime.cpp
+  ${SRC_DIR}/PluginInterface/PluginInterface.h
+  ${SRC_DIR}/PluginInterface/PluginInterface.cpp
+  ${SRC_DIR}/PluginInterface/PluginMsg.h
+  ${SRC_DIR}/PluginInterface/UnicodeTable.h
+  ${SRC_DIR}/PluginInterface/UnicodeTable.cpp)
 
-target_link_libraries (LaunchyLib
+target_link_libraries (PluginInterface
   PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets)
+
+##################################################
+# LaunchyCore
+#
+# Domain logic that must be reachable without a GUI: the catalogs, their
+# ranking and the option keys. STATIC on purpose --
+#
+#   * its only consumers live in this tree (the executable, and the unit
+#     tests), so a DLL would add a deploy step and a second ABI seam that
+#     nothing needs: the app tree is updated atomically,
+#   * everything that links it carries a private copy of the code, which is
+#     only harmless for stateless code. A stateful singleton here (the plugin
+#     registry, the command history) must therefore have exactly one linking
+#     consumer that owns it: the executable. PluginPy keeps to the stateless
+#     parts -- model types, ranking -- and talks to the app through the plugin
+#     message ABI, never through a core object.
+#
+# Rule for anything added here: Qt Core only. No QWidget, no qApp, no platform
+# headers, no platform implementation. If it needs those, it belongs to
+# the application, not here. That rule is what lets test/ link this library
+# and exercise the logic headless.
+add_library (LaunchyCore STATIC)
+
+target_sources (LaunchyCore
+  PRIVATE
+  ${SRC_DIR}/Core/Catalog.h
+  ${SRC_DIR}/Core/Catalog.cpp
+  ${SRC_DIR}/Core/CatalogFast.h
+  ${SRC_DIR}/Core/CatalogFast.cpp
+  ${SRC_DIR}/Core/CatalogSlow.h
+  ${SRC_DIR}/Core/CatalogSlow.cpp
+  ${SRC_DIR}/Core/CatalogRanking.h
+  ${SRC_DIR}/Core/CatalogRanking.cpp
+  ${SRC_DIR}/Core/CommandHistory.h
+  ${SRC_DIR}/Core/CommandHistory.cpp
+  ${SRC_DIR}/Core/CoreGlobals.h
+  ${SRC_DIR}/Core/CoreGlobals.cpp
+  ${SRC_DIR}/Core/Directory.h
+  ${SRC_DIR}/Core/Directory.cpp
+  ${SRC_DIR}/Core/HistoryPromotion.h
+  ${SRC_DIR}/Core/InputDataList.h
+  ${SRC_DIR}/Core/InputDataList.cpp
+  ${SRC_DIR}/Core/OptionItem.h
+  ${SRC_DIR}/Core/OptionItem.cpp
+  ${SRC_DIR}/Core/PluginInfo.h
+  ${SRC_DIR}/Core/PluginInfo.cpp
+  ${SRC_DIR}/Core/PluginRegistry.h
+  ${SRC_DIR}/Core/PluginRegistry.cpp
+  ${SRC_DIR}/Core/SettingsManager.h
+  ${SRC_DIR}/Core/SettingsManager.cpp
+  ${SRC_DIR}/Core/VersionTag.h
+  ${SRC_DIR}/Core/VersionTag.cpp)
+
+# PUBLIC: consumers of the catalogs also need the model types' include root
+# ("PluginInterface/CatalogItem.h") and the same option keys.
+target_include_directories (LaunchyCore
+  PUBLIC ${SRC_DIR}/Core ${SRC_DIR})
+
+# PluginInterface carries the model types (CatItem, InputData) and the plugin ABI,
+# so core links it rather than duplicating the classes.
+#
+# Network is PRIVATE and compile-time only: OptionItem.cpp needs the
+# QNetworkProxy enumerator for one default value (OPTION_PROXY_TYPE_DEFAULT).
+# An enumerator leaves no symbol reference, so nothing pulling core in also
+# imports Qt5Network.dll. Do not use this as a licence to put network code in
+# core -- the proxy settings themselves are read by the application.
+target_link_libraries (LaunchyCore
+  PUBLIC PluginInterface Qt${QT_MAJOR_VERSION}::Core
+  PRIVATE Qt${QT_MAJOR_VERSION}::Network)
+
+##################################################
+# LaunchyPlatform
+#
+# The operating system differences, gathered in one library. Everything that
+# answers a platform question (directories, environment, idle time, network,
+# running a program, the icon cache) lives here, in the platform specific
+# subfolders (Platform/Windows, Platform/Linux), together with the seam that
+# hands the answer to the rest of the tree (Platform/Platform.h). It links
+# LaunchyCore for the model types and the logging helpers.
+#
+# STATIC, like LaunchyCore, because its only consumers are the executable and
+# the unit tests in this tree -- a DLL would add a deploy step and an ABI seam
+# nothing needs. It links Qt Widgets/Gui for the icon cache (QFileIconProvider /
+# QIcon), but the code does not use QApplication -- the application object lives
+# in the executable, which is what keeps this library free of QApplication.
+add_library (LaunchyPlatform STATIC)
+
+target_sources (LaunchyPlatform
+  PRIVATE ${SOURCES_PLATFORM_COMMON}
+  PRIVATE ${SOURCES_PLATFORM})
+
+target_include_directories (LaunchyPlatform
+  PUBLIC ${SRC_DIR}/Platform ${SRC_DIR})
+
+if (WIN32)
+  target_include_directories (LaunchyPlatform PUBLIC ${SRC_DIR}/Platform/Windows)
+  # WinExtras for the taskbar, and the two system libraries the platform answers
+  # need: userenv (CreateEnvironmentBlock) and netapi32 (NetServerEnum). They are
+  # declared here, where the calls live, so anything linking this library gets
+  # them whether or not it is the executable.
+  target_link_libraries (LaunchyPlatform
+    PRIVATE Qt${QT_MAJOR_VERSION}::WinExtras
+    PRIVATE userenv netapi32)
+else ()
+  target_include_directories (LaunchyPlatform PUBLIC ${SRC_DIR}/Platform/Linux)
+endif ()
+
+target_link_libraries (LaunchyPlatform
+  PUBLIC LaunchyCore
+  PRIVATE Qt${QT_MAJOR_VERSION}::Widgets Qt${QT_MAJOR_VERSION}::Gui)
 
 ##################################################
 # PluginPy
@@ -422,7 +536,7 @@ target_include_directories (PluginPy
   PRIVATE ${Python_INCLUDE_DIRS})
 
 target_link_libraries (PluginPy
-  PUBLIC LaunchyLib
+  PUBLIC PluginInterface
   PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE ${Python_LIBRARIES})
 
@@ -560,7 +674,8 @@ if (QT_MAJOR_VERSION EQUAL 5)
   qt5_create_translation (QM_FILES_LAUNCHY
     ${TS_FILES_LAUNCHY}
     ${SRC_DIR}/Launchy
-    ${SRC_DIR}/LaunchyLib
+    ${SRC_DIR}/PluginInterface
+    ${SRC_DIR}/Core
     ${SRC_DIR}/PluginPy)
 
   # Drive the .qm generation and copy them next to the executable.
@@ -656,7 +771,7 @@ target_sources (Plugin.Runner
 target_link_libraries (Plugin.Runner
   PUBLIC Qt${QT_MAJOR_VERSION}::Core
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
-  PRIVATE LaunchyLib)
+  PRIVATE PluginInterface)
 
 # plugin/<Name>/ is the folder PluginHandler::loadPlugins() expects. One
 # generator expression instead of a _DEBUG/_RELEASE pair: $<CONFIG> expands to
@@ -695,7 +810,7 @@ target_link_libraries (Plugin.Tasky
   PUBLIC Qt${QT_MAJOR_VERSION}::Core
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE Qt${QT_MAJOR_VERSION}::WinExtras
-  PRIVATE LaunchyLib)
+  PRIVATE PluginInterface)
 
 set_target_properties (Plugin.Tasky PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Tasky")
@@ -732,7 +847,7 @@ target_sources (Plugin.UWPApp
 target_link_libraries (Plugin.UWPApp
   PUBLIC Qt${QT_MAJOR_VERSION}::Core
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
-  PRIVATE LaunchyLib
+  PRIVATE PluginInterface
   PRIVATE user32 shell32 propsys gdi32)
 
 set_target_properties (Plugin.UWPApp PROPERTIES
@@ -763,7 +878,7 @@ target_sources (Plugin.Verby
 target_link_libraries (Plugin.Verby
   PUBLIC Qt${QT_MAJOR_VERSION}::Core
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
-  PRIVATE LaunchyLib)
+  PRIVATE PluginInterface)
 
 set_target_properties (Plugin.Verby PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>/plugins/Verby")
@@ -786,7 +901,7 @@ add_custom_command (TARGET Plugin.Verby POST_BUILD
 # copy it after the compiled code. It used to be an ALL target that raced the
 # native plugin folders, and an incremental build could still drop the step.
 # Pin PythonPlugins.Deploy to the very end of `all`, so plugins/<Name>/ only
-# exists once Launchy.exe, LaunchyLib, PluginPy, every native plugin and the
+# exists once Launchy.exe, PluginInterface, PluginPy, every native plugin and the
 # generated .qm files are all in place.
 if (WIN32)
   set (PYTHON_PLUGINS_DEPENDS
@@ -841,7 +956,7 @@ endif ()
 ##################################################
 # Unit tests (QTest + CTest)
 #
-# Tests live in <repo>/test/ and are driven by CTest. They link LaunchyLib
+# Tests live in <repo>/test/ and are driven by CTest. They link PluginInterface
 # directly to exercise the real code. See test/CMakeLists.txt for how to add
 # a test (drop a Test<Name>.cpp + one launchy_add_test line).
 #

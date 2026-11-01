@@ -27,26 +27,17 @@ class CrashDumper;
 
 namespace launchy {
 
+// The Windows application object: the QApplication (via AppBase) plus the
+// Windows-specific startup (the installer mutexes, the crash dumper, the icon
+// provider). The platform questions themselves are answered by
+// PlatformWin in the platform library, not here.
 class AppWin : public AppBase {
 public:
     AppWin(int& argc, char** argv);
     virtual ~AppWin();
 
 public:
-    virtual QHash<QString, QList<QString>> getDirectories() const;
-    virtual QList<Directory> getDefaultCatalogDirectories() const;
-    virtual QString expandEnvironmentVars(const QString& vars) const;
-
-public:
     virtual void sendInstanceCommand(int command);
-
-    virtual bool supportsAlphaBorder() const;
-
-    virtual bool getComputers(QStringList& computers) const;
-
-    virtual bool allowNotification() const;
-
-    virtual int systemIdleSeconds() const;
 
 private:
     HANDLE localMutex;

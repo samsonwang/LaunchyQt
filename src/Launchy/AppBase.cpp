@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QFileInfo>
 #include <QApplication>
 
-#include "LaunchyLib/CatalogItem.h"
-
-#include "Directory.h"
 #include "IconProviderBase.h"
 
 namespace launchy {
@@ -45,11 +42,16 @@ AppBase::~AppBase() {
     }
 }
 
+AppBase* AppBase::instance() {
+    return static_cast<AppBase*>(qApp);
+}
+
 void AppBase::cleanup() {
-    if (g_app) {
-        delete g_app;
-    }
-};
+    // The platform object is owned by main(), which drops and deletes it after
+    // this returns -- see main.cpp. Deleting the application object first lets
+    // the teardown run while the platform is still installed.
+    delete AppBase::instance();
+}
 
 QIcon AppBase::icon(const QFileInfo& info) {
     if (m_iconProvider) {
@@ -58,8 +60,7 @@ QIcon AppBase::icon(const QFileInfo& info) {
     return QIcon();
 }
 
-QIcon AppBase::icon(const QString& path)
-{
+QIcon AppBase::icon(const QString& path) {
     return icon(QFileInfo(path));
 }
 
@@ -76,35 +77,30 @@ void AppBase::setPreferredIconSize(int size) {
     }
 }
 
+// The free functions exist so a caller that only wants an icon does not have to
+// reach for the application object.
+QIcon icon(const QFileInfo& info) {
+    return AppBase::instance()->icon(info);
+}
+
+QIcon icon(const QString& path) {
+    return AppBase::instance()->icon(path);
+}
+
+QIcon icon(QFileIconProvider::IconType type) {
+    return AppBase::instance()->icon(type);
+}
+
+void setPreferredIconSize(int size) {
+    AppBase::instance()->setPreferredIconSize(size);
+}
+
 bool AppBase::isAlreadyRunning() const {
     return this->isSecondary();
 }
 
 void AppBase::sendInstanceCommand(int command) {
     Q_UNUSED(command)
-}
-
-void AppBase::alterItem(CatItem* item) const {
-    Q_UNUSED(item)
-}
-
-bool AppBase::supportsAlphaBorder() const {
-    return false;
-}
-
-bool AppBase::getComputers(QStringList& computers) const {
-    Q_UNUSED(computers);
-    return false;
-}
-
-bool AppBase::allowNotification() const {
-    return true;
-}
-
-int AppBase::systemIdleSeconds() const {
-    // idle time is unknown on this platform, callers should fall back
-    // to the behavior used before idle detection was introduced
-    return -1;
 }
 
 } // namespace launchy

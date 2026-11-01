@@ -24,8 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <QDir>
 
-#include "LaunchyLib/LaunchyLib.h"
-#include "LaunchyLib/InputData.h"
+#include "PluginInterface/Runtime.h"
+#include "PluginInterface/InputData.h"
 
 #include "ExportPyPlugin.h"
 #include "PluginWrapper.h"

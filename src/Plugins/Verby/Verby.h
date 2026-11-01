@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QList>
 
-#include "LaunchyLib/PluginInterface.h"
-#include "LaunchyLib/CatalogItem.h"
-#include "LaunchyLib/InputData.h"
+#include "PluginInterface/PluginInterface.h"
+#include "PluginInterface/CatalogItem.h"
+#include "PluginInterface/InputData.h"
 
 class Gui;
 

@@ -5,9 +5,9 @@
 #include <QList>
 #include <QWidget>
 
-#include "LaunchyLib/InputData.h"
-#include "LaunchyLib/CatalogItem.h"
-#include "LaunchyLib/PluginInterface.h"
+#include "PluginInterface/InputData.h"
+#include "PluginInterface/CatalogItem.h"
+#include "PluginInterface/PluginInterface.h"
 
 namespace exportpy { class Plugin; }
 

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDebug>
 
-#include "LaunchyLib/PluginMsg.h"
+#include "PluginInterface/PluginMsg.h"
 
 #include "ExportPyPlugin.h"
 
@@ -170,8 +170,9 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     // the dispatch to keep two python calls from overlapping; it was dropped
     // because it could not reach the threads a plugin starts itself (those
     // never enter msg), while being non-recursive it deadlocked whenever a
-    // plugin's own call re-entered the launcher on the same thread - for
-    // instance through launchy.runProgram -> ShellExecuteEx pumping messages.
+    // plugin's own call re-entered the launcher on the same thread. A plugin
+    // can no longer trigger that path directly: launchy.runProgram now only
+    // enqueues a request the application drains on its own timer.
     // pybind11's gil is reference counted and re-entrant, so that same nesting
     // is legal.
     py::gil_scoped_acquire gil;

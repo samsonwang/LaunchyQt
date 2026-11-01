@@ -30,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QApplication>
 #include <QDir>
 
-#include "LaunchyLib/PluginInterface.h"
-#include "LaunchyLib/LaunchyLib.h"
+#include "PluginInterface/PluginInterface.h"
+#include "PluginInterface/Runtime.h"
 
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"

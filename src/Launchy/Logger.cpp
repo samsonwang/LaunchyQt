@@ -9,7 +9,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include <LaunchyLib/LaunchyLib.h>
+#include <PluginInterface/Runtime.h>
 
 namespace launchy {
 namespace log {

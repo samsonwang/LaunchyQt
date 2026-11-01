@@ -145,11 +145,11 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
 #ifdef Q_OS_LINUX
         QFileInfo info(item.fullPath);
         if (info.isDir())
-            return g_app->icon(QFileIconProvider::Folder);
+            return icon(QFileIconProvider::Folder);
 #endif
         if (item.fullPath.isEmpty())
             return QIcon();
-        return g_app->icon(QDir::toNativeSeparators(item.fullPath));
+        return icon(QDir::toNativeSeparators(item.fullPath));
     }
     else {
 #ifdef Q_OS_LINUX
@@ -157,7 +157,7 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
             return QIcon(item.iconPath);
         }
 #endif
-        return g_app->icon(QDir::toNativeSeparators(item.iconPath));
+        return icon(QDir::toNativeSeparators(item.iconPath));
     }
 }
 

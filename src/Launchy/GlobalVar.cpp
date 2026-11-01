@@ -22,19 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LaunchyWidget.h"
 #include "CatalogBuilder.h"
 
-#include "LaunchyLib/LaunchyLib.h"
+#include "PluginInterface/Runtime.h"
 
 namespace launchy {
-
-const QString NAME_LAUNCHY = QStringLiteral("launchy");
-const QString NAME_HISTORY = QStringLiteral("launchy_history");
-const QString NAME_LAUNCHYFILE = QStringLiteral("launchy_file");
-
-const QString LABEL_FILE = QStringLiteral("launchy_file");
-const QString LABEL_AUTOSUGGEST = QStringLiteral("launchy_auto_suggest");
-const QString LABEL_HISTORY = QStringLiteral("launchy_history");
-
-QString g_searchText;
 
 void cleanupGlobalVar() {
 

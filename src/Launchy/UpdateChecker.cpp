@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "GlobalVar.h"
 #include "OptionItem.h"
+#include "VersionTag.h"
 #include "LaunchyWidget.h"
 #include "LaunchyVersion.h"
 
@@ -40,29 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
 
 namespace launchy {
-
-// convert github release tag "v3.1.8" to LAUNCHY_VERSION format,
-// returns 0 if tag is not in "vMAJOR.MINOR.PATCH" format
-static unsigned parseReleaseTag(const QString& tag) {
-    QString version = tag.trimmed();
-    if (version.startsWith(QLatin1Char('v')) || version.startsWith(QLatin1Char('V'))) {
-        version = version.mid(1);
-    }
-    if (version.count(QLatin1Char('.')) != 2) {
-        return 0;
-    }
-
-    bool okMajor = false;
-    bool okMinor = false;
-    bool okPatch = false;
-    const unsigned major = version.section(QLatin1Char('.'), 0, 0).toUInt(&okMajor);
-    const unsigned minor = version.section(QLatin1Char('.'), 1, 1).toUInt(&okMinor);
-    const unsigned patch = version.section(QLatin1Char('.'), 2, 2).toUInt(&okPatch);
-    if (!okMajor || !okMinor || !okPatch) {
-        return 0;
-    }
-    return major * 10000 + minor * 100 + patch;
-}
 
 UpdateChecker::UpdateChecker()
     : m_mgr(new QNetworkAccessManager(this)),
@@ -214,7 +192,9 @@ void UpdateChecker::replyFinished(QNetworkReply* reply) {
     const QString tagName = release.value(QLatin1String("tag_name")).toString();
     const QString releaseUrl = release.value(QLatin1String("html_url")).toString();
 
-    const unsigned latestVersion = parseReleaseTag(tagName);
+    // Shared with the unit tests rather than living here: the tag parser is the
+    // only part of this file that can be reasoned about without a network.
+    const unsigned latestVersion = versionFromTag(tagName);
     if (latestVersion == 0) {
         checkFailed(QString("unexpected release tag: %1").arg(tagName));
         return;

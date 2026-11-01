@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FILESEARCH_H
 
 #include "InputDataList.h"
-#include "LaunchyLib/CatalogItem.h"
+#include "PluginInterface/CatalogItem.h"
 
 namespace launchy {
 class FileSearch {

@@ -21,13 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AppWin.h"
 
 #include <tchar.h>
-#include <ShlObj.h>
-#include <shellapi.h>
-#include <LM.h>
 
-#include "LaunchyWidgetWin.h"
-#include "UtilWin.h"
-#include "LaunchyWidget.h"
+#include <QApplication>
+
 #include "IconProviderWin.h"
 #include "CrashDumper.h"
 
@@ -58,133 +54,15 @@ AppWin::~AppWin() {
     }
 }
 
-QList<Directory> AppWin::getDefaultCatalogDirectories() const {
-    QList<Directory> list;
-
-    Directory dir;
-    dir.types << "*.lnk";
-    dir.indexDirs = false;
-
-    dir.name = GetShellDirectory(CSIDL_COMMON_STARTMENU);
-    list.append(dir);
-
-    dir.name = GetShellDirectory(CSIDL_STARTMENU);
-    list.append(dir);
-
-    dir.name = GetShellDirectory(CSIDL_COMMON_DESKTOPDIRECTORY);
-    dir.indexExe = true;
-    dir.depth = 1;
-    list.append(dir);
-
-    dir.name = GetShellDirectory(CSIDL_DESKTOPDIRECTORY);
-    dir.indexExe = true;
-    dir.depth = 1;
-    list.append(dir);
-
-    dir.name = GetShellDirectory(CSIDL_RECENT);
-    dir.indexDirs = false;
-    dir.indexExe = false;
-    dir.depth = 1;
-    list.append(dir);
-
-    Directory dir2;
-    dir2.name = "utilities\\";
-    dir2.types << "*.lnk";
-    dir2.types << "*.cmd";
-    dir2.types << "*.vbs";
-    dir2.indexDirs = false;
-    list.append(dir2);
-
-    return list;
-}
-
-QHash<QString, QList<QString> > AppWin::getDirectories() const {
-    QHash<QString, QList<QString> > out;
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "Launchy", "Launchy");
-    QString iniFilename = settings.fileName();
-    QFileInfo info(iniFilename);
-    QString userDataPath = info.absolutePath();
-
-    out["config"] << userDataPath;
-    out["portableConfig"] << qApp->applicationDirPath() + "/config";
-    out["skins"] << qApp->applicationDirPath() + "/skins"
-        << userDataPath + "/skins";
-    out["plugins"] << qApp->applicationDirPath() + "/plugins"
-        << userDataPath + "/plugins";
-
-    return out;
-}
-
-QString AppWin::expandEnvironmentVars(const QString& vars) const {
-    QString result;
-
-    DWORD size = ExpandEnvironmentStringsW((LPCWSTR)vars.utf16(), NULL, 0);
-    if (size > 0) {
-        WCHAR* buffer = new WCHAR[size];
-        ExpandEnvironmentStringsW((LPCWSTR)vars.utf16(), buffer, size);
-        result = QString::fromWCharArray(buffer);
-        delete[] buffer;
-        buffer = nullptr;
-    }
-
-    return result;
-}
-
-bool AppWin::supportsAlphaBorder() const {
-    return true;
-}
-
 void AppWin::sendInstanceCommand(int command) {
     UINT commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
     PostMessage(HWND_BROADCAST, commandMessageId, command, 0);
 }
 
-bool AppWin::getComputers(QStringList& computers) const {
-    // Get a list of domains. This should return nothing or fail when we're on a workgroup
-    QStringList domains;
-    if (EnumerateNetworkServers(domains, SV_TYPE_DOMAIN_ENUM)) {
-        foreach(QString domain, domains) {
-            EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, (const WCHAR*)domain.utf16());
-        }
-
-        // If names have been retrieved from more than one domain, they'll need sorting
-        if (domains.length() > 1) {
-            computers.sort();
-        }
-
-        return true;
-    }
-
-    return EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
-}
-
-bool AppWin::allowNotification() const {
-
-    QUERY_USER_NOTIFICATION_STATE state;
-    if (SHQueryUserNotificationState(&state) == S_OK) {
-        return state == QUNS_ACCEPTS_NOTIFICATIONS;
-    }
-
-    return true;
-}
-
-int AppWin::systemIdleSeconds() const {
-    LASTINPUTINFO lastInputInfo;
-    lastInputInfo.cbSize = sizeof(LASTINPUTINFO);
-    if (!GetLastInputInfo(&lastInputInfo)) {
-        return -1;
-    }
-
-    // both values come from GetTickCount() and wrap around together,
-    // so the unsigned subtraction stays correct after the 49.7 day wrap
-    DWORD idleMillis = GetTickCount() - lastInputInfo.dwTime;
-    return static_cast<int>(idleMillis / 1000);
-}
-
 // Create the application object
 AppBase* createApplication(int& argc, char** argv) {
     if (qApp) {
-        return g_app;
+        return AppBase::instance();
     }
     return new AppWin(argc, argv);
 }

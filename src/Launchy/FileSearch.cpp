@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QRegularExpression>
 #include <QDebug>
 
-#include "AppBase.h"
+#include "Platform/Platform.h"
 #include "GlobalVar.h"
 #include "Catalog.h"
 #include "OptionItem.h"
@@ -93,7 +93,7 @@ void FileSearch::search(const QString& searchText,
                               QRegularExpression::CaseInsensitiveOption);
         if (re.match(searchPath).hasMatch()) {
             // Get a list of devices on the network. This will be filtered and sorted later.
-            g_app->getComputers(itemList);
+            platform().getComputers(itemList);
             isDirectory = false;
             listPopulated = true;
             sort = false;

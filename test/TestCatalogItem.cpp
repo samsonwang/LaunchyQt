@@ -9,8 +9,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 #include <QtTest>
 
-#include "LaunchyLib/CatalogItem.h"
-#include "LaunchyLib/InputData.h"
+#include "PluginInterface/CatalogItem.h"
+#include "PluginInterface/InputData.h"
 
 using namespace launchy;
 

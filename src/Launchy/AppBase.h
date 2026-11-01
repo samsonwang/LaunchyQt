@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include <QIcon>
 #include <QList>
 #include <QHash>
 #include <QString>
@@ -26,15 +27,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SingleApplication/SingleApplication>
 
-#include "Directory.h"
-
 class QFileInfo;
 
 namespace launchy {
 
-class CatItem;
 class IconProviderBase;
 
+// The application object: the QApplication (via SingleApplication, which also
+// gives the single-instance channel) plus the icon cache.
+//
+// It deliberately does NOT implement PlatformBase any more. The platform
+// questions are answered by a separate platform object (PlatformWin /
+// PlatformLinux) that lives in the LaunchyPlatform library and knows
+// nothing about QApplication; main() installs it through initPlatform().
+// Keeping the application object in the executable is what lets the platform
+// library stay free of QApplication.
 class AppBase : public SingleApplication {
 public:
     AppBase(int& argc, char** argv);
@@ -43,6 +50,12 @@ public:
 public:
     static void cleanup();
 
+    // The application object. This exists for the few call sites that need the
+    // QApplication itself (its signals, its modal widgets) and for the icon
+    // accessors. Everything that is a platform question goes through
+    // platform(), which the tests can substitute.
+    static AppBase* instance();
+
 public:
     QIcon icon(const QFileInfo& info);
     QIcon icon(const QString& path);
@@ -50,34 +63,22 @@ public:
     void setPreferredIconSize(int size);
 
 public:
-    virtual QHash<QString, QList<QString>> getDirectories() const = 0;
-    virtual QList<Directory> getDefaultCatalogDirectories() const = 0;
-    virtual QString expandEnvironmentVars(const QString& vars) const = 0;
-
-public:
     virtual bool isAlreadyRunning() const;
     virtual void sendInstanceCommand(int command);
-
-    // Need to alter an indexed item?  e.g. .desktop files
-    virtual void alterItem(CatItem* item) const;
-
-    virtual bool supportsAlphaBorder() const;
-
-    virtual bool getComputers(QStringList& computers) const;
-
-    // detect current fullscreen mode
-    virtual bool allowNotification() const;
-
-    // seconds elapsed since the last keyboard/mouse input,
-    // or a negative value if the platform can not report idle time
-    virtual int systemIdleSeconds() const;
 
 protected:
     IconProviderBase* m_iconProvider;
 };
 
-AppBase* createApplication(int& argc, char** argv);
+// Icons for an indexed item. Free functions rather than members so a caller
+// does not have to spell out that it needs the application object for this.
+QIcon icon(const QFileInfo& info);
+QIcon icon(const QString& path);
+QIcon icon(QFileIconProvider::IconType type);
+void setPreferredIconSize(int size);
 
-#define g_app static_cast<launchy::AppBase*>(qApp)
+// Create the application object. Returns the existing one when there is
+// already a QApplication.
+AppBase* createApplication(int& argc, char** argv);
 
 } // namespace launchy
