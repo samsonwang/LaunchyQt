@@ -600,4 +600,10 @@ bool IconProviderWin::addIconFromImageList(int imageListIndex, int iconIndex, QI
     return SUCCEEDED(hResult);
 }
 
+// The provider this build extracts icons with. Declared in IconProviderBase.h so
+// that IconExtractor can create one without naming a Windows type.
+IconProviderBase* createIconProvider() {
+    return new IconProviderWin();
+}
+
 } // namespace launchy

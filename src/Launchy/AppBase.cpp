@@ -19,27 +19,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "AppBase.h"
 
-#include <QFileInfo>
 #include <QApplication>
-
-#include "IconProviderBase.h"
 
 namespace launchy {
 
 AppBase::AppBase(int& argc, char** argv)
-    : SingleApplication(argc, argv, false, Mode::SecondaryNotification),
-      m_iconProvider(nullptr) {
+    : SingleApplication(argc, argv, false, Mode::SecondaryNotification) {
     setQuitOnLastWindowClosed(false);
     setApplicationName("LaunchyQt");
     setOrganizationName("LaunchyQt");
-    setOrganizationDomain("launchy.wangzhl.com");
+    // setOrganizationDomain("launchyqt.github.io");
 }
 
 AppBase::~AppBase() {
-    if (m_iconProvider) {
-        delete m_iconProvider;
-        m_iconProvider = nullptr;
-    }
 }
 
 AppBase* AppBase::instance() {
@@ -51,48 +43,6 @@ void AppBase::cleanup() {
     // this returns -- see main.cpp. Deleting the application object first lets
     // the teardown run while the platform is still installed.
     delete AppBase::instance();
-}
-
-QIcon AppBase::icon(const QFileInfo& info) {
-    if (m_iconProvider) {
-        return m_iconProvider->icon(info);
-    }
-    return QIcon();
-}
-
-QIcon AppBase::icon(const QString& path) {
-    return icon(QFileInfo(path));
-}
-
-QIcon AppBase::icon(QFileIconProvider::IconType type) {
-    if (m_iconProvider) {
-        return m_iconProvider->icon(type);
-    }
-    return QIcon();
-}
-
-void AppBase::setPreferredIconSize(int size) {
-    if (m_iconProvider) {
-        m_iconProvider->setPreferredIconSize(size);
-    }
-}
-
-// The free functions exist so a caller that only wants an icon does not have to
-// reach for the application object.
-QIcon icon(const QFileInfo& info) {
-    return AppBase::instance()->icon(info);
-}
-
-QIcon icon(const QString& path) {
-    return AppBase::instance()->icon(path);
-}
-
-QIcon icon(QFileIconProvider::IconType type) {
-    return AppBase::instance()->icon(type);
-}
-
-void setPreferredIconSize(int size) {
-    AppBase::instance()->setPreferredIconSize(size);
 }
 
 bool AppBase::isAlreadyRunning() const {

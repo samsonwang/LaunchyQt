@@ -19,29 +19,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QIcon>
-#include <QList>
-#include <QHash>
-#include <QString>
-#include <QFileIconProvider>
-
 #include <SingleApplication/SingleApplication>
-
-class QFileInfo;
 
 namespace launchy {
 
-class IconProviderBase;
-
 // The application object: the QApplication (via SingleApplication, which also
-// gives the single-instance channel) plus the icon cache.
+// gives the single-instance channel).
 //
-// It deliberately does NOT implement PlatformBase any more. The platform
-// questions are answered by a separate platform object (PlatformWin /
-// PlatformLinux) that lives in the LaunchyPlatform library and knows
-// nothing about QApplication; main() installs it through initPlatform().
-// Keeping the application object in the executable is what lets the platform
-// library stay free of QApplication.
+// It holds no platform knowledge at all. The platform questions -- including
+// the icons, which used to be cached here -- are answered by a separate platform
+// object (PlatformWin / PlatformLinux) that lives in the LaunchyPlatform library
+// and knows nothing about QApplication; main() installs it through
+// initPlatform(). Keeping the application object in the executable is what lets
+// the platform library stay free of QApplication.
 class AppBase : public SingleApplication {
 public:
     AppBase(int& argc, char** argv);
@@ -50,32 +40,14 @@ public:
 public:
     static void cleanup();
 
-    // The application object. This exists for the few call sites that need the
-    // QApplication itself (its signals, its modal widgets) and for the icon
-    // accessors. Everything that is a platform question goes through
-    // platform(), which the tests can substitute.
+    // The application object. This exists for the call sites that need the
+    // QApplication itself (its signals, its modal widgets).
     static AppBase* instance();
-
-public:
-    QIcon icon(const QFileInfo& info);
-    QIcon icon(const QString& path);
-    QIcon icon(QFileIconProvider::IconType type);
-    void setPreferredIconSize(int size);
 
 public:
     virtual bool isAlreadyRunning() const;
     virtual void sendInstanceCommand(int command);
-
-protected:
-    IconProviderBase* m_iconProvider;
 };
-
-// Icons for an indexed item. Free functions rather than members so a caller
-// does not have to spell out that it needs the application object for this.
-QIcon icon(const QFileInfo& info);
-QIcon icon(const QString& path);
-QIcon icon(QFileIconProvider::IconType type);
-void setPreferredIconSize(int size);
 
 // Create the application object. Returns the existing one when there is
 // already a QApplication.

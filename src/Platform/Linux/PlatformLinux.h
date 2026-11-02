@@ -26,7 +26,9 @@ namespace launchy {
 class IconProviderLinux;
 
 // The Linux answers to the platform questions. Pure PlatformBase: no
-// QApplication, no QWidget -- only X11, QtGui (QX11Info) and Qt Core.
+// QApplication, no QWidget -- only X11, QtGui (QX11Info) and Qt Core. The only
+// icons here are the ones alterItem() has to resolve while indexing; the icons
+// the UI shows are extracted by IconExtractor (see Platform.h).
 class PlatformLinux : public PlatformBase {
 public:
     PlatformLinux();
@@ -49,8 +51,11 @@ public:
     virtual void alterItem(CatItem* item) const;
 
 private:
-    // Owns the desktop-icon cache used by alterItem; this class must not reach
-    // for the application object, so it carries its own provider.
+    // Resolving a .desktop entry's Icon= name to a file is an XDG lookup with
+    // its own caches, so indexing needs a provider even though extraction no
+    // longer goes through this class. It is deliberately NOT shared with the
+    // one IconExtractor owns: indexing runs on the catalog thread and
+    // extraction on its own, and these caches are only safe from one thread.
     IconProviderLinux* m_iconProvider;
 };
 

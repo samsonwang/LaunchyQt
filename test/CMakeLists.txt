@@ -53,8 +53,8 @@ function (launchy_add_test test_name)
 
     # A test carrying a Launchy-side unit also needs that unit's own headers and
     # the platform seam, which the app side asks directly (FileSearch looks up
-    # the network neighbourhood). The platform library is Qt Core only, so this
-    # keeps the test headless.
+    # the network neighbourhood). The seam is Qt Core only, so this keeps the
+    # test headless: no Qt GUI DLL has to sit next to the executable.
     if (ARGN)
         target_include_directories (${test_name} PRIVATE ${SRC_DIR}/Launchy)
         target_link_libraries (${test_name} PRIVATE LaunchyPlatform)

@@ -20,20 +20,17 @@
 #pragma once
 
 #include "AppBase.h"
-#include "IconProviderLinux.h"
 
 namespace launchy {
 
-// The Linux application object: the QApplication (via AppBase) plus the Linux
-// icon provider. The platform questions themselves are answered by
-// PlatformLinux in the platform library, not here.
+// The Linux application object: the QApplication (via AppBase) and nothing
+// else. The platform questions and the icons are answered by PlatformLinux in
+// the platform library, not here.
 class AppLinux : public AppBase {
     Q_OBJECT
 public:
     AppLinux(int& argc, char** argv);
     virtual ~AppLinux();
-
-    void setPreferredIconSize(int size);
 
     QString GetSettingsDirectory();
 

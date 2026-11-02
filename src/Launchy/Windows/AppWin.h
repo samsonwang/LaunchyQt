@@ -28,9 +28,7 @@ class CrashDumper;
 namespace launchy {
 
 // The Windows application object: the QApplication (via AppBase) plus the
-// Windows-specific startup (the installer mutexes, the crash dumper, the icon
-// provider). The platform questions themselves are answered by
-// PlatformWin in the platform library, not here.
+// Windows-specific startup (the installer mutexes, the crash dumper).
 class AppWin : public AppBase {
 public:
     AppWin(int& argc, char** argv);

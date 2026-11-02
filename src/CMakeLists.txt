@@ -239,8 +239,6 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/GlobalVar.cpp
   ${SRC_DIR}/Launchy/IconDelegate.h
   ${SRC_DIR}/Launchy/IconDelegate.cpp
-  ${SRC_DIR}/Launchy/IconExtractor.h
-  ${SRC_DIR}/Launchy/IconExtractor.cpp
   ${SRC_DIR}/Launchy/LaunchyVersion.h
   ${SRC_DIR}/Launchy/LaunchyWidget.h
   ${SRC_DIR}/Launchy/LaunchyWidget.cpp
@@ -262,17 +260,20 @@ set (SOURCES_LAUNCHY
 )
 
 
-# Sources shared by every platform: the icon cache base and the platform seam
-# itself (PlatformBase, the installed instance and the factory). Together with
-# the platform specific files below they build the LaunchyPlatform library,
-# which answers every question the core asks the OS and produces the QIcons the
-# UI needs. The seam lives here rather than in LaunchyCore because only this
-# library knows how to create a platform: with both in one place, the installed
-# pointer is a file-local in Platform.cpp instead of a global in a header, and
-# nothing has to be inline. The application object (AppBase, a QApplication) is
-# deliberately NOT here: it lives in the executable so this library stays free of
-# QApplication.
+# Sources shared by every platform: the icon cache base, the worker that fills
+# it in the background, and the platform seam itself (PlatformBase, the installed
+# instance and the factory). Together with the platform specific files below they
+# build the LaunchyPlatform library, which answers every question the core asks
+# the OS and produces the QIcons the UI needs -- IconExtractor is here because
+# deciding which file an item's icon comes from is an OS question, not a UI one.
+# The seam lives here rather than in LaunchyCore because only this library knows
+# how to create a platform: with both in one place, the installed pointer is a
+# file-local in Platform.cpp instead of a global in a header, and nothing has to
+# be inline. The application object (AppBase, a QApplication) is deliberately NOT
+# here: it lives in the executable so this library stays free of QApplication.
 set (SOURCES_PLATFORM_COMMON
+  ${SRC_DIR}/Platform/IconExtractor.h
+  ${SRC_DIR}/Platform/IconExtractor.cpp
   ${SRC_DIR}/Platform/IconProviderBase.h
   ${SRC_DIR}/Platform/IconProviderBase.cpp
   ${SRC_DIR}/Platform/Platform.h
@@ -487,7 +488,6 @@ target_link_libraries (LaunchyCore
 # QIcon), but the code does not use QApplication -- the application object lives
 # in the executable, which is what keeps this library free of QApplication.
 add_library (LaunchyPlatform STATIC)
-
 target_sources (LaunchyPlatform
   PRIVATE ${SOURCES_PLATFORM_COMMON}
   PRIVATE ${SOURCES_PLATFORM})
@@ -508,6 +508,15 @@ else ()
   target_include_directories (LaunchyPlatform PUBLIC ${SRC_DIR}/Platform/Linux)
 endif ()
 
+# Widgets + Gui are PRIVATE: Platform.h is Qt Core only, and nothing it declares
+# mentions a GUI type. The GUI dependency is still real -- the icon providers
+# derive from QFileIconProvider and produce QIcons -- but it stays inside this
+# library's own sources, so a consumer of the seam (the headless tests included)
+# neither needs the include paths nor Qt5Gui.dll at run time. IconExtractor.h
+# does expose QIcon; its only consumer is the widget, a Qt Widgets application.
+# Exposing a type is not the same as using a widget: no header of this library
+# declares one, and QFileIconProvider needs the QtWidgets library, not a
+# QApplication instance.
 target_link_libraries (LaunchyPlatform
   PUBLIC LaunchyCore
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets Qt${QT_MAJOR_VERSION}::Gui)

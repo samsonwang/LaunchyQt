@@ -28,6 +28,10 @@ public:
     IconProviderWin();
     virtual ~IconProviderWin();
 
+    // The path overload below hides the base one, which would also hide
+    // icon(IconType): the platform asks the provider for standard file types
+    // too, so both overloads have to stay reachable through this type.
+    using IconProviderBase::icon;
     virtual QIcon icon(const QFileInfo& info) const;
 
 private:

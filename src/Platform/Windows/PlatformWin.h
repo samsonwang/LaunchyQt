@@ -27,6 +27,9 @@ namespace launchy {
 // QApplication, no QWidget -- only Windows APIs and Qt Core.
 class PlatformWin : public PlatformBase {
 public:
+    PlatformWin();
+    virtual ~PlatformWin();
+
     // PlatformBase, the Windows answers
     virtual QHash<QString, QList<QString> > directories() const;
     virtual QList<Directory> defaultCatalogDirectories() const;

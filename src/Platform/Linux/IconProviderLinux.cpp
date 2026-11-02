@@ -1,6 +1,7 @@
 
 #include "IconProviderLinux.h"
 #include <QDir>
+#include <QFileInfo>
 #include <QPixmap>
 #include <QIcon>
 #include <QDebug>
@@ -25,7 +26,7 @@ IconProviderLinux::~IconProviderLinux() {
 
 }
 
-QIcon IconProviderLinux::icon(const QFileInfo& info) {
+QIcon IconProviderLinux::icon(const QFileInfo& info) const {
     QString name = info.fileName();
 
     if (name.endsWith(".png", Qt::CaseInsensitive)) {
@@ -81,7 +82,7 @@ QIcon IconProviderLinux::icon(const QFileInfo& info) {
     return QIcon(getDesktopIcon(desktop));
 }
 
-QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName) {
+QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName) const {
     if (QFile::exists(desktopFile)) {
         desktopFile = desktopFile.mid(desktopFile.lastIndexOf("/")+1);
     }
@@ -194,6 +195,12 @@ QString IconProviderLinux::getDesktopIcon(QString desktopFile, QString iconName)
     }
 
     return iconPath;
+}
+
+// The provider this build extracts icons with. Declared in IconProviderBase.h so
+// that IconExtractor can create one without naming a Linux type.
+IconProviderBase* createIconProvider() {
+    return new IconProviderLinux();
 }
 
 }

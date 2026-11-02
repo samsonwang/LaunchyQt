@@ -23,7 +23,7 @@
 #include <X11/Xlib.h>
 #include <QtGui>
 #include <QCoreApplication>
-#include <QFileIconProvider>
+#include <QFileInfo>
 #include <QRegularExpression>
 #include <private/qtx11extras_p.h>
 

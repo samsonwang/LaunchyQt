@@ -1146,7 +1146,7 @@ void LaunchyWidget::retranslateUi() {
 void LaunchyWidget::updateOutputSize() {
     int nIconSize = qMax(m_outputIcon->width(), m_outputIcon->height());
     qDebug() << "LaunchyWidget::updateOutputSize, output icon size:" << nIconSize;
-    launchy::setPreferredIconSize(nIconSize);
+    m_iconExtractor.setPreferredIconSize(nIconSize);
     m_alternativeList->setIconSize(nIconSize);
 }
 

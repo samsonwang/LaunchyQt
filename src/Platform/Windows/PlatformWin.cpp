@@ -84,9 +84,14 @@ static QString win32ErrorText(DWORD error) {
     return text;
 }
 
+PlatformWin::PlatformWin() {
+}
+
+PlatformWin::~PlatformWin() {
+}
+
 void PlatformWin::runProgram(const QString& file, const QString& args,
                                   bool translateSeparators) const {
-
     qDebug() << "PlatformWin::runProgram, file:" << file
              << "args:" << args << "separator:" << translateSeparators;
 

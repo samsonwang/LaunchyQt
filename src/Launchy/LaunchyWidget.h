@@ -27,7 +27,7 @@
 #include "PluginInterface/CatalogItem.h"
 #include "PluginInterface/InputData.h"
 
-#include "IconExtractor.h"
+#include "Platform/IconExtractor.h"
 #include "CommandHistory.h"
 
 class QPushButton;

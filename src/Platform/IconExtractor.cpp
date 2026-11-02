@@ -19,15 +19,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "IconExtractor.h"
 
+#include <QDebug>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QMutexLocker>
 
-#include "AppBase.h"
-#include "GlobalVar.h"
+#include "IconProviderBase.h"
 
 namespace launchy {
 
-IconExtractor::IconExtractor() {
+IconExtractor::IconExtractor()
+    : m_provider(createIconProvider()) {
     // The worker thread runs for the lifetime of this object: it is started
     // here and then blocks on the condition variable inside run() waiting for
     // requests.
@@ -36,13 +39,21 @@ IconExtractor::IconExtractor() {
 
 IconExtractor::~IconExtractor() {
     // Ask the thread to exit and wait for it to finish, so the object is never
-    // destroyed while the thread is still running.
+    // destroyed while the thread is still running -- and so the provider below
+    // is never used from a thread that is still alive.
     {
         QMutexLocker locker(&m_mutex);
         m_exiting = true;
     }
     m_condition.wakeAll();
     wait();
+
+    delete m_provider;
+    m_provider = nullptr;
+}
+
+void IconExtractor::setPreferredIconSize(int size) {
+    m_provider->setPreferredIconSize(size);
 }
 
 void IconExtractor::processIcon(const CatItem& item, bool highPriority) {
@@ -145,11 +156,11 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
 #ifdef Q_OS_LINUX
         QFileInfo info(item.fullPath);
         if (info.isDir())
-            return icon(QFileIconProvider::Folder);
+            return m_provider->icon(QFileIconProvider::Folder);
 #endif
         if (item.fullPath.isEmpty())
             return QIcon();
-        return icon(QDir::toNativeSeparators(item.fullPath));
+        return m_provider->icon(QDir::toNativeSeparators(item.fullPath));
     }
     else {
 #ifdef Q_OS_LINUX
@@ -157,7 +168,7 @@ QIcon IconExtractor::getIcon(const CatItem& item) {
             return QIcon(item.iconPath);
         }
 #endif
-        return icon(QDir::toNativeSeparators(item.iconPath));
+        return m_provider->icon(QDir::toNativeSeparators(item.iconPath));
     }
 }
 

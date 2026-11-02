@@ -21,20 +21,13 @@
 
 #include <QApplication>
 
-#include "IconProviderLinux.h"
-
 namespace launchy {
 
 AppLinux::AppLinux(int& argc, char** argv)
     : AppBase(argc, argv) {
-    m_iconProvider = new IconProviderLinux();
 }
 
 AppLinux::~AppLinux() {
-}
-
-void AppLinux::setPreferredIconSize(int size) {
-    Q_UNUSED(size);
 }
 
 QString AppLinux::GetSettingsDirectory() {

@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QApplication>
 
-#include "IconProviderWin.h"
 #include "CrashDumper.h"
 
 namespace launchy {
@@ -32,8 +31,6 @@ namespace launchy {
 AppWin::AppWin(int& argc, char** argv)
     : AppBase(argc, argv),
       m_crashDumper(new CrashDumper(L"Launchy")) {
-
-    m_iconProvider = new IconProviderWin();
 
     // Create local and global application mutexes so that installer knows when
     // Launchy is running
