@@ -34,6 +34,9 @@ public:
     void resetGeometry();
     void setListMode(int mode);
     void setIconSize(int size);
+    // Forwards the decoration text to the icon delegate; the plain item delegate
+    // used by the other list mode draws no highlighting at all.
+    void setSearchText(const QString& text);
 
 protected:
     virtual void keyPressEvent(QKeyEvent* event);

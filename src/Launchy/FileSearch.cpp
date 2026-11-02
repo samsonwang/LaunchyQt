@@ -28,8 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDebug>
 
 #include "Platform/Platform.h"
-#include "GlobalVar.h"
+#include "CoreGlobals.h"
 #include "Catalog.h"
+#include "CatalogRanking.h"
 #include "OptionItem.h"
 
 namespace launchy {
@@ -137,12 +138,13 @@ void FileSearch::search(const QString& searchText,
     }
 
     // The ranking and highlight are scoped to just the filename: pass filePart
-    // to the sort comparator explicitly instead of rewriting g_searchText, so
-    // search() no longer mutates the query state the rest of the pipeline
-    // relies on. When the input ends with a separator there is no filename;
-    // leaving filePart empty would drop every item out of the ranking done by
-    // CatItemComparePtr() and the highlighting done by Catalog::decorateText(),
-    // so in that case fall back to the query the user actually typed.
+    // to the sort comparator explicitly instead of rewriting the query state, so
+    // search() no longer mutates what the rest of the pipeline (and the
+    // decoration) relies on. When the input ends with a separator there is no
+    // filename; leaving filePart empty would drop every item out of the ranking
+    // done by CatItemComparePtr() and the highlighting done by
+    // Catalog::decorateText(), so in that case fall back to the query the user
+    // actually typed.
     if (isDirectory) {
         // We're showing a directory, add it as the top result
         if (!directoryPart.endsWith("/"))
@@ -170,8 +172,8 @@ bool FileSearch::looksLikePath(const QString& searchText) {
 
     // A URL or other scheme such as "http://example.com" only looks like a
     // path because of its slashes. Leave it to the catalog and the plugins;
-    // letting it through here would restart the query with a non-lowercased
-    // g_searchText and cost an unnecessary file system probe.
+    // letting it through here would label the input as a file and cost an
+    // unnecessary file system probe.
     if (searchPath.contains(QLatin1String("://")))
         return false;
 

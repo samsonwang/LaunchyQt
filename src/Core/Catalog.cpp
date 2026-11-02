@@ -31,7 +31,6 @@
 #include <algorithm>
 
 #include "CatalogRanking.h"
-#include "CoreGlobals.h"
 #include "OptionItem.h"
 
 namespace launchy {
@@ -152,10 +151,6 @@ void Catalog::incrementTimestamp() {
     ++m_timestamp;
 }
 
-void Catalog::setHistoryPromotion(const IHistoryPromotion* history) {
-    m_history = history;
-}
-
 // The ranking keys and the word-matching helpers live in CatalogRanking.{h,cpp}:
 // they are shared with the uncached comparator below, and having one copy is
 // what keeps the two sort paths from drifting apart.
@@ -186,8 +181,9 @@ bool Catalog::matchWords(const CatItem* item, const QStringList& lowerWords) {
     return true;
 }
 
-// Search the catalog, for items matching the text parameter and
-// populate the out parameter
+// Search the catalog for items matching `text` and fill `result` with at most
+// OPTION_NUMRESULT of them. Promotion plays no part here: the caller owns the
+// final order (see CatItemCompareWithPromotion in CatalogRanking.h).
 void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
     // text paramater is expected to be lower case already
 
@@ -197,82 +193,52 @@ void Catalog::searchCatalogs(const QString& text, QList<CatItem>& result) {
     QList<CatItem*> catMatches = search(text);
     qDebug() << "Catalog::searchCatalogs, search matched count:" << catMatches.count();
 
-    // Prioritize the catalog items.
-    // Precompute each item's ranking keys ONCE, then sort the cached view.
-    // This replaces CatItemComparePtr (which recomputes indexOf()/matchWordHelper() on every
-    // comparison) with a comparator that only reads the cached keys.
     // Read the result cap once; it bounds both the partial_sort and the output.
-    int resultNum = g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt();
-    if (catMatches.count() > 1) {
+    const int resultNum = g_settings->value(OPTION_NUMRESULT, OPTION_NUMRESULT_DEFAULT).toInt();
+
+    // Prioritize the catalog items, but only when the cap actually has to cut
+    // something. A match set that fits is returned whole and in the order
+    // search() produced: no item has to be chosen, and the caller ranks the
+    // merged result list anyway (LaunchyWidget::doSearch() sorts catalog,
+    // history and plugin hits together before showing them).
+    //
+    // When the cap does bite, precompute each item's ranking keys ONCE and sort
+    // the cached view. This replaces CatItemComparePtr (which recomputes
+    // indexOf()/matchWordHelper() on every comparison) with a comparator that
+    // only reads the cached keys.
+    if (resultNum > 0 && catMatches.count() > resultNum) {
         const QStringList words = splitQueryWords(text);
 
         QVector<CatalogRank> ranked;
         ranked.reserve(catMatches.count());
-        for (CatItem* it : catMatches) {
-            ranked.append(makeRank(it, text, words));
+        for (const CatItem* it : catMatches) {
+            ranked.append(makeRank(*it, text, words));
         }
 
         // Only the top `resultNum` items are ever displayed, so sort just those
         // instead of the whole match set. partial_sort drops the cost
         // from O(k log k) to O(k log resultNum) (resultNum is typically 10..20).
+        // The guard above makes `resultNum < catMatches.count()`, so the middle
+        // iterator is always inside the range.
         // The order itself comes from rankBefore(), the same decision function
-        // the uncached CatItemCompare*() path runs, so the two cannot drift.
-        const int n = qMin(resultNum, ranked.count());
-        std::partial_sort(ranked.begin(), ranked.begin() + n, ranked.end(),
+        // the uncached CatItemCompareWithMatch() path runs, so the two cannot drift.
+        std::partial_sort(ranked.begin(), ranked.begin() + resultNum, ranked.end(),
             [&](const CatalogRank& a, const CatalogRank& b) {
                 return rankBefore(a, b, text.size());
             });
 
-        // Map the cached, sorted order back onto the pointer list
-        for (int i = 0; i < ranked.count(); ++i) {
-            catMatches[i] = ranked[i].item;
+        // Copy the winners straight out of the ranked view -- that is what the
+        // pointer list was only being rearranged for.
+        for (int i = 0; i < resultNum; ++i) {
+            result.push_back(*ranked[i].item);
         }
-    }
-
-    // Check for history matches, and put them in the front
-    QString promotedShort;
-    QString promotedFull;
-    if (m_history != nullptr
-        && m_history->promotedItem(text, promotedShort, promotedFull)) {
-        for (int i = 0; i < catMatches.count(); ++i) {
-            if (catMatches[i]->shortName == promotedShort
-                && catMatches[i]->fullPath == promotedFull) {
-                CatItem* tmp = catMatches[i];
-                catMatches.removeAt(i);
-                catMatches.push_front(tmp);
-            }
-        }
-    }
-
-    // Load up the results (first `resultNum`, already in priority order)
-    for (int i = 0; i < resultNum && i < catMatches.count(); ++i) {
-        result.push_back(*catMatches[i]);
-    }
-}
-
-void Catalog::promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list) {
-    // Check for history matches
-    QString promotedShort;
-    QString promotedFull;
-    const bool promoted = (m_history != nullptr
-                           && m_history->promotedItem(text, promotedShort,
-                                                      promotedFull));
-    qDebug() << "Catalog::promoteRecentlyUsedItems, text:"
-        << text << "promoted:" << promoted;
-
-    if (!promoted) {
         return;
     }
 
-    for (int i = 0; i < list.count(); i++) {
-        if (list[i].shortName == promotedShort
-            && list[i].fullPath == promotedFull) {
-            CatItem tmp = list[i];
-            qDebug() << "Catalog::promoteRecentlyUsedItems, promoted:" << tmp.fullPath;
-            list.removeAt(i);
-            list.push_front(tmp);
-            break;
-        }
+    // Load up the results (first `resultNum` of them, in search() order: nothing
+    // is being cut here, so nothing has to be ranked)
+    for (int i = 0; i < resultNum && i < catMatches.count(); ++i) {
+        result.push_back(*catMatches[i]);
     }
 }
 
@@ -354,24 +320,6 @@ CatalogItem::CatalogItem(const CatItem& item, int time)
     : CatItem(item),
       m_timestamp(time) {
 
-}
-
-// Uncached comparator: builds exactly the keys searchCatalogs() precomputes and
-// runs the same rankBefore() policy on them. Only used for the small result
-// lists FileSearch ranks itself, so rebuilding the keys per comparison is fine.
-static bool CatItemComparePtrWithMatch(CatItem* a, CatItem* b,
-                                       const QString& match) {
-    const QStringList words = splitQueryWords(match);
-    return rankBefore(makeRank(a, match, words), makeRank(b, match, words),
-                      match.size());
-}
-
-bool CatItemCompare(CatItem& a, CatItem& b) {
-    return CatItemComparePtrWithMatch(&a, &b, g_searchText);
-}
-
-bool CatItemCompareWithMatch(CatItem& a, CatItem& b, const QString& match) {
-    return CatItemComparePtrWithMatch(&a, &b, match);
 }
 
 } // namespace launchy

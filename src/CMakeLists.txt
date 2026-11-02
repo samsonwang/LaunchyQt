@@ -215,8 +215,6 @@ endif ()
 set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/AnimationLabel.h
   ${SRC_DIR}/Launchy/AnimationLabel.cpp
-  ${SRC_DIR}/Launchy/AppBase.h
-  ${SRC_DIR}/Launchy/AppBase.cpp
   ${SRC_DIR}/Launchy/AppSettings.h
   ${SRC_DIR}/Launchy/AppSettings.cpp
   ${SRC_DIR}/Launchy/CatalogBuilder.h
@@ -235,10 +233,10 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/FileBrowserDelegate.cpp
   ${SRC_DIR}/Launchy/FileSearch.h
   ${SRC_DIR}/Launchy/FileSearch.cpp
-  ${SRC_DIR}/Launchy/GlobalVar.h
-  ${SRC_DIR}/Launchy/GlobalVar.cpp
   ${SRC_DIR}/Launchy/IconDelegate.h
   ${SRC_DIR}/Launchy/IconDelegate.cpp
+  ${SRC_DIR}/Launchy/LaunchyApp.h
+  ${SRC_DIR}/Launchy/LaunchyApp.cpp
   ${SRC_DIR}/Launchy/LaunchyVersion.h
   ${SRC_DIR}/Launchy/LaunchyWidget.h
   ${SRC_DIR}/Launchy/LaunchyWidget.cpp
@@ -269,7 +267,7 @@ set (SOURCES_LAUNCHY
 # The seam lives here rather than in LaunchyCore because only this library knows
 # how to create a platform: with both in one place, the installed pointer is a
 # file-local in Platform.cpp instead of a global in a header, and nothing has to
-# be inline. The application object (AppBase, a QApplication) is deliberately NOT
+# be inline. The application object (LaunchyApp, a QApplication) is deliberately NOT
 # here: it lives in the executable so this library stays free of QApplication.
 set (SOURCES_PLATFORM_COMMON
   ${SRC_DIR}/Platform/IconExtractor.h
@@ -290,12 +288,12 @@ if (WIN32)
     ${SRC_DIR}/Platform/Windows/IconProviderWin.cpp
     ${SRC_DIR}/Platform/Windows/UtilWin.h
     ${SRC_DIR}/Platform/Windows/UtilWin.cpp)
-  # The application object (QApplication) and the main widget override stay in
-  # the executable: AppWin is the Windows QApplication, LaunchyWidgetWin
-  # inherits the application's LaunchyWidget, launchy.rc is the exe resource.
+  # The main widget override and the exe resource stay in the executable:
+  # LaunchyWidgetWin inherits the application's LaunchyWidget, launchy.rc is the
+  # exe resource. There is no per-platform application class any more (AppWin
+  # was an empty LaunchyApp once the crash dumper moved to PlatformWin), so the
+  # QApplication itself is built by initApplication() in Launchy/LaunchyApp.cpp.
   set (SOURCES_PLATFORM_LAUNCHY
-    ${SRC_DIR}/Launchy/Windows/AppWin.h
-    ${SRC_DIR}/Launchy/Windows/AppWin.cpp
     ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.h
     ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.cpp
     ${SRC_DIR}/Launchy/Windows/launchy.rc)
@@ -308,8 +306,6 @@ else ()
     ${SRC_DIR}/Platform/Linux/IconProviderLinux.h
     ${SRC_DIR}/Platform/Linux/IconProviderLinux.cpp)
   set (SOURCES_PLATFORM_LAUNCHY
-    ${SRC_DIR}/Launchy/Linux/AppLinux.h
-    ${SRC_DIR}/Launchy/Linux/AppLinux.cpp
     ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.h
     ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.cpp)
   target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Linux)
@@ -441,7 +437,6 @@ target_sources (LaunchyCore
   ${SRC_DIR}/Core/CoreGlobals.cpp
   ${SRC_DIR}/Core/Directory.h
   ${SRC_DIR}/Core/Directory.cpp
-  ${SRC_DIR}/Core/HistoryPromotion.h
   ${SRC_DIR}/Core/InputDataList.h
   ${SRC_DIR}/Core/InputDataList.cpp
   ${SRC_DIR}/Core/OptionItem.h

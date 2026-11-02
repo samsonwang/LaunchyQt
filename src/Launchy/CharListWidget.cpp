@@ -122,6 +122,10 @@ void CharListWidget::setIconSize(int size) {
     m_iconListDelegate->setSize(size);
 }
 
+void CharListWidget::setSearchText(const QString& text) {
+    m_iconListDelegate->setSearchText(text);
+}
+
 void CharListWidget::keyPressEvent(QKeyEvent* event) {
     /*
     qDebug() << "CharListWidget::keyPressEvent, T1, key:" << event->key()

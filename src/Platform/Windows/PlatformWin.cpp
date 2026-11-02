@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UtilWin.h"
 #include "Directory.h"
+#include "CrashDumper.h"
 
 namespace launchy {
 
@@ -84,7 +85,17 @@ static QString win32ErrorText(DWORD error) {
     return text;
 }
 
-PlatformWin::PlatformWin() {
+// The crash dumper is installed here, in the constructor, so that the whole
+// life of the process is covered from the moment the platform is installed --
+// initPlatform() is called before any settings are read or any plugin is
+// loaded. It is created even in a debug build, where CrashDumper decides on its
+// own not to touch the exception filter.
+//
+// The name is the one the dump folder and the crash dialog have always used
+// ("%TEMP%/Launchy/..."), deliberately not QCoreApplication::applicationName(),
+// which is "LaunchyQt" and would send the dumps to a different directory.
+PlatformWin::PlatformWin()
+    : m_crashDumper(new CrashDumper(L"Launchy")) {
 }
 
 PlatformWin::~PlatformWin() {

@@ -44,13 +44,13 @@
 #include "PluginInterface/PluginMsg.h"
 #include "PluginInterface/Runtime.h"
 
-#include "GlobalVar.h"
+#include "CoreGlobals.h"
 #include "IconDelegate.h"
 #include "OptionDialog.h"
 #include "OptionItem.h"
 #include "FileSearch.h"
 #include "SettingsManager.h"
-#include "AppBase.h"
+#include "LaunchyApp.h"
 #include "Platform/Platform.h"
 #include "Fader.h"
 #include "IconDelegate.h"
@@ -59,6 +59,9 @@
 #include "CharLineEdit.h"
 #include "Catalog.h"
 #include "CatalogBuilder.h"
+#include "CatalogFast.h"
+#include "CatalogRanking.h"
+#include "CatalogSlow.h"
 #include "PluginHandler.h"
 #include "UpdateChecker.h"
 #include "LaunchyVersion.h"
@@ -74,9 +77,17 @@ using ::operator|;
 // catalog rebuild is allowed to start
 static const int CATALOG_REBUILD_SYSTEM_IDLE_SECONDS = 10 * 60;
 
-LaunchyWidget* LaunchyWidget::s_instance = nullptr;
+// The single widget of this executable. It lives at file scope on purpose: the
+// constructor has to publish the object before it is fully built (see below),
+// and cleanupLaunchyWidget() has to reach it without being a member or a friend.
+// No other translation unit touches it -- use LaunchyWidget::instance().
+static LaunchyWidget* g_widgetInstance = nullptr;
 
 LaunchyWidget::LaunchyWidget(CommandFlags command)
+    // The list follows the member declaration order in the header: that is the
+    // order the members are really constructed in, and keeping the two in step
+    // avoids -Wreorder surprises where an initializer reads a member that is
+    // still uninitialized.
     : QWidget(nullptr),
       m_skinChanged(false),
       m_inputBox(new CharLineEdit(this)),
@@ -92,7 +103,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
       m_rebuildTimer(new QTimer(this)),
       m_dropTimer(new QTimer(this)),
       m_searchTimer(new QTimer(this)),
-      m_alwaysShowLaunchy(false),
+      m_catalog(nullptr),
       m_dragging(false),
       m_menuOpen(false),
       m_optionDialog(nullptr),
@@ -101,22 +112,30 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // Publish ourselves as the singleton as early as possible, the rest of the
     // constructor can then safely use g_mainWidget. The startup command runs at
     // the end of this constructor and may open the options dialog, which reads
-    // g_mainWidget->getHotkey(). Without this, s_instance was still null there
-    // and opening the options dialog crashed.
-    s_instance = this;
+    // g_mainWidget->getHotkey(). Without this, g_widgetInstance was still null
+    // there and opening the options dialog crashed.
+    g_widgetInstance = this;
 
-    // The catalog asks the history store for the promotion of the last exact
-    // query through the IHistoryPromotion seam; the widget itself owns the
-    // store, so the pointer is only valid while this object is.
-    g_catalog->setHistoryPromotion(&m_history);
+    // Select the catalog implementation once at startup; changing the search
+    // mode requires a restart. The widget owns it for its whole lifetime and
+    // only hands it to the builder for rebuilds.
+    int mode = g_settings->value(OPTION_SEARCH_MODE, OPTION_SEARCH_MODE_DEFAULT).toInt();
+    if (mode == 1) {
+        m_catalog = new CatalogSlow;
+    }
+    else {
+        m_catalog = new CatalogFast;
+    }
+
+    // The promotion lookup is not installed here any more: the ranking takes it
+    // as an argument at search time (see doSearch), so the catalog holds no
+    // pointer into the history store this widget owns.
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
 #elif defined(Q_OS_MAC)
     setWindowFlags(Qt::FramelessWindowHint);
 #endif
-
-    g_searchText.clear();
 
     setObjectName("launchy");
     setWindowTitle(tr("Launchy"));
@@ -223,8 +242,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         command |= ShowLaunchy;
     }
 
-    // Set the general options
-    if (setAlwaysShow(g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool())) {
+    // Set the general options. Always-show needs no widget state: it is read
+    // from the settings wherever it is used. At startup the window is still
+    // hidden, so the value alone decides whether it has to be shown.
+    if (g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool()) {
         command |= ShowLaunchy;
     }
     setAlwaysTop(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
@@ -240,15 +261,15 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     }
 
     // Load the catalog
-    connect(g_builder, &CatalogBuilder::catalogIncrement,
+    connect(&m_catalogBuilder, &CatalogBuilder::catalogIncrement,
             this, &LaunchyWidget::catalogProgressUpdated);
-    connect(g_builder, &CatalogBuilder::catalogFinished,
+    connect(&m_catalogBuilder, &CatalogBuilder::catalogFinished,
             this, &LaunchyWidget::catalogBuilt);
 
     // Rescan if the catalog is missing or if catalog directories were
     // rewritten because the user home directory changed (account rename
     // or settings migrated to another machine)
-    if (!g_catalog->load(SettingsManager::instance().catalogFilename())
+    if (!m_catalog->load(SettingsManager::instance().catalogFilename())
         || g_needRebuildCatalog.fetchAndStoreRelaxed(0) > 0) {
         command |= Rescan;
     }
@@ -266,7 +287,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // Move to saved position
     loadPosition(g_settings->value(OPTION_POS, OPTION_POS_DEFAULT).toPoint());
 
-    connect(AppBase::instance(), &SingleApplication::instanceStarted,
+    connect(LaunchyApp::instance(), &SingleApplication::instanceStarted,
             this, &LaunchyWidget::onSecondInstance);
 
     // reload skin after new screen is added or removed
@@ -307,15 +328,17 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
 }
 
 LaunchyWidget::~LaunchyWidget() {
-    s_instance = nullptr;
-    // m_history is a member and dies with the widget, don't leave a dangling
-    // pointer behind. catalogIfCreated() is used on purpose: the builder is
-    // deleted before the widget during shutdown, and getCatalog() would create
-    // a second one just to clear a pointer.
-    if (Catalog* catalog = CatalogBuilder::catalogIfCreated()) {
-        catalog->setHistoryPromotion(nullptr);
-    }
+    g_widgetInstance = nullptr;
+
+    // The worker thread scans m_catalog, so it has to be stopped before the
+    // catalog is deleted; member destruction alone can not do that for a plain
+    // pointer.
+    m_catalogBuilder.shutdown();
+    delete m_catalog;
+    m_catalog = nullptr;
+
     m_trayIcon->hide();
+
     if (m_optionDialog) {
         m_optionDialog->close();
         delete m_optionDialog;
@@ -324,13 +347,13 @@ LaunchyWidget::~LaunchyWidget() {
 }
 
 LaunchyWidget* LaunchyWidget::instance() {
-    return s_instance;
+    return g_widgetInstance;
 }
 
-void LaunchyWidget::cleanup() {
-    if (s_instance) {
-        delete s_instance;
-        s_instance = nullptr;
+void cleanupLaunchyWidget() {
+    if (g_widgetInstance) {
+        delete g_widgetInstance;
+        g_widgetInstance = nullptr;
     }
 }
 
@@ -576,7 +599,7 @@ void LaunchyWidget::launchItem() {
     // udpate outputbox
     updateOutputItem(item);
 
-    g_catalog->incrementUsage(item);
+    m_catalog->incrementUsage(item);
     m_history.addItem(m_inputData);
 }
 
@@ -630,7 +653,9 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
             // No need to fetch the icon again, just grab it from the alternatives row
             m_outputIcon->setPixmap(m_alternativeList->item(row)->icon().pixmap(m_outputIcon->size()));
             m_outputItem = item;
-            g_searchText = m_inputData.toString();
+            // Previewing a history entry highlights the whole command it ran, so
+            // the match text is the full entry, not just its last segment.
+            setSearchText(m_inputData.toString());
         }
     }
     else if (!m_inputData.isEmpty() && (m_inputData.last().hasLabel(LABEL_AUTOSUGGEST)
@@ -651,7 +676,9 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
         // No need to fetch the icon again, just grab it from the alternatives row
         m_outputIcon->setPixmap(m_alternativeList->item(row)->icon().pixmap(m_outputIcon->size()));
         m_outputItem = item;
-        g_searchText = "";
+        // The completed text no longer corresponds to the list below it, so
+        // nothing is highlighted until the next search rebuilds the rows.
+        setSearchText(QString());
     }
     else {
         qDebug() << "LaunchyWidget::onAlternativeListRowChanged, update top result";
@@ -744,7 +771,7 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
                 // Demote the selected item down the alternatives list
                 qDebug() << "LaunchyWidget::onAlternativeListKeyPressed,"
                          << "demote item:" << item.shortName;
-                g_catalog->demoteItem(item);
+                m_catalog->demoteItem(item);
                 searchOnInput();
                 updateOutput(false);
             }
@@ -973,6 +1000,11 @@ void LaunchyWidget::doEnter() {
     }
 }
 
+void LaunchyWidget::setSearchText(const QString& text) {
+    m_searchText = text;
+    m_alternativeList->setSearchText(text);
+}
+
 void LaunchyWidget::processInput(bool debounce) {
     qDebug() << "LaunchyWidget::processInput, inputbox text:" << m_inputBox->text();
 
@@ -984,7 +1016,7 @@ void LaunchyWidget::processInput(bool debounce) {
         // itself only runs when the debounce timer fires (final query).
         QString searchText = m_inputData.isEmpty()
             ? QString() : m_inputData.last().getText();
-        g_searchText = searchText.toLower();
+        setSearchText(searchText);
         m_searchTimer->start();
         return;
     }
@@ -1021,7 +1053,9 @@ void LaunchyWidget::searchOnInput() {
 
     QString searchText = m_inputData.isEmpty() ? "" : m_inputData.last().getText();
     QString searchTextLower = searchText.toLower();
-    g_searchText = searchTextLower;
+    // Decoration is case-insensitive on its own (it folds both sides), so the
+    // match text keeps the user's original casing.
+    setSearchText(searchText);
     m_searchResult.clear();
 
     if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
@@ -1034,7 +1068,7 @@ void LaunchyWidget::searchOnInput() {
         // Search the catalog for matching items
         if (m_inputData.count() == 1) {
             qDebug() << "LaunchyWidget::searchOnInput, searching catalog for" << searchText;
-            g_catalog->searchCatalogs(searchTextLower, m_searchResult);
+            m_catalog->searchCatalogs(searchTextLower, m_searchResult);
 
             qDebug() << "LaunchyWidget::searchOnInput, searching history for" << searchText;
             m_history.search(searchTextLower, m_searchResult);
@@ -1046,10 +1080,19 @@ void LaunchyWidget::searchOnInput() {
         pluginHandler.getLabels(&m_inputData);
         pluginHandler.getResults(&m_inputData, &m_searchResult);
 
-        // Sort the results by match and usage, then promote any that match previously
-        // executed commands
-        std::sort(m_searchResult.begin(), m_searchResult.end(), CatItemCompare);
-        g_catalog->promoteRecentlyUsedItems(searchTextLower, m_searchResult);
+        // Promotion needs exactly one fact from the store this widget owns:
+        // which item this exact query picked last time. Hand it over as a
+        // callable -- nothing keeps a pointer back into the store.
+        const PromotionLookup promote =
+            [this](const QString& query, QString& shortName, QString& fullPath) {
+                return m_history.promotedItem(query, shortName, fullPath);
+            };
+        // One pass orders the merged list: the command this exact query ran
+        // last time first, everything else by match and usage. Promotion is a
+        // key of the comparator, not a step after the sort, so no later re-sort
+        // can drop it -- and the catalog knows nothing about history.
+        std::sort(m_searchResult.begin(), m_searchResult.end(),
+                  CatItemCompareWithPromotion(searchTextLower, promote));
 
         // Finally, if the search text looks like a file or directory name,
         // add any file or directory matches
@@ -1097,7 +1140,7 @@ void LaunchyWidget::updateOutput(bool resetAlternativesSelection) {
 
 void LaunchyWidget::updateOutputItem(const CatItem& item) {
     // qDebug() << "Setting output text to" << searchResults[0].shortName;
-    QString outputText = Catalog::decorateText(item.shortName, g_searchText, true);
+    QString outputText = Catalog::decorateText(item.shortName, m_searchText, true);
 
 #ifdef _DEBUG
     outputText += QString(" (%1 launches)").arg(item.usage);
@@ -1328,7 +1371,7 @@ void LaunchyWidget::saveSettings() {
     qDebug() << "LaunchyWidget::saveSettings";
     savePosition();
     g_settings->sync();
-    g_catalog->save(SettingsManager::instance().catalogFilename());
+    m_catalog->save(SettingsManager::instance().catalogFilename());
     m_history.save(SettingsManager::instance().historyFilename());
 }
 
@@ -1374,8 +1417,10 @@ void LaunchyWidget::onHotkey() {
         return;
     }
 
+    bool alwaysShow = g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool();
+
     qDebug() << "LaunchyWidget::onHotkey,"
-             << "always show launchy:" << m_alwaysShowLaunchy
+             << "always show launchy:" << alwaysShow
              << "visible:" << isVisible()
              << "fading:" << m_fader->isFadingOut()
              << "active window:" << QApplication::activeWindow();
@@ -1383,7 +1428,7 @@ void LaunchyWidget::onHotkey() {
     if (m_menuOpen || m_optionsOpen) {
         showLaunchy(true);
     }
-    else if (!m_alwaysShowLaunchy
+    else if (!alwaysShow
              && isVisible()
              && !m_fader->isFadingOut()
              && QApplication::activeWindow() != nullptr) {
@@ -1399,11 +1444,6 @@ void LaunchyWidget::onHotkey() {
 void LaunchyWidget::closeEvent(QCloseEvent* event) {
     event->ignore();
     hideLaunchy();
-}
-
-bool LaunchyWidget::setAlwaysShow(bool alwaysShow) {
-    m_alwaysShowLaunchy = alwaysShow;
-    return !isVisible() && alwaysShow;
 }
 
 bool LaunchyWidget::setAlwaysTop(bool alwaysTop) {
@@ -1721,7 +1761,7 @@ void LaunchyWidget::buildCatalog() {
 
     // Ask the worker thread to rebuild the catalog; requests received
     // while a rebuild is running are ignored by the builder
-    g_builder->requestBuild();
+    m_catalogBuilder.requestBuild(m_catalog);
 
     startRebuildTimer();
 }
@@ -1743,7 +1783,8 @@ void LaunchyWidget::showOptionDialog() {
         m_optionsOpen = true;
 
         if (!m_optionDialog) {
-            m_optionDialog = new OptionDialog(nullptr);
+            m_optionDialog = new OptionDialog(&m_catalogBuilder, m_catalog,
+                                              nullptr);
         }
 
         QRect rectScreen = screen->geometry();
@@ -1794,7 +1835,8 @@ void LaunchyWidget::showLaunchy(bool noFade) {
 
     loadPosition(pos());
 
-    m_fader->fadeIn(noFade || m_alwaysShowLaunchy);
+    m_fader->fadeIn(noFade
+                    || g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool());
 
     focusLaunchy();
 
@@ -1812,7 +1854,7 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
 
     savePosition();
     hideAlternativeList();
-    if (m_alwaysShowLaunchy) {
+    if (g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool()) {
         return;
     }
 

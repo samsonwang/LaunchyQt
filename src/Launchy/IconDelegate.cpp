@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QPainter>
 
-#include "GlobalVar.h"
 #include "Catalog.h"
 
 namespace launchy {
@@ -54,7 +53,7 @@ void IconDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
     longRect.setLeft(longRect.left() + m_size + 18);
     longRect.setTop(longRect.top() + fontHeight);
 
-    QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), g_searchText);
+    QString text = Catalog::decorateText(index.data(ROLE_SHORT).toString(), m_searchText);
     painter->drawText(shortRect, Qt::AlignTop | Qt::TextShowMnemonic, text);
 
     if (m_alternativesPath) {
@@ -80,6 +79,10 @@ QSize IconDelegate::sizeHint(const QStyleOptionViewItem & /* option */,
 
 void IconDelegate::setSize(int s) {
     m_size = s;
+}
+
+void IconDelegate::setSearchText(const QString& text) {
+    m_searchText = text;
 }
 
 void IconDelegate::setAlternativePathWidget(QLabel* label) {

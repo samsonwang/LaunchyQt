@@ -32,25 +32,25 @@ namespace launchy {
 // and knows nothing about QApplication; main() installs it through
 // initPlatform(). Keeping the application object in the executable is what lets
 // the platform library stay free of QApplication.
-class AppBase : public SingleApplication {
+class LaunchyApp : public SingleApplication {
 public:
-    AppBase(int& argc, char** argv);
-    virtual ~AppBase();
-
-public:
-    static void cleanup();
+    LaunchyApp(int& argc, char** argv);
+    virtual ~LaunchyApp();
 
     // The application object. This exists for the call sites that need the
     // QApplication itself (its signals, its modal widgets).
-    static AppBase* instance();
-
-public:
-    virtual bool isAlreadyRunning() const;
-    virtual void sendInstanceCommand(int command);
+    static LaunchyApp* instance();
 };
 
-// Create the application object. Returns the existing one when there is
-// already a QApplication.
-AppBase* createApplication(int& argc, char** argv);
+// Create the application object, if there is none yet. Void on purpose: the
+// object is a QApplication, reachable through qApp and instance() from then on,
+// and keeping it in a local pointer only invited a dangling/unused variable at
+// the call site (main() never needed the handle).
+void initApplication(int& argc, char** argv);
+
+// Delete it again, next to the function that created it. A free function rather
+// than a static member: the object is on its way out by then, and asking it to
+// delete itself reads backwards.
+void cleanupApplication();
 
 } // namespace launchy

@@ -36,10 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ui_OptionDialog.h"
 
-#include "AppBase.h"
+#include "LaunchyApp.h"
 #include "Platform/Platform.h"
 #include "LaunchyWidget.h"
-#include "GlobalVar.h"
 #include "PluginHandler.h"
 #include "DropListWidget.h"
 #include "FileBrowserDelegate.h"
@@ -65,10 +64,14 @@ QByteArray OptionDialog::s_lastWindowGeometry;
 int OptionDialog::s_lastTab = 0;
 int OptionDialog::s_lastPlugin = -1;
 
-OptionDialog::OptionDialog(QWidget* parent)
+OptionDialog::OptionDialog(CatalogBuilder* catalogBuilder,
+                           Catalog* catalog,
+                           QWidget* parent)
     : QDialog(parent),
       m_pUi(new Ui::OptionDialog),
-      m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)) {
+      m_directoryItemDelegate(new FileBrowserDelegate(this, FileBrowser::Directory)),
+      m_catalogBuilder(catalogBuilder),
+      m_catalog(catalog) {
 
     setObjectName("options");
     g_needRebuildCatalog.storeRelease(0);
@@ -111,10 +114,10 @@ OptionDialog::OptionDialog(QWidget* parent)
 }
 
 OptionDialog::~OptionDialog() {
-    if (g_builder) {
-        disconnect(g_builder, &CatalogBuilder::catalogIncrement,
+    if (m_catalogBuilder) {
+        disconnect(m_catalogBuilder, &CatalogBuilder::catalogIncrement,
                    this, &OptionDialog::catalogProgressUpdated);
-        disconnect(g_builder, &CatalogBuilder::catalogFinished,
+        disconnect(m_catalogBuilder, &CatalogBuilder::catalogFinished,
                    this, &OptionDialog::catalogBuilt);
     }
 
@@ -463,7 +466,8 @@ void OptionDialog::catalogBuilt() {
     m_pUi->catProgress->setVisible(false);
     m_pUi->catRescan->setEnabled(true);
 
-    m_pUi->catSize->setText(tr("Index has %n item(s)", "", g_catalog->count()));
+    m_pUi->catSize->setText(tr("Index has %n item(s)", "",
+                               m_catalog->count()));
     m_pUi->catSize->setVisible(true);
 }
 
@@ -803,8 +807,7 @@ bool OptionDialog::saveGeneralSettings() {
     QString appStyle = m_pUi->comboBoxAppStyle->currentData().toString();
     g_settings->setValue(OPTION_APPSTYLE, appStyle);
 
-    // Now save the options that require launchy to be shown or redrawed
-    g_mainWidget->setAlwaysShow(m_pUi->checkBoxAlwaysShow->isChecked());
+    // Now save the options that require launchy to be shown or redrawed.
     g_mainWidget->setAlwaysTop(m_pUi->checkBoxAlwaysTop->isChecked());
 
     g_mainWidget->setOpaqueness(m_pUi->genOpaqueness->value());
@@ -915,15 +918,16 @@ void OptionDialog::initCatalogWidget() {
     connect(m_pUi->pushButtonAddDefaultDirs, &QPushButton::clicked,
             this, &OptionDialog::onAddDefaultDirsClicked);
 
-    m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A", g_catalog->count()));
+    m_pUi->catSize->setText(tr("Index has %n item(s)", "N/A",
+                               m_catalog->count()));
 
     m_pUi->catProgress->setVisible(false);
-    connect(g_builder, &CatalogBuilder::catalogIncrement,
+    connect(m_catalogBuilder, &CatalogBuilder::catalogIncrement,
             this, &OptionDialog::catalogProgressUpdated);
-    connect(g_builder, &CatalogBuilder::catalogFinished,
+    connect(m_catalogBuilder, &CatalogBuilder::catalogFinished,
             this, &OptionDialog::catalogBuilt);
-    if (g_builder->isRunning()) {
-        catalogProgressUpdated(g_builder->getProgress());
+    if (m_catalogBuilder->isRunning()) {
+        catalogProgressUpdated(m_catalogBuilder->getProgress());
     }
     //m_pUi->catDirectories->installEventFilter(this);
 

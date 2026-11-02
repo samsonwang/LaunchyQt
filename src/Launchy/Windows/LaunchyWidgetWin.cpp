@@ -18,13 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "LaunchyWidgetWin.h"
 
+#include <windows.h>
+
 #include "UtilWin.h"
 
 namespace launchy {
 
 LaunchyWidgetWin::LaunchyWidgetWin(CommandFlags command)
     : LaunchyWidget(command) {
-    commandMessageId = RegisterWindowMessageW(L"LaunchyCommand");
 }
 
 
@@ -56,13 +57,6 @@ bool LaunchyWidgetWin::nativeEvent(const QByteArray& eventType,
         break;
     case WM_WTSSESSION_CHANGE:
         break;
-
-    default:
-        if (msg->message == commandMessageId) {
-            // A Launchy startup command
-            executeStartupCommand((int)msg->wParam);
-        }
-        break;
     }
     return LaunchyWidget::nativeEvent(eventType, message, result);
 }
@@ -75,8 +69,8 @@ void LaunchyWidgetWin::focusLaunchy() {
 }
 
 // Create the main widget for the application
-void createLaunchyWidget(CommandFlags command) {
-    // LaunchyWidget publishes itself into s_instance at the beginning of its
+void initLaunchyWidget(CommandFlags command) {
+    // LaunchyWidget publishes itself to the singleton at the beginning of its
     // constructor, so the singleton is already reachable while the widget is
     // still being built (and therefore never null for g_mainWidget).
     if (!LaunchyWidget::instance()) {

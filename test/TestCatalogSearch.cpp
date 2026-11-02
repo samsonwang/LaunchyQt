@@ -51,34 +51,19 @@ QStringList shortNames(const QList<CatItem>& items) {
     return names;
 }
 
-// Stands in for CommandHistory: the catalog only ever asks "which item did
-// this exact query pick last time".
-class StubHistory : public IHistoryPromotion {
-public:
-    explicit StubHistory(const QString& query) : m_query(query) {}
-
-    void remember(const QString& shortName, const QString& fullPath) {
-        m_short = shortName;
-        m_full = fullPath;
-        m_has = true;
-    }
-
-    bool promotedItem(const QString& text, QString& shortName,
-                      QString& fullPath) const override {
-        if (!m_has || text != m_query) {
+// Stands in for CommandHistory: promotion only ever asks "which item did this
+// exact query pick last time", so a callable is all it takes.
+PromotionLookup promoteTo(const QString& query, const QString& shortName,
+                          const QString& fullPath) {
+    return [=](const QString& text, QString& promotedShort, QString& promotedFull) {
+        if (text != query) {
             return false;
         }
-        shortName = m_short;
-        fullPath = m_full;
+        promotedShort = shortName;
+        promotedFull = fullPath;
         return true;
-    }
-
-private:
-    QString m_query;
-    QString m_short;
-    QString m_full;
-    bool m_has = false;
-};
+    };
+}
 
 } // namespace
 
@@ -103,7 +88,8 @@ private slots:
     void negativeUsageRanksLast();
     void shorterNameWins();
     void resultCapHonoured();
-    void promotionMovesItemToFront();
+    void matchSetBelowCapIsUnordered();
+    void promotedItemSortsFirst();
     void catalogAndComparatorAgree();
     void saveAndLoadRoundTrip();
 
@@ -134,12 +120,15 @@ void TestCatalogSearch::initTestCase() {
 }
 
 void TestCatalogSearch::init() {
-    // Every case starts with a cap large enough to see the whole result set
+    // Every case starts with a cap large enough to see the whole result set.
+    // searchCatalogs() only ranks when the cap has to cut the match set, so the
+    // cases that assert an ORDER shrink the cap below the number of matches
+    // first; the ones that only count results can leave it alone.
     g_settings->setValue(OPTION_NUMRESULT, 100);
 }
 
 void TestCatalogSearch::cleanupTestCase() {
-    // Mirror what the application does at shutdown (cleanupGlobalVar):
+    // Mirror what the application does at shutdown (main()):
     // release the shared QSettings before the libraries are unloaded, so the
     // object is not destroyed from Launchy.dll's static teardown.
     if (!g_settings.isNull()) {
@@ -159,8 +148,8 @@ void TestCatalogSearch::usageBeatsWordCount() {
     CatItem catalogItem = makeItem("C:/tmp/123.txt", "123", 0);
 
     const QStringList words = splitQueryWords(query);
-    CatalogRank pluginRank = makeRank(&pluginItem, query, words);
-    CatalogRank catalogRank = makeRank(&catalogItem, query, words);
+    CatalogRank pluginRank = makeRank(pluginItem, query, words);
+    CatalogRank catalogRank = makeRank(catalogItem, query, words);
 
     // Neither name contains the query contiguously: this is the branch that
     // decides between a plugin answer and a file match.
@@ -184,62 +173,86 @@ void TestCatalogSearch::wordCountBreaksUsageTies() {
 
     const QStringList words = splitQueryWords(query);
 
-    QVERIFY(rankBefore(makeRank(&closer, query, words),
-                       makeRank(&weak, query, words), query.size()));
-    QVERIFY(!rankBefore(makeRank(&weak, query, words),
-                        makeRank(&closer, query, words), query.size()));
+    QVERIFY(rankBefore(makeRank(closer, query, words),
+                       makeRank(weak, query, words), query.size()));
+    QVERIFY(!rankBefore(makeRank(weak, query, words),
+                        makeRank(closer, query, words), query.size()));
 }
 
 void TestCatalogSearch::exactMatchFirst() {
+    // One slot, two matches: the cap has to cut, so the catalog ranks
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+
     CatalogSlow catalog;
     catalog.addItem(makeItem("C:/win/notepad.exe", "notepad", 0));      // exact
     catalog.addItem(makeItem("C:/win/notepad++.exe", "notepad++", 100)); // used more
 
     // Exact name match outranks usage
-    QCOMPARE(shortNames(runSearch(catalog, "notepad")),
-             QStringList({"notepad", "notepad++"}));
+    QCOMPARE(shortNames(runSearch(catalog, "notepad")), QStringList({"notepad"}));
 }
 
 void TestCatalogSearch::prefixFirstForSingleCharQuery() {
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+
     CatalogSlow catalog;
     catalog.addItem(makeItem("C:/apps/chrome.exe", "chrome", 0));
     catalog.addItem(makeItem("C:/apps/acrobat.exe", "acrobat", 100));
 
     // For a one-character query a match at the start wins over usage
-    QCOMPARE(shortNames(runSearch(catalog, "c")),
-             QStringList({"chrome", "acrobat"}));
+    QCOMPARE(shortNames(runSearch(catalog, "c")), QStringList({"chrome"}));
 }
 
 void TestCatalogSearch::contiguousBeatsNonContiguous() {
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+
     CatalogSlow catalog;
     catalog.addItem(makeItem("C:/apps/firefox.exe", "firefox", 0));
     catalog.addItem(makeItem("C:/docs/f-i-r-e.txt", "f-i-r-e", 100));
 
     // "f-i-r-e" matches the query as a subsequence only; a contiguous match
     // ranks above it even with a much lower usage count
-    QCOMPARE(shortNames(runSearch(catalog, "fire")),
-             QStringList({"firefox", "f-i-r-e"}));
+    QCOMPARE(shortNames(runSearch(catalog, "fire")), QStringList({"firefox"}));
 }
 
 void TestCatalogSearch::negativeUsageRanksLast() {
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+
     CatalogSlow catalog;
     catalog.addItem(makeItem("C:/win/calc.exe", "calc", -1)); // demoted
     catalog.addItem(makeItem("C:/win/calculator.exe", "calculator", 0));
 
     // Negative usage (demoted) is lowest priority, even when the name is an
-    // exact match
-    QCOMPARE(shortNames(runSearch(catalog, "calc")),
-             QStringList({"calculator", "calc"}));
+    // exact match: it does not get the only slot
+    QCOMPARE(shortNames(runSearch(catalog, "calc")), QStringList({"calculator"}));
 }
 
 void TestCatalogSearch::shorterNameWins() {
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+
     CatalogSlow catalog;
     catalog.addItem(makeItem("C:/x/abzzz.txt", "abzzz", 0));
     catalog.addItem(makeItem("C:/x/abz.txt", "abz", 0));
 
-    // Same usage, same match position: the shorter name comes first
-    QCOMPARE(shortNames(runSearch(catalog, "ab")),
-             QStringList({"abz", "abzzz"}));
+    // Same usage, same match position: the shorter name comes first, so it is
+    // the one the cap keeps
+    QCOMPARE(shortNames(runSearch(catalog, "ab")), QStringList({"abz"}));
+}
+
+// The other half of the contract: a match set that fits inside the cap is
+// returned whole and in search() order. Nothing has to be chosen, and the
+// caller ranks the merged list anyway (LaunchyWidget::doSearch()).
+void TestCatalogSearch::matchSetBelowCapIsUnordered() {
+    CatalogSlow catalog;
+    catalog.addItem(makeItem("C:/x/abzzz.txt", "abzzz", 0));
+    catalog.addItem(makeItem("C:/x/abz.txt", "abz", 0));
+
+    // Cap 2, two matches: no ranking, CatalogSlow's insertion order comes back
+    g_settings->setValue(OPTION_NUMRESULT, 2);
+    QCOMPARE(shortNames(runSearch(catalog, "ab")), QStringList({"abzzz", "abz"}));
+
+    // Cap 1: now the set has to be cut, and the ranking decides what survives
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+    QCOMPARE(shortNames(runSearch(catalog, "ab")), QStringList({"abz"}));
 }
 
 void TestCatalogSearch::resultCapHonoured() {
@@ -250,34 +263,49 @@ void TestCatalogSearch::resultCapHonoured() {
     catalog.addItem(makeItem("C:/x/ab2.txt", "ab2", 0));
     catalog.addItem(makeItem("C:/x/ab3.txt", "ab3", 0));
 
-    QCOMPARE(runSearch(catalog, "ab").count(), 2);
+    // Three matches, cap 2: the two best survive, in rank order
+    QCOMPARE(shortNames(runSearch(catalog, "ab")), QStringList({"ab1", "ab2"}));
 }
 
-void TestCatalogSearch::promotionMovesItemToFront() {
-    CatalogSlow catalog;
-    catalog.addItem(makeItem("C:/apps/firefox.exe", "firefox", 0));
-    catalog.addItem(makeItem("C:/docs/campfire.jpg", "campfire", 50));
+// The comparator behind the list the user sees: "the command this exact query
+// ran last time" is its most significant key, ranking is the second one.
+void TestCatalogSearch::promotedItemSortsFirst() {
+    // campfire wins on usage (50 vs 0), so it ranks first without promotion
+    const QList<CatItem> merged = {
+        makeItem("C:/apps/firefox.exe", "firefox", 0),
+        makeItem("C:/docs/campfire.jpg", "campfire", 50),
+    };
 
-    // Without history "campfire" wins on usage
-    QCOMPARE(shortNames(runSearch(catalog, "fire")).first(), QString("campfire"));
+    const auto sorted = [](QList<CatItem> list, const PromotionLookup& promote) {
+        std::sort(list.begin(), list.end(), CatItemCompareWithPromotion("fire", promote));
+        return shortNames(list);
+    };
 
-    // The item chosen for this exact query last time is moved to the front
-    StubHistory history("fire");
-    history.remember("firefox", "C:/apps/firefox.exe");
-    catalog.setHistoryPromotion(&history);
+    // Plain ranking
+    QCOMPARE(sorted(merged, PromotionLookup()), QStringList({"campfire", "firefox"}));
 
-    QCOMPARE(shortNames(runSearch(catalog, "fire")),
+    // The item this exact query picked last time comes first, even though it
+    // ranks below the other one
+    QCOMPARE(sorted(merged, promoteTo("fire", "firefox", "C:/apps/firefox.exe")),
              QStringList({"firefox", "campfire"}));
 
-    // Detaching the history restores the plain ranking
-    catalog.setHistoryPromotion(nullptr);
-    QCOMPARE(shortNames(runSearch(catalog, "fire")).first(), QString("campfire"));
+    // No entry for this query, or an entry for an item that is not in the list:
+    // the ranking decides everything
+    QCOMPARE(sorted(merged, promoteTo("other", "firefox", "C:/apps/firefox.exe")),
+             QStringList({"campfire", "firefox"}));
+    QCOMPARE(sorted(merged, promoteTo("fire", "ghost", "C:/x/ghost.exe")),
+             QStringList({"campfire", "firefox"}));
 }
 
 // The cached sort in searchCatalogs() and the uncached CatItemCompareWithMatch()
 // path must rank identically - they used to be two copies of the same policy.
-// This is the guard that keeps them from drifting apart again.
+// This is the guard that keeps them from drifting apart again. The cap is below
+// the match count so the catalog actually ranks, and it also proves the cut
+// keeps the head of the ranking rather than a different subset.
 void TestCatalogSearch::catalogAndComparatorAgree() {
+    const int cap = 4;
+    g_settings->setValue(OPTION_NUMRESULT, cap);
+
     CatalogSlow catalog;
     const QList<CatItem> items = {
         makeItem("C:/x/ab.exe", "ab", 3),
@@ -293,6 +321,7 @@ void TestCatalogSearch::catalogAndComparatorAgree() {
 
     const QString query = "ab";
     const QStringList cachedOrder = shortNames(runSearch(catalog, query));
+    QCOMPARE(cachedOrder.count(), cap);
 
     QList<CatItem> uncached = items;
     // std::sort, not stable_sort: the comparator ends in a fullPath tiebreaker,
@@ -302,7 +331,7 @@ void TestCatalogSearch::catalogAndComparatorAgree() {
                   return CatItemCompareWithMatch(left, right, query);
               });
 
-    QCOMPARE(cachedOrder, shortNames(uncached));
+    QCOMPARE(cachedOrder, shortNames(uncached.mid(0, cap)));
 }
 
 // The catalog file format moved into the core library, keep the round-trip

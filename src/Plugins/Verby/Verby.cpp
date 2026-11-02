@@ -43,7 +43,7 @@ using namespace launchy;
 // Owners that identify Launchy's own file and directory items: the indexed
 // catalog never sets a plugin name at all, and the browse-as-you-type results
 // from FileSearch carry "launchy"/"launchy_file" (NAME_LAUNCHY / NAME_LAUNCHYFILE
-// in Launchy/GlobalVar.h -- that header is part of the application, a plugin
+// in Core/CoreGlobals.h -- that header is part of the application, a plugin
 // cannot link against it, so the values are repeated here).
 static bool isLaunchyOwnedItem(const QString& owner) {
     return owner.isEmpty()

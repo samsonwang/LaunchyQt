@@ -36,6 +36,13 @@ CrashDumper::CrashDumper(const WCHAR* appName) {
 }
 
 CrashDumper::~CrashDumper() {
+#ifdef NDEBUG
+    // The filter is process wide and the state it reads is about to go away.
+    // The owner (PlatformWin) is destroyed by cleanupPlatform() while the
+    // process still runs its last steps, so remove it instead of leaving a
+    // handler pointing at a name this destructor is releasing.
+    SetUnhandledExceptionFilter(NULL);
+#endif
     free(m_appName);
     m_appName = NULL;
     if (m_dbgHelpDll) {

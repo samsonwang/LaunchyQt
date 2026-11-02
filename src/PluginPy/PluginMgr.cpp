@@ -208,8 +208,8 @@ void PluginMgr::releaseGilForEventLoop() {
     m_mainThreadState = PyEval_SaveThread();
     qDebug("pluginpy::PluginMgr, gil handed over to python threads");
 
-    // Taken back before cleanupGlobalVar() pulls the plugins down, so shutdown
-    // sees the same gil state startup did.
+    // Taken back before the application objects are torn down, so shutdown sees
+    // the same gil state startup did.
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, qApp, [this]() {
         if (!m_mainThreadState) {
             return;

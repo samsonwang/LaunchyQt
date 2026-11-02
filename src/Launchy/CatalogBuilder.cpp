@@ -24,13 +24,11 @@
 #include <QDebug>
 #include <QElapsedTimer>
 
-#include "Catalog.h"
-#include "CatalogFast.h"
-#include "CatalogSlow.h"
 #include "Platform/Platform.h"
+
+#include "Catalog.h"
 #include "Directory.h"
 #include "SettingsManager.h"
-#include "OptionItem.h"
 #include "MemProfiler.h"
 
 #define CATALOG_PROGRESS_MIN 0
@@ -45,39 +43,30 @@
 
 namespace launchy {
 
-CatalogBuilder* CatalogBuilder::s_instance = nullptr;
-
-// Select the catalog once at startup; changing the mode requires a restart.
-static Catalog* createCatalog() {
-    int mode = g_settings->value(OPTION_SEARCH_MODE, OPTION_SEARCH_MODE_DEFAULT).toInt();
-    if (mode == 1) {
-        return new CatalogSlow;
-    }
-
-    return new CatalogFast;
-}
-
 CatalogBuilder::CatalogBuilder()
-    : m_catalog(createCatalog()),
-      m_thread(new QThread),
+    : m_thread(new QThread),
       m_progress(CATALOG_PROGRESS_MAX) {
     moveToThread(m_thread);
     m_thread->start(QThread::IdlePriority);
 }
 
-void CatalogBuilder::requestBuild() {
-    // Ignore the request when a rebuild is already queued or running
+void CatalogBuilder::requestBuild(Catalog* catalog) {
+    // Ignore the request when a rebuild is already queued or running. The
+    // catalog pointer travels with the queued call instead of being a member:
+    // the builder owns no catalog, so nothing here has to be kept in sync with
+    // the widget that does.
     if (m_rebuildScheduled.testAndSetOrdered(0, 1)) {
-        QMetaObject::invokeMethod(this, "buildCatalog", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this, [this, catalog] { buildCatalog(catalog); },
+                                  Qt::QueuedConnection);
     }
 }
 
-void CatalogBuilder::buildCatalog() {
+void CatalogBuilder::buildCatalog(Catalog* catalog) {
     m_throttleTimer.start();
 
     m_progress.storeRelease(CATALOG_PROGRESS_MIN);
     emit catalogIncrement(m_progress.loadAcquire());
-    m_catalog->incrementTimestamp();
+    catalog->incrementTimestamp();
     m_indexed.clear();
 
     launchy::memprof::record("buildCatalog:start");
@@ -100,7 +89,8 @@ void CatalogBuilder::buildCatalog() {
                  << m_totalItems << "current item:" << m_currentItem;
 
         QString currentDir = platform().expandEnvironmentVars(catDirs[m_currentItem].name);
-        indexDirectory(currentDir,
+        indexDirectory(catalog,
+                       currentDir,
                        catDirs[m_currentItem].types,
                        catDirs[m_currentItem].indexDirs,
                        catDirs[m_currentItem].indexExe,
@@ -122,12 +112,12 @@ void CatalogBuilder::buildCatalog() {
     launchy::memprof::record("buildCatalog:after-dir-scan");
 
     // Don't call the pluginhandler to request catalog because we need to track progress
-    pluginRegistry.getCatalogs(m_catalog, this);
+    pluginRegistry.getCatalogs(catalog, this);
     launchy::memprof::record("buildCatalog:after-plugins");
 
     qDebug() << "CatalogBuilder::buildCatalog, purget old item";
 
-    m_catalog->purgeOldItems();
+    catalog->purgeOldItems();
     launchy::memprof::record("buildCatalog:after-purge");
 
     qDebug() << "CatalogBuilder::buildCatalog, saving catalog";
@@ -136,7 +126,7 @@ void CatalogBuilder::buildCatalog() {
     // a large memory spike there
     {
         launchy::memprof::ScopedMem saveScope("buildCatalog:save");
-        m_catalog->save(SettingsManager::instance().catalogFilename());
+        catalog->save(SettingsManager::instance().catalogFilename());
     }
     launchy::memprof::record("buildCatalog:after-save");
 
@@ -165,7 +155,8 @@ void CatalogBuilder::throttle() {
     }
 }
 
-void CatalogBuilder::indexDirectory(const QString& directory,
+void CatalogBuilder::indexDirectory(Catalog* catalog,
+                                    const QString& directory,
                                     const QStringList& filters,
                                     bool fDirs,
                                     bool fBin,
@@ -187,11 +178,12 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                     if (cur.endsWith(".app", Qt::CaseInsensitive)) {
                         CatItem item(dir + "/" + cur);
                         platform().alterItem(&item);
-                        m_catalog->addItem(item);
+                        catalog->addItem(item);
                     }
                     else
 #endif
-                        indexDirectory(dir + "/" + dirs[i], filters, fDirs, fBin, depth-1);
+                        indexDirectory(catalog, dir + "/" + dirs[i], filters,
+                                       fDirs, fBin, depth-1);
                 }
             }
         }
@@ -206,7 +198,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                 bool isShortcut = dirs[i].endsWith(".lnk", Qt::CaseInsensitive);
 
                 CatItem item(dir + "/" + dirs[i], !isShortcut);
-                m_catalog->addItem(item);
+                catalog->addItem(item);
                 m_indexed.insert(dir + "/" + dirs[i]);
             }
         }
@@ -222,7 +214,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                 && dirs[i].endsWith(".lnk", Qt::CaseInsensitive)) {
                 if (!m_indexed.contains(dir + "/" + dirs[i])) {
                     CatItem item(dir + "/" + dirs[i], true);
-                    m_catalog->addItem(item);
+                    catalog->addItem(item);
                     m_indexed.insert(dir + "/" + dirs[i]);
                 }
             }
@@ -237,7 +229,7 @@ void CatalogBuilder::indexDirectory(const QString& directory,
             }
             if (!m_indexed.contains(dir + "/" + bins[i])) {
                 CatItem item(dir + "/" + bins[i]);
-                m_catalog->addItem(item);
+                catalog->addItem(item);
                 m_indexed.insert(dir + "/" + bins[i]);
             }
         }
@@ -262,50 +254,34 @@ void CatalogBuilder::indexDirectory(const QString& directory,
                 continue;
             }
 #endif
-            m_catalog->addItem(item);
+            catalog->addItem(item);
 
             m_indexed.insert(dir + "/" + files[i]);
         }
     }
 }
 
+void CatalogBuilder::shutdown() {
+    if (!m_thread) {
+        return;
+    }
+
+    // Return only once a running scan is done: the caller may delete the catalog
+    // right after, and the scan writes to it.
+    m_thread->exit();
+    m_thread->wait();
+    // wait() returned, so the thread is not running any more and the
+    // QThread object itself can be deleted right here. No event loop is
+    // guaranteed to be left at teardown time, so deleteLater() would leak.
+    delete m_thread;
+    m_thread = nullptr;
+}
+
 CatalogBuilder::~CatalogBuilder() {
-    s_instance = nullptr;
     qDebug() << "CatalogBuilder::~CatalogBuilder, exit thread";
-    if (m_thread) {
-        m_thread->exit();
-        m_thread->wait();
-        m_thread->deleteLater();
-        m_thread = nullptr;
-    }
-
-    if (m_catalog) {
-        delete m_catalog;
-        m_catalog = nullptr;
-    }
+    shutdown();
 }
 
-CatalogBuilder* CatalogBuilder::instance() {
-    if (!s_instance) {
-        s_instance = new CatalogBuilder;
-    }
-    return s_instance;
-}
-
-void CatalogBuilder::cleanup() {
-    if (s_instance) {
-        delete s_instance;
-        s_instance = nullptr;
-    }
-}
-
-Catalog* CatalogBuilder::getCatalog() {
-    return instance()->m_catalog;
-}
-
-Catalog* CatalogBuilder::catalogIfCreated() {
-    return s_instance ? s_instance->m_catalog : nullptr;
-}
 
 int CatalogBuilder::getProgress() const {
     return m_progress.loadAcquire();

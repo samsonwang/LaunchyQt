@@ -23,7 +23,7 @@
 namespace launchy {
 
 class LaunchyWidgetLinux : public LaunchyWidget {
-    friend void createLaunchyWidget(CommandFlags command);
+    friend void initLaunchyWidget(CommandFlags command);
 
 protected:
     LaunchyWidgetLinux(CommandFlags command);

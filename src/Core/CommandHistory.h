@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "PluginInterface/CatalogItem.h"
 
-#include "HistoryPromotion.h"
 #include "InputDataList.h"
 
 namespace launchy {
@@ -32,13 +31,14 @@ namespace launchy {
 //   - "commands":  the launched inputs (InputDataList entries) that make up
 //     the history rows and the history search
 //   - "promotion": "query -> item chosen last time the exact query ran",
-//     used by Catalog to move that item back to the top of the results.
+//     used by CatItemCompareWithPromotion to put that item back on top of the results.
 //     Front of the list is the most recently used entry, the list is capped
 //     (LRU) and validated on load.
 //
-// IHistoryPromotion is the one operation the catalog needs from the store;
-// deriving from it is what keeps the catalog out of this header.
-class CommandHistory : public IHistoryPromotion {
+// The ranking does not know this class: promotedItem() matches the signature of
+// CatalogRanking.h's PromotionLookup, so the application hands the ranking a
+// callable bound to this store and the two stay decoupled.
+class CommandHistory {
 public:
     CommandHistory();
 
@@ -64,8 +64,10 @@ public:
 
     // Look up the item that was chosen the last time the exact query ran.
     // Returns false when there is no promotion entry for the query.
+    // Signature matches PromotionLookup (Catalog.h): the application binds this
+    // method into the callable it passes to CatItemCompareWithPromotion.
     bool promotedItem(const QString& query,
-                      QString& shortName, QString& fullPath) const override;
+                      QString& shortName, QString& fullPath) const;
 
     // Record that `shortName`/`fullPath` was chosen for `query`, moving the
     // entry to the front of the LRU list. Persists immediately.

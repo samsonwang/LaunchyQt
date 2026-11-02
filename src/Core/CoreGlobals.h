@@ -21,10 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QString>
 
-// Process-wide state that the core algorithms read. Kept in one header so the
-// remaining globals are visible in a single place instead of being spread over
-// the application sources -- every entry here is one that a refactor still
-// owes an injection seam.
+// Process-wide model constants. Kept in one header so they are visible in a
+// single place instead of being spread over the application sources. Nothing
+// here is mutable state any more: the query text used for result decoration is
+// owned by LaunchyWidget and injected into the delegate (IconDelegate::
+// setSearchText), because a writable global in a STATIC library would give every
+// linker its own copy.
 
 namespace launchy {
 
@@ -40,11 +42,5 @@ extern const QString NAME_LAUNCHYFILE;
 extern const QString LABEL_FILE;
 extern const QString LABEL_AUTOSUGGEST;
 extern const QString LABEL_HISTORY;
-
-// Lower-cased text of the query being searched. The UI writes it before
-// ranking, CatItemCompare() reads it. The comparator variant that takes the
-// query as a parameter (CatItemCompareWithMatch) exists precisely so new code
-// does not have to touch this.
-extern QString g_searchText;
 
 } // namespace launchy

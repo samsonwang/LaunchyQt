@@ -27,46 +27,48 @@ class QThread;
 
 namespace launchy {
 
+class Catalog;
+
+// Not a singleton: LaunchyWidget owns exactly one by value (m_catalogBuilder).
+// The builder does not own the catalog either -- LaunchyWidget owns that and
+// passes it in for every rebuild, so ownership stays in one place. What lives
+// here is only the scan state, which belongs to the worker thread the
+// constructor moves this object to.
 class CatalogBuilder : public QObject, public INotifyProgressStep {
     Q_OBJECT
 public:
-    static CatalogBuilder* instance();
-    static void cleanup();
-    static Catalog* getCatalog();
-
-    // The catalog when the builder already exists, nullptr otherwise.
-    // Unlike getCatalog() this never creates the singleton: teardown code must
-    // not resurrect the builder while the process is going down (cleanupGlobalVar
-    // deletes the builder before the widget that owns the history store).
-    static Catalog* catalogIfCreated();
+    CatalogBuilder();
+    // Stops the worker thread, so a builder can be a plain value member of its
+    // owner.
+    virtual ~CatalogBuilder();
+    Q_DISABLE_COPY(CatalogBuilder)
 
     int getProgress() const;
     int isRunning() const;
     virtual bool progressStep(int newStep);
 
-    // Thread-safe. Request a catalog rebuild; requests that arrive while a
-    // rebuild is queued or running are ignored
-    void requestBuild();
+    // Stops the worker thread; idempotent, the destructor calls it too. Owners
+    // that have to release something the scan touches before the builder itself
+    // goes away call it explicitly -- LaunchyWidget does, it owns the catalog
+    // and deletes it from its own destructor body.
+    void shutdown();
 
-public slots:
-    void buildCatalog();
+    // Thread-safe. Request a rebuild of `catalog`, owned by the caller and
+    // required to outlive this builder; requests that arrive while a rebuild is
+    // queued or running are ignored.
+    void requestBuild(Catalog* catalog);
 
 signals:
     void catalogIncrement(int);
     void catalogFinished();
 
 private:
-    void indexDirectory(const QString& dir, const QStringList& filters,
+    void buildCatalog(Catalog* catalog);
+    void indexDirectory(Catalog* catalog, const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
     // Briefly yield the CPU so the scan does not starve other applications
     void throttle();
 private:
-    CatalogBuilder();
-    Q_DISABLE_COPY(CatalogBuilder)
-    virtual ~CatalogBuilder();
-
-private:
-    Catalog* m_catalog;
     QThread* m_thread;
 
     QSet<QString> m_indexed;
@@ -77,12 +79,6 @@ private:
 
     QElapsedTimer m_throttleTimer;
     QAtomicInt m_rebuildScheduled{0}; // a rebuild is queued or running
-
-private:
-    static CatalogBuilder* s_instance;
 };
-
-#define g_builder launchy::CatalogBuilder::instance()
-#define g_catalog launchy::CatalogBuilder::instance()->getCatalog()
 
 } // namespace launchy

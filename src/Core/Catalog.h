@@ -23,12 +23,15 @@
 #include <QMutex>
 
 #include "PluginInterface/CatalogItem.h"
-#include "HistoryPromotion.h"
 
 // These classes do not pertain to plugins
 
 namespace launchy {
-// Catalog provides methods to search and manage the indexed items
+
+// Catalog provides methods to search and manage the indexed items.
+//
+// Ranking, the uncached comparator and history promotion all live in
+// CatalogRanking.h: this class only owns the index and the search.
 class Catalog {
 public:
     Catalog();
@@ -36,13 +39,18 @@ public:
     bool load(const QString& filename);
     bool save(const QString& filename);
     void incrementTimestamp();
+    // Fills `result` with at most OPTION_NUMRESULT matches.
+    //
+    // Ranking only happens when the cap has to cut something: with more matches
+    // than the cap, the best `resultNum` come back in rank order; with fewer,
+    // every match comes back and the order is whatever search() produced (the
+    // insertion order for CatalogSlow, the index order for CatalogFast).
+    // Nothing is being chosen in that case, and the caller sorts the merged list
+    // anyway -- see LaunchyWidget::doSearch(), which sorts catalog, history and
+    // plugin hits together with CatalogRanking.h's
+    // CatItemCompareWithPromotion. Do not rely on the order of a result set that
+    // fits inside the cap.
     void searchCatalogs(const QString& text, QList<CatItem>& result);
-    void promoteRecentlyUsedItems(const QString& text, QList<CatItem>& list);
-
-    // Installs the history store used for "this query ran this item last time"
-    // promotion. The application passes its CommandHistory; a headless test can
-    // pass a stub, and a catalog without one simply does no promotion.
-    void setHistoryPromotion(const IHistoryPromotion* history);
 
     virtual int count() = 0;
     virtual void clear() = 0;
@@ -61,8 +69,6 @@ protected:
     virtual QList<CatItem*> search(const QString&) = 0;
 
     int m_timestamp;
-    // Set by the application through setHistoryPromotion(), may be null
-    const IHistoryPromotion* m_history = nullptr;
     // Guards the catalog data. The lock is recursive: the compound operations
     // (searchCatalogs, save) hold it while calling the primitives (count,
     // getItem, search) and the primitives take it again on their own. With a
@@ -76,7 +82,6 @@ protected:
 #endif
 };
 
-
 // CatalogItem is used internally to store additional
 class CatalogItem : public CatItem {
 public:
@@ -85,12 +90,5 @@ public:
 
     int m_timestamp;
 };
-
-bool CatItemCompare(CatItem& left, CatItem& right);
-
-// Sort comparator variant that ranks against an explicit query string rather
-// than the global g_searchText. FileSearch uses it so it can rank and sort by
-// the filename part of a path without rewriting the global mid-search.
-bool CatItemCompareWithMatch(CatItem& left, CatItem& right, const QString& match);
 
 } // namespace launchy

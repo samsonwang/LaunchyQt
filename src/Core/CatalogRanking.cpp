@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <algorithm>
 
+#include <QDebug>
+
 namespace launchy {
 
 // Case-insensitive subsequence test: every character of 'word' must appear, in
@@ -45,13 +47,13 @@ bool matchWordHelper(const QString& name, const QString& word) {
 // whole query is not a contiguous substring (e.g. out-of-order, multi-word).
 // The caller is responsible for splitting/toLowering the query once; passing the
 // word list in avoids re-splitting on every rank comparison.
-int countMatchWords(const CatItem* item, const QStringList& lowerWords) {
+int countMatchWords(const CatItem& item, const QStringList& lowerWords) {
     int count = 0;
     for (const QString& word : lowerWords) {
         if (word.isEmpty())
             continue;
-        if (matchWordHelper(item->searchName, word) ||
-            matchWordHelper(item->searchNameTrans, word))
+        if (matchWordHelper(item.searchName, word) ||
+            matchWordHelper(item.searchNameTrans, word))
             ++count;
     }
     return count;
@@ -66,16 +68,16 @@ QStringList splitQueryWords(const QString& text) {
 // of the sort-key cache: a single sort compares each item O(log n) times,
 // so without caching the same indexOf()/matchWordHelper() results are recomputed
 // dozens of times per item.
-CatalogRank makeRank(CatItem* item, const QString& searchText,
+CatalogRank makeRank(const CatItem& item, const QString& searchText,
                      const QStringList& lowerWords) {
     CatalogRank r;
-    r.item = item;
-    r.exactEqual = (item->searchName == searchText ||
-                    item->searchNameTrans == searchText);
-    r.findPos = std::min(item->searchName.indexOf(searchText),
-                         item->searchNameTrans.indexOf(searchText));
-    r.usage = item->usage;
-    r.nameLen = item->shortName.size();
+    r.item = &item;
+    r.exactEqual = (item.searchName == searchText ||
+                    item.searchNameTrans == searchText);
+    r.findPos = std::min(item.searchName.indexOf(searchText),
+                         item.searchNameTrans.indexOf(searchText));
+    r.usage = item.usage;
+    r.nameLen = item.shortName.size();
     // Only needed when neither name contains the query as a contiguous substring;
     // the comparator never reads wordMatches otherwise, so skip the work.
     r.wordMatches = (r.findPos == -1)
@@ -162,6 +164,48 @@ bool rankBefore(const CatalogRank& a, const CatalogRank& b, int matchLen) {
 
     // Absolute tiebreaker to prevent loops
     return a.item->fullPath < b.item->fullPath;
+}
+
+// Builds the query words once per comparison -- the price of not caching the
+// keys, paid on the small lists this comparator is used for.
+bool CatItemCompareWithMatch(CatItem& left, CatItem& right, const QString& match) {
+    const QStringList words = splitQueryWords(match);
+    return rankBefore(makeRank(left, match, words), makeRank(right, match, words),
+                      match.size());
+}
+
+CatItemCompareWithPromotion::CatItemCompareWithPromotion(
+    const QString& query, const PromotionLookup& promote)
+    : m_query(query) {
+    // The one history lookup of the whole sort: the comparator is duplicated by
+    // std::sort as it likes, so it must not ask again.
+    if (promote && promote(query, m_promotedShort, m_promotedFull)) {
+        m_hasPromoted = true;
+        qDebug() << "CatItemCompareWithPromotion, history promotes:" << m_promotedFull;
+    }
+}
+
+bool CatItemCompareWithPromotion::isPromoted(const CatItem& item) const {
+    return m_hasPromoted
+        && item.shortName == m_promotedShort
+        && item.fullPath == m_promotedFull;
+}
+
+bool CatItemCompareWithPromotion::operator()(CatItem& left, CatItem& right) const {
+    // Key 1: the command this exact query ran last time. When only one of the
+    // two is that command the answer is already decided; otherwise both are (or
+    // neither is) and the ranking policy decides. "Promoted" is a predicate on
+    // a single item, so this stays a strict weak ordering.
+    if (m_hasPromoted) {
+        const bool leftPromoted = isPromoted(left);
+        const bool rightPromoted = isPromoted(right);
+        if (leftPromoted != rightPromoted) {
+            return leftPromoted;
+        }
+    }
+
+    // Key 2: match and usage, from the one policy function.
+    return CatItemCompareWithMatch(left, right, m_query);
 }
 
 } // namespace launchy

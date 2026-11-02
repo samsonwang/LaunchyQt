@@ -288,8 +288,16 @@ void TestCatalogFast::searchAgreesWithSlowCatalog() {
     };
 
     for (const QString& query : queries) {
-        QCOMPARE(shortNames(runSearch(fast, query)),
-                 shortNames(runSearch(slow, query)));
+        // Compare the result SETS, not the order: searchCatalogs() only ranks
+        // when the cap cuts the match set, and these queries fit inside it. The
+        // two catalogs then hand back whatever their own walk produced
+        // (insertion order vs. index order). Ordering the merged list is the
+        // caller's job - LaunchyWidget::doSearch() sorts it.
+        QStringList fromFast = shortNames(runSearch(fast, query));
+        QStringList fromSlow = shortNames(runSearch(slow, query));
+        fromFast.sort();
+        fromSlow.sort();
+        QCOMPARE(fromFast, fromSlow);
     }
 }
 
@@ -330,24 +338,27 @@ void TestCatalogFast::mutationInvalidatesTheIndex() {
     found.sort();
     QCOMPARE(found, QStringList({"alpha", "alphabet"}));
 
-    // The same through a usage change, which replaces the stored item
+    // The same through a usage change, which replaces the stored item. One slot,
+    // so the catalog ranks and the demoted item has to lose it.
     catalog.demoteItem(makeItem("C:/x/alpha.txt", "alpha", 0));
-    QCOMPARE(shortNames(runSearch(catalog, "alpha")).first(), QString("alphabet"));
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+    QCOMPARE(shortNames(runSearch(catalog, "alpha")), QStringList({"alphabet"}));
 }
 
 // A demoted item has negative usage, which the ranking policy pushes below
 // every non-demoted item - even when its own name is the better match.
 void TestCatalogFast::demotedItemRanksAfterItsSibling() {
+    // One slot for two matches: the cap has to cut, so the catalog ranks
+    g_settings->setValue(OPTION_NUMRESULT, 1);
+
     CatalogFast catalog;
     catalog.addItem(makeItem("C:/win/calc.exe", "calc", 0));
     catalog.addItem(makeItem("C:/win/calculator.exe", "calculator", 0));
 
-    QCOMPARE(shortNames(runSearch(catalog, "calc")),
-             QStringList({"calc", "calculator"}));
+    QCOMPARE(shortNames(runSearch(catalog, "calc")), QStringList({"calc"}));
 
     catalog.demoteItem(makeItem("C:/win/calc.exe", "calc", 0));
-    QCOMPARE(shortNames(runSearch(catalog, "calc")),
-             QStringList({"calculator", "calc"}));
+    QCOMPARE(shortNames(runSearch(catalog, "calc")), QStringList({"calculator"}));
 }
 
 // Known trade-off of the trigram index (documented in CatalogFast.h): a query

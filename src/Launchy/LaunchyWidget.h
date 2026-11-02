@@ -28,12 +28,15 @@
 #include "PluginInterface/InputData.h"
 
 #include "Platform/IconExtractor.h"
+
 #include "CommandHistory.h"
+#include "CatalogBuilder.h"
 
 class QPushButton;
 class QHotkey;
 
 namespace launchy {
+class Catalog;
 class Fader;
 class AnimationLabel;
 class IconDelegate;
@@ -59,13 +62,16 @@ class LaunchyWidget : public QWidget {
     Q_OBJECT
 public:
     static LaunchyWidget* instance();
-    static void cleanup();
+    // Public on purpose: the singleton is destroyed by the free function
+    // cleanupLaunchyWidget(), and `delete` through a LaunchyWidget* needs access
+    // to the destructor. Construction stays protected, so the singleton rule is
+    // still enforced.
+    virtual ~LaunchyWidget();
 
 public:
     void executeStartupCommand(int command);
     void setAlternativeListMode(int mode);
     bool setHotkey(const QKeySequence& hotkey);
-    bool setAlwaysShow(bool alwaysShow);
     bool setAlwaysTop(bool alwaysTop);
     void setSkin(const QString& name);
     int getHotkey() const;
@@ -100,8 +106,6 @@ protected:
     // singleton
     LaunchyWidget(CommandFlags command);
     Q_DISABLE_COPY(LaunchyWidget)
-    virtual ~LaunchyWidget();
-    friend void createLaunchyWidget(CommandFlags command);
 
 protected:
     void saveSettings();
@@ -128,6 +132,11 @@ protected:
     void doBackTab();
     void doEnter();
     void processInput(bool debounce = false);
+    // Text the result decoration (Catalog::decorateText) matches against. Single
+    // writer: this class, from the places that know the current query; it also
+    // pushes the value to the alternatives list, whose delegate needs it while
+    // painting.
+    void setSearchText(const QString& text);
     // Immediate full search + UI refresh. Used by explicit actions and by the
     // debounce timer once typing pauses.
     void doSearch();
@@ -143,7 +152,7 @@ protected slots:
     void showOptionDialog();                   // m_optionButton, m_actOptions
     void onHotkey();                           // m_pHotKey
     void dropTimeout();                        // m_dropTimer
-    void catalogProgressUpdated(int progress); // g_builder
+    void catalogProgressUpdated(int progress); // m_catalogBuilder
     void catalogBuilt();
     void setFadeLevel(double level);
     void iconExtracted(const QString& plugin, const QString& path, const QIcon& icon);
@@ -195,13 +204,21 @@ protected:
     // typing rapidly; only the final query after a short idle window triggers it.
     QTimer* m_searchTimer;
 
-    IconExtractor m_iconExtractor;
-
     InputDataList m_inputData;
-    CommandHistory m_history;
     QList<CatItem> m_searchResult;
     CatItem m_outputItem;
-    bool m_alwaysShowLaunchy;
+    // Decoration search text, see setSearchText(). Empty means "highlight nothing".
+    QString m_searchText;
+
+    IconExtractor m_iconExtractor;
+
+    CommandHistory m_history;
+    // The catalog and the builder that fills it are both owned here. Declared
+    // last so the builder (destroyed first) has already stopped its worker
+    // thread; the catalog itself is deleted in the destructor, right after
+    // m_catalogBuilder.shutdown(), because that worker thread scans it.
+    Catalog* m_catalog;
+    CatalogBuilder m_catalogBuilder;
 
     bool m_dragging;
     QPoint m_dragStartPos;
@@ -210,12 +227,10 @@ protected:
 
     OptionDialog* m_optionDialog;
     bool m_optionsOpen;
-
-private:
-    static LaunchyWidget* s_instance;
 };
 
-void createLaunchyWidget(CommandFlags command);
+void initLaunchyWidget(CommandFlags command);
+void cleanupLaunchyWidget();
 
 #define g_mainWidget launchy::LaunchyWidget::instance()
 

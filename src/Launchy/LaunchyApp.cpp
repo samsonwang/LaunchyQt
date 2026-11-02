@@ -17,13 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "AppBase.h"
+#include "LaunchyApp.h"
 
 #include <QApplication>
 
 namespace launchy {
 
-AppBase::AppBase(int& argc, char** argv)
+LaunchyApp::LaunchyApp(int& argc, char** argv)
     : SingleApplication(argc, argv, false, Mode::SecondaryNotification) {
     setQuitOnLastWindowClosed(false);
     setApplicationName("LaunchyQt");
@@ -31,26 +31,36 @@ AppBase::AppBase(int& argc, char** argv)
     // setOrganizationDomain("launchyqt.github.io");
 }
 
-AppBase::~AppBase() {
+LaunchyApp::~LaunchyApp() {
 }
 
-AppBase* AppBase::instance() {
-    return static_cast<AppBase*>(qApp);
+LaunchyApp* LaunchyApp::instance() {
+    return static_cast<LaunchyApp*>(qApp);
 }
 
-void AppBase::cleanup() {
+void cleanupApplication() {
     // The platform object is owned by main(), which drops and deletes it after
     // this returns -- see main.cpp. Deleting the application object first lets
-    // the teardown run while the platform is still installed.
-    delete AppBase::instance();
+    // the teardown run while the platform is still installed. Deleting a null
+    // qApp is a no-op, so this is safe even when initApplication() never ran.
+    delete LaunchyApp::instance();
 }
 
-bool AppBase::isAlreadyRunning() const {
-    return this->isSecondary();
-}
-
-void AppBase::sendInstanceCommand(int command) {
-    Q_UNUSED(command)
+// No per-platform application class any more: AppWin/AppLinux were empty
+// subclasses once the crash dumper moved to PlatformWin and the installer
+// mutexes and the "LaunchyCommand" broadcast went away. What is left is the
+// QApplication itself, which is the same on every platform, so it is built
+// here and main() does not have to care which OS it is on.
+//
+// The new object installs itself as qApp (QApplication's constructor does that),
+// so nothing is returned: every call site reaches it through qApp or
+// instance() anyway. Already having one is not an error -- initApplication()
+// simply leaves it alone.
+void initApplication(int& argc, char** argv) {
+    if (qApp) {
+        return;
+    }
+    new LaunchyApp(argc, argv);
 }
 
 } // namespace launchy

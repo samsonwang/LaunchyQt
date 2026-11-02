@@ -29,6 +29,4 @@ const QString LABEL_FILE = QStringLiteral("launchy_file");
 const QString LABEL_AUTOSUGGEST = QStringLiteral("launchy_auto_suggest");
 const QString LABEL_HISTORY = QStringLiteral("launchy_history");
 
-QString g_searchText;
-
 } // namespace launchy

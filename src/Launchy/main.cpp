@@ -20,13 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QProcess>
 #include <QObject>
 
-#include "AppBase.h"
+#include "LaunchyApp.h"
 #include "AppSettings.h"
 #include "SettingsManager.h"
 #include "LaunchyWidget.h"
 #include "Logger.h"
 #include "MemProfiler.h"
-#include "GlobalVar.h"
 #include "Platform/Platform.h"
 #include "PluginInterface/Runtime.h"
 
@@ -61,7 +60,7 @@ int main(int argc, char* argv[]) {
     // platform questions and lives in the platform library. Installed before
     // anything reads settings or builds a catalog, taken down at the end of
     // main() -- after everything that could still ask it a question is gone.
-    launchy::AppBase* app = launchy::createApplication(argc, argv);
+    launchy::initApplication(argc, argv);
     launchy::initPlatform();
 
     // A plugin cannot run a program itself -- the platform is what does, and it
@@ -72,7 +71,7 @@ int main(int argc, char* argv[]) {
         launchy::platform().runProgram(file, args);
     });
 
-    launchy::memprof::record("main:after-createApplication");
+    launchy::memprof::record("main:after-initApplication");
 
     // Load settings (core reads them), then apply the effects the core cannot
     // (style, proxy, language, logging).
@@ -128,14 +127,22 @@ int main(int argc, char* argv[]) {
     // first program can be launched.
     dropHostEnvironment();
 
-    launchy::createLaunchyWidget(command);
+    launchy::initLaunchyWidget(command);
 
     int exitCode = qApp->exec();
     launchy::memprof::record("main:after-exec");
 
     qDebug() << "app exec exit code:" << exitCode;
 
-    launchy::cleanupGlobalVar();
+    // Tear the process-wide objects down in dependency order, now that the event
+    // loop is gone: the widget first (it owns the catalog builder and the history
+    // store, and stops the builder thread on the way out), then the application
+    // object itself, and finally the settings everything above still reads.
+    launchy::cleanupLaunchyWidget();
+    launchy::cleanupApplication();
+    launchy::g_settings.clear();
+
+    qInfo("main: cleanup finished");
     launchy::memprof::record("main:after-cleanup");
 
     // Everything that can still reach the platform is gone by now except the

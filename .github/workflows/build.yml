@@ -1010,8 +1010,8 @@ jobs:
       #     Their own step, right before the upload, because the build never
       #     touches skins/: this is a pure asset copy, independent of the Qt and
       #     Python packaging (it needs nothing they produce). The app looks for
-      #     <appdir>/skins (AppWin.cpp) and renders unskinned if the folder is
-      #     missing, so an empty copy is an error here.
+      #     <appdir>/skins (PlatformWin.cpp) and renders unskinned if the folder
+      #     is missing, so an empty copy is an error here.
       # ------------------------------------------------------------------
       - name: Copy skins
         shell: pwsh

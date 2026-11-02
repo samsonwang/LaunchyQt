@@ -30,12 +30,19 @@ namespace Ui { class OptionDialog; }
 
 namespace launchy {
 
+class Catalog;
+class CatalogBuilder;
 class FileBrowserDelegate;
 
 class OptionDialog : public QDialog {
     Q_OBJECT
 public:
-    OptionDialog(QWidget* parent = nullptr);
+    // Both are owned by LaunchyWidget and outlive this dialog, so raw pointers
+    // are enough; there is no global builder or catalog to fall back to any
+    // more.
+    OptionDialog(CatalogBuilder* catalogBuilder,
+                 Catalog* catalog,
+                 QWidget* parent = nullptr);
     virtual ~OptionDialog();
 
 public:
@@ -122,6 +129,8 @@ private slots:
 private:
     Ui::OptionDialog* m_pUi;
     FileBrowserDelegate* m_directoryItemDelegate;
+    CatalogBuilder* m_catalogBuilder;
+    Catalog* m_catalog;
 
     QStringList m_metaKeys;
     QStringList m_actionKeys;

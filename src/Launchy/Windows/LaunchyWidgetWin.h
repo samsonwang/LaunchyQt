@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <windows.h>
-
 #include "LaunchyWidget.h"
 
 namespace launchy {
@@ -30,7 +28,7 @@ namespace launchy {
 // for messages like WM_SETTINGCHANGE.
 
 class LaunchyWidgetWin : public LaunchyWidget {
-    friend void createLaunchyWidget(CommandFlags command);
+    friend void initLaunchyWidget(CommandFlags command);
 
 protected:
     LaunchyWidgetWin(CommandFlags command);
@@ -45,9 +43,6 @@ protected:
 #endif // QT_VERSION
 
     virtual void focusLaunchy();
-
-private:
-    UINT commandMessageId;
 };
 
 } // namespace launchy

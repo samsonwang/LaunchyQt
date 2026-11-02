@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QStyledItemDelegate>
 #include <QLabel>
+#include <QString>
 
 #define ROLE_SHORT Qt::DisplayRole
 #define ROLE_FULL Qt::ToolTipRole
@@ -39,10 +40,16 @@ public:
                            const QModelIndex &index) const;
 
     void setSize(int s);
+    // Text the drawn row is decorated against (Catalog::decorateText). It is a
+    // drawing input like the size and the alternative-path label, so it arrives
+    // through a setter instead of a global: paint() runs on any repaint, long
+    // after the query that produced the rows.
+    void setSearchText(const QString& text);
     void setAlternativePathWidget(QLabel* label);
 
 private:
     int m_size;
+    QString m_searchText;
     QLabel* m_alternativesPath;
 };
 }
