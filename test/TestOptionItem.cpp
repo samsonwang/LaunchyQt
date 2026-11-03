@@ -14,8 +14,8 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QStringList>
 #include <Qt>
 
-#include "CoreGlobals.h"
-#include "OptionItem.h"
+#include "Core/CoreGlobals.h"
+#include "Core/OptionItem.h"
 
 using namespace launchy;
 

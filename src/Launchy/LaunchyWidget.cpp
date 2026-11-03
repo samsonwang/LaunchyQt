@@ -28,6 +28,9 @@
 #include <QTimer>
 #include <QPainter>
 #include <QDir>
+#include <QStyleFactory>
+#include <QLocale>
+#include <QNetworkProxy>
 #include <QPixmap>
 #include <QBitmap>
 #include <QKeyEvent>
@@ -44,12 +47,14 @@
 #include "PluginInterface/PluginMsg.h"
 #include "PluginInterface/Runtime.h"
 
-#include "CoreGlobals.h"
+#include "Core/CoreGlobals.h"
 #include "IconDelegate.h"
 #include "OptionDialog.h"
-#include "OptionItem.h"
+#include "Core/OptionItem.h"
 #include "FileSearch.h"
-#include "SettingsManager.h"
+#include "Core/SettingsManager.h"
+#include "Logger.h"
+#include "TranslationManager.h"
 #include "LaunchyApp.h"
 #include "Platform/Platform.h"
 #include "Fader.h"
@@ -57,11 +62,11 @@
 #include "AnimationLabel.h"
 #include "CharListWidget.h"
 #include "CharLineEdit.h"
-#include "Catalog.h"
+#include "Core/Catalog.h"
 #include "CatalogBuilder.h"
-#include "CatalogFast.h"
-#include "CatalogRanking.h"
-#include "CatalogSlow.h"
+#include "Core/CatalogFast.h"
+#include "Core/CatalogRanking.h"
+#include "Core/CatalogSlow.h"
 #include "PluginHandler.h"
 #include "UpdateChecker.h"
 #include "LaunchyVersion.h"
@@ -83,7 +88,7 @@ static const int CATALOG_REBUILD_SYSTEM_IDLE_SECONDS = 10 * 60;
 // No other translation unit touches it -- use LaunchyWidget::instance().
 static LaunchyWidget* g_widgetInstance = nullptr;
 
-LaunchyWidget::LaunchyWidget(CommandFlags command)
+LaunchyWidget::LaunchyWidget(const StartupOption& option)
     // The list follows the member declaration order in the header: that is the
     // order the members are really constructed in, and keeping the two in step
     // avoids -Wreorder surprises where an initializer reads a member that is
@@ -115,6 +120,73 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // g_mainWidget->getHotkey(). Without this, g_widgetInstance was still null
     // there and opening the options dialog crashed.
     g_widgetInstance = this;
+
+    // The command line as this constructor will act on it. The parameter is
+    // read only (it belongs to main()), but the startup logic below adds to it:
+    // a first run or always-show has to show the window, a missing catalog has
+    // to be rebuilt, an unusable hotkey overrides the whole request.
+    StartupOption startup = option;
+
+    // The ini values whose effect the core cannot apply are read here, right
+    // where they are applied: the log level, the language, the widget style and
+    // the application proxy. No snapshot object in between, so none of them can
+    // go stale between being read and being used.
+    //
+    // Logging comes first, because the rest of this constructor is where startup
+    // failures have to become visible. setDebugLogEnabled() also opens
+    // launchy.log, so it is called even when nothing asks for debug output.
+    //
+    // -debug was already acted on in main(), but its effect is decided here: the
+    // level is set once from the parsed option OR the ini key, so the key can
+    // never lower what the command line asked for. Checking startup.debug rather
+    // than the logger's current level keeps the value in one place -- the command
+    // line -- instead of reading logger state back out.
+    log::setDebugLogEnabled(
+        startup.debug
+        || g_settings->value(OPTION_DEBUG_LOG, OPTION_DEBUG_LOG_DEFAULT).toBool());
+
+    qInfo() << "Launchy version:" << LAUNCHY_VERSION_STRING
+            << "(git " << LAUNCHY_GIT_HASH
+            << "build " << LAUNCHY_BUILD_TIME_STRING << ")";
+    const SettingsManager& settings = SettingsManager::instance();
+    qInfo("Loading settings in %s mode from %s",
+          settings.isPortable() ? "portable" : "installed",
+          qPrintable(settings.configDirectory()));
+
+    // The language decides every tr() text created below, so it goes in before
+    // the first of them exists.
+    const QString language = g_settings->value(OPTION_LANGUAGE,
+                                               OPTION_LANGUAGE_DEFAULT).toString();
+    TranslationManager::instance().setLocale(language.isEmpty() ? QLocale::system()
+                                                               : QLocale(language));
+
+    // The widget style. The child widgets built in the member list above already
+    // exist, but a style change repolishes every widget, so they pick it up.
+    qApp->setStyle(QStyleFactory::create(
+        g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString()));
+
+    // The application proxy, installed before the update checker starts since
+    // that is what consumes it. The type is written by the options dialog as a
+    // QNetworkProxy::ProxyType variant and comes back from the ini as text, so
+    // accept either spelling instead of relying on QVariant's enum conversion.
+    bool proxyTypeRead = false;
+    const int proxyType = g_settings->value(OPTION_PROXY_TYPE, OPTION_PROXY_TYPE_DEFAULT)
+                              .toString().toInt(&proxyTypeRead);
+    QNetworkProxy proxy;
+    proxy.setType(static_cast<QNetworkProxy::ProxyType>(
+        proxyTypeRead ? proxyType : OPTION_PROXY_TYPE_DEFAULT));
+    proxy.setHostName(g_settings->value(OPTION_PROXY_SERVER_NAME,
+                                        OPTION_PROXY_SERVER_NAME_DEFAULT).toString());
+    proxy.setPort(g_settings->value(OPTION_PROXY_SERVER_PORT,
+                                    OPTION_PROXY_SERVER_PORT_DEFAULT).toString().toUInt());
+    if (g_settings->value(OPTION_PROXY_REQUIRE_PASSWORD,
+                          OPTION_PROXY_REQUIRE_PASSWORD_DEFAULT).toBool()) {
+        proxy.setUser(g_settings->value(OPTION_PROXY_USERNAME,
+                                        OPTION_PROXY_USERNAME_DEFAULT).toString());
+        proxy.setPassword(g_settings->value(OPTION_PROXY_PASSWORD,
+                                            OPTION_PROXY_PASSWORD_DEFAULT).toString());
+    }
+    QNetworkProxy::setApplicationProxy(proxy);
 
     // Select the catalog implementation once at startup; changing the search
     // mode requires a restart. The widget owns it for its whole lifetime and
@@ -239,14 +311,14 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     int version = g_settings->value(OPTION_VERSION, OPTION_VERSION_DEFAULT).toInt();
     if (version != LAUNCHY_VERSION) {
         updateVersion(version);
-        command |= ShowLaunchy;
+        startup.show = true;
     }
 
     // Set the general options. Always-show needs no widget state: it is read
     // from the settings wherever it is used. At startup the window is still
     // hidden, so the value alone decides whether it has to be shown.
     if (g_settings->value(OPTION_ALWAYSSHOW, OPTION_ALWAYSSHOW_DEFAULT).toBool()) {
-        command |= ShowLaunchy;
+        startup.show = true;
     }
     setAlwaysTop(g_settings->value(OPTION_ALWAYSTOP, OPTION_ALWAYSTOP_DEFAULT).toBool());
 
@@ -257,7 +329,13 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
         QMessageBox::warning(this, tr("Launchy"),
                              tr("The hotkey %1 is already in use, please select another.")
                              .arg(hotkey.toString()));
-        command = ShowLaunchy | ShowOptions;
+        // Without a hotkey the launcher can only be reached through the tray, so
+        // this overrides what was asked on the command line: show the window and
+        // the options dialog, where another hotkey can be picked. Everything
+        // else in the struct was read by main() before the widget existed.
+        startup = StartupOption();
+        startup.show = true;
+        startup.options = true;
     }
 
     // Load the catalog
@@ -271,7 +349,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     // or settings migrated to another machine)
     if (!m_catalog->load(SettingsManager::instance().catalogFilename())
         || g_needRebuildCatalog.fetchAndStoreRelaxed(0) > 0) {
-        command |= Rescan;
+        startup.rescan = true;
     }
 
     // Load the history
@@ -324,7 +402,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command)
     PluginHandler::instance().loadPlugins();
     launchy::memprof::record("widget:after-loadPlugins");
 
-    executeStartupCommand(command);
+    executeStartupCommand(startup);
 }
 
 LaunchyWidget::~LaunchyWidget() {
@@ -357,8 +435,12 @@ void cleanupLaunchyWidget() {
     }
 }
 
-void LaunchyWidget::executeStartupCommand(int command) {
-    if (command & ResetPosition) {
+void LaunchyWidget::executeStartupCommand(const StartupOption& option) {
+    // -rescue asks for a known-good window before anything else: the saved
+    // position may be off-screen and the saved skin unreadable, and both are
+    // what would keep the launcher from being usable. It also implies showing
+    // the window -- a reset nobody can see is pointless.
+    if (option.rescue) {
         // The saved position may sit outside every screen, so ask for the screen
         // covering the window center and let screenAtIndex() fall back when there is none.
         QScreen* screen = screenAtIndex(0);
@@ -373,27 +455,25 @@ void LaunchyWidget::executeStartupCommand(int command) {
                       rectScreen.height() / 2 - rectWidget.height() / 2);
             move(pos);
         }
-    }
 
-    if (command & ResetSkin) {
         setOpaqueness(100);
         showTrayIcon();
         applySkin("Default");
     }
 
-    if (command & ShowLaunchy) {
+    if (option.show || option.rescue) {
         showLaunchy();
     }
 
-    if (command & ShowOptions) {
+    if (option.options) {
         showOptionDialog();
     }
 
-    if (command & Rescan) {
+    if (option.rescan) {
         buildCatalog();
     }
 
-    if (command & Exit) {
+    if (option.exit) {
         exit();
     }
 }
@@ -1911,7 +1991,7 @@ void LaunchyWidget::createActions() {
         // restart:
         //qApp->closeAllWindows();
         hideTrayIcon();
-        qApp->exit(Restart);
+        qApp->exit(EXIT_CODE_RESTART);
         qInfo() << "Finish application relaunch...";
     });
 

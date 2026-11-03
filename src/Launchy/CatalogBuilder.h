@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QAtomicInt>
 #include <QElapsedTimer>
-#include "PluginRegistry.h"
+#include "Core/PluginRegistry.h"
 class QThread;
 
 namespace launchy {

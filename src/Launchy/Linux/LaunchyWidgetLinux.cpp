@@ -20,8 +20,8 @@
 
 namespace launchy {
 
-LaunchyWidgetLinux::LaunchyWidgetLinux(CommandFlags command)
-    : LaunchyWidget(command) {
+LaunchyWidgetLinux::LaunchyWidgetLinux(const StartupOption& option)
+    : LaunchyWidget(option) {
 }
 
 void LaunchyWidgetLinux::focusLaunchy() {
@@ -36,12 +36,12 @@ void LaunchyWidgetLinux::focusLaunchy() {
 }
 
 // Create the main widget for the application
-void initLaunchyWidget(CommandFlags command) {
+void initLaunchyWidget(const StartupOption& option) {
     // LaunchyWidget publishes itself to the singleton at the beginning of its
     // constructor, so the singleton is already reachable while the widget is
     // still being built (and therefore never null for g_mainWidget).
     if (!LaunchyWidget::instance()) {
-        LaunchyWidgetLinux* widget = new LaunchyWidgetLinux(command);
+        LaunchyWidgetLinux* widget = new LaunchyWidgetLinux(option);
 
         // dirty approach to make Qhotkey works, do not know why
         if (!widget->isVisible()) {

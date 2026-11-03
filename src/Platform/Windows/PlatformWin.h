@@ -41,7 +41,7 @@ public:
     virtual ~PlatformWin();
 
     // PlatformBase, the Windows answers
-    virtual QHash<QString, QList<QString> > directories() const;
+    virtual QMap<QString, QList<QString>> directories() const;
     virtual QList<Directory> defaultCatalogDirectories() const;
     virtual QString expandEnvironmentVars(const QString& vars) const;
 

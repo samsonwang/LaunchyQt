@@ -215,8 +215,6 @@ endif ()
 set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/AnimationLabel.h
   ${SRC_DIR}/Launchy/AnimationLabel.cpp
-  ${SRC_DIR}/Launchy/AppSettings.h
-  ${SRC_DIR}/Launchy/AppSettings.cpp
   ${SRC_DIR}/Launchy/CatalogBuilder.h
   ${SRC_DIR}/Launchy/CatalogBuilder.cpp
   ${SRC_DIR}/Launchy/CharLineEdit.h
@@ -298,7 +296,6 @@ if (WIN32)
     ${SRC_DIR}/Launchy/Windows/LaunchyWidgetWin.cpp
     ${SRC_DIR}/Launchy/Windows/launchy.rc)
   source_group ("Resource Files" FILES ${SRC_DIR}/Launchy/Windows/launchy.rc)
-  target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Windows)
 else ()
   set (SOURCES_PLATFORM
     ${SRC_DIR}/Platform/Linux/PlatformLinux.h
@@ -308,7 +305,6 @@ else ()
   set (SOURCES_PLATFORM_LAUNCHY
     ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.h
     ${SRC_DIR}/Launchy/Linux/LaunchyWidgetLinux.cpp)
-  target_include_directories (Launchy PRIVATE ${SRC_DIR}/Launchy/Linux)
 endif (WIN32)
 
 list (APPEND SOURCES_LAUNCHY ${SOURCES_PLATFORM_LAUNCHY})
@@ -447,13 +443,28 @@ target_sources (LaunchyCore
   ${SRC_DIR}/Core/PluginRegistry.cpp
   ${SRC_DIR}/Core/SettingsManager.h
   ${SRC_DIR}/Core/SettingsManager.cpp
+  ${SRC_DIR}/Core/StartupOption.h
+  ${SRC_DIR}/Core/StartupOption.cpp
   ${SRC_DIR}/Core/VersionTag.h
   ${SRC_DIR}/Core/VersionTag.cpp)
 
 # PUBLIC: consumers of the catalogs also need the model types' include root
 # ("PluginInterface/CatalogItem.h") and the same option keys.
+#
+# ${SRC_DIR}/Core is deliberately NOT an include directory, for either side:
+#
+#   * a consumer of the library (the executable, the platform library, the
+#     tests) writes the path it sees from src/: "Core/Catalog.h",
+#   * core's own sources include their siblings bare ("Catalog.h"), exactly as
+#     PluginInterface does ("Runtime.h"). That works without any include
+#     directory because a quoted include is searched in the directory of the
+#     including file first -- and every core file lives in src/Core.
+#
+# The point of the split is that one name can never resolve to a header of
+# another layer by accident, and the include site says which layer a symbol
+# comes from. Do not add ${SRC_DIR}/Core (PUBLIC or PRIVATE) back.
 target_include_directories (LaunchyCore
-  PUBLIC ${SRC_DIR}/Core ${SRC_DIR})
+  PUBLIC ${SRC_DIR})
 
 # PluginInterface carries the model types (CatItem, InputData) and the plugin ABI,
 # so core links it rather than duplicating the classes.
@@ -491,7 +502,6 @@ target_include_directories (LaunchyPlatform
   PUBLIC ${SRC_DIR}/Platform ${SRC_DIR})
 
 if (WIN32)
-  target_include_directories (LaunchyPlatform PUBLIC ${SRC_DIR}/Platform/Windows)
   # WinExtras for the taskbar, and the two system libraries the platform answers
   # need: userenv (CreateEnvironmentBlock) and netapi32 (NetServerEnum). They are
   # declared here, where the calls live, so anything linking this library gets
@@ -500,7 +510,7 @@ if (WIN32)
     PRIVATE Qt${QT_MAJOR_VERSION}::WinExtras
     PRIVATE userenv netapi32)
 else ()
-  target_include_directories (LaunchyPlatform PUBLIC ${SRC_DIR}/Platform/Linux)
+  # LINUX
 endif ()
 
 # Widgets + Gui are PRIVATE: Platform.h is Qt Core only, and nothing it declares

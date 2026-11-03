@@ -9,7 +9,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 #include <QtTest>
 
-#include "PluginInfo.h"
+#include "Core/PluginInfo.h"
 
 #include "PluginInterface/PluginInterface.h"
 #include "PluginInterface/PluginMsg.h"

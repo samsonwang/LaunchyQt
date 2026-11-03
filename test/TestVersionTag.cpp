@@ -11,7 +11,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 #include <QString>
 
-#include "VersionTag.h"
+#include "Core/VersionTag.h"
 
 // The update notification compares one number with LAUNCHY_VERSION, so the tag
 // has to be encoded exactly the way that macro is built. The header lives in

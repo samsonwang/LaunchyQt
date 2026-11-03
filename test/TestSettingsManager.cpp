@@ -15,9 +15,9 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QTemporaryDir>
 #include <QSharedPointer>
 
-#include "Directory.h"
-#include "OptionItem.h"
-#include "SettingsManager.h"
+#include "Core/Directory.h"
+#include "Core/OptionItem.h"
+#include "Core/SettingsManager.h"
 
 #include "PluginInterface/Runtime.h"
 
@@ -28,9 +28,9 @@ namespace {
 // The directory roots a platform would report, resolved under one
 // temporary directory. This is the whole seam: no QApplication, no platform
 // code, the manager just needs to be told where the files live.
-QHash<QString, QList<QString> > makeRoots(const QString& base,
-                                          const QString& portableRoot) {
-    QHash<QString, QList<QString> > roots;
+QMap<QString, QList<QString>> makeRoots(const QString& base,
+                                        const QString& portableRoot) {
+    QMap<QString, QList<QString>> roots;
     roots["config"] << base + "/config";
     roots["portableConfig"] << portableRoot;
     roots["skins"] << base + "/skins";

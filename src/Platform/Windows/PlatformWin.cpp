@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDebug>
 
 #include "UtilWin.h"
-#include "Directory.h"
+#include "Core/Directory.h"
 #include "CrashDumper.h"
 
 namespace launchy {
@@ -205,8 +205,8 @@ QList<Directory> PlatformWin::defaultCatalogDirectories() const {
     return list;
 }
 
-QHash<QString, QList<QString> > PlatformWin::directories() const {
-    QHash<QString, QList<QString> > out;
+QMap<QString, QList<QString>> PlatformWin::directories() const {
+    QMap<QString, QList<QString>> out;
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "Launchy", "Launchy");
     QString iniFilename = settings.fileName();
     QFileInfo info(iniFilename);

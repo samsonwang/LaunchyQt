@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace launchy {
 
-LaunchyApp::LaunchyApp(int& argc, char** argv)
-    : SingleApplication(argc, argv, false, Mode::SecondaryNotification) {
+LaunchyApp::LaunchyApp(int& argc, char** argv, bool allowSecondary)
+    : SingleApplication(argc, argv, allowSecondary, Mode::SecondaryNotification) {
     setQuitOnLastWindowClosed(false);
     setApplicationName("LaunchyQt");
     setOrganizationName("LaunchyQt");
@@ -38,29 +38,20 @@ LaunchyApp* LaunchyApp::instance() {
     return static_cast<LaunchyApp*>(qApp);
 }
 
-void cleanupApplication() {
-    // The platform object is owned by main(), which drops and deletes it after
-    // this returns -- see main.cpp. Deleting the application object first lets
-    // the teardown run while the platform is still installed. Deleting a null
-    // qApp is a no-op, so this is safe even when initApplication() never ran.
-    delete LaunchyApp::instance();
-}
-
-// No per-platform application class any more: AppWin/AppLinux were empty
-// subclasses once the crash dumper moved to PlatformWin and the installer
-// mutexes and the "LaunchyCommand" broadcast went away. What is left is the
-// QApplication itself, which is the same on every platform, so it is built
-// here and main() does not have to care which OS it is on.
-//
-// The new object installs itself as qApp (QApplication's constructor does that),
-// so nothing is returned: every call site reaches it through qApp or
-// instance() anyway. Already having one is not an error -- initApplication()
-// simply leaves it alone.
-void initApplication(int& argc, char** argv) {
+void initApplication(int& argc, char** argv, bool allowSecondary) {
     if (qApp) {
         return;
     }
-    new LaunchyApp(argc, argv);
+    new LaunchyApp(argc, argv, allowSecondary);
+}
+
+void cleanupApplication() {
+    // main() owns the platform object and the settings, and drops both before
+    // calling this -- deleting the application object is the last step of the
+    // shutdown, see the teardown block at the end of main.cpp. Nothing may
+    // touch qApp or a widget after this returns. Deleting a null qApp is a
+    // no-op, so this is safe even when initApplication() never ran.
+    delete LaunchyApp::instance();
 }
 
 } // namespace launchy

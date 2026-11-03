@@ -26,9 +26,9 @@
 
 #include "Platform/Platform.h"
 
-#include "Catalog.h"
-#include "Directory.h"
-#include "SettingsManager.h"
+#include "Core/Catalog.h"
+#include "Core/Directory.h"
+#include "Core/SettingsManager.h"
 #include "MemProfiler.h"
 
 #define CATALOG_PROGRESS_MIN 0

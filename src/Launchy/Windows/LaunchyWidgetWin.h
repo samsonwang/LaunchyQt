@@ -28,10 +28,10 @@ namespace launchy {
 // for messages like WM_SETTINGCHANGE.
 
 class LaunchyWidgetWin : public LaunchyWidget {
-    friend void initLaunchyWidget(CommandFlags command);
+    friend void initLaunchyWidget(const StartupOption& option);
 
 protected:
-    LaunchyWidgetWin(CommandFlags command);
+    LaunchyWidgetWin(const StartupOption& option);
 
 protected:
     virtual bool nativeEvent(const QByteArray& eventType,

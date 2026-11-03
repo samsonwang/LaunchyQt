@@ -25,16 +25,12 @@ namespace launchy {
 
 // The application object: the QApplication (via SingleApplication, which also
 // gives the single-instance channel).
-//
-// It holds no platform knowledge at all. The platform questions -- including
-// the icons, which used to be cached here -- are answered by a separate platform
-// object (PlatformWin / PlatformLinux) that lives in the LaunchyPlatform library
-// and knows nothing about QApplication; main() installs it through
-// initPlatform(). Keeping the application object in the executable is what lets
-// the platform library stay free of QApplication.
 class LaunchyApp : public SingleApplication {
 public:
-    LaunchyApp(int& argc, char** argv);
+    // allowSecondary is -multiple: by default a second process hands its
+    // request to the first one and exits, with this it runs alongside it
+    // (different profiles, typically, each with its own hotkey).
+    LaunchyApp(int& argc, char** argv, bool allowSecondary);
     virtual ~LaunchyApp();
 
     // The application object. This exists for the call sites that need the
@@ -42,11 +38,11 @@ public:
     static LaunchyApp* instance();
 };
 
-// Create the application object, if there is none yet. Void on purpose: the
-// object is a QApplication, reachable through qApp and instance() from then on,
-// and keeping it in a local pointer only invited a dangling/unused variable at
-// the call site (main() never needed the handle).
-void initApplication(int& argc, char** argv);
+// Create the application object, if there is none yet. 
+// allowSecondary comes from the command line (-multiple), so it has to be
+// decided before this call: the single-instance channel is set up by the
+// application's constructor and cannot be changed afterwards.
+void initApplication(int& argc, char** argv, bool allowSecondary);
 
 // Delete it again, next to the function that created it. A free function rather
 // than a static member: the object is on its way out by then, and asking it to

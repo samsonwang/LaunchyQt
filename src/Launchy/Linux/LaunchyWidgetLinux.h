@@ -23,10 +23,10 @@
 namespace launchy {
 
 class LaunchyWidgetLinux : public LaunchyWidget {
-    friend void initLaunchyWidget(CommandFlags command);
+    friend void initLaunchyWidget(const StartupOption& option);
 
 protected:
-    LaunchyWidgetLinux(CommandFlags command);
+    LaunchyWidgetLinux(const StartupOption& option);
     virtual void focusLaunchy();
 };
 

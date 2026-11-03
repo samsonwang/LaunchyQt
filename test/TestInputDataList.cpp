@@ -11,7 +11,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 #include <QStringList>
 
-#include "InputDataList.h"
+#include "Core/InputDataList.h"
 
 using namespace launchy;
 

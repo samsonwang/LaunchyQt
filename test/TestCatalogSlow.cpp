@@ -13,7 +13,7 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QSharedPointer>
 #include <QTemporaryDir>
 
-#include "CatalogSlow.h"
+#include "Core/CatalogSlow.h"
 
 #include "PluginInterface/Runtime.h"
 

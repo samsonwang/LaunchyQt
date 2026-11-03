@@ -116,16 +116,6 @@ static bool fixCatalogUserPaths(QList<Directory>& directories) {
     return changed;
 }
 
-// The proxy type is written by the options dialog as a QNetworkProxy::ProxyType
-// QVariant and comes back from the ini file as text, so accept either spelling
-// instead of relying on QVariant's enum conversion.
-static int readProxyType() {
-    const QVariant raw = g_settings->value(OPTION_PROXY_TYPE, OPTION_PROXY_TYPE_DEFAULT);
-    bool ok = false;
-    const int asInt = raw.toString().toInt(&ok);
-    return ok ? asInt : OPTION_PROXY_TYPE_DEFAULT;
-}
-
 SettingsManager::SettingsManager()
     : m_portable(false) {
 }
@@ -135,7 +125,7 @@ SettingsManager& SettingsManager::instance() {
     return s_obj;
 }
 
-void SettingsManager::load(const QHash<QString, QList<QString> >& roots,
+void SettingsManager::load(const QMap<QString, QList<QString>>& roots,
                            const QList<Directory>& defaultCatalogDirectories) {
     m_roots = roots;
     m_defaultDirs = defaultCatalogDirectories;
@@ -150,7 +140,7 @@ void SettingsManager::load(const QHash<QString, QList<QString> >& roots,
     m_portable = false;
     const QList<QString> portableRoots = m_roots.value("portableConfig");
     if (!portableRoots.isEmpty()) {
-        const QString root = portableRoots.front();
+        const QString& root = portableRoots.front();
         m_portable = (QFile::exists(root) || QFile::exists(root + iniName))
             && !QFile::exists(root + installedName);
     }
@@ -168,41 +158,12 @@ void SettingsManager::load(const QHash<QString, QList<QString> >& roots,
         writeCatalogDirectories(directories);
     }
 
-    // Runtime values. The core reads them, the application applies them.
-    m_runtime.debugLog = g_settings->value(OPTION_DEBUG_LOG,
-                                           OPTION_DEBUG_LOG_DEFAULT).toBool();
-    // Write the normalized value back: an unreadable ini entry otherwise keeps
-    // disagreeing with what the app actually runs with.
-    g_settings->setValue(OPTION_DEBUG_LOG, m_runtime.debugLog);
-
-    m_runtime.appStyle = g_settings->value(OPTION_APPSTYLE, OPTION_APPSTYLE_DEFAULT).toString();
-    m_runtime.language = g_settings->value(OPTION_LANGUAGE, OPTION_LANGUAGE_DEFAULT).toString();
-
-    ProxyConfig& proxy = m_runtime.proxy;
-    proxy.type = readProxyType();
-    proxy.host = g_settings->value(OPTION_PROXY_SERVER_NAME,
-                                   OPTION_PROXY_SERVER_NAME_DEFAULT).toString();
-    proxy.port = g_settings->value(OPTION_PROXY_SERVER_PORT,
-                                   OPTION_PROXY_SERVER_PORT_DEFAULT).toString().toUInt();
-    proxy.requirePassword = g_settings->value(OPTION_PROXY_REQUIRE_PASSWORD,
-                                              OPTION_PROXY_REQUIRE_PASSWORD_DEFAULT).toBool();
-    if (proxy.requirePassword) {
-        proxy.user = g_settings->value(OPTION_PROXY_USERNAME,
-                                       OPTION_PROXY_USERNAME_DEFAULT).toString();
-        proxy.password = g_settings->value(OPTION_PROXY_PASSWORD,
-                                           OPTION_PROXY_PASSWORD_DEFAULT).toString();
-    }
-
     // An extra plugin directory is just another entry in the resolved roots,
     // so everything that walks directory("plugins") picks it up.
     const QString pluginExtraDir = g_settings->value(OPTION_PLUGIN_EXTRA_DIRECTORY).toString();
     if (!pluginExtraDir.isEmpty()) {
         m_roots["plugins"].push_back(pluginExtraDir);
     }
-}
-
-const RuntimeSettings& SettingsManager::runtime() const {
-    return m_runtime;
 }
 
 // Add the built-in catalog directories and list them first in a fixed order,

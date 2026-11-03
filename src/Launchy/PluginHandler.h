@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PluginInterface/CatalogItem.h"
 #include "PluginInterface/InputData.h"
 
-#include "PluginInfo.h"
-#include "PluginRegistry.h"
+#include "Core/PluginInfo.h"
+#include "Core/PluginRegistry.h"
 
 class QWidget;
 

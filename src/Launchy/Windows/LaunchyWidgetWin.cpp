@@ -20,12 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-#include "UtilWin.h"
+#include "Platform/Windows/UtilWin.h"
 
 namespace launchy {
 
-LaunchyWidgetWin::LaunchyWidgetWin(CommandFlags command)
-    : LaunchyWidget(command) {
+LaunchyWidgetWin::LaunchyWidgetWin(const StartupOption& option)
+    : LaunchyWidget(option) {
 }
 
 
@@ -69,12 +69,12 @@ void LaunchyWidgetWin::focusLaunchy() {
 }
 
 // Create the main widget for the application
-void initLaunchyWidget(CommandFlags command) {
+void initLaunchyWidget(const StartupOption& option) {
     // LaunchyWidget publishes itself to the singleton at the beginning of its
     // constructor, so the singleton is already reachable while the widget is
     // still being built (and therefore never null for g_mainWidget).
     if (!LaunchyWidget::instance()) {
-        LaunchyWidgetWin* widget = new LaunchyWidgetWin(command);
+        LaunchyWidgetWin* widget = new LaunchyWidgetWin(option);
 
         // Create the native window now, while it is still hidden.
         //

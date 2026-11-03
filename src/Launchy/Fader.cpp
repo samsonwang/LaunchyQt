@@ -18,8 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "Fader.h"
+
+#include "Core/OptionItem.h"
+
 #include "PluginInterface/Runtime.h"
-#include "OptionItem.h"
 
 namespace launchy {
 

@@ -101,6 +101,7 @@ launchy_add_test (TestCatalogSlow)
 launchy_add_test (TestInputDataList)
 launchy_add_test (TestCommandHistory)
 launchy_add_test (TestSettingsManager)
+launchy_add_test (TestStartupOption)
 launchy_add_test (TestPluginRegistry)
 launchy_add_test (TestPlatform)
 # The one test that exercises the seam itself: platform() and the inert fallback

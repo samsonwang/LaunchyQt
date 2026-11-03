@@ -28,7 +28,7 @@
 #include <private/qtx11extras_p.h>
 
 #include "IconProviderLinux.h"
-#include "Directory.h"
+#include "Core/Directory.h"
 #include "PluginInterface/CatalogItem.h"
 
 namespace launchy {
@@ -80,8 +80,8 @@ QList<Directory> PlatformLinux::defaultCatalogDirectories() const {
     return list;
 }
 
-QHash<QString, QList<QString> > PlatformLinux::directories() const {
-    QHash<QString, QList<QString> > out;
+QMap<QString, QList<QString>> PlatformLinux::directories() const {
+    QMap<QString, QList<QString>> out;
     QDir d;
     d.mkdir(QDir::homePath() + "/.launchy");
 

@@ -24,12 +24,14 @@
 #include <QLabel>
 #include <QUrl>
 
+#include "Core/CommandHistory.h"
+#include "Core/StartupOption.h"
+
 #include "PluginInterface/CatalogItem.h"
 #include "PluginInterface/InputData.h"
 
 #include "Platform/IconExtractor.h"
 
-#include "CommandHistory.h"
 #include "CatalogBuilder.h"
 
 class QPushButton;
@@ -44,19 +46,11 @@ class CharListWidget;
 class CharLineEdit;
 class OptionDialog;
 
-enum CommandFlag {
-    Default         = 0,
-    ShowLaunchy     = 1,
-    ShowOptions     = 2,
-    ResetPosition   = 4,
-    ResetSkin       = 8,
-    Rescan          = 16,
-    Exit            = 32,
-    Restart         = 64
-};
-
-Q_DECLARE_FLAGS(CommandFlags, CommandFlag)
-Q_DECLARE_OPERATORS_FOR_FLAGS(CommandFlags)
+// Passed to QCoreApplication::exit() to mean "start over with the same command
+// line" rather than "quit". main() compares the event loop's exit code against
+// it after exec() and re-runs the arguments it parsed. Any value works as long
+// as it never collides with a code the event loop returns on its own.
+constexpr int EXIT_CODE_RESTART = 64;
 
 class LaunchyWidget : public QWidget {
     Q_OBJECT
@@ -69,7 +63,9 @@ public:
     virtual ~LaunchyWidget();
 
 public:
-    void executeStartupCommand(int command);
+    // Act on the parsed command line. Called once, at the end of the
+    // constructor, with what that constructor decided to add to it.
+    void executeStartupCommand(const StartupOption& option);
     void setAlternativeListMode(int mode);
     bool setHotkey(const QKeySequence& hotkey);
     bool setAlwaysTop(bool alwaysTop);
@@ -104,7 +100,10 @@ protected:
 
 protected:
     // singleton
-    LaunchyWidget(CommandFlags command);
+    // The parsed command line, read only: the constructor copies it and adds to
+    // that copy (first run, always-show, a catalog that needs rebuilding, an
+    // unusable hotkey) instead of writing into the caller's object.
+    LaunchyWidget(const StartupOption& option);
     Q_DISABLE_COPY(LaunchyWidget)
 
 protected:
@@ -229,7 +228,12 @@ protected:
     bool m_optionsOpen;
 };
 
-void initLaunchyWidget(CommandFlags command);
+// Create the one widget, handing it the parsed command line. Implemented per
+// platform (Windows/LaunchyWidgetWin.cpp, Linux/LaunchyWidgetLinux.cpp), which
+// is also why the class constructors stay protected: this function and the
+// subclass are the only ones allowed to build it. The option is only read here;
+// the copy the constructor is allowed to add to is made there.
+void initLaunchyWidget(const StartupOption& option);
 void cleanupLaunchyWidget();
 
 #define g_mainWidget launchy::LaunchyWidget::instance()

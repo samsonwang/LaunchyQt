@@ -27,11 +27,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QRegularExpression>
 #include <QDebug>
 
+#include "Core/CoreGlobals.h"
+#include "Core/Catalog.h"
+#include "Core/CatalogRanking.h"
+#include "Core/OptionItem.h"
+
 #include "Platform/Platform.h"
-#include "CoreGlobals.h"
-#include "Catalog.h"
-#include "CatalogRanking.h"
-#include "OptionItem.h"
 
 namespace launchy {
 

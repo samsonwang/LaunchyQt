@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QHash>
 #include <QList>
+#include <QMap>
 #include <QString>
 
-#include "Directory.h"
+#include "Core/Directory.h"
 
 namespace launchy {
 
@@ -45,8 +45,10 @@ public:
 
     // Roots of every runtime directory, keyed by role: "config",
     // "portableConfig", "skins", "plugins". SettingsManager resolves all of
-    // its paths from these.
-    virtual QHash<QString, QList<QString> > directories() const = 0;
+    // its paths from these. A QMap rather than a QHash: the roles are a small
+    // fixed set, the lookup cost is irrelevant, and a sorted, repeatable
+    // iteration order makes anything that walks the roles deterministic.
+    virtual QMap<QString, QList<QString>> directories() const = 0;
 
     // Directories indexed when the catalog is created for the first time
     virtual QList<Directory> defaultCatalogDirectories() const = 0;

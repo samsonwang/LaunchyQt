@@ -272,19 +272,6 @@ jobs:
         run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
 
       # ------------------------------------------------------------------
-      # 5b) Run the unit tests (QTest + CTest)
-      #     `ctest` runs every add_test() target registered in test/CMakeLists.txt.
-      #     Test executables live in build/test/<Config>, a self-contained tree:
-      #     the test target's POST_BUILD step copies Launchy.dll + Qt5Core.dll +
-      #     Qt5Test.dll next to each exe, so no extra deployment is needed here.
-      # ------------------------------------------------------------------
-      - name: Run tests
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          ctest --test-dir build -C ${{ env.BUILD_TYPE }} --output-on-failure
-
-      # ------------------------------------------------------------------
       # 6) Deploy the Qt runtime
       #    Written inline instead of calling misc/deploy_win.ps1: the Qt prefix is
       #    only known to this workflow (jurplel/install-qt-action exports it), and
@@ -1007,11 +994,11 @@ jobs:
 
       # ------------------------------------------------------------------
       # 10) Copy the skins into the artifact.
-      #     Their own step, right before the upload, because the build never
-      #     touches skins/: this is a pure asset copy, independent of the Qt and
-      #     Python packaging (it needs nothing they produce). The app looks for
-      #     <appdir>/skins (PlatformWin.cpp) and renders unskinned if the folder
-      #     is missing, so an empty copy is an error here.
+      #     Their own step, BEFORE the tests and the upload, because the build
+      #     never touches skins/: this is a pure asset copy, independent of the
+      #     Qt and Python packaging (it needs nothing they produce). The app
+      #     looks for <appdir>/skins (PlatformWin.cpp) and renders unskinned if
+      #     the folder is missing, so an empty copy is an error here.
       # ------------------------------------------------------------------
       - name: Copy skins
         shell: pwsh
@@ -1039,7 +1026,23 @@ jobs:
           Write-Host ("copied $skinCount skin(s), {0:N1} MB, into $skinsDst" -f ($skinsSize / 1MB))
 
       # ------------------------------------------------------------------
-      # 11) Package with 7-Zip (maximum compression, symbols split out)
+      # 11) Run the unit tests (QTest + CTest)
+      #      `ctest` runs every add_test() target registered in test/CMakeLists.txt.
+      #      Test executables live in build/test/<Config>, a self-contained tree:
+      #      the test target's POST_BUILD step copies Launchy.dll + Qt5Core.dll +
+      #      Qt5Test.dll next to each exe, so no extra deployment is needed here.
+      #      Deliberately placed AFTER the artifact is assembled (Qt runtime,
+      #      PySide2, python, skins): the run then describes the tree that ships,
+      #      not a half-deployed one.
+      # ------------------------------------------------------------------
+      - name: Run tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ctest --test-dir build -C ${{ env.BUILD_TYPE }} --output-on-failure
+
+      # ------------------------------------------------------------------
+      # 12) Package with 7-Zip (maximum compression, symbols split out)
       #     Two archives instead of the raw tree:
       #       Launchy-v<ver>-win-x64.7z      the runnable tree, *.pdb excluded
       #       Launchy-v<ver>-win-x64-pdb.7z  only the debug symbols
@@ -1262,7 +1265,7 @@ jobs:
             Out-File -Append -FilePath $env:GITHUB_OUTPUT -Encoding utf8
 
       # ------------------------------------------------------------------
-      # 12) Upload the runnable archive
+      # 13) Upload the runnable archive
       #     build/bin/Release holds the exe, the Qt runtime (root Qt DLLs +
       #     qtlibs/), plugins/, python/ (stdlib zip + extension modules + pruned
       #     PySide2), skins/, utilities/ and the app translations -- i.e. a tree
@@ -1279,7 +1282,7 @@ jobs:
           if-no-files-found: error
 
       # ------------------------------------------------------------------
-      # 13) Upload the symbols archive
+      # 14) Upload the symbols archive
       #     Separate artifact, not a second file in the one above: the whole
       #     point of the split is that a normal downloader never pulls it.
       # ------------------------------------------------------------------

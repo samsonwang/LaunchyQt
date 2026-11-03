@@ -21,10 +21,10 @@ the Free Software Foundation, either version 3 of the License, or
 #include <windows.h>
 #endif
 
-#include "CoreGlobals.h"
+#include "Core/CoreGlobals.h"
 #include "FileSearch.h"
-#include "InputDataList.h"
-#include "OptionItem.h"
+#include "Core/InputDataList.h"
+#include "Core/OptionItem.h"
 
 #include "PluginInterface/Runtime.h"
 

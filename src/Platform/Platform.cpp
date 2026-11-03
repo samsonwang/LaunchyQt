@@ -29,9 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // which wrapped a single new-expression and needed a hook to hand the pointer
 // back here; a typedef says the same thing without either.
 #if defined(Q_OS_WIN)
-#include "PlatformWin.h"
+#include "Windows/PlatformWin.h"
 #elif defined(Q_OS_LINUX)
-#include "PlatformLinux.h"
+#include "Linux/PlatformLinux.h"
 #else
 #error Launchy has no platform implementation for this target
 #endif
@@ -51,8 +51,8 @@ typedef PlatformLinux InstalledPlatform;
 // core-only consumer run against this.
 class PlatformNull : public PlatformBase {
 public:
-    virtual QHash<QString, QList<QString> > directories() const {
-        return QHash<QString, QList<QString> >();
+    virtual QMap<QString, QList<QString>> directories() const {
+        return QMap<QString, QList<QString>>();
     }
 
     virtual QList<Directory> defaultCatalogDirectories() const {

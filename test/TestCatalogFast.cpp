@@ -13,10 +13,10 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QSharedPointer>
 #include <QTemporaryDir>
 
-#include "CatalogFast.h"
-#include "CatalogSlow.h"
-#include "CoreGlobals.h"
-#include "OptionItem.h"
+#include "Core/CatalogFast.h"
+#include "Core/CatalogSlow.h"
+#include "Core/CoreGlobals.h"
+#include "Core/OptionItem.h"
 
 #include "PluginInterface/Runtime.h"
 

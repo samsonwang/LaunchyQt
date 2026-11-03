@@ -20,14 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QProcess>
 #include <QObject>
 
-#include "LaunchyApp.h"
-#include "AppSettings.h"
-#include "SettingsManager.h"
-#include "LaunchyWidget.h"
+#include "Core/StartupOption.h"
+#include "Core/SettingsManager.h"
+
+#include "Platform/Platform.h"
+
+#include "PluginInterface/Runtime.h"
+
 #include "Logger.h"
 #include "MemProfiler.h"
-#include "Platform/Platform.h"
-#include "PluginInterface/Runtime.h"
+#include "LaunchyApp.h"
+#include "LaunchyWidget.h"
 
 namespace {
 
@@ -55,13 +58,55 @@ void dropHostEnvironment() {
 
 int main(int argc, char* argv[]) {
 
+    // The command line is read first, while nothing that could depend on it
+    // exists yet: no QApplication, no settings, no platform. Two of its answers
+    // have to be known this early -- -multiple decides how the application
+    // object is built (one instance or several allowed), -profile decides which
+    // ini file the settings are read from.
+    //
+    // The arguments are taken as ANSI (local 8-bit) on purpose: argv is all a
+    // program has before Qt builds an application object, and the only
+    // free-form value -- the profile name -- is a directory name, which the
+    // system code page covers.
+    QStringList arguments;
+    arguments.reserve(argc);
+    for (int i = 0; i < argc; ++i) {
+        arguments << QString::fromLocal8Bit(argv[i]);
+    }
+    const launchy::StartupOption option = launchy::parseStartupOption(arguments);
+
+    // -debug comes before everything else: it opens the log file, and every step
+    // below wants to be able to explain a failure there.
+    if (option.debug) {
+        launchy::log::setDebugLogEnabled(true);
+        // [MEMPROF] output goes through qInfo(), which only lands in
+        // launchy.log under -debug, so turn on sampling at the same time.
+        launchy::memprof::setEnabled(true);
+    }
+
+    launchy::memprof::record("main:after-parse-args");
+
+    // After -debug on purpose: the warning below would be lost if it ran any
+    // earlier. Still long before the first program can be launched.
+    dropHostEnvironment();
+
+    // Where the settings live is part of the settings, so the profile has to be
+    // known before they are loaded -- with -profile the ini file read below is
+    // the one in profiles/<name>/.
+    if (!option.profile.isEmpty()) {
+        launchy::SettingsManager::instance().setProfileName(option.profile);
+    }
+
     // The application object (QApplication) and the platform are separate now:
     // the application lives in the executable, the platform answers the
-    // platform questions and lives in the platform library. Installed before
-    // anything reads settings or builds a catalog, taken down at the end of
-    // main() -- after everything that could still ask it a question is gone.
-    launchy::initApplication(argc, argv);
+    // platform questions and lives in the platform library. Both are installed
+    // before anything reads settings or builds a catalog: the settings are
+    // where the application's directories come from, so they have to be asked
+    // of a real platform, not of the inert fallback core otherwise answers with.
+    launchy::initApplication(argc, argv, option.multiple);
     launchy::initPlatform();
+
+    launchy::memprof::record("main:after-initApplication");
 
     // A plugin cannot run a program itself -- the platform is what does, and it
     // lives in this executable. Hand the plugin-facing request straight to it:
@@ -71,63 +116,12 @@ int main(int argc, char* argv[]) {
         launchy::platform().runProgram(file, args);
     });
 
-    launchy::memprof::record("main:after-initApplication");
-
-    // Load settings (core reads them), then apply the effects the core cannot
-    // (style, proxy, language, logging).
+    // Load settings into the core.
     launchy::SettingsManager::instance().load(launchy::platform().directories(),
                                               launchy::platform().defaultCatalogDirectories());
-    launchy::applyRuntimeSettings();
     launchy::memprof::record("main:after-settings-load");
 
-    // improve code below with QCommandlinePareser
-    QStringList args = qApp->arguments();
-    launchy::CommandFlags command = launchy::Default;
-    bool allowMultipleInstances = false;
-    for (int i = 1; i < args.size(); ++i) {
-        QString arg = args[i];
-        if (arg.startsWith("-") || arg.startsWith("/")) {
-            arg = arg.mid(1);
-            if (arg.compare("rescue", Qt::CaseInsensitive) == 0) {
-                command = launchy::ResetSkin | launchy::ResetPosition | launchy::ShowLaunchy;
-            }
-            else if (arg.compare("show", Qt::CaseInsensitive) == 0) {
-                command |= launchy::ShowLaunchy;
-            }
-            else if (arg.compare("options", Qt::CaseInsensitive) == 0) {
-                command |= launchy::ShowOptions;
-            }
-            else if (arg.compare("multiple", Qt::CaseInsensitive) == 0) {
-                allowMultipleInstances = true;
-            }
-            else if (arg.compare("rescan", Qt::CaseInsensitive) == 0) {
-                command |= launchy::Rescan;
-            }
-            else if (arg.compare("exit", Qt::CaseInsensitive) == 0) {
-                command |= launchy::Exit;
-            }
-            else if (arg.compare("debug", Qt::CaseInsensitive) == 0) {
-                launchy::log::setDebugLogEnabled(true);
-                // [MEMPROF] output goes through qInfo(), which only lands in
-                // launchy.log under -debug, so turn on sampling at the same time.
-                launchy::memprof::setEnabled(true);
-            }
-            else if (arg.compare("profile", Qt::CaseInsensitive) == 0) {
-                if (++i < args.length()) {
-                    launchy::SettingsManager::instance().setProfileName(args[i]);
-                }
-            }
-        }
-    }
-
-    launchy::memprof::record("main:after-parse-args");
-
-    // After the argument loop on purpose: -debug is what opens the log file, so
-    // this warning would be lost if it ran any earlier. Still long before the
-    // first program can be launched.
-    dropHostEnvironment();
-
-    launchy::initLaunchyWidget(command);
+    launchy::initLaunchyWidget(option);
 
     int exitCode = qApp->exec();
     launchy::memprof::record("main:after-exec");
@@ -135,15 +129,15 @@ int main(int argc, char* argv[]) {
     qDebug() << "app exec exit code:" << exitCode;
 
     // Tear the process-wide objects down in dependency order, now that the event
-    // loop is gone: the widget first (it owns the catalog builder and the history
-    // store, and stops the builder thread on the way out), then the application
-    // object itself, and finally the settings everything above still reads.
+    // loop is gone. The five calls below are ordered like this on purpose, each
+    // one removes something the calls after it still read; the order is
+    // widget -> plugin seam -> platform -> settings -> application.
+    //
+    // The widget goes first: deleting a QWidget needs a live QApplication, and
+    // its destructor is what stops the catalog builder thread (it waits for a
+    // running scan). That thread calls platform() while it scans, so it has to
+    // be joined before the platform can be dropped.
     launchy::cleanupLaunchyWidget();
-    launchy::cleanupApplication();
-    launchy::g_settings.clear();
-
-    qInfo("main: cleanup finished");
-    launchy::memprof::record("main:after-cleanup");
 
     // Everything that can still reach the platform is gone by now except the
     // plugin seam, so unhook that first -- a request arriving from a straggling
@@ -152,11 +146,27 @@ int main(int argc, char* argv[]) {
     launchy::setRunProgramHandler(nullptr);
     launchy::cleanupPlatform();
 
-    if (exitCode == launchy::Restart) {
-        qInfo() << "app restarted" << args;
-        QString program = args[0];
-        args.pop_front();
-        QProcess::startDetached(program, args);
+    // The settings go only now: the teardown above dereferences g_settings
+    // without a null check (the option dialog, savePosition). A cleared
+    // g_settings is a null pointer, so anything still reading it would crash.
+    launchy::g_settings.clear();
+
+    // Last, because it invalidates qApp: no widget may be deleted and no code
+    // connected to the application object (PluginPy returns the GIL from
+    // aboutToQuit) may run after this returns.
+    launchy::cleanupApplication();
+
+    qInfo("main: cleanup finished");
+    launchy::memprof::record("main:after-cleanup");
+
+    if (exitCode == launchy::EXIT_CODE_RESTART) {
+        // The arguments this process was started with, still in the list they
+        // were parsed from -- no second read of the command line, and none from
+        // an application object that has already been deleted above.
+        qInfo() << "app restarted" << arguments;
+        QString program = arguments.front();
+        arguments.pop_front();
+        QProcess::startDetached(program, arguments);
     }
 
     launchy::log::stopLogging();

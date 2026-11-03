@@ -14,9 +14,9 @@ the Free Software Foundation; either version 2 of the License, or
 #include <QSharedPointer>
 #include <QTemporaryDir>
 
-#include "CatalogSlow.h"
-#include "PluginRegistry.h"
-#include "SettingsManager.h"
+#include "Core/CatalogSlow.h"
+#include "Core/PluginRegistry.h"
+#include "Core/SettingsManager.h"
 
 #include "PluginInterface/Runtime.h"
 #include "PluginInterface/PluginInterface.h"
@@ -196,7 +196,7 @@ QString TestPluginRegistry::loadProfile(const QString& name) {
     QDir().mkpath(base + "/config");
     QDir().mkpath(base + "/plugins");
 
-    QHash<QString, QList<QString> > roots;
+    QMap<QString, QList<QString>> roots;
     roots["config"] << base + "/config";
     roots["plugins"] << base + "/plugins";
     SettingsManager::instance().load(roots, QList<Directory>());

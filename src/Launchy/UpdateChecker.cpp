@@ -31,8 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QUrl>
 #include <QDebug>
 
-#include "OptionItem.h"
-#include "VersionTag.h"
+#include "Core/OptionItem.h"
+#include "Core/VersionTag.h"
 #include "LaunchyWidget.h"
 #include "LaunchyVersion.h"
 

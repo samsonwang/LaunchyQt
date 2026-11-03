@@ -38,7 +38,7 @@
 
 #include "PluginInterface/Runtime.h"
 
-#include "OptionItem.h"
+#include "Core/OptionItem.h"
 #include "UtilWin.h"
 
 namespace launchy {

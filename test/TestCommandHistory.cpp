@@ -13,10 +13,10 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QTemporaryDir>
 #include <QSharedPointer>
 
-#include "CommandHistory.h"
-#include "CoreGlobals.h"
-#include "InputDataList.h"
-#include "OptionItem.h"
+#include "Core/CommandHistory.h"
+#include "Core/CoreGlobals.h"
+#include "Core/InputDataList.h"
+#include "Core/OptionItem.h"
 
 #include "PluginInterface/Runtime.h"
 

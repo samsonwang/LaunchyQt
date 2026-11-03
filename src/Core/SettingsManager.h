@@ -19,45 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QHash>
 #include <QList>
+#include <QMap>
 #include <QString>
 
 #include "Directory.h"
 
 namespace launchy {
-
-// Proxy settings as stored, without QtNetwork: the type is a plain int holding
-// a QNetworkProxy::ProxyType value. Naming the enumerator here would put a
-// Qt5Network reference into every consumer of the core library, the tests
-// included.
-struct ProxyConfig {
-    ProxyConfig()
-        : type(0), port(0), requirePassword(false) {
-    }
-
-    int type;
-    QString host;
-    quint16 port;
-    bool requirePassword;
-    QString user;
-    QString password;
-};
-
-// The ini values whose effect the core cannot apply: the widget style, the
-// language, the application proxy and whether debug logging is on. Core
-// decides what they are, the application applies them -- applying needs
-// QtWidgets, QtNetwork and the translation manager, none of which core links.
-struct RuntimeSettings {
-    RuntimeSettings()
-        : debugLog(false) {
-    }
-
-    bool debugLog;
-    QString appStyle;
-    QString language;
-    ProxyConfig proxy;
-};
 
 class SettingsManager {
 public:
@@ -68,11 +36,8 @@ public:
     // list. The caller supplies both, so the same code runs against the real
     // platform and against a temporary profile in the tests -- which is why
     // this file knows nothing about the platform library.
-    void load(const QHash<QString, QList<QString>>& roots,
+    void load(const QMap<QString, QList<QString>>& roots,
               const QList<Directory>& defaultCatalogDirectories);
-
-    // Values the application still has to apply after load()
-    const RuntimeSettings& runtime() const;
 
     bool isPortable() const;
 
@@ -113,8 +78,7 @@ private:
 private:
     bool m_portable;
     QString m_profileName;
-    QHash<QString, QList<QString>> m_roots;
+    QMap<QString, QList<QString>> m_roots;
     QList<Directory> m_defaultDirs;
-    RuntimeSettings m_runtime;
 };
 } // namespace launchy
