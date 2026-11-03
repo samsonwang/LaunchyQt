@@ -10,6 +10,7 @@ the Free Software Foundation; either version 2 of the License, or
 #include <QtTest>
 
 #include <QDir>
+#include <QMap>
 #include <QSettings>
 #include <QSharedPointer>
 #include <QTemporaryDir>
@@ -125,17 +126,12 @@ public:
         return info;
     }
 
-    void release(const QString& name) override {
-        released << name;
-    }
-
     // Directory name -> the name the plugin reports; missing means "not a
     // plugin at all"
-    QHash<QString, QString> names;
-    QHash<QString, void*> dialogs;
+    QMap<QString, QString> names;
+    QMap<QString, void*> dialogs;
 
     QStringList instantiated;
-    QStringList released;
     QList<FakePlugin*> owned;
 };
 
@@ -162,13 +158,17 @@ private slots:
     void loadsEnabledPlugins();
     void skipsDirectoriesThatHoldNoPlugin();
     void disabledPluginStaysInTheTable();
+    void enablingAPluginThatWasNeverBuiltLoadsIt();
     void dispatchSkipsDisabledPlugins();
+    void dispatchFollowsTheTableOrder();
     void getLabelsIgnoresEmptyInput();
     void launchItemRoutesToTheOwningPlugin();
     void launchItemOnDisabledPluginFallsBack();
     void getCatalogsCollectsItemsAndReportsProgress();
     void dialogHandleTravelsAsAnOpaqueValue();
     void reloadReplacesTheTable();
+    void reloadReusesTheInstance();
+    void disableThenEnableKeepsTheInstance();
 
 private:
     // A clean profile per case: the plugin array lives in the ini, so sharing
@@ -176,6 +176,8 @@ private:
     QString loadProfile(const QString& name);
     QString addPluginDirectory(const QString& base, const QString& name);
     void disable(const QStringList& names);
+    void enable(const QStringList& names);
+    void setLoadState(const QMap<QString, bool>& states);
 
 private:
     QTemporaryDir m_dir;
@@ -210,16 +212,52 @@ QString TestPluginRegistry::addPluginDirectory(const QString& base, const QStrin
     return path;
 }
 
-void TestPluginRegistry::disable(const QStringList& names) {
-    g_settings->beginWriteArray("Plugin");
+namespace {
+
+// The array the option dialog maintains, written straight into the profile
+void writeLoadArray(const QMap<QString, bool>& states) {
+    g_settings->beginWriteArray("Plugin", states.count());
     int index = 0;
-    for (const QString& name : names) {
-        g_settings->setArrayIndex(index++);
-        g_settings->setValue("name", name);
-        g_settings->setValue("load", false);
+    for (auto it = states.constBegin(); it != states.constEnd(); ++it, ++index) {
+        g_settings->setArrayIndex(index);
+        g_settings->setValue("name", it.key());
+        g_settings->setValue("load", it.value());
     }
     g_settings->endArray();
     g_settings->sync();
+}
+
+void writeLoadArray(const QStringList& names, bool load) {
+    QMap<QString, bool> states;
+    for (const QString& name : names) {
+        states[name] = load;
+    }
+    writeLoadArray(states);
+}
+
+// How many result queries the plugin called 'name' has seen. A plugin that was
+// never built is not in 'owned' at all, and that counts as zero too.
+int resultQueries(const QString& name, const FakeFactory& factory) {
+    for (const FakePlugin* plugin : factory.owned) {
+        if (plugin->m_name == name) {
+            return plugin->resultQueries;
+        }
+    }
+    return 0;
+}
+
+} // namespace
+
+void TestPluginRegistry::disable(const QStringList& names) {
+    writeLoadArray(names, false);
+}
+
+void TestPluginRegistry::enable(const QStringList& names) {
+    writeLoadArray(names, true);
+}
+
+void TestPluginRegistry::setLoadState(const QMap<QString, bool>& states) {
+    writeLoadArray(states);
 }
 
 void TestPluginRegistry::loadsEnabledPlugins() {
@@ -233,9 +271,8 @@ void TestPluginRegistry::loadsEnabledPlugins() {
 
     PluginRegistry::instance().loadPlugins(factory);
 
-    const QHash<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
+    const QMap<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
     QCOMPARE(plugins.count(), 2);
-    QVERIFY(factory.released.isEmpty());
 
     for (const QString& name : {QString("Alpha"), QString("Beta")}) {
         QVERIFY2(plugins.contains(name), qPrintable(name));
@@ -262,13 +299,12 @@ void TestPluginRegistry::skipsDirectoriesThatHoldNoPlugin() {
 
     PluginRegistry::instance().loadPlugins(factory);
 
-    const QHash<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
+    const QMap<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
     QCOMPARE(plugins.count(), 1);
     QVERIFY(plugins.contains("Alpha"));
     QVERIFY(!plugins.contains("Empty"));
     // The directory was never claimed by the factory, so there is nothing to
     // release either
-    QVERIFY(factory.released.isEmpty());
 }
 
 void TestPluginRegistry::disabledPluginStaysInTheTable() {
@@ -283,24 +319,51 @@ void TestPluginRegistry::disabledPluginStaysInTheTable() {
 
     PluginRegistry::instance().loadPlugins(factory);
 
-    const QHash<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
-    // It has to stay: the option dialog builds its list from this table, so a
-    // plugin dropped here could never be enabled again
+    // Nothing was built for it: the factory was not even asked about the
+    // directory. Mapping a DLL (or importing a module) for a plugin that never
+    // gets a message is the cost this check exists to avoid.
+    QVERIFY(!factory.instantiated.contains("Alpha"));
+    QCOMPARE(factory.owned.count(), 1);
+
+    const QMap<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
+    // It has to stay in the table: the option dialog builds its list from there,
+    // so a plugin dropped here could never be enabled again
     QCOMPARE(plugins.count(), 2);
     const PluginInfo disabled = plugins.value("Alpha");
     QVERIFY(!disabled.loaded);
-    QCOMPARE(disabled.name, QString("Alpha"));
     QVERIFY(disabled.obj == nullptr);
+    // A skipped plugin can still describe itself by where it lives -- its own
+    // MSG_GET_NAME answer only exists once it has been built
+    QCOMPARE(disabled.name, QString("Alpha"));
+    QCOMPARE(disabled.path, QDir::cleanPath(base + "/plugins/Alpha"));
     QVERIFY(plugins.value("Beta").loaded);
+}
 
-    // And the instance the factory made for it was handed back
-    QCOMPARE(factory.released, QStringList({"Alpha"}));
+void TestPluginRegistry::enablingAPluginThatWasNeverBuiltLoadsIt() {
+    const QString base = loadProfile("enable-later");
+    addPluginDirectory(base, "Alpha");
+    disable({"Alpha"});
 
-    for (const FakePlugin* plugin : factory.owned) {
-        if (plugin->m_name == "Alpha") {
-            QVERIFY(!plugin->sent.contains(MSG_INIT));
-        }
-    }
+    FakeFactory first;
+    first.names["Alpha"] = "Alpha";
+    PluginRegistry::instance().loadPlugins(first);
+    QVERIFY(first.owned.isEmpty());
+
+    // Ticking the checkbox has to build it now -- the entry it left behind is a
+    // placeholder, not a loaded plugin
+    enable({"Alpha"});
+    FakeFactory second;
+    second.names["Alpha"] = "Alpha";
+    PluginRegistry::instance().loadPlugins(second);
+
+    const PluginInfo info = PluginRegistry::instance().getPlugins().value("Alpha");
+    QVERIFY(info.loaded);
+    QVERIFY(info.obj != nullptr);
+    QCOMPARE(info.name, QString("Alpha"));
+    QCOMPARE(second.owned.count(), 1);
+    // Built once, and initialised on the way in
+    QCOMPARE(second.owned.first()->sent.count(MSG_INIT), 1);
+    QCOMPARE(second.owned.first()->sent.count(MSG_PATH), 1);
 }
 
 void TestPluginRegistry::dispatchSkipsDisabledPlugins() {
@@ -320,18 +383,60 @@ void TestPluginRegistry::dispatchSkipsDisabledPlugins() {
     QList<CatItem> results;
     PluginRegistry::instance().getResults(&input, &results);
 
-    // Exactly one plugin answered, and its item ended up in the list
+    // Exactly one plugin answered, and its item ended up in the list. Beta was
+    // never even built, so nothing there could have answered for it.
     QCOMPARE(results.count(), 1);
     QCOMPARE(results.first().shortName, QString("Alpha result"));
+    QCOMPARE(resultQueries("Alpha", factory), 1);
+    QCOMPARE(resultQueries("Beta", factory), 0);
 
-    for (const FakePlugin* plugin : factory.owned) {
-        if (plugin->m_name == "Alpha") {
-            QCOMPARE(plugin->resultQueries, 1);
-        }
-        else {
-            QCOMPARE(plugin->resultQueries, 0);
-        }
+    // And the same rule for a plugin switched off after it has been running:
+    // the instance stays (nothing is ever unloaded), the messages stop
+    setLoadState({{"Alpha", false}, {"Beta", true}});
+    PluginRegistry::instance().loadPlugins(factory);
+
+    results.clear();
+    PluginRegistry::instance().getResults(&input, &results);
+    QCOMPARE(results.count(), 1);
+    QCOMPARE(results.first().shortName, QString("Beta result"));
+    QCOMPARE(resultQueries("Alpha", factory), 1);
+    QCOMPARE(resultQueries("Beta", factory), 1);
+}
+
+void TestPluginRegistry::dispatchFollowsTheTableOrder() {
+    const QString base = loadProfile("order");
+    // Created out of alphabetical order on purpose: what the plugins answer in
+    // must come from the table, not from the order the directory listing
+    // happens to return
+    addPluginDirectory(base, "Charlie");
+    addPluginDirectory(base, "Alpha");
+    addPluginDirectory(base, "Beta");
+
+    FakeFactory factory;
+    factory.names["Alpha"] = "Alpha";
+    factory.names["Beta"] = "Beta";
+    factory.names["Charlie"] = "Charlie";
+
+    PluginRegistry::instance().loadPlugins(factory);
+
+    QStringList keys;
+    for (const PluginInfo& info : PluginRegistry::instance().getPlugins()) {
+        keys << info.name;
     }
+    QCOMPARE(keys, QStringList({"Alpha", "Beta", "Charlie"}));
+
+    // The table is a QMap, so every dispatch walks it in directory-name order:
+    // a run is reproducible, and two plugins cannot swap places from one start
+    // to the next (a QHash shuffled them per process)
+    QList<InputData> input;
+    input << InputData("query");
+    QList<CatItem> results;
+    PluginRegistry::instance().getResults(&input, &results);
+
+    QCOMPARE(results.count(), 3);
+    QCOMPARE(results.at(0).shortName, QString("Alpha result"));
+    QCOMPARE(results.at(1).shortName, QString("Beta result"));
+    QCOMPARE(results.at(2).shortName, QString("Charlie result"));
 }
 
 void TestPluginRegistry::getLabelsIgnoresEmptyInput() {
@@ -465,12 +570,68 @@ void TestPluginRegistry::reloadReplacesTheTable() {
 
     FakeFactory second;
     second.names["Beta"] = "Beta";
+
     PluginRegistry::instance().loadPlugins(second);
 
-    const QHash<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
+    const QMap<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
     QCOMPARE(plugins.count(), 1);
     QVERIFY(plugins.contains("Beta"));
     QVERIFY(!plugins.contains("Alpha"));
+}
+
+void TestPluginRegistry::reloadReusesTheInstance() {
+    const QString base = loadProfile("reuse");
+    addPluginDirectory(base, "Alpha");
+
+    FakeFactory first;
+    first.names["Alpha"] = "Alpha";
+    PluginRegistry::instance().loadPlugins(first);
+    QCOMPARE(first.owned.count(), 1);
+
+    // A second pass over the same directory -- one click on the checkbox in the
+    // option dialog -- must not build the plugin again: one ini entry means one
+    // instance, and a second load would leave a module (or a python object) that
+    // nothing in the table points at any more.
+    FakeFactory second;
+    second.names["Alpha"] = "Alpha";
+
+    PluginRegistry::instance().loadPlugins(second);
+
+    QVERIFY(second.instantiated.isEmpty());
+    QVERIFY(second.owned.isEmpty());
+    QCOMPARE(first.owned.count(), 1);
+
+    // Nor is it restarted: a reload keeps a plugin, it does not re-initialise
+    // one that was already running
+    QCOMPARE(first.owned.first()->sent.count(MSG_INIT), 1);
+    QVERIFY(PluginRegistry::instance().getPlugins().value("Alpha").loaded);
+}
+
+void TestPluginRegistry::disableThenEnableKeepsTheInstance() {
+    const QString base = loadProfile("toggle");
+    addPluginDirectory(base, "Alpha");
+
+    FakeFactory factory;
+    factory.names["Alpha"] = "Alpha";
+    PluginRegistry::instance().loadPlugins(factory);
+    QCOMPARE(factory.owned.count(), 1);
+    FakePlugin* const plugin = factory.owned.first();
+
+    disable({"Alpha"});
+    PluginRegistry::instance().loadPlugins(factory);
+    QVERIFY(!PluginRegistry::instance().getPlugins().value("Alpha").loaded);
+    QCOMPARE(plugin->sent.count(MSG_INIT), 1);
+
+    // Re-enabling hands back the very same instance, initialised again because
+    // it is on its way out of the disabled state
+    enable({"Alpha"});
+    PluginRegistry::instance().loadPlugins(factory);
+
+    const PluginInfo info = PluginRegistry::instance().getPlugins().value("Alpha");
+    QVERIFY(info.loaded);
+    QVERIFY(info.obj == plugin);
+    QCOMPARE(factory.instantiated.count("Alpha"), 1);
+    QCOMPARE(plugin->sent.count(MSG_INIT), 2);
 }
 
 QTEST_APPLESS_MAIN(TestPluginRegistry)

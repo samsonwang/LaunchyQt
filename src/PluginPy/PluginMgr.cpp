@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <pybind11/embed.h>
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 

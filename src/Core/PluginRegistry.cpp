@@ -39,8 +39,8 @@ namespace {
 // The array the option dialog maintains: directory name -> should this plugin
 // be loaded. A plugin with no entry at all is loadable, that is how a freshly
 // installed one starts enabled.
-QHash<QString, bool> readLoadableTable() {
-    QHash<QString, bool> table;
+QMap<QString, bool> readLoadableTable() {
+    QMap<QString, bool> table;
     if (g_settings.isNull()) {
         qWarning("PluginRegistry::loadPlugins, no settings, treating every plugin as enabled");
         return table;
@@ -76,37 +76,84 @@ void PluginRegistry::loadPlugins(IPluginFactory& factory) {
 
     m_loadable = readLoadableTable();
 
-    QHash<QString, PluginInfo> plugins;
+    QMap<QString, PluginInfo> plugins;
     const QList<QString> roots = SettingsManager::instance().directory("plugins");
     for (const QString& root : roots) {
         const QDir pluginsDir(root);
         const QStringList names = pluginsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         for (const QString& name : names) {
             const QString path = QDir::cleanPath(root + "/" + name);
+
+            // A plugin is built once and then lives as long as the process, so
+            // a reload -- one per click on a checkbox -- takes the entry it
+            // already has instead of instantiating that directory again. The
+            // path has to match as well: the same directory name under a
+            // different root is a different plugin.
+            const PluginInfo existing = m_plugins.value(name);
+            if (existing.path == path && existing.obj != nullptr) {
+                install(name, existing, &plugins);
+                continue;
+            }
+
+            // Configured off and never built: it stays unbuilt. This is the
+            // whole point of checking the ini before instantiating -- building
+            // a plugin maps its DLL and, for the first python one, starts the
+            // interpreter, and none of that is worth paying for a plugin the
+            // registry will not dispatch to anyway.
+            //
+            // The entry still goes into the table, just without an object: the
+            // option dialog builds its list from there, so a plugin left out is
+            // one the user could never switch back on (and its "load=false"
+            // line would be dropped the next time the dialog rewrites the
+            // array). Name and path are all a skipped plugin can say about
+            // itself; its own MSG_GET_NAME answer only exists once it runs.
+            if (!isLoadable(name)) {
+                qDebug() << "PluginRegistry::loadPlugins, plugin configured not to load:" << name;
+                PluginInfo info;
+                info.name = name;
+                info.path = path;
+                plugins[name] = info;
+                continue;
+            }
+
             PluginInfo info = factory.instantiate(name, path);
             if (info.obj == nullptr) {
                 // Nothing this process can load. The factory already said what
                 // was wrong with the directory, so this stays silent.
                 continue;
             }
-            install(name, info, factory, &plugins);
+            install(name, info, &plugins);
         }
     }
 
+    // An entry whose directory has disappeared simply falls out here. Nothing
+    // is unloaded on the way: its code stays mapped until the process ends,
+    // exactly like every other plugin's.
     m_plugins = std::move(plugins);
 }
 
-void PluginRegistry::install(const QString& key, PluginInfo info, IPluginFactory& factory,
-                             QHash<QString, PluginInfo>* plugins) {
-    // A disabled plugin still has to be in the table: the option dialog builds
-    // its list from it, so a plugin left out here disappears from the list and
-    // can never be re-enabled, and its "load=false" entry is silently dropped
-    // the next time the dialog rewrites the array.
+void PluginRegistry::install(const QString& key, PluginInfo info,
+                             QMap<QString, PluginInfo>* plugins) {
+    // Reached only for an entry that already had an instance (the caller keeps
+    // loadPlugins() from building a plugin that is configured off), so this is
+    // the "switch off a plugin that is running" case.
+    //
+    // It keeps its instance. Disabling is a decision about dispatch, not a
+    // statement about the module on disk: dropping the code here is what used
+    // to leave a catalog build holding a vtable that had just been unmapped,
+    // and what made re-enabling build the plugin all over again.
     if (!isLoadable(key)) {
         qDebug() << "PluginRegistry::loadPlugins, plugin configured not to load:" << key;
-        factory.release(key);
-        info.obj = nullptr;
         info.loaded = false;
+        (*plugins)[key] = info;
+        return;
+    }
+
+    // Carried over from the previous table: it was initialised when it first
+    // loaded, and a reload keeps a plugin, it does not restart it (a plugin
+    // that gets MSG_INIT on every checkbox would re-read its directory and
+    // rebuild its timers each time).
+    if (info.loaded) {
         (*plugins)[key] = info;
         return;
     }
@@ -123,7 +170,7 @@ bool PluginRegistry::isLoadable(const QString& name) const {
     return !m_loadable.contains(name) || m_loadable[name];
 }
 
-QHash<QString, PluginInfo> PluginRegistry::getPlugins() const {
+QMap<QString, PluginInfo> PluginRegistry::getPlugins() const {
     QMutexLocker locker(&m_mutex);
     // Copy: the table may be rebuilt right after the lock is dropped, the
     // caller keeps working on this snapshot
@@ -142,7 +189,7 @@ bool PluginRegistry::isLoaded(const QString& name) const {
 }
 
 void PluginRegistry::showLaunchy() {
-    QHash<QString, PluginInfo> plugins = getPlugins();
+    QMap<QString, PluginInfo> plugins = getPlugins();
     for (PluginInfo info : plugins) {
         if (info.loaded) {
             info.sendMsg(MSG_LAUNCHY_SHOW);
@@ -151,7 +198,7 @@ void PluginRegistry::showLaunchy() {
 }
 
 void PluginRegistry::hideLaunchy() {
-    QHash<QString, PluginInfo> plugins = getPlugins();
+    QMap<QString, PluginInfo> plugins = getPlugins();
     for (PluginInfo info : plugins) {
         if (info.loaded) {
             info.sendMsg(MSG_LAUNCHY_HIDE);
@@ -164,7 +211,7 @@ void PluginRegistry::getLabels(QList<InputData>* inputData) {
         return;
     }
 
-    QHash<QString, PluginInfo> plugins = getPlugins();
+    QMap<QString, PluginInfo> plugins = getPlugins();
     for (PluginInfo info : plugins) {
         if (info.loaded) {
             info.sendMsg(MSG_GET_LABELS, (void*)inputData);
@@ -177,7 +224,7 @@ void PluginRegistry::getResults(QList<InputData>* inputData, QList<CatItem>* res
         return;
     }
 
-    QHash<QString, PluginInfo> plugins = getPlugins();
+    QMap<QString, PluginInfo> plugins = getPlugins();
     for (PluginInfo info : plugins) {
         if (info.loaded) {
             info.sendMsg(MSG_GET_RESULTS, (void*)inputData, (void*)results);
@@ -189,7 +236,7 @@ void PluginRegistry::getCatalogs(Catalog* pCatalog, INotifyProgressStep* progres
     // Called on the catalog builder worker thread, so take a snapshot and let
     // the plugin callbacks run without the lock: the GUI thread must stay free
     // to reload the plugin list while the catalog is being built
-    QHash<QString, PluginInfo> plugins = getPlugins();
+    QMap<QString, PluginInfo> plugins = getPlugins();
     int index = 0;
 
     for (PluginInfo info : plugins) {

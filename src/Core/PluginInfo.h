@@ -30,8 +30,14 @@ namespace launchy {
 class PluginInterface;
 
 // A plain value type on purpose: the registry copies it in and out of the
-// table, and the option dialog reads a copy of that table. No virtual methods,
-// no ownership -- the PluginInterface* belongs to the factory that made it.
+// table, and the option dialog reads a copy of that table. Nothing is owned
+// here, and nothing has to be: a plugin is loaded once and never unloaded, so
+// the code behind 'obj' stays mapped for the rest of the process and the loader
+// that mapped it was a stack object inside the factory (see PluginFactory).
+//
+// 'obj' is null for a plugin that is configured off and has therefore never
+// been built. Such an entry exists only so the option dialog can list it: name
+// and path are filled in, everything else is what it will have once it runs.
 struct PluginInfo {
     QString name;
     QString path;

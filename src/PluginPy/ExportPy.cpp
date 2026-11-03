@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <pybind11/eval.h>
 
 #include <QDebug>
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDir>
 
 #include "PluginInterface/PluginInterface.h"

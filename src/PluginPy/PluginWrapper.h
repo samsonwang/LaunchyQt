@@ -3,11 +3,16 @@
 
 #include <QString>
 #include <QList>
-#include <QWidget>
 
 #include "PluginInterface/InputData.h"
 #include "PluginInterface/CatalogItem.h"
 #include "PluginInterface/PluginInterface.h"
+
+// Forward declared on purpose: this library only ever handles a dialog parent as
+// an opaque pointer it passes along, so it needs no QWidget definition -- and
+// with none, the target compiles with Qt Core include paths only (see the
+// target_link_libraries comment in src/CMakeLists.txt).
+class QWidget;
 
 namespace exportpy { class Plugin; }
 

@@ -12,7 +12,7 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QFile>
 #include <QString>
 
-#include "Logger.h"
+#include "Core/Logger.h"
 
 #include "PluginInterface/Runtime.h"
 

@@ -116,13 +116,16 @@ launchy_add_test (TestVersionTag)
 launchy_add_test (TestInputData)
 launchy_add_test (TestPluginInfo)
 launchy_add_test (TestRuntime)
+launchy_add_test (TestLogger)
 launchy_add_test (TestUnicodeTable)
+launchy_add_test (TestCatalogBuilder)
 
 # Application units: no library holds them, so the test compiles the .cpp it
-# needs. FileSearch is the only search stage outside the catalogs; Logger and
-# MemProfiler are the two process-wide facilities every other file calls.
+# needs. FileSearch is the only search stage outside the catalogs; MemProfiler is
+# the process-wide facility every other file calls. Logger used to be listed here
+# too -- it moved to LaunchyCore (pure Qt Core), so TestLogger now links the real
+# module like every other test instead of compiling a copy.
 launchy_add_test (TestFileSearch ${SRC_DIR}/Launchy/FileSearch.cpp)
-launchy_add_test (TestLogger ${SRC_DIR}/Launchy/Logger.cpp)
 launchy_add_test (TestMemProfiler ${SRC_DIR}/Launchy/MemProfiler.cpp)
 
 ##################################################
@@ -150,14 +153,13 @@ set_tests_properties (TestPluginPy PROPERTIES SKIP_RETURN_CODE 77)
 # PluginMgr, PluginLoader and PluginWrapper::msg only exist with an interpreter
 # in the process, so this test links PluginPy and carries its own copy of the
 # runtime -- the same self-contained layout as the other tests: python36.dll,
-# python/launchy.pyd, python/launchy_util.py and the Qt DLLs the .pyd links
-# against land next to the test executable.
+# python/launchy.pyd and python/launchy_util.py land next to the test executable.
+# No Qt5Gui.dll / Qt5Widgets.dll: PluginPy is Qt Core only (see
+# src/CMakeLists.txt), and launchy_add_test already copies Qt5Core.dll.
 launchy_add_test (TestPluginPyLoader)
 target_link_libraries (TestPluginPyLoader PRIVATE PluginPy)
 target_include_directories (TestPluginPyLoader PRIVATE ${SRC_DIR}/PluginPy)
 
-get_filename_component (_qt_libexec "${Qt5Test_DIR}/../../.." ABSOLUTE)
-set (_qt_test_bin "${_qt_libexec}/bin")
 if (NOT EXISTS "${Python_ROOT_DIR}/python36.dll")
     message (FATAL_ERROR "python36.dll not found in ${Python_ROOT_DIR}; pass "
         "-DPython_ROOT_DIR=<3.6.8 install> (see the Python section of "
@@ -174,13 +176,10 @@ add_custom_command (TARGET TestPluginPyLoader POST_BUILD
         "$<TARGET_FILE:PluginPy>" "$<TARGET_FILE_DIR:TestPluginPyLoader>/python/launchy.pyd"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SRC_DIR}/PluginPy/launchy_util.py" "$<TARGET_FILE_DIR:TestPluginPyLoader>/python"
-    # PluginPy.dll itself, the Qt DLLs it imports and the interpreter
+    # PluginPy.dll itself and the interpreter it embeds. Its only Qt import is
+    # Qt5Core.dll, which the helper above already copies.
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:PluginPy>" "$<TARGET_FILE_DIR:TestPluginPyLoader>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${_qt_test_bin}/Qt5Gui$<$<CONFIG:Debug>:d>.dll" "$<TARGET_FILE_DIR:TestPluginPyLoader>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${_qt_test_bin}/Qt5Widgets$<$<CONFIG:Debug>:d>.dll" "$<TARGET_FILE_DIR:TestPluginPyLoader>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${Python_ROOT_DIR}/python36.dll" "$<TARGET_FILE_DIR:TestPluginPyLoader>"
-    COMMENT "copy PluginPy + python36.dll + Qt GUI DLLs next to the test")
+    COMMENT "copy PluginPy + python36.dll next to the test")

@@ -30,26 +30,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QDropEvent>
 #include <QScreen>
 #include <QUrl>
+#include <QMap>
+#include <QSet>
 #include <QDesktopServices>
 
 #include "PluginInterface/Runtime.h"
 
-#include "ui_OptionDialog.h"
+#include "Core/Logger.h"
+#include "Core/Catalog.h"
+#include "Core/CatalogBuilder.h"
+#include "Core/OptionItem.h"
+#include "Core/PluginRegistry.h"
+#include "Core/SettingsManager.h"
+
+#include "Platform/Platform.h"
 
 #include "LaunchyApp.h"
-#include "Platform/Platform.h"
 #include "LaunchyWidget.h"
-#include "PluginHandler.h"
+#include "PluginFactory.h"
 #include "DropListWidget.h"
 #include "FileBrowserDelegate.h"
-#include "Core/SettingsManager.h"
-#include "Logger.h"
-#include "Core/Catalog.h"
-#include "CatalogBuilder.h"
-#include "Core/OptionItem.h"
 #include "UpdateChecker.h"
 #include "TranslationManager.h"
 #include "LaunchyVersion.h"
+
+#include "ui_OptionDialog.h"
 
 // for QNetworkProxy::ProxyType in QVariant
 Q_DECLARE_METATYPE(QNetworkProxy::ProxyType)
@@ -59,6 +64,17 @@ namespace launchy {
 // for qt flags
 // https://stackoverflow.com/questions/10755058/qflags-enum-type-conversion-fails-all-of-a-sudden
 using ::operator|;
+
+namespace {
+
+// The registry hands the dialog back as an opaque handle, because core is not
+// allowed to name QWidget. The cast back therefore lives on this side, next to
+// the only place that puts the result into a layout.
+QWidget* pluginDialog(QWidget* parent, const QString& name) {
+    return static_cast<QWidget*>(PluginRegistry::instance().doDialog(parent, name));
+}
+
+} // namespace
 
 QByteArray OptionDialog::s_lastWindowGeometry;
 int OptionDialog::s_lastTab = 0;
@@ -179,7 +195,7 @@ void OptionDialog::accept() {
 void OptionDialog::reject() {
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), false);
+        PluginRegistry::instance().endDialog(item->data(Qt::UserRole).toString(), false);
     }
 
     QDialog::reject();
@@ -317,7 +333,7 @@ void OptionDialog::pluginChanged(int row) {
     // Close any current plugin dialogs
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
+        PluginRegistry::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 
     // Open the new plugin dialog
@@ -336,7 +352,7 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     // close current plugin dialogs
     if (s_lastPlugin == row && item->checkState() != Qt::Checked) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
+        PluginRegistry::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 
     // write out the new config. Pass the count explicitly: beginWriteArray()
@@ -356,8 +372,10 @@ void OptionDialog::pluginItemChanged(QListWidgetItem* item) {
     }
     g_settings->endArray();
 
-    // Reload the plugins
-    PluginHandler::instance().loadPlugins();
+    // Reload the plugins. A fresh factory per pass is enough: what it creates
+    // stays alive because its loaders are never unloaded, see PluginFactory.
+    PluginFactory factory;
+    PluginRegistry::instance().loadPlugins(factory);
 
     if (row != m_pUi->plugList->currentRow()) {
         m_pUi->plugList->setCurrentRow(row);
@@ -386,7 +404,7 @@ void OptionDialog::loadPluginDialog(QListWidgetItem* item) {
     qDebug() << "OptionDialog::loadPluginDialog, layout:" << pLayout;
 
     QString pluginName = item->data(Qt::UserRole).toString();
-    QWidget* win = PluginHandler::instance().doDialog(m_pUi->plugBox, pluginName);
+    QWidget* win = pluginDialog(m_pUi->plugBox, pluginName);
     if (win != nullptr) {
         if (pLayout != nullptr) {
             pLayout->addWidget(win);
@@ -827,7 +845,9 @@ void OptionDialog::initSkinWidget() {
     QString skinName = g_settings->value(OPTION_SKIN, OPTION_SKIN_DEFAULT).toString();
 
     int skinRow = 0;
-    QHash<QString, bool> knownSkins;
+    // Skin directory names already listed, so the same skin installed under two
+    // skin roots shows up once
+    QSet<QString> knownSkins;
     foreach(QString szDir, SettingsManager::instance().directory("skins")) {
         QDir dir(szDir);
         QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
@@ -835,7 +855,7 @@ void OptionDialog::initSkinWidget() {
         foreach(QString d, dirs) {
             if (knownSkins.contains(d))
                 continue;
-            knownSkins[d] = true;
+            knownSkins.insert(d);
 
             QFile f(dir.absolutePath() + "/" + d + "/style.qss");
             // Only look for 2.0+ skins
@@ -940,9 +960,9 @@ void OptionDialog::saveCatalogSettings() {
 }
 
 void OptionDialog::initPluginsWidget() {
-    // Load up the plugins
-    // PluginHandler::instance().loadPlugins();
-    const QHash<QString, PluginInfo> plugins = PluginHandler::instance().getPlugins();
+    // The table is filled at startup and after every toggle; this page only
+    // reads it
+    const QMap<QString, PluginInfo> plugins = PluginRegistry::instance().getPlugins();
     foreach(const PluginInfo& info, plugins) {
         QListWidgetItem* item = new QListWidgetItem(info.name, m_pUi->plugList);
         item->setSizeHint(QSize(100, 24));
@@ -970,7 +990,7 @@ void OptionDialog::initPluginsWidget() {
 void OptionDialog::savePluginsSettings() {
     if (s_lastPlugin >= 0) {
         QListWidgetItem* item = m_pUi->plugList->item(s_lastPlugin);
-        PluginHandler::instance().endDialog(item->data(Qt::UserRole).toString(), true);
+        PluginRegistry::instance().endDialog(item->data(Qt::UserRole).toString(), true);
     }
 }
 

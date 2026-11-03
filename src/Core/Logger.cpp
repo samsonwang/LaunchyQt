@@ -9,8 +9,20 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include <PluginInterface/Runtime.h>
+#include "PluginInterface/Runtime.h"
 
+// Pure Qt Core (QString/QDateTime/QMutex plus qInstallMessageHandler) and no
+// QApplication, which is what lets this live in the core library: the unit test
+// links the real module instead of compiling a private copy of it.
+//
+// The state below is file-static, and LaunchyCore is STATIC -- one set of these
+// per linked binary. The executable is the only owner (nothing else in this tree
+// opens the log), and the test binaries hold their own copy on purpose. Do not
+// link core into a plugin DLL while this matters: qInstallMessageHandler is
+// process-wide, so the last installer would win over a second, unused FILE*.
+//
+// The directory comes from launchy::getAppTempPath() in PluginInterface, the
+// layer below -- core links it PUBLIC, so this direction is the allowed one.
 namespace launchy {
 namespace log {
 

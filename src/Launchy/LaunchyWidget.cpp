@@ -48,26 +48,29 @@
 #include "PluginInterface/Runtime.h"
 
 #include "Core/CoreGlobals.h"
+#include "Core/OptionItem.h"
+#include "Core/SettingsManager.h"
+#include "Core/Logger.h"
+#include "Core/Catalog.h"
+#include "Core/CatalogBuilder.h"
+#include "Core/CatalogFast.h"
+#include "Core/CatalogRanking.h"
+#include "Core/CatalogSlow.h"
+#include "Core/PluginRegistry.h"
+
+#include "Platform/Platform.h"
+
 #include "IconDelegate.h"
 #include "OptionDialog.h"
-#include "Core/OptionItem.h"
 #include "FileSearch.h"
-#include "Core/SettingsManager.h"
-#include "Logger.h"
 #include "TranslationManager.h"
 #include "LaunchyApp.h"
-#include "Platform/Platform.h"
 #include "Fader.h"
 #include "IconDelegate.h"
 #include "AnimationLabel.h"
 #include "CharListWidget.h"
 #include "CharLineEdit.h"
-#include "Core/Catalog.h"
-#include "CatalogBuilder.h"
-#include "Core/CatalogFast.h"
-#include "Core/CatalogRanking.h"
-#include "Core/CatalogSlow.h"
-#include "PluginHandler.h"
+#include "PluginFactory.h"
 #include "UpdateChecker.h"
 #include "LaunchyVersion.h"
 #include "MemProfiler.h"
@@ -398,8 +401,10 @@ LaunchyWidget::LaunchyWidget(const StartupOption& option)
     // start update checker
     UpdateChecker::instance().startup();
 
-    // Load the plugins
-    PluginHandler::instance().loadPlugins();
+    // Load the plugins. The factory is a stack object for this pass only: the
+    // loaders it keeps are never unloaded, so nothing has to outlive it.
+    PluginFactory factory;
+    PluginRegistry::instance().loadPlugins(factory);
     launchy::memprof::record("widget:after-loadPlugins");
 
     executeStartupCommand(startup);
@@ -613,7 +618,7 @@ void LaunchyWidget::launchItem() {
     int ops = MSG_CONTROL_LAUNCHITEM;
 
     if (item.pluginName != NAME_LAUNCHY && item.pluginName != NAME_LAUNCHYFILE) {
-        ops = PluginHandler::instance().launchItem(&m_inputData, &item);
+        ops = PluginRegistry::instance().launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
             exit();
@@ -1156,9 +1161,9 @@ void LaunchyWidget::searchOnInput() {
 
         // Give plugins a chance to add their own dynamic matches
         // why getLabels first then getResults, why not getResult straightforward
-        PluginHandler& pluginHandler = PluginHandler::instance();
-        pluginHandler.getLabels(&m_inputData);
-        pluginHandler.getResults(&m_inputData, &m_searchResult);
+        PluginRegistry& pluginRegistry = PluginRegistry::instance();
+        pluginRegistry.getLabels(&m_inputData);
+        pluginRegistry.getResults(&m_inputData, &m_searchResult);
 
         // Promotion needs exactly one fact from the store this widget owns:
         // which item this exact query picked last time. Hand it over as a
@@ -1840,8 +1845,17 @@ void LaunchyWidget::buildCatalog() {
     m_rebuildTimer->stop();
 
     // Ask the worker thread to rebuild the catalog; requests received
-    // while a rebuild is running are ignored by the builder
-    m_catalogBuilder.requestBuild(m_catalog);
+    // while a rebuild is running are ignored by the builder. The platform
+    // hooks are adapted here, at the only place in the application that
+    // knows the platform seam, so core never has to include Platform.h.
+    CatalogBuilderContext ctx;
+    ctx.expandEnvironmentVars = [](const QString& s) {
+        return launchy::platform().expandEnvironmentVars(s);
+    };
+    ctx.alterItem = [](CatItem* item) {
+        launchy::platform().alterItem(item);
+    };
+    m_catalogBuilder.requestBuild(m_catalog, ctx);
 
     startRebuildTimer();
 }
@@ -1924,7 +1938,7 @@ void LaunchyWidget::showLaunchy(bool noFade) {
     m_inputBox->setFocus();
 
     // Let the plugins know
-    PluginHandler::instance().showLaunchy();
+    PluginRegistry::instance().showLaunchy();
 }
 
 void LaunchyWidget::hideLaunchy(bool noFade) {
@@ -1949,7 +1963,7 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
     }
 
     // let the plugins know
-    PluginHandler::instance().hideLaunchy();
+    PluginRegistry::instance().hideLaunchy();
 }
 
 int LaunchyWidget::getHotkey() const {

@@ -19,15 +19,41 @@
 
 #pragma once
 
+#include <functional>
+
 #include <QObject>
 #include <QAtomicInt>
 #include <QElapsedTimer>
-#include "Core/PluginRegistry.h"
+
+#include "PluginRegistry.h"
+
 class QThread;
 
 namespace launchy {
 
 class Catalog;
+class CatItem;
+
+// The platform answers the builder needs while scanning, injected per rebuild
+// so that core never includes a platform header. Each entry is an optional
+// hook: an empty std::function means "this platform has nothing to offer", and
+// the scan simply skips the step. The application adapts these from
+// PlatformBase (see LaunchyWidget); a test supplies lambdas or nothing at all.
+//
+// std::function rather than an interface: the two hooks have no shared state,
+// no lifetime, and no default behaviour to inherit, so a pair of callables
+// says the same thing without pulling PlatformBase into the core include
+// graph. Keeping them in one struct means a single argument threads through
+// requestBuild -> buildCatalog -> indexDirectory.
+struct CatalogBuilderContext {
+    // Expand %VAR% / $VAR references in a configured directory path. Empty ->
+    // the path is used verbatim.
+    std::function<QString(const QString&)> expandEnvironmentVars;
+
+    // Let the platform rewrite an item as it is indexed (e.g. .desktop files).
+    // Empty -> the item is added unchanged.
+    std::function<void(CatItem*)> alterItem;
+};
 
 // Not a singleton: LaunchyWidget owns exactly one by value (m_catalogBuilder).
 // The builder does not own the catalog either -- LaunchyWidget owns that and
@@ -55,19 +81,30 @@ public:
 
     // Thread-safe. Request a rebuild of `catalog`, owned by the caller and
     // required to outlive this builder; requests that arrive while a rebuild is
-    // queued or running are ignored.
-    void requestBuild(Catalog* catalog);
+    // queued or running are ignored. `ctx` carries the platform hooks for this
+    // scan; it is copied into the queued call, so it must stay copyable (the
+    // std::functions are) and must not reference state with a shorter lifetime
+    // than the scan.
+    void requestBuild(Catalog* catalog, const CatalogBuilderContext& ctx);
 
 signals:
     void catalogIncrement(int);
     void catalogFinished();
 
-private:
-    void buildCatalog(Catalog* catalog);
-    void indexDirectory(Catalog* catalog, const QString& dir, const QStringList& filters,
+protected:
+    // The recursive walk. protected (not private) so a test probe can drive it
+    // directly with a synthetic directory tree and a CatalogBuilderContext,
+    // which is the only way to exercise the traversal/dedup/alterItem rules
+    // headless (requestBuild needs an event loop on the worker thread).
+    void indexDirectory(Catalog* catalog, const CatalogBuilderContext& ctx,
+                        const QString& dir, const QStringList& filters,
                         bool fdirs, bool fbin, int depth);
+
+private:
+    void buildCatalog(Catalog* catalog, const CatalogBuilderContext& ctx);
     // Briefly yield the CPU so the scan does not starve other applications
     void throttle();
+
 private:
     QThread* m_thread;
 

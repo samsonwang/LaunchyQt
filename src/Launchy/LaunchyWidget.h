@@ -24,15 +24,15 @@
 #include <QLabel>
 #include <QUrl>
 
-#include "Core/CommandHistory.h"
-#include "Core/StartupOption.h"
 
 #include "PluginInterface/CatalogItem.h"
 #include "PluginInterface/InputData.h"
 
-#include "Platform/IconExtractor.h"
+#include "Core/CommandHistory.h"
+#include "Core/StartupOption.h"
+#include "Core/CatalogBuilder.h"
 
-#include "CatalogBuilder.h"
+#include "Platform/IconExtractor.h"
 
 class QPushButton;
 class QHotkey;

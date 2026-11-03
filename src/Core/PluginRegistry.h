@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QHash>
+#include <QMap>
 #include <QList>
 #include <QMutex>
 #include <QString>
@@ -54,14 +54,11 @@ public:
     //
     // Returns an entry whose obj is nullptr when the directory holds nothing
     // this factory can load -- it has logged why (unknown type, broken module,
-    // wrong module name, ...). The instance otherwise stays owned by the
-    // factory; the registry drops a rejected one through release().
+    // wrong module name, ...). A successful entry is just a pointer plus its
+    // metadata: what kept the code mapped is a loader the factory owned for the
+    // length of this call, and a plugin is never unloaded, so nothing else has
+    // to be handed over.
     virtual PluginInfo instantiate(const QString& name, const QString& path) = 0;
-
-    // Drop the instance created for the directory 'name', because the user
-    // disabled the plugin or because the registry refused it. What that means
-    // (unload the module, delete the python object) is the factory's business.
-    virtual void release(const QString& name) = 0;
 };
 
 // The plugin table and the message dispatch.
@@ -78,14 +75,26 @@ public:
 
 public:
     // Rebuild the table: scan the plugin directories reported by
-    // SettingsManager, ask 'factory' for each directory, apply the
-    // enabled/disabled choice from the ini and publish the result.
+    // SettingsManager, apply the enabled/disabled choice from the ini and
+    // publish the result, asking 'factory' only for the directories that are
+    // meant to run.
+    //
+    // A disabled plugin is never built -- no DLL mapped, no module imported, no
+    // python interpreter started -- but it does get an entry, so the option
+    // dialog can list it and switch it on. Nothing is unloaded, so a plugin
+    // whose directory has disappeared just drops out of the table.
+    //
+    // A directory that is already in the table is not instantiated again: one
+    // plugin is one module (or one python object) for the life of the process,
+    // however many times the option dialog rewrites a checkbox. That also means
+    // 'factory' can -- and should -- be a stack object built for this one call.
     void loadPlugins(IPluginFactory& factory);
 
     // A snapshot by value, never a reference: loadPlugins() may rebuild the
     // table from the GUI thread (the plugins page of the option dialog) while
-    // a worker thread walks the result, so the caller must own a copy.
-    QHash<QString, PluginInfo> getPlugins() const;
+    // a worker thread walks the result, so the caller must own a copy. Ordered
+    // by plugin directory name.
+    QMap<QString, PluginInfo> getPlugins() const;
 
     // One entry, default constructed when there is no such plugin. Handy for
     // the callers that route a single message (launchItem, endDialog, ...).
@@ -111,10 +120,12 @@ private:
     PluginRegistry();
     Q_DISABLE_COPY(PluginRegistry)
 
-    // Put one instantiated plugin into the table under 'key' (its directory
-    // name), running the enable/disable decision and the init sequence.
-    void install(const QString& key, PluginInfo info, IPluginFactory& factory,
-                 QHash<QString, PluginInfo>* plugins);
+    // Put one plugin into the table under 'key' (its directory name), running
+    // the enable/disable decision and the init sequence. 'info' is either fresh
+    // from the factory or carried over from the previous table -- an entry that
+    // arrives loaded has been initialised already and is not restarted here.
+    void install(const QString& key, PluginInfo info,
+                 QMap<QString, PluginInfo>* plugins);
 
     // No entry in the ini array means "load": only the plugins the option
     // dialog has written have one.
@@ -125,8 +136,18 @@ private:
     // callback (MSG_INIT while a reload is in progress) may turn around and
     // read the registry again on the same thread.
     mutable QMutex m_mutex{QMutex::Recursive};
-    QHash<QString, PluginInfo> m_plugins;
-    QHash<QString, bool> m_loadable;
+    // The published table. Nothing in here is owned: a plugin is loaded once and
+    // never unloaded, so its code stays mapped and the entry only holds a
+    // borrowed pointer (see PluginInfo).
+    //
+    // A QMap and not a QHash: iterating it walks the directory names in order,
+    // so every plugin sees the same messages in the same sequence from one run
+    // to the next (an order that shuffles per process is not reproducible when
+    // two plugins disagree about something).
+    QMap<QString, PluginInfo> m_plugins;
+    // Directory name -> load it, as the ini array says. Order does not matter
+    // here, it is only ever looked up.
+    QMap<QString, bool> m_loadable;
 };
 
 } // namespace launchy

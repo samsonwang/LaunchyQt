@@ -36,12 +36,8 @@ PluginFactory::PluginFactory() {
 }
 
 PluginFactory::~PluginFactory() {
-    // Nothing is unloaded here on purpose. The plugin objects this process
-    // created are still in the registry's table, and they are code living
-    // inside those modules; unloading a module out from under them would take
-    // their vtable with it. The loader objects are left to the OS, which is
-    // the same deal the pre-split code made by letting its stack loader die
-    // (and the python bridge makes at shutdown too).
+    // Nothing to release: every loader this class builds is a stack object that
+    // dies inside loadCpp()/loadPython(), and what it mapped stays mapped.
 }
 
 PluginInfo PluginFactory::instantiate(const QString& name, const QString& path) {
@@ -64,11 +60,16 @@ PluginInfo PluginFactory::instantiate(const QString& name, const QString& path) 
 
 PluginInfo PluginFactory::loadCpp(const QString& name, const QString& path) {
     const QString libPath = QDir::cleanPath(path + "/" + name);
-    QPluginLoader* loader = new QPluginLoader(libPath);
-    PluginInterface* plugin = qobject_cast<PluginInterface*>(loader->instance());
+
+    // The loader is a stack object: something has to map the module and hand
+    // back the instance, and once it has, nothing else is wanted from it. This
+    // process never unloads a plugin, so the loader has no reason to outlive
+    // this call (measured: the module stays mapped and the instance keeps
+    // answering after the loader is destroyed).
+    QPluginLoader loader(libPath);
+    PluginInterface* plugin = qobject_cast<PluginInterface*>(loader.instance());
     if (!plugin) {
         qWarning() << "PluginFactory::loadCpp," << libPath << "is not a valid plugin";
-        delete loader;
         return PluginInfo();
     }
     qDebug() << "PluginFactory::loadCpp, plugin loaded:" << libPath;
@@ -81,14 +82,21 @@ PluginInfo PluginFactory::loadCpp(const QString& name, const QString& path) {
     if (!info.sendMsg(MSG_GET_NAME, &info.name) || info.name.isEmpty()) {
         qWarning() << "PluginFactory::loadCpp, fail to get plugin name,"
             << " plugin path:" << libPath;
-        loader->unload();
-        delete loader;
+        // A module that is not a Launchy plugin does not deserve to stay mapped
+        loader.unload();
         return PluginInfo();
     }
 
+    // Make "this module is never unmapped" an explicit contract instead of an
+    // observed side effect: the plugin object is handed to a table that copies
+    // itself across threads, and a vtable that goes away with a loader object
+    // is a crash nobody would trace back to this line.
+    QLibrary::LoadHints hints = loader.loadHints();
+    hints |= QLibrary::PreventUnloadHint;
+    loader.setLoadHints(hints);
+
     // Deliberately no check that the reported name equals the directory name:
     // C++ plugins have never been held to that and some do not match.
-    m_cpp.insert(name, loader);
     return info;
 }
 
@@ -101,12 +109,14 @@ PluginInfo PluginFactory::loadPython(const QString& name, const QString& path) {
     // has no python plugin installed.
     pluginpy::initSettings(g_settings.data());
 
-    pluginpy::PluginLoader* loader = new pluginpy::PluginLoader(name, path);
-    PluginInterface* plugin = loader->instance();
+    // Also a stack object. It only addresses the plugin, it does not own it:
+    // PluginMgr keeps the python object and the wrapper it hands out, so this
+    // loader can die as soon as it has said where the plugin lives.
+    pluginpy::PluginLoader loader(name, path);
+    PluginInterface* plugin = loader.instance();
     if (!plugin) {
         qWarning() << "PluginFactory::loadPython," << pluginFullPath
             << "is not a Launchy plugin";
-        delete loader;
         return PluginInfo();
     }
     qDebug() << "PluginFactory::loadPython, plugin loaded:" << pluginFullPath;
@@ -119,8 +129,7 @@ PluginInfo PluginFactory::loadPython(const QString& name, const QString& path) {
     if (!info.sendMsg(MSG_GET_NAME, &info.name)) {
         qWarning() << "PluginFactory::loadPython, fail to get plugin name,"
             << " plugin path:" << pluginFullPath;
-        loader->unload();
-        delete loader;
+        loader.unload();
         return PluginInfo();
     }
 
@@ -130,24 +139,10 @@ PluginInfo PluginFactory::loadPython(const QString& name, const QString& path) {
     if (info.name != name) {
         qWarning() << "PluginFactory::loadPython, plugin name not match:"
             << name << ", " << info.name;
-        loader->unload();
-        delete loader;
+        loader.unload();
         return PluginInfo();
     }
-
-    m_python.insert(name, loader);
     return info;
-}
-
-void PluginFactory::release(const QString& name) {
-    if (QPluginLoader* loader = m_cpp.take(name)) {
-        loader->unload();
-        delete loader;
-    }
-    if (pluginpy::PluginLoader* loader = m_python.take(name)) {
-        loader->unload();
-        delete loader;
-    }
 }
 
 } // namespace launchy

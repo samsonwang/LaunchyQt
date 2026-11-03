@@ -31,7 +31,7 @@ PluginInfo::PluginInfo()
 }
 
 PluginInfo::~PluginInfo() {
-
+    // An entry owns no code, so there is nothing to release here.
 }
 
 bool PluginInfo::isValid() const {

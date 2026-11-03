@@ -20,14 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QProcess>
 #include <QObject>
 
+#include "PluginInterface/Runtime.h"
+
 #include "Core/StartupOption.h"
 #include "Core/SettingsManager.h"
+#include "Core/Logger.h"
 
 #include "Platform/Platform.h"
 
-#include "PluginInterface/Runtime.h"
-
-#include "Logger.h"
 #include "MemProfiler.h"
 #include "LaunchyApp.h"
 #include "LaunchyWidget.h"

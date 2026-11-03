@@ -77,10 +77,12 @@ void Verby::getLabels(QList<launchy::InputData>* inputData) {
     //
     // Ask the matched item, never the query. A label on the first segment is
     // only valid for the pass that set it (parse() drops every label on the
-    // next keystroke), and the plugin callbacks of one pass are iterated in
-    // QHash order, so "did some plugin claim this segment before me" is not
-    // even stable across runs. The item's owner is stable for as long as the
-    // item stays matched, and it is exactly what launchItem() routes on.
+    // next keystroke), and the order the plugins of one pass are called in is
+    // no contract either: the registry walks its table in directory-name order
+    // today, and installing or renaming a plugin quietly rearranges that. So
+    // "did some plugin claim this segment before me" is nothing to build on.
+    // The item's owner is stable for as long as the item stays matched, and it
+    // is exactly what launchItem() routes on.
     //
     // Verby counts as an owner because getResults rewrites the item's plugin
     // name for the launch routing, and the first segment's top result is never

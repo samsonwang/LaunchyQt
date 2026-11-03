@@ -215,8 +215,6 @@ endif ()
 set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/AnimationLabel.h
   ${SRC_DIR}/Launchy/AnimationLabel.cpp
-  ${SRC_DIR}/Launchy/CatalogBuilder.h
-  ${SRC_DIR}/Launchy/CatalogBuilder.cpp
   ${SRC_DIR}/Launchy/CharLineEdit.h
   ${SRC_DIR}/Launchy/CharLineEdit.cpp
   ${SRC_DIR}/Launchy/CharListWidget.h
@@ -238,8 +236,6 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/LaunchyVersion.h
   ${SRC_DIR}/Launchy/LaunchyWidget.h
   ${SRC_DIR}/Launchy/LaunchyWidget.cpp
-  ${SRC_DIR}/Launchy/Logger.h
-  ${SRC_DIR}/Launchy/Logger.cpp
   ${SRC_DIR}/Launchy/MemProfiler.h
   ${SRC_DIR}/Launchy/MemProfiler.cpp
   ${SRC_DIR}/Launchy/main.cpp
@@ -247,8 +243,6 @@ set (SOURCES_LAUNCHY
   ${SRC_DIR}/Launchy/OptionDialog.cpp
   ${SRC_DIR}/Launchy/PluginFactory.h
   ${SRC_DIR}/Launchy/PluginFactory.cpp
-  ${SRC_DIR}/Launchy/PluginHandler.h
-  ${SRC_DIR}/Launchy/PluginHandler.cpp
   ${SRC_DIR}/Launchy/TranslationManager.h
   ${SRC_DIR}/Launchy/TranslationManager.cpp
   ${SRC_DIR}/Launchy/UpdateChecker.h
@@ -392,8 +386,18 @@ target_sources (PluginInterface
   ${SRC_DIR}/PluginInterface/UnicodeTable.h
   ${SRC_DIR}/PluginInterface/UnicodeTable.cpp)
 
+# Qt Core ONLY. This library is the plugin ABI: it ships next to every plugin,
+# to python/launchy.pyd and to the headless unit tests, so whatever it imports
+# has to be present in all of those directories -- and the test tree only copies
+# Qt5Core.dll and Qt5Test.dll. Widgets used to be linked here "just in case"; no
+# header or source of this library names a widget type (the only mentions are
+# inside PluginMsg.h's doc comments), so it produced no import entry and only
+# advertised a dependency that did not exist. Do not add it back: the day a real
+# widget symbol is used, PluginInterface.dll starts importing Qt5Widgets.dll and
+# every test binary fails at startup with 0xc0000135. Needing a QWidget* in the
+# ABI is fine -- forward declare it or pass void*, as msg() already does.
 target_link_libraries (PluginInterface
-  PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets)
+  PRIVATE Qt${QT_MAJOR_VERSION}::Core)
 
 ##################################################
 # LaunchyCore
@@ -421,6 +425,8 @@ target_sources (LaunchyCore
   PRIVATE
   ${SRC_DIR}/Core/Catalog.h
   ${SRC_DIR}/Core/Catalog.cpp
+  ${SRC_DIR}/Core/CatalogBuilder.h
+  ${SRC_DIR}/Core/CatalogBuilder.cpp
   ${SRC_DIR}/Core/CatalogFast.h
   ${SRC_DIR}/Core/CatalogFast.cpp
   ${SRC_DIR}/Core/CatalogSlow.h
@@ -435,6 +441,8 @@ target_sources (LaunchyCore
   ${SRC_DIR}/Core/Directory.cpp
   ${SRC_DIR}/Core/InputDataList.h
   ${SRC_DIR}/Core/InputDataList.cpp
+  ${SRC_DIR}/Core/Logger.h
+  ${SRC_DIR}/Core/Logger.cpp
   ${SRC_DIR}/Core/OptionItem.h
   ${SRC_DIR}/Core/OptionItem.cpp
   ${SRC_DIR}/Core/PluginInfo.h
@@ -549,9 +557,18 @@ target_sources (PluginPy
 target_include_directories (PluginPy
   PRIVATE ${Python_INCLUDE_DIRS})
 
+# Qt Core only, for the same reason as PluginInterface: this is the python face
+# of the plugin ABI, deployed as python/launchy.pyd, and whatever it imports has
+# to exist wherever it is loaded. It does handle a dialog parent, but only as an
+# opaque pointer handed straight back to the plugin (PluginWrapper.h forward
+# declares QWidget), and it reaches the application object through
+# qApp->applicationDirPath() / QCoreApplication::aboutToQuit -- both Qt Core, so
+# the Widgets link produced no import entry at all. Keep it that way: including a
+# QtWidgets header here would make PluginPy.dll (and tests that load it) fail to
+# start whenever Qt5Widgets.dll is not next to them.
 target_link_libraries (PluginPy
   PUBLIC PluginInterface
-  PRIVATE Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Widgets
+  PRIVATE Qt${QT_MAJOR_VERSION}::Core
   PRIVATE ${Python_LIBRARIES})
 
 # Copy the built plugin and its python helper into the target's python/ dir on
@@ -573,7 +590,7 @@ add_custom_target (PluginPy.Deploy ALL
 ##################################################
 # python plugins
 #
-# PluginHandler::loadPlugins() scans the plugins/ directory and treats
+# PluginRegistry::loadPlugins() scans the plugins/ directory and treats
 # plugins/<Name>/ as a plugin whenever <Name>.py exists inside it. The native
 # plugins reach that folder through their LIBRARY_OUTPUT_DIRECTORY_RELEASE,
 # but a python plugin has nothing to link, so its whole source folder used to
@@ -595,7 +612,7 @@ add_custom_target (PluginPy.Deploy ALL
 file (GLOB PY_PLUGIN_DIRS CONFIGURE_DEPENDS ${SRC_DIR}/Plugins/*)
 
 # A folder counts as a python plugin when it owns a <FolderName>.py, the rule
-# PluginHandler::loadPlugins() uses to scan the plugins/ directory. Collecting
+# PluginRegistry::loadPlugins() uses to scan the plugins/ directory. Collecting
 # them first also gives the total for the "[i/n]" progress prefix below.
 set (PYTHON_PLUGINS "")
 foreach (pyPluginDir ${PY_PLUGIN_DIRS})
@@ -787,7 +804,7 @@ target_link_libraries (Plugin.Runner
   PRIVATE Qt${QT_MAJOR_VERSION}::Widgets
   PRIVATE PluginInterface)
 
-# plugin/<Name>/ is the folder PluginHandler::loadPlugins() expects. One
+# plugin/<Name>/ is the folder PluginRegistry::loadPlugins() expects. One
 # generator expression instead of a _DEBUG/_RELEASE pair: $<CONFIG> expands to
 # the config being built, and this property accepts target level genexes.
 set_target_properties (Plugin.Runner PROPERTIES

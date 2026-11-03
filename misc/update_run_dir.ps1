@@ -182,7 +182,7 @@ function Get-ProjectArtifactList {
 
     # Plugins under plugins\<plugin name>\.
     # A folder is a python plugin when it owns a <folder name>.py (that is exactly the
-    # contract PluginHandler::loadPlugins() relies on); its whole tree is listed, because
+    # contract PluginRegistry::loadPlugins() relies on); its whole tree is listed, because
     # a python plugin reads its assets at runtime (helper modules, icons, data.json,
     # packaged helper folders such as Calcy\ or WebSearch\), and the ones that bundle an
     # external helper need it next to them (virtual-keyboard.exe, libgcc/libstdc++).

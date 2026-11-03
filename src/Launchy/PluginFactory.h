@@ -19,16 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include <QHash>
 #include <QString>
 
 #include "Core/PluginRegistry.h"
-
-class QPluginLoader;
-
-namespace pluginpy {
-class PluginLoader;
-}
 
 namespace launchy {
 
@@ -40,10 +33,17 @@ namespace launchy {
 //   * a directory holding <name>.py is a python plugin, loaded through the
 //     PluginPy bridge
 //
-// Both mechanisms used to be two private methods of PluginHandler, which meant
-// the enable/disable policy was duplicated for them and neither could be tested
-// without a real DLL. They live here now, and nothing above this class mentions
-// .dll or .py.
+// Both mechanisms used to be two private methods of one loader class that also
+// owned the table and the policy, which meant the enable/disable rule was
+// duplicated for them and neither could be tested without a real DLL. They live
+// here now, behind the single seam the registry knows about, and nothing above
+// this class mentions .dll or .py.
+//
+// A factory is a short-lived stack object: build one for a single
+// PluginRegistry::loadPlugins() pass and let it die. It owns nothing and it
+// unloads nothing -- the loaders it builds are stack objects too, and a plugin
+// that has been mapped stays mapped for the rest of the process. A second pass
+// reuses the entries already in the table and asks this class for nothing.
 class PluginFactory : public IPluginFactory {
 public:
     PluginFactory();
@@ -51,18 +51,10 @@ public:
 
 public:
     PluginInfo instantiate(const QString& name, const QString& path) override;
-    void release(const QString& name) override;
 
 private:
     PluginInfo loadCpp(const QString& name, const QString& path);
     PluginInfo loadPython(const QString& name, const QString& path);
-
-private:
-    // The loaders have to outlive instantiate(): the module behind a plugin
-    // object must stay loaded for as long as the registry keeps that object,
-    // and release() arrives after instantiate() has returned.
-    QHash<QString, QPluginLoader*> m_cpp;
-    QHash<QString, pluginpy::PluginLoader*> m_python;
 };
 
 } // namespace launchy

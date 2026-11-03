@@ -61,7 +61,7 @@ the OpenSSL runtime DLLs next to the executable.
 
 The *python* plugins are copied too, by the =PythonPlugins.Deploy= target:
 every folder under =src/Plugins/= that owns a =<FolderName>.py= is copied to
-=plugins/<FolderName>/=. That is the layout =PluginHandler::loadPlugins()=
+=plugins/<FolderName>/=. That is the layout =PluginRegistry::loadPlugins()=
 expects (it scans =plugins/= and loads =plugins/<Name>/<Name>.py=), and it is
 what used to be done by hand. Adding a new python plugin therefore needs no
 CMake change — as long as the entry file is named after its folder.
@@ -401,7 +401,7 @@ otherwise Launchy falls back to a bare UI. For a release package, copy
 If a python plugin you added is missing from =plugins/=, check that its entry
 file is called =<FolderName>.py=: =PythonPlugins.Deploy= only copies folders
 whose name matches that file, and the plugin would silently not be picked up
-at startup (=PluginHandler= only looks at directories). The CI build asserts
+at startup (=PluginRegistry= only looks at directories). The CI build asserts
 this as a build-time check.
 
 *** Q9. Build runs out of memory / is very slow
