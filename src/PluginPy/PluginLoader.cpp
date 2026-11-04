@@ -18,21 +18,279 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // qt defines "slots" macro
 // python.h must include before qt header files
-// #include <Python.h>
+// Keep pybind11 ahead of every qt header in this file: it pulls in python.h,
+// and the slot/signals macros above only survive that if qt has not been seen
+// yet.
 #include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
 
 #include "PluginLoader.h"
 
+#include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
+#include <QSettings>
 
 #include "PluginInterface/PluginInterface.h"
+#include "PluginInterface/Runtime.h"
 
-#include "PluginMgr.h"
+#include "ExportPyPlugin.h"
+#include "PluginWrapper.h"
+
+namespace py = pybind11;
 
 namespace pluginpy {
+namespace {
+
+// The one interpreter a process gets, plus the plugins imported into it.
+//
+// This state cannot be a PluginLoader member: PluginFactory builds one loader
+// per plugin on the stack, so an interpreter owned by the object would be
+// initialised again for every plugin. A python interpreter is process-global,
+// which is why it sits here instead, reachable only from this file -- there is
+// no header and no instance() for anybody else to reach for.
+class PluginCore {
+public:
+    static PluginCore& instance();
+
+    void initSettings(QSettings* setting);
+
+    launchy::PluginInterface* load(const QString& pluginName, const QString& pluginPath);
+    bool unload(const QString& pluginName);
+
+private:
+    PluginCore();
+    ~PluginCore();
+    PluginCore(const PluginCore&) = delete;
+    PluginCore& operator=(const PluginCore&) = delete;
+
+    // Hands the gil over to python threads for as long as the event loop runs,
+    // and takes it back before the app shuts down. See PluginCore::PluginCore.
+    void releaseGilForEventLoop();
+
+private:
+    QSettings* m_pSettings;
+    QMap<QString, py::object> m_pluginObject;
+    QMap<QString, launchy::PluginInterface*> m_pluginInterface;
+    // Thread state of the thread that initialised the interpreter, valid while
+    // the gil is dropped, nullptr once it is held again.
+    PyThreadState* m_mainThreadState;
+};
+
+PluginCore& PluginCore::instance() {
+    static PluginCore s_core;
+    return s_core;
+}
+
+launchy::PluginInterface* PluginCore::load(const QString& pluginName, const QString& pluginPath) {
+    // Everything below uses the python api, and the main thread no longer owns
+    // the gil once the event loop is running.
+    py::gil_scoped_acquire gil;
+
+    qDebug() << "pluginpy::PluginLoader::load, name:" << pluginName
+        << "path:" << pluginPath;
+
+    if (m_pluginInterface.contains(pluginName)) {
+        qDebug() << "pluginpy::PluginLoader::load, plugin alread loaded, name:"
+            << pluginName << "path:" << pluginPath;
+        return m_pluginInterface[pluginName];
+    }
+
+    if (!m_pluginObject.contains(pluginName)) {
+        py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
+        pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pluginPath)));
+        py::object module = py::module::import(qUtf8Printable(pluginName));
+        py::object pluginClass = module.attr("getPlugin")();
+
+        m_pluginObject.insert(pluginName, pluginClass());
+    }
+
+    py::object& pluginObject = m_pluginObject[pluginName];
+
+    if (py::isinstance<exportpy::Plugin>(pluginObject)) {
+        qDebug() << "pluginpy::PluginLoader::load, plugin load succeed, plugin name:"
+            << pluginName;
+        exportpy::Plugin* pluginPtr = pluginObject.cast<exportpy::Plugin*>();
+        if (pluginPtr) {
+            std::string name = pluginPtr->getName();
+            qDebug() << "pluginpy::PluginLoader::load, plugin name:"
+                << name.c_str() << pluginName;
+            launchy::PluginInterface* intf = new pluginpy::PluginWrapper(pluginPtr, pluginName);
+            // store this pointer in the core
+            m_pluginInterface.insert(pluginName, intf);
+            return intf;
+        }
+    }
+
+    return nullptr;
+}
+
+bool PluginCore::unload(const QString& pluginName) {
+    py::gil_scoped_acquire gil;
+
+    qDebug() << "pluginpy::PluginLoader::unload, name:" << pluginName;
+
+    // Use value() rather than operator[]: operator[] would silently insert an
+    // empty (nullptr) entry for an unknown plugin before the remove() below, so
+    // an unload of a never-loaded plugin would leave a stray null entry behind.
+    launchy::PluginInterface* plugin = m_pluginInterface.value(pluginName, nullptr);
+    if (plugin) {
+        delete plugin;
+        plugin = nullptr;
+    }
+
+    m_pluginInterface.remove(pluginName);
+    m_pluginObject.remove(pluginName);
+
+    return true;
+}
+
+void PluginCore::initSettings(QSettings* setting) {
+    if (!setting) {
+        qWarning("pluginpy::PluginLoader::initSettings, setting is nullptr");
+        return;
+    }
+
+    // avoid multiple pybind11 import
+    if (setting == m_pSettings) {
+        qDebug("pluginpy::PluginLoader::initSettings, setting is already set");
+        return;
+    }
+    m_pSettings = setting;
+
+    py::gil_scoped_acquire gil;
+
+    try {
+        // init qsetting
+        py::object launchyModule = py::module::import("launchy");
+        py::object launchyDict = launchyModule.attr("__dict__");
+        // PyLong_FromVoidPtr returns a new reference; steal it so the assigned
+        // object owns it (no leak, though initSettings is usually called once).
+        py::object settingPyObj = py::reinterpret_steal<py::object>(
+            PyLong_FromVoidPtr(m_pSettings));
+        launchyDict["__settings"] = settingPyObj;
+
+        // run launchy_util initSettings
+        qDebug() << "pluginpy::PluginLoader::initSettings, import launchy_util";
+        py::object launchyUtilModule = py::module::import("launchy_util");
+        py::object launchyUtilInitSettings = launchyUtilModule.attr("initSettings");
+        launchyUtilInitSettings();
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        qWarning() << "pluginpy::PluginLoader::initSettings, fail to init QSetting,"
+            << e.what();
+    }
+}
+
+PluginCore::PluginCore()
+    : m_pSettings(nullptr),
+      m_mainThreadState(nullptr) {
+
+    py::initialize_interpreter();
+
+    QString pythonPkgPath = qApp->applicationDirPath() + "/python";
+    py::list pathObj = py::module::import("sys").attr("path").cast<py::list>();
+    pathObj.append(qUtf8Printable(QDir::toNativeSeparators(pythonPkgPath)));
+
+    // load system pypi package path
+    QString externalPkgPath = launchy::g_settings->value("Python/ExternalPackagePath", "").toString();
+    if (!externalPkgPath.isEmpty()) {
+        pathObj.append(qUtf8Printable(QDir::toNativeSeparators(externalPkgPath)));
+        qDebug() << "pluginpy::PluginLoader, external package path:"
+            << externalPkgPath;
+    }
+
+    try {
+        // run launchy_util main (init logging and pypi package)
+        qDebug() << "pluginpy::PluginLoader, import launchy_util";
+        py::object launchyUtilModule = py::module::import("launchy_util");
+        py::object launchyUtilMain = launchyUtilModule.attr("main");
+        launchyUtilMain();
+    }
+    catch (const py::error_already_set& e) {
+        PyErr_Print();
+        PyErr_Clear();
+        qWarning() << "pluginpy::PluginLoader, fail to init launchy_util,"
+            << e.what();
+    }
+
+    // Safe to drop it this early because every remaining way into python takes
+    // it back: load, unload, initSettings, ~PluginCore, the catches in
+    // PluginLoader and every trampoline call in PluginWrapper::msg.
+    //
+    // It must happen before anything can run python on another thread. The
+    // catalog builder calls getCatalog from its own thread, which now takes the
+    // gil; had the main thread still been holding it, that wait would never end.
+    releaseGilForEventLoop();
+}
+
+// pybind11 keeps the gil on the thread that called initialize_interpreter(), and
+// gil_scoped_acquire only takes and releases it when that thread has handed it
+// over at least once (gil.h derives its "release" flag from whether the thread
+// state is current). Nothing ever did, so the main thread held the gil for the
+// whole life of the app: it runs no python bytecode while sitting in the qt
+// event loop, so it never offers the gil to anybody, and every python thread a
+// plugin starts is starved before its first instruction.
+//
+// Dropping it here lets python threads run. Every entry point that touches
+// python from c++ (load, unload, initSettings, ~PluginCore and the trampolines
+// in ExportPyPlugin.h) takes it back with gil_scoped_acquire, which from now on
+// is a real acquire/release pair rather than a no-op.
+void PluginCore::releaseGilForEventLoop() {
+    if (m_mainThreadState) {
+        return;
+    }
+
+    m_mainThreadState = PyEval_SaveThread();
+    qDebug("pluginpy::PluginLoader, gil handed over to python threads");
+
+    // Taken back before the application objects are torn down, so shutdown sees
+    // the same gil state startup did.
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, qApp, [this]() {
+        if (!m_mainThreadState) {
+            return;
+        }
+        PyEval_RestoreThread(m_mainThreadState);
+        m_mainThreadState = nullptr;
+        qDebug("pluginpy::PluginLoader, gil taken back from python threads");
+    });
+}
+
+PluginCore::~PluginCore() {
+    py::gil_scoped_acquire gil;
+
+    for (auto plugin : m_pluginInterface)
+    {
+        delete plugin;
+    }
+
+    m_pSettings = nullptr;
+    m_pluginInterface.clear();
+    m_pluginObject.clear();
+
+    // We deliberately do NOT call py::finalize_interpreter() here.
+    //
+    // The interpreter cannot be finalized from inside ~PluginCore: the very next
+    // lines still touch the python api (m_pluginObject.clear() destroys each
+    // py::object, and ~PluginWrapper drops its held exportpy::Plugin*), so the
+    // interpreter must stay alive through the end of this destructor. Even a
+    // finalize() placed after clear() would be unsafe, because the gil held by
+    // the scope guard above is released as the function returns and pybind11
+    // does not finalize cleanly after a gil acquire/release pair has wrapped a
+    // partially torn-down interpreter.
+    //
+    // For a single-instance object destroyed at process exit, leaving the
+    // interpreter initialized is the accepted behaviour: the OS reclaims all
+    // python state as the process terminates. No per-run resource leak is
+    // observable to the user.
+}
+
+} // namespace
 
 void initSettings(QSettings* setting) {
-    PluginMgr::instance().initSettings(setting);
+    PluginCore::instance().initSettings(setting);
 }
 
 PluginLoader::PluginLoader(const QString& pluginName, const QString& pluginPath)
@@ -42,20 +300,14 @@ PluginLoader::PluginLoader(const QString& pluginName, const QString& pluginPath)
     load();
 }
 
-void PluginLoader::setFileName(const QString& fileName) {
-    Q_UNUSED(fileName);
-    // split fileName to pluginName and pluginPath
-    // m_fileName = fileName;
-}
-
-launchy::PluginInterface* PluginLoader::instance() {
+launchy::PluginInterface* PluginLoader::instance() const {
     return m_interface;
 }
 
 bool PluginLoader::unload() {
     bool ret = false;
     try {
-        ret = PluginMgr::instance().unloadPlugin(m_pluginName);
+        ret = PluginCore::instance().unload(m_pluginName);
         m_interface = nullptr;
     }
     catch (const py::error_already_set& e) {
@@ -64,7 +316,7 @@ bool PluginLoader::unload() {
         PyErr_Print();
         PyErr_Clear();
         const char* errInfo = e.what();
-        qWarning() << "PluginLoader::load, exception catched on load plugin"
+        qWarning() << "PluginLoader::unload, exception catched on unload plugin"
             << "error info:" << errInfo;
     }
 
@@ -74,7 +326,7 @@ bool PluginLoader::unload() {
 bool PluginLoader::load() {
     try {
         // finally get m_interface
-        m_interface = PluginMgr::instance().loadPlugin(m_pluginName, m_pluginPath);
+        m_interface = PluginCore::instance().load(m_pluginName, m_pluginPath);
     }
     catch (const py::error_already_set& e) {
         py::gil_scoped_acquire gil;

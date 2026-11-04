@@ -144,7 +144,7 @@ and a mismatch between a PySide2 Qt and the app Qt aborts on load. Shipping the
 keep-list only costs ~19 MB. =misc/deploy_win.ps1= takes the same route via
 =$INSTALL_PYSIDE2=; the CI build does it in the workflow step
 "Install and prune PySide2", which copies into =build/bin/<Config>/python/PySide2=
-and =.../python/shiboken2= -- the folder =PluginMgr.cpp= puts on =sys.path=,
+and =.../python/shiboken2= -- the folder =PluginLoader.cpp= puts on =sys.path=,
 because =launchy.pyd= and =launchy_util.py= live next to it. If a plugin ever
 imports another Qt module (e.g. =PySide2.QtNetwork=), add the matching =.pyd=
 plus its DLL to that keep-list; the CI verify step fails loudly if a listed file
@@ -245,7 +245,7 @@ Notes:
   =$true=).
 
   *Smaller alternative (what CI uses):* drop only the files the plugins import
-  into =python/PySide2= and =python/shiboken2=. =PluginMgr.cpp= appends
+  into =python/PySide2= and =python/shiboken2=. =PluginLoader.cpp= appends
   =<appdir>/python= to =sys.path= (next to =launchy.pyd=), so both spellings of
   the package resolve, and the artifact stays ~19 MB instead of ~298 MB. The
   native closure to keep is =__init__.py=, =_config.py=, =QtCore.pyd=,

@@ -223,7 +223,7 @@ class PluginContract(unittest.TestCase):
         self.assertIsNone(self.Bare().doDialog(None))
 
     def testSubclassIsStillAPlugin(self):
-        # PluginMgr decides "is this a python plugin" with
+        # PluginLoader decides "is this a python plugin" with
         # py::isinstance<exportpy::Plugin>, so a subclass has to satisfy it.
         self.assertIsInstance(self.Full(), launchy.Plugin)
         self.assertIsInstance(self.Bare(), launchy.Plugin)

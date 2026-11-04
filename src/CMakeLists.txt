@@ -548,8 +548,6 @@ target_sources (PluginPy
   ${SRC_DIR}/PluginPy/ExportPyPlugin.h
   ${SRC_DIR}/PluginPy/PluginLoader.h
   ${SRC_DIR}/PluginPy/PluginLoader.cpp
-  ${SRC_DIR}/PluginPy/PluginMgr.h
-  ${SRC_DIR}/PluginPy/PluginMgr.cpp
   ${SRC_DIR}/PluginPy/PluginPy.h
   ${SRC_DIR}/PluginPy/PluginWrapper.h
   ${SRC_DIR}/PluginPy/PluginWrapper.cpp)

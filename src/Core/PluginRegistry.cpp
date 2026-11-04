@@ -161,7 +161,7 @@ void PluginRegistry::install(const QString& key, PluginInfo info,
     qDebug() << "PluginRegistry::loadPlugins, plugin loaded:" << key;
     info.loaded = true;
     info.sendMsg(MSG_INIT);
-    info.sendMsg(MSG_PATH, &info.path);
+    info.sendMsg(MSG_SET_PATH, &info.path);
 
     (*plugins)[key] = info;
 }

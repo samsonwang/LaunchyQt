@@ -496,7 +496,7 @@ int Tasky::msg(int msgId, void* wParam, void* lParam) {
         endDialog((bool)wParam);
         break;
 
-    case MSG_PATH:
+    case MSG_SET_PATH:
         setPath((const QString*)wParam);
         break;
 

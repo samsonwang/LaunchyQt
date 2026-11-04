@@ -158,7 +158,7 @@ int PluginWrapper::msg(int msgId, void* wParam, void* lParam) {
     // Every thread that touches the python api has to hold the gil, and that
     // includes the catalog builder thread that runs getCatalog. The main thread
     // hands the gil over while the event loop runs
-    // (PluginMgr::releaseGilForEventLoop), so this is a real acquire/release
+    // (PluginLoader.cpp, releaseGilForEventLoop), so this is a real acquire/release
     // pair rather than the no-op it used to be.
     //
     // It is taken for the whole dispatch, not just inside the trampolines:
@@ -223,7 +223,7 @@ int PluginWrapper::dispatchMsg(int msgId, void* wParam, void* lParam) {
         handled = true;
         break;
 
-    case MSG_PATH:
+    case MSG_SET_PATH:
         setPath((const QString*)wParam);
         // handled stays false, matching the upstream Launchy convention: these
         // fire-and-forget setters never signal that the message was consumed,

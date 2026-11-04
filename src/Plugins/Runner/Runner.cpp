@@ -208,7 +208,7 @@ int Runner::msg(int msgId, void* wParam, void* lParam) {
     case MSG_END_DIALOG:
         endDialog(wParam != 0);
         break;
-    case MSG_PATH:
+    case MSG_SET_PATH:
         setPath((const QString*)wParam);
         break;
     default:

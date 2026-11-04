@@ -21,11 +21,46 @@
 #   1. drop a Test<Name>.cpp here (it must end by including its own .moc)
 #   2. add one line below:  launchy_add_test(TestName)
 #   The helper names the executable, sets its output dir, links Qt::Test + the
-#   libraries under test, copies the runtime DLLs, and registers the CTest case.
+#   libraries under test, makes the test depend on the shared runtime-DLL target,
+#   and registers the CTest case.
 
 find_package (Qt${QT_MAJOR_VERSION} COMPONENTS Test REQUIRED)
 
 enable_testing ()
+
+# --- runtime DLLs every test needs (copied ONCE) ---
+#
+# Every test executable lands in the same build/test/<Config> directory, so the
+# three DLLs a test needs at run time are shared by all of them. Copying them
+# from a POST_BUILD step on each test would repeat the identical three copies
+# once per test target (21x) into one directory; instead a single target does it
+# and every test depends on it. copy_if_different keeps the repeated runs cheap.
+if (WIN32)
+    # Qt5Test_DIR is <prefix>/lib/cmake/Qt5Test, so ../../.. is <prefix>.
+    get_filename_component (_qt_bin "${Qt5Test_DIR}/../../.." ABSOLUTE)
+    set (_qt_bin "${_qt_bin}/bin")
+
+    set (_qt_test_dll "${_qt_bin}/Qt5Test$<$<CONFIG:Debug>:d>.dll")
+    set (_qt_core_dll "${_qt_bin}/Qt5Core$<$<CONFIG:Debug>:d>.dll")
+
+    # Same directory the tests are routed to below.
+    set (_launchy_test_dir "${CMAKE_BINARY_DIR}/test/$<CONFIG>")
+
+    add_custom_target (launchy_test_runtime
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${_launchy_test_dir}"
+        # PluginInterface.dll is a build product (SHARED lib under test), the two
+        # Qt DLLs are not: Qt5Core.dll is what every test imports, Qt5Test.dll is
+        # only ever deployed into the app tree, so both are taken from the Qt
+        # installation the build found.
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:PluginInterface>" "${_launchy_test_dir}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${_qt_core_dll}" "${_launchy_test_dir}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${_qt_test_dll}" "${_launchy_test_dir}"
+        COMMENT "copy PluginInterface.dll + Qt5Core.dll + Qt5Test.dll next to the test"
+        VERBATIM)
+endif ()
 
 # --- helper to declare a QTest executable + its CTest case ---
 #
@@ -65,28 +100,11 @@ function (launchy_add_test test_name)
         PRIVATE LaunchyCore
         PRIVATE PluginInterface)
 
-    # A test links PluginInterface (SHARED -> PluginInterface.dll) and Qt5::Test.
-    # Neither DLL sits next to the test exe (PluginInterface.dll is in the app
-    # tree, Qt5Test.dll is only deployed by windeployqt into the app tree once).
-    # Copy the three runtime DLLs the test needs -- PluginInterface.dll,
-    # Qt5Core.dll, Qt5Test.dll -- into the test's own directory so it is
-    # self-contained and does not depend on the app tree or PATH.
-    if (WIN32)
-        # Qt5Test_DIR is <prefix>/lib/cmake/Qt5Test, so ../../.. is <prefix>.
-        get_filename_component (_qt_bin "${Qt5Test_DIR}/../../.." ABSOLUTE)
-        set (_qt_bin "${_qt_bin}/bin")
-
-        set (_qt_test_dll   "${_qt_bin}/Qt5Test$<$<CONFIG:Debug>:d>.dll")
-        set (_qt_core_dll   "${_qt_bin}/Qt5Core$<$<CONFIG:Debug>:d>.dll")
-
-        add_custom_command (TARGET ${test_name} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_FILE:PluginInterface>" "$<TARGET_FILE_DIR:${test_name}>"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${_qt_core_dll}" "$<TARGET_FILE_DIR:${test_name}>"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${_qt_test_dll}" "$<TARGET_FILE_DIR:${test_name}>"
-            COMMENT "copy PluginInterface.dll + Qt5Core.dll + Qt5Test.dll next to the test")
+    # The three runtime DLLs this test needs (PluginInterface.dll, Qt5Core.dll,
+    # Qt5Test.dll) sit in the shared test directory; launchy_test_runtime puts
+    # them there once for all tests, so this only orders the test after it.
+    if (TARGET launchy_test_runtime)
+        add_dependencies (${test_name} launchy_test_runtime)
     endif ()
 
     add_test (NAME ${test_name} COMMAND ${test_name})
@@ -150,7 +168,7 @@ set_tests_properties (TestPluginPy PROPERTIES SKIP_RETURN_CODE 77)
 ##################################################
 # PluginPy: the C++ side of a python plugin
 #
-# PluginMgr, PluginLoader and PluginWrapper::msg only exist with an interpreter
+# PluginLoader and PluginWrapper::msg only exist with an interpreter
 # in the process, so this test links PluginPy and carries its own copy of the
 # runtime -- the same self-contained layout as the other tests: python36.dll,
 # python/launchy.pyd and python/launchy_util.py land next to the test executable.
@@ -165,13 +183,22 @@ if (NOT EXISTS "${Python_ROOT_DIR}/python36.dll")
         "-DPython_ROOT_DIR=<3.6.8 install> (see the Python section of "
         "src/CMakeLists.txt)")
 endif ()
+# The home reaches the test as a compile definition, i.e. as a C string literal,
+# so it must not contain backslashes: the compiler reads
+# "C:\hostedtoolcache\...\3.6.8\x64" as escape sequences (\h, \3, \x64) and hands
+# the interpreter a path that does not exist -- Py_Initialize then dies with
+# "No module named 'encodings'" and the process aborts (0xC0000409) before a
+# single assertion, which is exactly how CI used to fail. TO_CMAKE_PATH turns
+# C:\ and C:/ into the same forward-slashed form the interpreter accepts on
+# Windows.
+file (TO_CMAKE_PATH "${Python_ROOT_DIR}" _launchy_test_python_home)
 target_compile_definitions (TestPluginPyLoader PRIVATE
-    "LAUNCHY_TEST_PYTHON_HOME=\"${Python_ROOT_DIR}\"")
+    "LAUNCHY_TEST_PYTHON_HOME=\"${_launchy_test_python_home}\"")
 
 add_custom_command (TARGET TestPluginPyLoader POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
         "$<TARGET_FILE_DIR:TestPluginPyLoader>/python"
-    # The module and its helper: PluginMgr puts <exe dir>/python on sys.path
+    # The module and its helper: PluginLoader puts <exe dir>/python on sys.path
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:PluginPy>" "$<TARGET_FILE_DIR:TestPluginPyLoader>/python/launchy.pyd"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

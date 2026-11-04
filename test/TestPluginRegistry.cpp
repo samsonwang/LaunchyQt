@@ -45,7 +45,7 @@ public:
             *static_cast<QString*>(wParam) = m_name;
             return 1;
 
-        case MSG_PATH:
+        case MSG_SET_PATH:
             path = *static_cast<const QString*>(wParam);
             return 0;
 
@@ -284,7 +284,7 @@ void TestPluginRegistry::loadsEnabledPlugins() {
     // Both were told to initialise and where they live, exactly once
     const FakePlugin* plugin = factory.owned.first();
     QCOMPARE(plugin->sent.count(MSG_INIT), 1);
-    QCOMPARE(plugin->sent.count(MSG_PATH), 1);
+    QCOMPARE(plugin->sent.count(MSG_SET_PATH), 1);
     QCOMPARE(plugin->path, QDir::cleanPath(base + "/plugins/Alpha"));
 }
 
@@ -363,7 +363,7 @@ void TestPluginRegistry::enablingAPluginThatWasNeverBuiltLoadsIt() {
     QCOMPARE(second.owned.count(), 1);
     // Built once, and initialised on the way in
     QCOMPARE(second.owned.first()->sent.count(MSG_INIT), 1);
-    QCOMPARE(second.owned.first()->sent.count(MSG_PATH), 1);
+    QCOMPARE(second.owned.first()->sent.count(MSG_SET_PATH), 1);
 }
 
 void TestPluginRegistry::dispatchSkipsDisabledPlugins() {

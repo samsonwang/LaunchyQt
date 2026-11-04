@@ -1,9 +1,8 @@
 /*
 PluginPy: the C++ side of a python plugin.
 
-launchy.pyd embeds an interpreter, so the only way to exercise PluginMgr,
-PluginLoader and PluginWrapper::msg is to have the interpreter in this process
-too. This test links PluginPy and drives a python plugin through the same
+launchy.pyd embeds an interpreter, so the only way to exercise PluginLoader and
+PluginWrapper::msg is to have the interpreter in this process too. This test links PluginPy and drives a python plugin through the same
 PluginInterface::msg() ABI the launcher uses:
 
     load  ->  MSG_GET_NAME / MSG_PATH / MSG_GET_RESULTS / MSG_LAUNCH_ITEM
@@ -11,9 +10,10 @@ PluginInterface::msg() ABI the launcher uses:
 
 The plugin is written by the test into a temporary directory, so nothing here
 depends on the plugins the app ships. What is checked is the marshalling in
-both directions (InputData and CatItem), and the handled/not-handled return
-values msg() promises: the setters and the dialog pair are fire-and-forget, so
-the caller keeps dispatching them to the other plugins.
+both directions (InputData and CatItem), the handled/not-handled return values
+msg() promises -- the setters and the dialog pair are fire-and-forget, so the
+caller keeps dispatching them to the other plugins -- and that two handles for
+one directory address the same instance until one of them unloads it.
 
 The test needs the python runtime next to it (python36.dll, python/launchy.pyd,
 python/launchy_util.py) -- the POST_BUILD step in test/CMakeLists.txt copies
@@ -74,6 +74,14 @@ void writeFile(const QString& path, const QByteArray& content) {
     QVERIFY2(file.open(QIODevice::WriteOnly), qPrintable(path));
     file.write(content);
     file.close();
+}
+
+// The plugin leaves one line per python instance it constructed, so the C++
+// side can tell "the table answered" from "a new object was built". Counting
+// addresses would not work: the wrapper a previous load deleted is the block
+// the next new happens to hand out again.
+int instancesCreated(const QString& pluginDir) {
+    return readFile(pluginDir + "/init.txt").count(QLatin1Char('\n'));
 }
 
 // A plugin that implements every virtual, records what it was given, and hands
@@ -172,6 +180,48 @@ def getPlugin():
     return PyRaising
 )PY";
 
+// A minimal plugin that records its own construction. Two loaders pointed at
+// this directory must end up at the same python object, and the count is how
+// the test sees that.
+const char* SHARED_PLUGIN = R"PY(
+import os
+import launchy
+
+HERE = os.path.dirname(__file__)
+
+
+class PyShared(launchy.Plugin):
+    def __init__(self):
+        launchy.Plugin.__init__(self)
+        with open(os.path.join(HERE, "init.txt"), "a") as handle:
+            handle.write("instance\n")
+
+    def init(self):
+        pass
+
+    def getName(self):
+        return "PyShared"
+
+    def setPath(self, path):
+        pass
+
+    def getLabels(self, inputDataList):
+        pass
+
+    def getResults(self, inputDataList, resultsList):
+        pass
+
+    def getCatalog(self, resultsList):
+        pass
+
+    def launchItem(self, inputDataList, item):
+        pass
+
+
+def getPlugin():
+    return PyShared
+)PY";
+
 } // namespace
 
 class TestPluginPyLoader : public QObject {
@@ -198,6 +248,7 @@ private slots:
     // --- robustness ---
     void unknownMessageIsNotHandled();
     void pythonExceptionIsContained();
+    void secondLoaderSharesTheInstance();
     void unloadingDropsTheWrapper();
 
 private:
@@ -215,15 +266,26 @@ void TestPluginPyLoader::initTestCase() {
     m_dir.reset(new QTemporaryDir);
     QVERIFY(m_dir->isValid());
 
-    // The interpreter is created by PluginMgr on first use, which happens
+    // The interpreter is created by PluginLoader on first use, which happens
     // below. Point it at the installation its python36.dll came from instead of
     // relying on a registry entry the interpreter would otherwise need.
+    //
+    // A home without a standard library does not fail this test, it kills the
+    // process: Py_Initialize cannot load the file system codec and aborts, which
+    // ctest reports as 0xC0000409 with nothing pointing at the path. Checking
+    // here turns a bad -DPython_ROOT_DIR into one readable line instead.
 #ifdef LAUNCHY_TEST_PYTHON_HOME
-    qputenv("PYTHONHOME", QByteArray(LAUNCHY_TEST_PYTHON_HOME));
+    const QString pyHome = QString::fromLocal8Bit(LAUNCHY_TEST_PYTHON_HOME);
+    QVERIFY2(QDir(pyHome + "/Lib/encodings").exists(),
+             qPrintable(QString("PYTHONHOME '%1' has no Lib/encodings, the "
+                                "embedded interpreter would abort in "
+                                "Py_Initialize").arg(pyHome)));
+    qputenv("PYTHONHOME", pyHome.toLocal8Bit());
 #endif
 
-    // PluginMgr's constructor reads the external package path from the global
-    // settings store, so it has to exist before the first plugin is loaded.
+    // PluginLoader reads the external package path from the global settings
+    // store the first time it is used, so it has to exist before the first
+    // plugin is loaded.
     g_settings = QSharedPointer<QSettings>(
         new QSettings(m_dir->path() + "/pluginpy_test.ini", QSettings::IniFormat));
     QVERIFY(!g_settings.isNull());
@@ -234,6 +296,10 @@ void TestPluginPyLoader::initTestCase() {
     const QString raisingDir = m_dir->path() + "/plugins/PyRaising";
     QDir().mkpath(raisingDir);
     writeFile(raisingDir + "/PyRaising.py", QByteArray(RAISING_PLUGIN));
+
+    const QString sharedDir = m_dir->path() + "/plugins/PyShared";
+    QDir().mkpath(sharedDir);
+    writeFile(sharedDir + "/PyShared.py", QByteArray(SHARED_PLUGIN));
 }
 
 void TestPluginPyLoader::cleanupTestCase() {
@@ -265,7 +331,7 @@ void TestPluginPyLoader::nameTravelsThroughTheOutParameter() {
 void TestPluginPyLoader::pathIsForwardedWithoutClaimingTheMessage() {
     QVERIFY(m_plugin != nullptr);
     QString path = "C:/plugins/PyFixture";
-    QCOMPARE(m_plugin->msg(MSG_PATH, &path), 0);
+    QCOMPARE(m_plugin->msg(MSG_SET_PATH, &path), 0);
     QCOMPARE(readFile(pathFile(pluginDir())), path);
 }
 
@@ -357,6 +423,45 @@ void TestPluginPyLoader::pythonExceptionIsContained() {
     QString name;
     QCOMPARE(raising.instance()->msg(MSG_GET_NAME, &name), 1);
     QCOMPARE(name, QString("PyRaising"));
+}
+
+// One directory, several handles. The second one has to land on the entry the
+// first one created: the module is imported and instantiated once per process
+// and the table is keyed by plugin name. unload() empties that entry for
+// everybody, so the next load has to build a new python instance.
+void TestPluginPyLoader::secondLoaderSharesTheInstance() {
+    const QString dir = m_dir->path() + "/plugins/PyShared";
+
+    pluginpy::PluginLoader first("PyShared", dir);
+    QVERIFY(first.instance() != nullptr);
+    QCOMPARE(instancesCreated(dir), 1);
+
+    // Destroying a handle is not an unload: the plugin stays in the table, and
+    // that is exactly what a second handle finds there.
+    {
+        pluginpy::PluginLoader second("PyShared", dir);
+        QCOMPARE(second.instance(), first.instance());
+        // A table hit short-circuits before the module is asked for its class,
+        // so no second python object was built.
+        QCOMPARE(instancesCreated(dir), 1);
+    }
+
+    QCOMPARE(instancesCreated(dir), 1);
+
+    pluginpy::PluginLoader third("PyShared", dir);
+    QCOMPARE(third.instance(), first.instance());
+
+    QVERIFY(third.unload());
+    QVERIFY(third.instance() == nullptr);
+
+    // The entry is gone for every handle, not just the one that asked: the next
+    // load re-imports and constructs a fresh instance. The handle that did not
+    // unload still holds the old pointer, which is dangling now -- that is the
+    // contract: unload through one owner only.
+    pluginpy::PluginLoader fourth("PyShared", dir);
+    QVERIFY(fourth.instance() != nullptr);
+    QCOMPARE(instancesCreated(dir), 2);
+    QVERIFY(fourth.unload());
 }
 
 void TestPluginPyLoader::unloadingDropsTheWrapper() {

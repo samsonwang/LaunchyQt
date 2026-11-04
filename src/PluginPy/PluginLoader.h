@@ -28,18 +28,32 @@ class QSettings;
 
 namespace pluginpy {
 
+// Publishes the ini to python as launchy.__settings (and runs
+// launchy_util.initSettings). A free function on purpose: the caller does this
+// before it knows which plugin it is about to load, so there is no loader yet
+// to hang it on.
 void PLUGINPY_EXPORT initSettings(QSettings* setting);
 
+// A handle for one python plugin directory.
+//
+// It used to be a thin forwarder over a second class that owned the
+// interpreter and the plugin table. That second class is gone: its state lives
+// in PluginLoader.cpp as PluginCore, because a python interpreter is
+// process-global and cannot belong to an object built once per plugin on the
+// stack (see the comment on PluginCore).
+//
+// The handle addresses the plugin, it does not own it: PluginCore keeps the
+// python object and the wrapper that instance() hands out, so this object can
+// die as soon as it has said where the plugin lives.
 class PLUGINPY_EXPORT PluginLoader {
 public:
     PluginLoader(const QString& pluginName, const QString& pluginPath);
 
-    launchy::PluginInterface* instance();
+    launchy::PluginInterface* instance() const;
 
     bool unload();
 
 private:
-    void setFileName(const QString& fileName);
     bool load();
 
 private:

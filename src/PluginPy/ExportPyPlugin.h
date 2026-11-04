@@ -111,8 +111,8 @@ public:
         // This function runs on the catalog builder thread, so it needs the gil
         // like every other call into python. It is only safe now that the main
         // thread lets go of the gil while the event loop runs (see
-        // PluginMgr::releaseGilForEventLoop); before that, taking it here simply
-        // deadlocked against the main thread and had to be left out.
+        // PluginLoader.cpp, releaseGilForEventLoop); before that, taking it here
+        // simply deadlocked against the main thread and had to be left out.
         py::gil_scoped_acquire gil;
 
         py::function overload = py::get_overload(static_cast<const Plugin*>(this),

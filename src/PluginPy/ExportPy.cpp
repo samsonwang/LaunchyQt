@@ -35,7 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ExportPyPlugin.h"
 #include "ExportPyCatItem.h"
-#include "PluginMgr.h"
 
 namespace py = pybind11;
 

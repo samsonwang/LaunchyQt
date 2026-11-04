@@ -110,7 +110,7 @@ PluginInfo PluginFactory::loadPython(const QString& name, const QString& path) {
     pluginpy::initSettings(g_settings.data());
 
     // Also a stack object. It only addresses the plugin, it does not own it:
-    // PluginMgr keeps the python object and the wrapper it hands out, so this
+    // the bridge keeps the python object and the wrapper it hands out, so this
     // loader can die as soon as it has said where the plugin lives.
     pluginpy::PluginLoader loader(name, path);
     PluginInterface* plugin = loader.instance();
