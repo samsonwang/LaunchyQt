@@ -272,6 +272,45 @@ jobs:
         run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
 
       # ------------------------------------------------------------------
+      # 5b) Guard: the build must not write into the checkout
+      #     The version string comes from BuildInfo.Generate, which asks git for
+      #     the state of the tree WHILE the build runs. Any target that rewrites
+      #     a tracked file therefore turns a pristine clone into "<hash>-dirty"
+      #     -- which is exactly what happened with qt5_create_translation: it
+      #     ran lupdate as a build rule, so every CI build refreshed
+      #     translations/*.ts (locations only) and the artifact claimed a
+      #     provenance the commit did not have. Instead of trusting the build
+      #     graph to stay clean, assert it: this step is what catches the next
+      #     target that writes into the source tree.
+      # ------------------------------------------------------------------
+      - name: Verify the build left the checkout clean
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $header = 'build/generated/LaunchyBuildInfo.h'
+          if (-not (Test-Path $header)) {
+            Write-Host "::error::$header was not generated"
+            exit 1
+          }
+          $match = Select-String -Path $header -Pattern 'LAUNCHY_GIT_HASH "([^"]+)"'
+          if (-not $match) {
+            Write-Host "::error::$header carries no LAUNCHY_GIT_HASH"
+            exit 1
+          }
+          $hash = $match.Matches[0].Groups[1].Value
+          Write-Host "recorded git hash: $hash"
+
+          $modified = @(git status --porcelain --untracked-files=no)
+          if ($modified.Count -gt 0) {
+            Write-Host "the build modified tracked files:"
+            $modified | ForEach-Object { Write-Host "  $_" }
+          }
+          if ($hash -like '*-dirty' -or $modified.Count -gt 0) {
+            Write-Host "::error::the build wrote into the checkout: the artifact would name a commit the sources do not match"
+            exit 1
+          }
+
+      # ------------------------------------------------------------------
       # 6) Deploy the Qt runtime
       #    Written inline instead of calling misc/deploy_win.ps1: the Qt prefix is
       #    only known to this workflow (jurplel/install-qt-action exports it), and

@@ -689,21 +689,21 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="216"/>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="332"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1481"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1483"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="267"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1259"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1264"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1990"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1261"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1266"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1992"/>
         <source>Options</source>
         <translation>Optionen</translation>
     </message>
     <message>
         <location filename="../src/Launchy/LaunchyWidget.cpp" line="273"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1265"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1267"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
@@ -713,55 +713,55 @@ p, li { white-space: pre-wrap; }
         <translation>Die Tastenkürzel %1 wird bereits verwendet, bitte eine andere wählen.</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="522"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1267"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="524"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1269"/>
         <source>Launchy %1
 press %2 to activate</source>
         <translation>Launchy %1
 %2 drücken zum Aktivieren</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1593"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1595"/>
         <source>Launchy is already running!</source>
         <translation>Launchy läuft bereits!</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="2000"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="2002"/>
         <source>Relaunch</source>
         <translation>Neu starten</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1256"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1977"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1258"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1979"/>
         <source>Show Launchy</source>
         <translation>Launchy anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1257"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1980"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1259"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1982"/>
         <source>Reload skin</source>
         <translation>Skin neu laden</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1258"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1985"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1260"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1987"/>
         <source>Rebuild catalog</source>
         <translation>Katalog neu erstellen</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1260"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1995"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1262"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1997"/>
         <source>Check for updates</source>
         <translation>Nach Updates suchen</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1261"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1263"/>
         <source>Restart</source>
         <translation>Neustart</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1262"/>
-        <location filename="../src/Launchy/LaunchyWidget.cpp" line="2010"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="1264"/>
+        <location filename="../src/Launchy/LaunchyWidget.cpp" line="2012"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -769,29 +769,29 @@ press %2 to activate</source>
 <context>
     <name>launchy::OptionDialog</name>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="180"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="182"/>
         <source>Search mode changes will take effect after restarting Launchy.</source>
         <translation>Änderungen am Suchmodus werden nach einem Neustart von Launchy wirksam.</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="387"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="391"/>
         <source>Plugin options</source>
         <translation>Plugin-Optionen</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="424"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="428"/>
         <source>Failed to open the config folder:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="439"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="443"/>
         <source>Failed to open the log folder:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="483"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="487"/>
         <source>Index has %n item(s)</source>
         <translation>
             <numerusform>Index hat %n Eintrag</numerusform>
@@ -799,56 +799,56 @@ press %2 to activate</source>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="505"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="509"/>
         <source>The catalog directories are already up to date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="634"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="638"/>
         <source>Up</source>
         <translation>Oben</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="634"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="638"/>
         <source>Down</source>
         <translation>Unten</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="634"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="638"/>
         <source>Left</source>
         <translation>Links</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="634"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="638"/>
         <source>Right</source>
         <translation>Rechts</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="705"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="709"/>
         <source>Screen %1: </source>
         <translation>Bildschirm %1: </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="720"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="724"/>
         <source>Cursor screen</source>
         <translation>Bildschirm am Cursor</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="179"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="423"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="438"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="504"/>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="782"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="181"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="427"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="442"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="508"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="786"/>
         <source>Launchy</source>
         <translation>Launchy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="783"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="787"/>
         <source>The hotkey %1 is already in use, please select another.</source>
         <translation>Die Tastenkürzel %1 wird bereits verwendet, bitte eine andere wählen.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Launchy/OptionDialog.cpp" line="935"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="941"/>
         <source>Index has %n item(s)</source>
         <comment>N/A</comment>
         <translation>
@@ -857,37 +857,37 @@ press %2 to activate</source>
         </translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1046"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1052"/>
         <source>No Proxy</source>
         <translation>Kein Proxy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1047"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1053"/>
         <source>System Proxy</source>
         <translation>System-Proxy</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1048"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1054"/>
         <source>HTTP</source>
         <translation>HTTP</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1049"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1055"/>
         <source>SOCKS5</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1213"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1219"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1216"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1222"/>
         <source>(%1-bit)</source>
         <translation>(%1 Bit)</translation>
     </message>
     <message>
-        <location filename="../src/Launchy/OptionDialog.cpp" line="1193"/>
+        <location filename="../src/Launchy/OptionDialog.cpp" line="1199"/>
         <source>Fail to convert to %1 mode.
 Please check directory:
  %2</source>

@@ -3,7 +3,7 @@ here are the procedures to release a new version, in case of I forget something 
 
 1. update version number in source code (.cpp file and .rc file)
 2. update CHANGELOG
-3. update translation files
+3. update translation files (=cmake --build build --target Launchy.UpdateTranslations=, then review the =translations/*.ts= diff -- it moves =<location= lines even when no string changed -- and commit it; a normal build no longer does this)
 4. commit all changes in source code
 5. build binary
 6. test

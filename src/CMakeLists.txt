@@ -39,6 +39,14 @@ include_directories (${SRC_DIR} ${DEPS_DIR})
 # The header is only rewritten when the value changed, so a build of unchanged
 # sources neither recompiles nor relinks.
 #
+# INVARIANT: no build rule may write into the checkout. The hash is only as
+# honest as the tree the probe sees, and BuildInfo.Generate runs concurrently
+# with every other target the executable depends on -- a target that rewrites a
+# tracked file (the .ts refresh used to, see the translation section) can dirty
+# the tree before the probe runs, and then a pristine CI checkout reports
+# "<hash>-dirty" for a commit that is not dirty at all. Generated files belong
+# in the build tree.
+#
 # -DLAUNCHY_GIT_HASH=<hash> supplies the value when the tree carries no git
 #  metadata, e.g. a source tarball.
 set (LAUNCHY_GIT_HASH "" CACHE STRING
@@ -698,14 +706,20 @@ set (TS_FILES_LAUNCHY
 
 if (QT_MAJOR_VERSION EQUAL 5)
 
-  # Qt5: qt5_create_translation both refreshes the .ts sources and compiles
-  # the .qm files. The positional signature is (QM_VAR ts_files... sources...).
-  qt5_create_translation (QM_FILES_LAUNCHY
-    ${TS_FILES_LAUNCHY}
-    ${SRC_DIR}/Launchy
-    ${SRC_DIR}/PluginInterface
-    ${SRC_DIR}/Core
-    ${SRC_DIR}/PluginPy)
+  # Compile the .qm files only. The committed .ts files are the INPUT of the
+  # build, not a build product -- and qt5_create_translation would have made
+  # them a product: it is lupdate + lrelease, so every build where a translatable
+  # source is newer than the .ts rewrites translations/*.ts in the checkout
+  # (lupdate refreshes every <location line="..."> even when no string changed).
+  #
+  # That in-place rewrite is what put "-dirty" into CI artifacts. A fresh clone
+  # always has locations stale relative to the sources, so every CI build
+  # rewrote the .ts files, and BuildInfo.Generate (which asks git for the tree
+  # state) is an INDEPENDENT dependency of Launchy -- with --parallel the two run
+  # concurrently, so the rewrite could easily land before the git probe and a
+  # pristine tree was reported as dirty. Refreshing the .ts therefore happens in
+  # a separate target below, never during a normal build.
+  qt5_add_translation (QM_FILES_LAUNCHY ${TS_FILES_LAUNCHY})
 
   # Drive the .qm generation and copy them next to the executable.
   add_custom_target (Launchy.Translations ALL DEPENDS ${QM_FILES_LAUNCHY})
@@ -718,6 +732,22 @@ if (QT_MAJOR_VERSION EQUAL 5)
     ${QM_FILES_LAUNCHY}
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/translations
     COMMENT "copy generated .qm translation files to translations directory")
+
+  # Deliberately NOT part of ALL, for the reason given above. Run it by hand
+  # after touching translatable code, then review and commit the .ts diff --
+  # locations move even when no string changed, which is exactly why the result
+  # must not appear in a build's working tree.
+  #
+  #   cmake --build <build> --target Launchy.UpdateTranslations
+  add_custom_target (Launchy.UpdateTranslations
+    COMMAND ${Qt5_LUPDATE_EXECUTABLE}
+      ${SRC_DIR}/Launchy
+      ${SRC_DIR}/PluginInterface
+      ${SRC_DIR}/Core
+      ${SRC_DIR}/PluginPy
+      -ts ${TS_FILES_LAUNCHY}
+    COMMENT "refresh translations/*.ts from the sources (review and commit the diff)"
+    VERBATIM)
 
 else ()
 
