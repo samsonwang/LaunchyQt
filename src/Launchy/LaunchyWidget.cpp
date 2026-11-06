@@ -805,6 +805,16 @@ void LaunchyWidget::onAlternativeListKeyPressed(QKeyEvent* event) {
         if (!m_searchResult.isEmpty()) {
             int row = m_alternativeList->currentRow();
                 if (row > -1) {
+                    // DIAG only: this is the only place a promotion is written.
+                    // timerActive means the row comes from the previous query's
+                    // list, so the recorded item can be wrong for this text.
+                    qInfo() << "LaunchyWidget::onAlternativeListKeyPressed,"
+                               " set promoted item, query"
+                            << m_inputBox->text()
+                            << "row" << row
+                            << "timer active" << m_searchTimer->isActive()
+                            << "item" << m_searchResult[row].shortName
+                            << m_searchResult[row].fullPath;
                     // Remember the choice for this query, Catalog promotes
                     // it back to the top the next time the query runs
                     m_history.setPromotedItem(m_inputBox->text(),
@@ -1066,6 +1076,13 @@ void LaunchyWidget::doTab() {
 }
 
 void LaunchyWidget::doEnter() {
+    // DIAG only: whether Enter had to flush a pending debounce, and what the
+    // results list it is about to launch against looks like. Run with -debug.
+    qInfo() << "LaunchyWidget::doEnter, timer active" << m_searchTimer->isActive()
+            << "results" << m_searchResult.count()
+            << "segments" << m_inputData.count()
+            << "input text" << m_inputBox->text();
+
     // if a debounced search is still pending (user typed fast then hit Enter),
     // run it now so we launch against the final query, not a stale one.
     // doSearch() -> searchOnInput() drops the pending timer on its own.
@@ -1143,10 +1160,23 @@ void LaunchyWidget::searchOnInput() {
     setSearchText(searchText);
     m_searchResult.clear();
 
+    // DIAG only: the input the search actually ran on, and how many segments
+    // reached the plugins. Run with -debug.
+    qInfo() << "LaunchyWidget::searchOnInput, input text" << m_inputBox->text()
+            << "segments" << m_inputData.count()
+            << "search text" << searchText;
+
     if ((!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
         || m_inputBox->text().isEmpty()) {
         // Add history items exclusively and unsorted so they remain in most recently used order
         qDebug() << "LaunchyWidget::searchOnInput, get all history items";
+        // DIAG only: a run that takes this branch never asks a plugin, so a
+        // missing calculator answer is explained right here. Run with -debug.
+        qInfo() << "LaunchyWidget::searchOnInput, history-only branch, input empty"
+                << m_inputBox->text().isEmpty()
+                << "segments" << m_inputData.count()
+                << "first history label"
+                << (!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY));
         m_history.getAllItem(m_searchResult);
     }
     else {
@@ -1183,6 +1213,23 @@ void LaunchyWidget::searchOnInput() {
         // add any file or directory matches
         if (FileSearch::looksLikePath(searchText)) {
             FileSearch::search(searchText, m_searchResult, m_inputData);
+        }
+
+        // DIAG only: the answer's fate. Promotion is the one lookup that can
+        // outrank usage, and the first rows show whether the calculator item is
+        // present but sorted below, or missing entirely. Run with -debug.
+        QString promotedShortName;
+        QString promotedFullPath;
+        const bool promoted = m_history.promotedItem(searchTextLower,
+                                                     promotedShortName,
+                                                     promotedFullPath);
+        qInfo() << "LaunchyWidget::searchOnInput, results" << m_searchResult.count()
+                << "promoted" << promoted
+                << promotedShortName << promotedFullPath;
+        for (int i = 0; i < m_searchResult.count() && i < 3; ++i) {
+            const CatItem& item = m_searchResult[i];
+            qInfo() << "LaunchyWidget::searchOnInput, result" << i << item.shortName << item.fullPath
+                    << item.pluginName << "usage" << item.usage;
         }
 
         if (!m_searchResult.isEmpty()) {
@@ -1925,6 +1972,12 @@ void LaunchyWidget::setFadeLevel(double level) {
 
 void LaunchyWidget::showLaunchy(bool noFade) {
 
+    // DIAG only: showing never re-runs the search, so whatever is printed here
+    // is also what the user sees until the next keystroke. Run with -debug.
+    qInfo() << "LaunchyWidget::showLaunchy, input text" << m_inputBox->text()
+            << "results" << m_searchResult.count()
+            << "timer active" << m_searchTimer->isActive(); 
+
     hideAlternativeList();
 
     loadPosition(pos());
@@ -1945,6 +1998,12 @@ void LaunchyWidget::hideLaunchy(bool noFade) {
     if (!isVisible() || isHidden()) {
         return;
     }
+
+    // DIAG only: hiding drops the pending debounce, so a timer that is still
+    // active here is a search the user will never see. Run with -debug.
+    qInfo() << "LaunchyWidget::hideLaunchy, input text" << m_inputBox->text()
+            << "results" << m_searchResult.count()
+            << "timer active" << m_searchTimer->isActive();
 
     savePosition();
     hideAlternativeList();

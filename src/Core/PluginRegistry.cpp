@@ -120,6 +120,7 @@ void PluginRegistry::loadPlugins(IPluginFactory& factory) {
             if (info.obj == nullptr) {
                 // Nothing this process can load. The factory already said what
                 // was wrong with the directory, so this stays silent.
+                qInfo() << "PluginRegistry::loadPlugins, instantiate failed:" << name << path;
                 continue;
             }
             install(name, info, &plugins);
@@ -130,6 +131,15 @@ void PluginRegistry::loadPlugins(IPluginFactory& factory) {
     // is unloaded on the way: its code stays mapped until the process ends,
     // exactly like every other plugin's.
     m_plugins = std::move(plugins);
+
+    // DIAG only: the dispatch table is rebuilt exactly here, so this is the one
+    // place that can show a plugin which will never answer (a directory the
+    // factory could not load leaves no entry at all). Run with -debug.
+    for (auto it = m_plugins.constBegin(); it != m_plugins.constEnd(); ++it) {
+        qInfo() << "PluginRegistry::loadPlugins, plugin entry:" << it.key()
+                << "loaded" << it->loaded
+                << "obj" << (it->obj != nullptr);
+    }
 }
 
 void PluginRegistry::install(const QString& key, PluginInfo info,
@@ -225,9 +235,21 @@ void PluginRegistry::getResults(QList<InputData>* inputData, QList<CatItem>* res
     }
 
     QMap<QString, PluginInfo> plugins = getPlugins();
+
+    // DIAG only: what the dispatch layer actually handed to the plugins, and
+    // how many items each one added. A plugin that adds nothing here either did
+    // not run or chose not to answer, which is the distinction the bug report
+    // needs. Run with -debug.
+    qInfo() << "PluginRegistry::getResults, input segments" << inputData->count()
+            << "text" << inputData->last().getText()
+            << "plugin entries" << plugins.size();
+
     for (PluginInfo info : plugins) {
         if (info.loaded) {
+            const int before = results->count();
             info.sendMsg(MSG_GET_RESULTS, (void*)inputData, (void*)results);
+            qInfo() << "PluginRegistry::getResults, plugin:" << info.name
+                    << "items" << before << "->" << results->count();
         }
     }
 }

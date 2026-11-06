@@ -79,7 +79,16 @@ void PluginWrapper::getResults(QList<launchy::InputData>* inputData, QList<launc
     }
 
     exportpy::CatItemList scriptResults(result);
+    const int before = result->count();
     m_plugin->getResults(inputDataList, scriptResults);
+
+    // DIAG only: the segment count is what a plugin like CalcyPy gates its
+    // answer on, and the delta is what this plugin contributed. Together with
+    // the registry's per-plugin line this separates "wrong number of segments"
+    // from "returned nothing" from "never called". Run with -debug.
+    qInfo() << "PluginWrapper::getResults, python plugin:" << m_pluginName
+            << "segments" << (int)inputDataList.size()
+            << "items" << before << "->" << result->count();
 }
 
 void PluginWrapper::getCatalog(QList<launchy::CatItem>* catItem) {
