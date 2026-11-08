@@ -143,7 +143,7 @@ void Runner::launchItem(QList<InputData>* inputData, CatItem* item) {
         QUrl url(file);
         file = url.toEncoded();
     }
-    //	qDebug() << file << args;
+    //    qDebug() << file << args;
     runProgram(file, args);
 }
 

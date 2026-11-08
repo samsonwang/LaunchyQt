@@ -96,7 +96,7 @@ OptionDialog::OptionDialog(CatalogBuilder* catalogBuilder,
 
     Qt::WindowFlags windowsFlags = windowFlags();
     windowsFlags = windowsFlags & (~Qt::WindowContextHelpButtonHint);
-    windowsFlags = windowsFlags | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint;
+    // windowsFlags = windowsFlags | Qt::WindowStaysOnTopHint;
     setWindowFlags(windowsFlags);
 
 

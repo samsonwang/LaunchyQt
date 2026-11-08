@@ -26,12 +26,6 @@
     <height>420</height>
    </size>
   </property>
-  <property name="maximumSize">
-   <size>
-    <width>1440</width>
-    <height>840</height>
-   </size>
-  </property>
   <property name="font">
    <font>
     <family>Verdana</family>
@@ -111,12 +105,6 @@
                 <height>24</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>26</height>
-               </size>
-              </property>
               <property name="frame">
                <bool>true</bool>
               </property>
@@ -144,12 +132,6 @@
                <size>
                 <width>50</width>
                 <height>24</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>26</height>
                </size>
               </property>
              </widget>
@@ -229,12 +211,6 @@
                <size>
                 <width>0</width>
                 <height>22</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>20</height>
                </size>
               </property>
               <property name="text">
@@ -337,12 +313,6 @@
                 <height>24</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>26</height>
-               </size>
-              </property>
              </widget>
             </item>
             <item>
@@ -436,12 +406,6 @@
                 <height>24</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>26</height>
-               </size>
-              </property>
              </widget>
             </item>
             <item>
@@ -477,12 +441,6 @@
            <height>0</height>
           </size>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>360</height>
-          </size>
-         </property>
          <property name="title">
           <string>Suggestion List</string>
          </property>
@@ -516,12 +474,6 @@
               <height>22</height>
              </size>
             </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>22</height>
-             </size>
-            </property>
             <property name="text">
              <string>Underline matched text</string>
             </property>
@@ -546,12 +498,6 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>22</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
                 <height>22</height>
                </size>
               </property>
@@ -588,12 +534,6 @@
                <size>
                 <width>140</width>
                 <height>24</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>26</height>
                </size>
               </property>
               <property name="font">
@@ -649,12 +589,6 @@
                 <height>22</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>25</height>
-               </size>
-              </property>
               <property name="text">
                <string>Auto open delay</string>
               </property>
@@ -669,12 +603,6 @@
                <size>
                 <width>0</width>
                 <height>22</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>100</width>
-                <height>16777215</height>
                </size>
               </property>
               <property name="font">
@@ -835,12 +763,6 @@
                 <height>22</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>22</height>
-               </size>
-              </property>
               <property name="text">
                <string>Search mode</string>
               </property>
@@ -874,12 +796,6 @@
                <size>
                 <width>140</width>
                 <height>24</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>26</height>
                </size>
               </property>
               <property name="font">
@@ -1046,7 +962,7 @@
       <attribute name="title">
        <string>Skins</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,3">
        <property name="topMargin">
         <number>6</number>
        </property>
@@ -1056,12 +972,6 @@
           <size>
            <width>0</width>
            <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>160</width>
-           <height>16777215</height>
           </size>
          </property>
          <property name="title">
@@ -1085,12 +995,6 @@
           </property>
           <item>
            <widget class="QListWidget" name="skinList">
-            <property name="maximumSize">
-             <size>
-              <width>150</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="font">
              <font>
               <family>Verdana</family>
@@ -1295,12 +1199,6 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <widget class="QPushButton" name="catDirPlus">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>26</height>
-                 </size>
-                </property>
                 <property name="font">
                  <font>
                   <family>Verdana</family>
@@ -1316,12 +1214,6 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <widget class="QPushButton" name="catDirMinus">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>26</height>
-                 </size>
-                </property>
                 <property name="font">
                  <font>
                   <family>Verdana</family>
@@ -1438,12 +1330,6 @@ p, li { white-space: pre-wrap; }
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>175</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="title">
           <string>File Types</string>
          </property>
@@ -1455,12 +1341,6 @@ p, li { white-space: pre-wrap; }
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
             </property>
             <property name="font">
              <font>
@@ -1581,15 +1461,9 @@ p, li { white-space: pre-wrap; }
       <attribute name="title">
        <string>Plugins</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,4">
        <item>
         <widget class="QGroupBox" name="groupBox_7">
-         <property name="maximumSize">
-          <size>
-           <width>141</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="title">
           <string>Available plugins</string>
          </property>
@@ -1818,12 +1692,6 @@ p, li { white-space: pre-wrap; }
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
                 <property name="contextMenuPolicy">
                  <enum>Qt::NoContextMenu</enum>
                 </property>
@@ -1976,12 +1844,6 @@ p, li { white-space: pre-wrap; }
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>500</height>
-          </size>
-         </property>
          <property name="title">
           <string>System Options</string>
          </property>
@@ -2019,12 +1881,6 @@ p, li { white-space: pre-wrap; }
                <size>
                 <width>100</width>
                 <height>22</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
                </size>
               </property>
               <property name="contextMenuPolicy">
@@ -2179,12 +2035,6 @@ p, li { white-space: pre-wrap; }
                 <height>26</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>22</height>
-               </size>
-              </property>
              </widget>
             </item>
            </layout>
@@ -2212,7 +2062,7 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>331</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
@@ -2376,12 +2226,6 @@ p, li { white-space: pre-wrap; }
            </item>
            <item>
             <widget class="QPushButton" name="pushButtonAboutQt">
-             <property name="maximumSize">
-              <size>
-               <width>130</width>
-               <height>30</height>
-              </size>
-             </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -2411,12 +2255,6 @@ p, li { white-space: pre-wrap; }
             <size>
              <width>90</width>
              <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>500</width>
-             <height>16777215</height>
             </size>
            </property>
            <property name="text">

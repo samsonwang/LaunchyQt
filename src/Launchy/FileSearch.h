@@ -28,14 +28,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace launchy {
 class FileSearch {
 public:
-	static void search(const QString& searchText,
+    static void search(const QString& searchText,
                        QList<CatItem>& searchResults,
                        InputDataList& inputData);
 
-	// True when the text looks like a file system path, so that the file
-	// system should be searched as well as the catalog. Kept next to search()
-	// so that this test never drifts away from the way search() splits paths.
-	static bool looksLikePath(const QString& searchText);
+    // True when the text looks like a file system path, so that the file
+    // system should be searched as well as the catalog. Kept next to search()
+    // so that this test never drifts away from the way search() splits paths.
+    static bool looksLikePath(const QString& searchText);
 };
 } // namespace launchy
 

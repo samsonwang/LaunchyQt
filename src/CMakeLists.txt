@@ -324,6 +324,14 @@ target_sources (Launchy
   PRIVATE ${SOURCES_SINGLEAPP}
   PRIVATE ${SOURCES_HOTKEY})
 
+# Keep fractional DPI scaling (e.g. 125%) instead of rounding it to the nearest
+# integer. Qt 5.12's default is Round, which drops 125% all the way back to 100%
+# -- HighDpiScaleFactorRoundingPolicy::PassThrough preserves the raw system value.
+# Must be set as a compile-time macro (qglobal.h #ifndef-guards the default)
+# because Qt 5.12 predates the runtime QGuiApplication setter API.
+target_compile_definitions (Launchy PRIVATE
+  QT_DEFAULT_HIGHDPI_SCALE_FACTOR_ROUNDING_POLICY=Qt::HighDpiScaleFactorRoundingPolicy::PassThrough)
+
 # The commit this build came from. BuildInfo.Generate writes the generated
 # header before any Launchy source is compiled; the include dir is what lets
 # LaunchyVersion.h find it.
