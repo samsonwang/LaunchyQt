@@ -1,4 +1,5 @@
 
+import re
 import urllib.parse
 import webbrowser
 
@@ -16,6 +17,13 @@ from WebSearch.WebSearchGui import WebSearchGui
 from WebSearch.FaviconCache import cache as faviconCache, toBool
 from WebSearch.LaunchyProxy import proxy as launchyProxy
 
+# Label used to mark plain website URLs (not search-engine queries).
+LABEL_WEBSITE = "LABEL_WEBSITE"
+
+# Default regex pattern to detect whether an input string looks like a website URL.
+# Matches schemes (http/https/ftp), www. prefix, and common TLDs.
+_DEFAULT_URL_REGEX = r"^(https?|ftp)://|^www\.|\.com\b|\.co\.[a-z]{2,}\b|\.net\b|\.org\b"
+
 
 class WebSearchPy(Plugin):
     def __init__(self):
@@ -26,6 +34,8 @@ class WebSearchPy(Plugin):
         # Kept as an instance dict so one plugin instance can never leak its
         # engines into another (it used to be a mutable class attribute).
         self.searchEngine = {}
+        # URL detection regex; compiled lazily when first needed.
+        self._urlRegex = None
 
     def init(self):
         self.__readConfig()
@@ -43,9 +53,27 @@ class WebSearchPy(Plugin):
         query = inputDataList[0].getText()
         if query in self.searchEngine.keys():
             inputDataList[-1].setLabel(self.getName())
+            return
+        # Also detect plain website URLs (single input segment only).
+        # Tab-separated input (length > 1) means the first segment is a
+        # keyword lookup, and URL detection should stay out of the way.
+        if len(inputDataList) == 1 and self.__isWebsite(inputDataList[-1].getText()):
+            inputDataList[-1].setLabel(LABEL_WEBSITE)
 
     def getResults(self, inputDataList, resultsList):
-        if not inputDataList[-1].hasLabel(self.getName()):
+        last = inputDataList[-1]
+
+        # A plain URL typed directly (not a search-engine keyword + query).
+        if last.hasLabel(LABEL_WEBSITE):
+            url = self.__normalizeUrl(last.getText())
+            resultsList.push_front(
+                CatItem(url,
+                        "Open %s" % url,
+                        self.getName(),
+                        self.getIcon()))
+            return
+
+        if not last.hasLabel(self.getName()):
             return
         query = inputDataList[0].getText()
         keyword = inputDataList[-1].getText()
@@ -66,6 +94,14 @@ class WebSearchPy(Plugin):
         self.__refreshFavicons()
 
     def launchItem(self, inputDataList, catItem):
+        # Plain URL typed directly (no tab-separated keyword prefix).
+        if len(inputDataList) == 1:
+            url = self.__normalizeUrl(inputDataList[-1].getText())
+            if self.__isWebsite(inputDataList[-1].getText()):
+                log.debug('WebSearchPy::launchItem, opening URL directly: %s' % url)
+                webbrowser.open(url)
+                return True
+
         if len(inputDataList) == 2:
             key = inputDataList[0].getText()
             query = inputDataList[-1].getText()
@@ -183,6 +219,34 @@ class WebSearchPy(Plugin):
                       "the query is not appended" % url)
         log.debug("WebSearchPy::getUrl: %s" % result)
         return result
+
+    # ---- URL detection helpers -------------------------------------------
+    # Compile the regex lazily so the plugin pays nothing if URL detection
+    # never fires (e.g. a user who only uses tab-separated search). The pattern
+    # is read from the INI so advanced users can tune it; a bad pattern falls
+    # back to the default instead of crashing on every keystroke.
+    def __getUrlRegex(self):
+        if self._urlRegex is not None:
+            return self._urlRegex
+        pattern = str(lSettings.value(self.getName() + "/UrlRegExp", _DEFAULT_URL_REGEX))
+        try:
+            self._urlRegex = re.compile(pattern, re.IGNORECASE)
+        except re.error:
+            log.warning("WebSearchPy::__getUrlRegex, pattern '%s' is invalid, "
+                        "using default" % pattern)
+            self._urlRegex = re.compile(_DEFAULT_URL_REGEX, re.IGNORECASE)
+        return self._urlRegex
+
+    def __isWebsite(self, text):
+        """Return True if *text* looks like a website URL."""
+        return bool(self.__getUrlRegex().search(text or ""))
+
+    def __normalizeUrl(self, text):
+        """Return *text* as a usable URL, prepending http:// when no scheme."""
+        url = (text or "").strip()
+        if not re.match(r'^https?://|^ftp://', url, re.IGNORECASE):
+            url = "http://" + url
+        return url
 
 
 def getPlugin():
