@@ -47,7 +47,7 @@
 #include "PluginInterface/PluginMsg.h"
 #include "PluginInterface/Runtime.h"
 
-#include "Core/CoreGlobals.h"
+#include "PluginInterface/PluginLabels.h"
 #include "Core/OptionItem.h"
 #include "Core/SettingsManager.h"
 #include "Core/Logger.h"
@@ -617,7 +617,7 @@ void LaunchyWidget::launchItem() {
 
     int ops = MSG_CONTROL_LAUNCHITEM;
 
-    if (item.pluginName != NAME_LAUNCHY && item.pluginName != NAME_LAUNCHYFILE) {
+    if (item.pluginName != NAME_LAUNCHY) {
         ops = PluginRegistry::instance().launchItem(&m_inputData, &item);
         switch (ops) {
         case MSG_CONTROL_EXIT:
@@ -966,7 +966,7 @@ void LaunchyWidget::keyPressEvent(QKeyEvent* event) {
         if (!m_inputData.isEmpty()
             && m_inputData.last().hasLabel(LABEL_FILE)
             && !m_searchResult.isEmpty()
-            && m_searchResult[0].pluginName == NAME_LAUNCHYFILE) {
+            && m_searchResult[0].pluginName == NAME_LAUNCHY) {
             doTab();
         }
         processInput();

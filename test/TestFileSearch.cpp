@@ -21,12 +21,13 @@ the Free Software Foundation, either version 3 of the License, or
 #include <windows.h>
 #endif
 
-#include "Core/CoreGlobals.h"
-#include "FileSearch.h"
+#include "PluginInterface/PluginLabels.h"
+#include "PluginInterface/Runtime.h"
+
 #include "Core/InputDataList.h"
 #include "Core/OptionItem.h"
 
-#include "PluginInterface/Runtime.h"
+#include "FileSearch.h"
 
 using namespace launchy;
 
@@ -281,7 +282,7 @@ void TestFileSearch::fileResultsAreStampedWithTheFilePlugin() {
     FileSearch::search(m_tree.path() + "/gamma", results, inputData);
 
     QCOMPARE(results.count(), 1);
-    QCOMPARE(results.first().pluginName, NAME_LAUNCHYFILE);
+    QCOMPARE(results.first().pluginName, NAME_LAUNCHY);
     // The segment is tagged so the UI knows the list came from the file system
     QVERIFY(inputData.last().hasLabel(LABEL_FILE));
 }

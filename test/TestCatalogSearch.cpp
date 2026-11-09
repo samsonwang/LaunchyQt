@@ -19,13 +19,13 @@ the Free Software Foundation, either version 3 of the License, or
 
 #include <algorithm>
 
+#include "PluginInterface/PluginLabels.h"
+#include "PluginInterface/Runtime.h"
+
 #include "Core/Catalog.h"
 #include "Core/CatalogSlow.h"
 #include "Core/CatalogRanking.h"
-#include "Core/CoreGlobals.h"
 #include "Core/OptionItem.h"
-
-#include "PluginInterface/Runtime.h"
 
 using namespace launchy;
 

@@ -13,12 +13,13 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QTemporaryDir>
 #include <QSharedPointer>
 
+#include "PluginInterface/PluginLabels.h"
+#include "PluginInterface/Runtime.h"
+
 #include "Core/CommandHistory.h"
-#include "Core/CoreGlobals.h"
 #include "Core/InputDataList.h"
 #include "Core/OptionItem.h"
 
-#include "PluginInterface/Runtime.h"
 
 using namespace launchy;
 

@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QClipboard>
 
 #include "PluginInterface/PluginMsg.h"
+#include "PluginInterface/PluginLabels.h"
 
 #include "gui.h"
 
@@ -42,13 +43,10 @@ using namespace launchy;
 
 // Owners that identify Launchy's own file and directory items: the indexed
 // catalog never sets a plugin name at all, and the browse-as-you-type results
-// from FileSearch carry "launchy"/"launchy_file" (NAME_LAUNCHY / NAME_LAUNCHYFILE
-// in Core/CoreGlobals.h -- that header is part of the application, a plugin
-// cannot link against it, so the values are repeated here).
+// from FileSearch carry NAME_LAUNCHY.
 static bool isLaunchyOwnedItem(const QString& owner) {
     return owner.isEmpty()
-        || owner == QLatin1String("launchy")
-        || owner == QLatin1String("launchy_file");
+        || owner == NAME_LAUNCHY;
 }
 
 void Verby::init() {

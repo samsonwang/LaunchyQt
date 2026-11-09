@@ -15,7 +15,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 #include "Core/CatalogFast.h"
 #include "Core/CatalogSlow.h"
-#include "Core/CoreGlobals.h"
+#include "PluginInterface/PluginLabels.h"
 #include "Core/OptionItem.h"
 
 #include "PluginInterface/Runtime.h"

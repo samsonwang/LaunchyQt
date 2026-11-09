@@ -14,7 +14,8 @@ the Free Software Foundation, either version 3 of the License, or
 #include <QStringList>
 #include <Qt>
 
-#include "Core/CoreGlobals.h"
+#include "PluginInterface/PluginLabels.h"
+
 #include "Core/OptionItem.h"
 
 using namespace launchy;
@@ -178,16 +179,13 @@ void TestOptionItem::hotkeyDefaultsAreSet() {
 }
 
 // CommandHistory stamps its rows with NAME_HISTORY and FileSearch with
-// NAME_LAUNCHYFILE; pages of the option dialog compare against them. Equal
+// NAME_LAUNCHY; pages of the option dialog compare against them. Equal
 // constants would make a history row look like a file row.
 void TestOptionItem::catalogNamesAreDistinct() {
     QVERIFY(!NAME_LAUNCHY.isEmpty());
     QVERIFY(!NAME_HISTORY.isEmpty());
-    QVERIFY(!NAME_LAUNCHYFILE.isEmpty());
 
     QVERIFY(NAME_LAUNCHY != NAME_HISTORY);
-    QVERIFY(NAME_LAUNCHY != NAME_LAUNCHYFILE);
-    QVERIFY(NAME_HISTORY != NAME_LAUNCHYFILE);
 
     QVERIFY(!LABEL_FILE.isEmpty());
     QVERIFY(!LABEL_HISTORY.isEmpty());

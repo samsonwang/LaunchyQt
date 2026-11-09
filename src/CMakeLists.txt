@@ -398,6 +398,7 @@ target_sources (PluginInterface
   ${SRC_DIR}/PluginInterface/Runtime.cpp
   ${SRC_DIR}/PluginInterface/PluginInterface.h
   ${SRC_DIR}/PluginInterface/PluginInterface.cpp
+  ${SRC_DIR}/PluginInterface/PluginLabels.h
   ${SRC_DIR}/PluginInterface/PluginMsg.h
   ${SRC_DIR}/PluginInterface/UnicodeTable.h
   ${SRC_DIR}/PluginInterface/UnicodeTable.cpp)
@@ -451,8 +452,6 @@ target_sources (LaunchyCore
   ${SRC_DIR}/Core/CatalogRanking.cpp
   ${SRC_DIR}/Core/CommandHistory.h
   ${SRC_DIR}/Core/CommandHistory.cpp
-  ${SRC_DIR}/Core/CoreGlobals.h
-  ${SRC_DIR}/Core/CoreGlobals.cpp
   ${SRC_DIR}/Core/Directory.h
   ${SRC_DIR}/Core/Directory.cpp
   ${SRC_DIR}/Core/InputDataList.h

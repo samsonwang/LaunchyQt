@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QRegularExpression>
 #include <QDebug>
 
-#include "Core/CoreGlobals.h"
+#include "PluginInterface/PluginLabels.h"
 #include "Core/Catalog.h"
 #include "Core/CatalogRanking.h"
 #include "Core/OptionItem.h"
@@ -63,7 +63,7 @@ void FileSearch::search(const QString& searchText,
                 volumeName = QDir::toNativeSeparators(info.filePath());
             }
             CatItem item(QDir::toNativeSeparators(info.filePath()), volumeName);
-            item.pluginName = NAME_LAUNCHYFILE;
+            item.pluginName = NAME_LAUNCHY;
             searchResults.push_front(item);
         }
         return;
@@ -133,7 +133,7 @@ void FileSearch::search(const QString& searchText,
         // word list, which used to drop the whole listing for "C:\" and
         // other trailing-separator paths.
         if (words.isEmpty() || Catalog::matchWords(&item, words)) {
-            item.pluginName = NAME_LAUNCHYFILE;
+            item.pluginName = NAME_LAUNCHY;
             searchResults.push_front(item);
         }
     }
@@ -153,7 +153,7 @@ void FileSearch::search(const QString& searchText,
         QString fullPath = QDir::toNativeSeparators(directoryPart);
         QString name = dir.dirName();
         CatItem item(fullPath, name.length() == 0 ? fullPath : name);
-        item.pluginName = NAME_LAUNCHYFILE;
+        item.pluginName = NAME_LAUNCHY;
         searchResults.push_front(item);
     }
     else if (sort) {
