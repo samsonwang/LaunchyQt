@@ -95,6 +95,15 @@ void PluginRegistry::loadPlugins(IPluginFactory& factory) {
                 continue;
             }
 
+            // A previous root has already claimed this plugin name. The later
+            // entry silently overwrites the earlier one (QMap assignment), so
+            // inform the user which copy wins and which one is ignored.
+            if (plugins.contains(name) && plugins[name].path != path) {
+                qInfo() << "PluginRegistry::loadPlugins, duplicate plugin name" << name
+                        << "from" << path
+                        << "overrides earlier entry at" << plugins[name].path;
+            }
+
             // Configured off and never built: it stays unbuilt. This is the
             // whole point of checking the ini before instantiating -- building
             // a plugin maps its DLL and, for the first python one, starts the
