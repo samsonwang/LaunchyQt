@@ -123,9 +123,8 @@ jobs:
             exit 1
           }
           Write-Host "v141 toolset ready: $($toolset.FullName)"
-          # exported for the packaging step below, which needs the VC++ 2017
-          # redist directory to ship the CRT Launchy.exe links against
-          "VC_TOOLSET_DIR=$($toolset.FullName)" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
+          # exported for the packaging step below, which resolves the VC++ 2017
+          # redist under VC\Redist\MSVC to ship the CRT Launchy.exe links against
           "VS_INSTALL_PATH=$vsPath" | Out-File -Append -FilePath $env:GITHUB_ENV -Encoding utf8
 
       # ------------------------------------------------------------------
@@ -704,28 +703,30 @@ jobs:
           # ---- 5) MSVC 2017 CRT ------------------------------------------------
           # Launchy.exe links it and python36.dll needs vcruntime140.dll. The
           # runner has them in System32; the machine the artifact runs on may not.
+          # Copy the COMPLETE VC141 CRT app-locally (next to Launchy.exe) so the
+          # archive runs right after extraction -- no vc_redist.x64.exe install
+          # step. The redist folder comes from the v141 component installed in
+          # step 1, so the version always matches the toolset the exe links.
           $vsCrt = $null
-          if ($env:VC_TOOLSET_DIR) {
-            $vsCrt = Get-ChildItem -Path (Join-Path $env:VC_TOOLSET_DIR 'VC\Redist\VS2017') `
+          if ($env:VS_INSTALL_PATH) {
+            $vsCrt = Get-ChildItem -Path (Join-Path $env:VS_INSTALL_PATH 'VC\Redist\MSVC') `
               -Directory -ErrorAction SilentlyContinue |
               ForEach-Object { Join-Path $_.FullName 'x64\Microsoft.VC141.CRT' } |
               Where-Object { Test-Path (Join-Path $_ 'msvcp140.dll') } | Select-Object -First 1
           }
-          if (-not $vsCrt -and (Test-Path 'C:\Windows\System32\vcruntime140.dll')) {
-            $vsCrt = 'C:\Windows\System32'
+          if (-not $vsCrt) {
+            Write-Host "::error::VC141 CRT folder not found under $env:VS_INSTALL_PATH\VC\Redist\MSVC"
+            exit 1
           }
-          if ($vsCrt) {
-            foreach ($f in 'vcruntime140.dll', 'msvcp140.dll', 'concrt140.dll') {
-              $dst = Join-Path $release $f
-              if (Test-Path $dst) { continue }
-              $src = Join-Path $vsCrt $f
-              if (Test-Path $src) { Copy-Item -LiteralPath $src -Destination $dst -Force }
-            }
-            Write-Host "CRT taken from $vsCrt"
+          $crtDlls = Get-ChildItem -Path $vsCrt -Filter '*.dll' -File -ErrorAction SilentlyContinue
+          if (-not $crtDlls) {
+            Write-Host "::error::no CRT DLLs found in $vsCrt"
+            exit 1
           }
-          else {
-            Write-Host "[warn] MSVC 2017 redist not found, ship the VC++ 2017 Redistributable with the artifact"
+          foreach ($d in $crtDlls) {
+            Copy-Item -LiteralPath $d.FullName -Destination (Join-Path $release $d.Name) -Force
           }
+          Write-Host ("CRT taken from {0}: {1}" -f $vsCrt, ($crtDlls.Name -join ', '))
 
           # ---- 6) sanity + size report -----------------------------------------
           $rootDlls = @('python36.dll', 'python3.dll', 'vcruntime140.dll')
