@@ -609,7 +609,18 @@ void LaunchyWidget::launchItem() {
 
     qDebug() << "LaunchyWidget::launchItem, inputdata size:" << m_inputData.size();
 
-    CatItem& item = m_inputData[0].getTopResult();
+    // Snapshot the query before anything can pump the message loop. A plugin's
+    // launchItem (Verby runs ShellExecuteExW) or platform().runProgram() below
+    // can re-enter processInput(), which replaces m_inputData; every read after
+    // this point comes from the copy instead of the live list. QList is
+    // implicitly shared, so this is a refcount bump, not a deep copy.
+    const InputDataList inputDataSnapshot = m_inputData;
+
+    // Taken from the snapshot, so the item and the arguments/history entry
+    // below always describe the same query. A value rather than a reference:
+    // it is handed to plugins as a mutable pointer, and the snapshot element is
+    // const here.
+    CatItem item = inputDataSnapshot[0].getTopResult();
     qDebug() << "LaunchyWidget::launchItem, item.shortName:" << item.shortName
              << "item.fullPath:" << item.fullPath
              << "item.pluginName:" << item.pluginName
@@ -657,14 +668,14 @@ void LaunchyWidget::launchItem() {
                 qWarning() << "LaunchyWidget::launchItem, history entry gone:"
                            << historyIndex
                            << ", history size:" << m_history.getItemCount();
-                for (int i = 1; i < m_inputData.count(); ++i) {
-                    args += m_inputData[i].getText() + " ";
+                for (int i = 1; i < inputDataSnapshot.count(); ++i) {
+                    args += inputDataSnapshot[i].getText() + " ";
                 }
             }
         }
-        else if (m_inputData.count() > 1) {
-            for (int i = 1; i < m_inputData.count(); ++i) {
-                args += m_inputData[i].getText() + " ";
+        else if (inputDataSnapshot.count() > 1) {
+            for (int i = 1; i < inputDataSnapshot.count(); ++i) {
+                args += inputDataSnapshot[i].getText() + " ";
             }
         }
 
@@ -685,7 +696,7 @@ void LaunchyWidget::launchItem() {
     updateOutputItem(item);
 
     m_catalog->incrementUsage(item);
-    m_history.addItem(m_inputData);
+    m_history.addItem(inputDataSnapshot);
 }
 
 void LaunchyWidget::onAlternativeListRowChanged(int row) {
