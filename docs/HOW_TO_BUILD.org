@@ -463,3 +463,14 @@ only inspects =Launchy.exe=, so it never deploys =Qt5Qml.dll=. Copy it (and
   family (~Nov 2020) as the other =Qt5*.dll=.
 - =python3.dll= must sit next to =python36.dll= (the Release root). It is the
   stable-ABI forwarder that =pyside2.abi3.dll= / =shiboken2.abi3.dll= import.
+
+Having the files in place is necessary but not sufficient: CPython loads
+extension modules with =LOAD_WITH_ALTERED_SEARCH_PATH=, which replaces the
+application directory in the DLL search order with the module's own directory
+(=python/PySide2=). Root-level =Qt5Qml.dll= / =python3.dll= are therefore found
+only through the process working directory, so a launcher started with any other
+working directory fails every Qt based python plugin with the same
+=DLL load failed= message (the OS dialog above only appears when something loads
+=Qt5Qml.dll= outside python). =PlatformWin= calls =SetDllDirectoryW= on the
+application directory when the platform is created, before plugins are loaded,
+which makes these imports independent of how/whence Launchy was started.

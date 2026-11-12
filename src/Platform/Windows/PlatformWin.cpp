@@ -96,6 +96,22 @@ static QString win32ErrorText(DWORD error) {
 // which is "LaunchyQt" and would send the dumps to a different directory.
 PlatformWin::PlatformWin()
     : m_crashDumper(new CrashDumper(L"Launchy")) {
+    // The embedded Python loads extension modules with
+    // LOAD_WITH_ALTERED_SEARCH_PATH, which replaces the application directory
+    // in the DLL search order with the module's own directory. PySide2's
+    // pyside2.abi3.dll imports Qt5Qml.dll, which only exists next to
+    // Launchy.exe, so without this the Qt based python plugins import only when
+    // the process working directory happens to be the application directory (a
+    // launcher started from a shell, a script or an autostart entry can have any
+    // other one, and then every one of them fails with "DLL load failed").
+    // SetDllDirectory puts the directory back into the search order for the rest
+    // of the process. It is process-wide, so doing it once here -- the platform
+    // is created before the first plugin is loaded -- covers every importer.
+    const QString appDir = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
+    if (!SetDllDirectoryW((LPCWSTR)appDir.utf16())) {
+        qWarning() << "PlatformWin, SetDllDirectoryW failed for" << appDir
+                   << ", error:" << win32ErrorText(GetLastError());
+    }
 }
 
 PlatformWin::~PlatformWin() {
