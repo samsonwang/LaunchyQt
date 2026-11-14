@@ -607,6 +607,22 @@ void LaunchyWidget::launchItem() {
         return;
     }
 
+    // A history row is a placeholder CatItem that search()/getAllItem() build
+    // for the alternatives list (pluginName == NAME_HISTORY, data == history
+    // index, shortName == the whole "key <sep> query" line). Expand it back
+    // into the original command segments before launching, so the launch
+    // routes through the original plugin (Verby, WebSearchPy, ...) with the
+    // real segments -- running the first segment's path with the second
+    // segment's text as a literal argument string would mis-handle plugin
+    // actions such as "Code <sep> Open containing folder".
+    if (m_inputData[0].getTopResult().pluginName == NAME_HISTORY) {
+        const int historyIndex = (int)(int64_t)(m_inputData[0].getTopResult().data);
+        InputDataList historyEntry = m_history.getItem(historyIndex);
+        if (!historyEntry.isEmpty()) {
+            m_inputData = historyEntry;
+        }
+    }
+
     qDebug() << "LaunchyWidget::launchItem, inputdata size:" << m_inputData.size();
 
     // Snapshot the query before anything can pump the message loop. A plugin's
@@ -723,7 +739,9 @@ void LaunchyWidget::onAlternativeListRowChanged(int row) {
              << ", item.pluginName:" << item.pluginName
              << ", inputBox:" << m_inputBox->text();
 
-    if ( (!m_inputData.isEmpty() && m_inputData.first().hasLabel(LABEL_HISTORY))
+    if ( item.pluginName == NAME_HISTORY
+         || (!m_inputData.isEmpty()
+             && m_inputData.first().hasLabel(LABEL_HISTORY))
          || m_inputBox->text().isEmpty() ) {
         // Used a void* to hold an int.. ick!
         // BUT! Doing so avoids breaking existing catalogs
