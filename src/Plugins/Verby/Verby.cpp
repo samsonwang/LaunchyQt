@@ -49,6 +49,36 @@ static bool isLaunchyOwnedItem(const QString& owner) {
         || owner == NAME_LAUNCHY;
 }
 
+#ifdef Q_OS_WIN
+// Open a folder with the shell's DEFAULT verb (lpVerb = NULL), not with the
+// literal "open" verb. A file manager that replaces Explorer normally leaves
+// Directory\shell\open alone: it registers a verb of its own (xplorer2's
+// open_x2, ...) and makes that the default verb of the progid, which is what
+// the shell picks when no verb is named. On a stock Windows there is no open
+// command under Directory at all, so naming it explicitly lands on the built-in
+// Explorer handler whatever the default verb says. NULL is also what
+// platform().runProgram() passes, so a folder reached through a verb result and
+// a folder opened from the catalog are handed to the same handler.
+static void shellOpenFolder(const QString& folderPath) {
+    SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
+
+    shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
+    shellExecInfo.hwnd = NULL;
+    shellExecInfo.lpVerb = NULL;
+    shellExecInfo.lpFile = (LPCWSTR)folderPath.utf16();
+    shellExecInfo.lpParameters = NULL;
+    shellExecInfo.lpDirectory = NULL;
+    shellExecInfo.nShow = SW_NORMAL;
+    shellExecInfo.hInstApp = NULL;
+
+    // A failure here is silent otherwise: the folder just does not open.
+    if (!ShellExecuteExW(&shellExecInfo)) {
+        qWarning() << "Verby, failed to open folder:" << folderPath
+                   << ", error:" << (quint32)GetLastError();
+    }
+}
+#endif
+
 void Verby::init() {
 }
 
@@ -225,43 +255,14 @@ int Verby::launchItem(QList<InputData>* inputData, CatItem* item) {
         }
 
 #ifdef Q_OS_WIN
-        // Open the folder with the shell's default "open" verb instead of
-        // hardcoding explorer.exe, so that it opens in whichever file manager
-        // is registered as the default handler for directories.
-        QString folderPath = QDir::toNativeSeparators(info.absolutePath());
-
-        SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
-
-        shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
-        shellExecInfo.hwnd = NULL;
-        shellExecInfo.lpVerb = L"open";
-        shellExecInfo.lpFile = (LPCWSTR)folderPath.utf16();
-        shellExecInfo.lpParameters = NULL;
-        shellExecInfo.lpDirectory = NULL;
-        shellExecInfo.nShow = SW_NORMAL;
-        shellExecInfo.hInstApp = NULL;
-
-        ShellExecuteExW(&shellExecInfo);
+        shellOpenFolder(QDir::toNativeSeparators(info.absolutePath()));
 #endif
     }
     else if (verb == "Open shortcut folder") {
         QFileInfo info(noun);
 
 #ifdef Q_OS_WIN
-        QString folderPath = QDir::toNativeSeparators(info.absolutePath());
-
-        SHELLEXECUTEINFOW shellExecInfo = { sizeof(shellExecInfo) };
-
-        shellExecInfo.fMask = SEE_MASK_FLAG_NO_UI;
-        shellExecInfo.hwnd = NULL;
-        shellExecInfo.lpVerb = L"open";
-        shellExecInfo.lpFile = (LPCWSTR)folderPath.utf16();
-        shellExecInfo.lpParameters = NULL;
-        shellExecInfo.lpDirectory = NULL;
-        shellExecInfo.nShow = SW_NORMAL;
-        shellExecInfo.hInstApp = NULL;
-
-        ShellExecuteExW(&shellExecInfo);
+        shellOpenFolder(QDir::toNativeSeparators(info.absolutePath()));
 #endif
     }
     else if (verb == "Copy path to clipboard") {
